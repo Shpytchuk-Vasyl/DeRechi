@@ -23,6 +23,7 @@ spring:
     password: derechi
     listener:
       simple:
+        default-requeue-rejected: false
         retry:
           enabled: true
           max-attempts: 3

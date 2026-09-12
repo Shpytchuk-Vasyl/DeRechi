@@ -1,6 +1,6 @@
-package org.shpytchuk.clientapi.config;
+package org.shpytchuk.automaticsearch.config;
 
-import org.shpytchuk.clientapi.event.EventTypeScanner;
+import org.shpytchuk.automaticsearch.event.EventTypeScanner;
 import org.springframework.amqp.support.converter.DefaultJacksonJavaTypeMapper;
 import org.springframework.amqp.support.converter.JacksonJavaTypeMapper;
 import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
@@ -8,6 +8,7 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import tools.jackson.databind.json.JsonMapper;
+
 
 @Configuration
 public class RabbitConfig {
@@ -18,7 +19,6 @@ public class RabbitConfig {
         converter.setJavaTypeMapper(javaTypeMapper());
         return converter;
     }
-
 
     private static JacksonJavaTypeMapper javaTypeMapper() {
         DefaultJacksonJavaTypeMapper typeMapper = new DefaultJacksonJavaTypeMapper();

@@ -4,6 +4,7 @@ import org.shpytchuk.clientapi.dto.ItemDto;
 
 import java.time.LocalDate;
 
+@EventType("item.created")
 public class ItemCreatedEvent {
     public Long id;
     public LocalDate date;
