@@ -3,18 +3,12 @@ package org.shpytchuk.dbpostgres.core.thing;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.shpytchuk.dbpostgres.core.ContactInfo;
 import org.shpytchuk.dbpostgres.core.Place;
 
 import java.time.LocalDate;
 
 @MappedSuperclass
-@Getter
-@Setter
-@NoArgsConstructor
 public class Thing {
 
     @Id
@@ -29,6 +23,10 @@ public class Thing {
     @Size(max = 250)
     @Column(length = 250)
     private String description;
+
+    @Size(max = 200)
+    @Column(length = 200)
+    private String image;
 
     @Column(nullable = false)
     private LocalDate date;

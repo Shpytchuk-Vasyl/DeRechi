@@ -1,5 +1,4 @@
 databaseChangeLog:
-  # includeAll сортує за іменем, тому нумерація в назві = порядок застосування
   - includeAll:
       path: changes
       relativeToChangelogFile: true

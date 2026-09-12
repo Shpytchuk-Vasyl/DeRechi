@@ -25,6 +25,8 @@ spring:
   graphql:
     schema:
       locations: classpath:graphql/
+      printer:
+        enabled: true
     graphiql:
       enabled: true
 

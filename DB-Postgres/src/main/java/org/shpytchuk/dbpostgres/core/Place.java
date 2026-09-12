@@ -4,18 +4,12 @@ package org.shpytchuk.dbpostgres.core;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
-import org.locationtech.jts.geom.Point;
 import org.hibernate.type.SqlTypes;
+import org.locationtech.jts.geom.Point;
 
 
 @Entity
-@Setter
-@Getter
-@NoArgsConstructor
 public class Place {
 
     @Id

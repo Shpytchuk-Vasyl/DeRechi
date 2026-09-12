@@ -1,14 +1,22 @@
-package org.shpytchuk.dbpostgres.core;
+package org.shpytchuk.clientapi.entity;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class ContactInfo {
 
     public enum SocialMediaEnum {
@@ -23,22 +31,14 @@ public class ContactInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Pattern(
-            regexp = "^\\+[1-9]\\d{7,14}$"
-    )
-    @Column(nullable = false, length = 16)
+    @Column(nullable = false)
     private String phone;
 
-    @Email
-    @NotBlank
-    @Size(max = 50)
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String email;
-
 
     @Enumerated(EnumType.ORDINAL)
     @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column()
+    @Column
     private SocialMediaEnum[] socialMedias;
-
 }

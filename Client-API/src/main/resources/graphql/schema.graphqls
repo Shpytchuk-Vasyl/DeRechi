@@ -1,0 +1,109 @@
+scalar Date
+
+enum SocialMedia {
+    TELEGRAM
+    VIBER
+    WHATSAPP
+    SIGNAL
+    MESSENGER
+}
+
+enum ItemSort {
+    DATE_DESC
+    DATE_ASC
+    TITLE_DESC
+    TITLE_ASC
+}
+
+type Category {
+    id: ID!
+    key: String!
+}
+
+type Place {
+    id: ID!
+    name: String!
+    lat: Float
+    lon: Float
+}
+
+type ContactInfo {
+    id: ID!
+    phone: String!
+    email: String!
+    socialMedias: [SocialMedia!]!
+}
+
+"Lost Item Notice."
+type LostItem {
+    id: ID!
+    title: String!
+    description: String
+    date: Date!
+    "Reward for return"
+    compensation: Int
+    image: String
+    category: Category!
+    place: Place!
+    contact: ContactInfo!
+}
+
+"Lost and found notice. Photo required."
+type FoundItem {
+    id: ID!
+    title: String!
+    description: String
+    date: Date!
+    compensation: Int
+    image: String!
+    category: Category!
+    place: Place!
+    contact: ContactInfo!
+}
+
+input ItemFilterInput {
+    search: String
+    categoryId: ID
+    placeId: ID
+    dateFrom: Date
+    dateTo: Date
+}
+
+input ContactInfoInput {
+    "E.164 format, for example +380671234567"
+    phone: String!
+    email: String!
+    socialMedias: [SocialMedia!]
+}
+
+input ItemInput {
+    title: String!
+    description: String
+    date: Date!
+    compensation: Int
+    image: String
+    categoryId: ID!
+    placeId: ID!
+    contact: ContactInfoInput!
+}
+
+type Query {
+    lostItem(id: ID!): LostItem
+    lostItems(filter: ItemFilterInput, sort: ItemSort = DATE_DESC, first: Int, after: String): LostItemConnection!
+
+    foundItem(id: ID!): FoundItem
+    foundItems(filter: ItemFilterInput, sort: ItemSort = DATE_DESC, first: Int, after: String): FoundItemConnection!
+
+    categories: [Category!]!
+    places(name: String): [Place!]!
+}
+
+type Mutation {
+    createLostItem(input: ItemInput!): LostItem!
+    updateLostItem(id: ID!, input: ItemInput!): LostItem!
+    deleteLostItem(id: ID!): Boolean!
+
+    createFoundItem(input: ItemInput!): FoundItem!
+    updateFoundItem(id: ID!, input: ItemInput!): FoundItem!
+    deleteFoundItem(id: ID!): Boolean!
+}
