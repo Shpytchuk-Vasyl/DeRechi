@@ -17,7 +17,7 @@ public class Place {
     @Id
     @NotBlank
     @Size(max = 255)
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String googlePlaceId;
 
     @NotBlank

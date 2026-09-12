@@ -16,7 +16,7 @@ import org.locationtech.jts.geom.Point;
 public class Place {
 
     @Id
-    @Column(name = "google_place_id", nullable = false, length = 255)
+    @Column(name = "google_place_id", nullable = false)
     private String googlePlaceId;
 
     @Column(nullable = false)

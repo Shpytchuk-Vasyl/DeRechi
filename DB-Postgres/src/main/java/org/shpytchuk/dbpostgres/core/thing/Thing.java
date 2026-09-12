@@ -2,6 +2,7 @@ package org.shpytchuk.dbpostgres.core.thing;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 import org.shpytchuk.dbpostgres.core.ContactInfo;
 import org.shpytchuk.dbpostgres.core.Place;
@@ -28,6 +29,7 @@ public class Thing {
     @Column(length = 200)
     private String image;
 
+    @PastOrPresent
     @Column(nullable = false)
     private LocalDate date;
 

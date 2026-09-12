@@ -31,7 +31,10 @@ services:
     ports:
       - "5672:5672"     # AMQP
       - "15672:15672"   # Management UI -> http://localhost:15672
+      - "15692:15692"   # Prometheus -> http://localhost:15692/metrics
     volumes:
+      - ./docker/rabbitmq/rabbitmq.conf:/etc/rabbitmq/conf.d/20-derechi.conf:ro
+      - ./docker/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
       - rabbitdata:/var/lib/rabbitmq
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]

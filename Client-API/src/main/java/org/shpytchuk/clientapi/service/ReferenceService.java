@@ -2,10 +2,7 @@ package org.shpytchuk.clientapi.service;
 
 import lombok.AllArgsConstructor;
 import org.shpytchuk.clientapi.dto.CategoryDto;
-import org.shpytchuk.clientapi.dto.PlaceDto;
-import org.shpytchuk.clientapi.entity.Place;
 import org.shpytchuk.clientapi.mapper.ItemMapper;
-import org.shpytchuk.clientapi.repository.PlaceRepository;
 import org.shpytchuk.clientapi.repository.ThingCategoryRepository;
 import org.springframework.stereotype.Service;
 

@@ -6,9 +6,9 @@ import org.shpytchuk.clientapi.config.GraphQlExceptionResolver;
 import org.shpytchuk.clientapi.dto.CategoryDto;
 import org.shpytchuk.clientapi.dto.ContactInfoDto;
 import org.shpytchuk.clientapi.dto.ItemDto;
-import org.shpytchuk.clientapi.input.ItemInput;
 import org.shpytchuk.clientapi.dto.PlaceDto;
 import org.shpytchuk.clientapi.entity.ContactInfo.SocialMediaEnum;
+import org.shpytchuk.clientapi.input.ItemInput;
 import org.shpytchuk.clientapi.service.FoundItemService;
 import org.shpytchuk.clientapi.service.LostItemService;
 import org.shpytchuk.clientapi.service.ReferenceService;
@@ -27,7 +27,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -116,18 +115,18 @@ class LostItemControllerTests {
         tester.document(
                         //Language=GraphQL
                         """
-                        mutation {
-                          createLostItem(input: {
-                            title: "Ключі"
-                            date: "2026-09-01"
-                            compensation: 500
-                            categoryId: 2
-                            placeId: 3
-                            contact: { phone: "+380671234567", email: "finder@example.com", socialMedias: [TELEGRAM] }
-                          }) { id title }
-                        }
-                        
-                        """)
+                                mutation {
+                                  createLostItem(input: {
+                                    title: "Ключі"
+                                    date: "2026-09-01"
+                                    compensation: 500
+                                    categoryId: 2
+                                    placeId: 3
+                                    contact: { phone: "+380671234567", email: "finder@example.com", socialMedias: [TELEGRAM] }
+                                  }) { id title }
+                                }
+                                
+                                """)
                 .execute()
                 .errors()
                 .expect(error -> error.getErrorType() == ErrorType.BAD_REQUEST)

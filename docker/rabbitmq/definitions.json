@@ -1,0 +1,158 @@
+{
+  "rabbit_version": "4.3.5",
+  "rabbitmq_version": "4.3.5",
+  "product_name": "RabbitMQ",
+  "product_version": "4.3.5",
+
+  "vhosts": [
+    { "name": "/" }
+  ],
+
+  "users": [
+    {
+      "name": "derechi",
+      "password_hash": "kI3GCqBcICMgkfrqLFEms6BesC5SI44UeRVXehAxAU8xh/R4",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": ["administrator"],
+      "limits": {}
+    }
+  ],
+
+  "permissions": [
+    {
+      "user": "derechi",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+
+  "topic_permissions": [],
+  "parameters": [],
+  "global_parameters": [],
+  "policies": [],
+
+  "exchanges": [
+    {
+      "name": "derechi.items",
+      "vhost": "/",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "derechi.items.dlx",
+      "vhost": "/",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "derechi.matches",
+      "vhost": "/",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "derechi.matches.dlx",
+      "vhost": "/",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+
+  "queues": [
+    {
+      "name": "automatic-search.items",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "quorum",
+        "x-dead-letter-exchange": "derechi.items.dlx"
+      }
+    },
+    {
+      "name": "automatic-search.items.dlq",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "quorum"
+      }
+    },
+    {
+      "name": "notification.matches",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "quorum",
+        "x-dead-letter-exchange": "derechi.matches.dlx"
+      }
+    },
+    {
+      "name": "notification.matches.dlq",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "quorum"
+      }
+    }
+  ],
+
+  "bindings": [
+    {
+      "source": "derechi.items",
+      "vhost": "/",
+      "destination": "automatic-search.items",
+      "destination_type": "queue",
+      "routing_key": "item.lost.created",
+      "arguments": {}
+    },
+    {
+      "source": "derechi.items",
+      "vhost": "/",
+      "destination": "automatic-search.items",
+      "destination_type": "queue",
+      "routing_key": "item.found.created",
+      "arguments": {}
+    },
+    {
+      "source": "derechi.items.dlx",
+      "vhost": "/",
+      "destination": "automatic-search.items.dlq",
+      "destination_type": "queue",
+      "routing_key": "#",
+      "arguments": {}
+    },
+    {
+      "source": "derechi.matches",
+      "vhost": "/",
+      "destination": "notification.matches",
+      "destination_type": "queue",
+      "routing_key": "match.found",
+      "arguments": {}
+    },
+    {
+      "source": "derechi.matches.dlx",
+      "vhost": "/",
+      "destination": "notification.matches.dlq",
+      "destination_type": "queue",
+      "routing_key": "#",
+      "arguments": {}
+    }
+  ]
+}
