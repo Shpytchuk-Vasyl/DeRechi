@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: Notification
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: derechi
+    password: derechi
+    listener:
+      simple:
+        retry:
+          enabled: true
+          max-attempts: 3
+
+  mail:
+    host: localhost
+    port: 1025
+    username: ""
+    password: ""
+    properties:
+      mail.smtp.auth: false
+      mail.smtp.starttls.enable: false
+
+  thymeleaf:
+    cache: false
+
+server:
+  port: 8084
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: always

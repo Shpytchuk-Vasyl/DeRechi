@@ -1,0 +1,111 @@
+#
+#   docker compose up
+#
+name: derechi
+
+services:
+
+  postgres:
+    image: postgres:18.6
+    container_name: derechi-postgres
+    environment:
+      POSTGRES_USER: derechi
+      POSTGRES_PASSWORD: derechi
+      POSTGRES_DB: derechi
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U derechi"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:4.3.5-management
+    container_name: derechi-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: derechi
+      RABBITMQ_DEFAULT_PASS: derechi
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # Management UI -> http://localhost:15672
+    volumes:
+      - rabbitdata:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+
+  prometheus:
+    image: prom/prometheus:v3.14.0
+    container_name: derechi-prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=15d
+      - --web.enable-lifecycle
+    ports:
+      - "9090:9090"     # http://localhost:9090
+    volumes:
+      - ./docker/prometheus:/etc/prometheus:ro
+      - prometheusdata:/prometheus
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  grafana:
+    image: grafana/grafana:13.2.1
+    container_name: derechi-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    ports:
+      - "3000:3000"     # http://localhost:3000  (admin / admin)
+    volumes:
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafanadata:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+  minio:
+    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
+    container_name: derechi-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: derechi
+      MINIO_ROOT_PASSWORD: derechi123
+      MINIO_PROMETHEUS_AUTH_TYPE: public
+    ports:
+      - "9000:9000"     # S3 API
+      - "9001:9001"     # Console -> http://localhost:9001  (derechi / derechi123)
+    volumes:
+      - miniodata:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+#  minio-init:
+#    image: quay.io/minio/mc:RELEASE.2025-08-13T08-35-41Z
+#    container_name: derechi-minio-init
+#    depends_on:
+#      minio:
+#        condition: service_healthy
+#    entrypoint: >
+#      /bin/sh -c "
+#      mc alias set local http://minio:9000 derechi derechi123 &&
+#      mc mb --ignore-existing local/derechi-files &&
+#      mc anonymous set download local/derechi-files &&
+#      echo 'buckets ready'
+#      "
+
+volumes:
+  pgdata:
+  rabbitdata:
+  prometheusdata:
+  grafanadata:
+  miniodata:

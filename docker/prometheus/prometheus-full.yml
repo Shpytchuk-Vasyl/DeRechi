@@ -1,0 +1,37 @@
+# Конфіг для docker-compose.full.yml: усі сервіси в контейнерах,
+# тому таргети — імена сервісів у compose-мережі, а не host.docker.internal.
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    project: derechi
+
+scrape_configs:
+
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: derechi-services
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["discovery:8761"]
+        labels: { application: Discovery }
+      - targets: ["getaway:8080"]
+        labels: { application: Getaway }
+      - targets: ["auth:8081"]
+        labels: { application: Auth }
+      - targets: ["client-api:8082"]
+        labels: { application: Client-API }
+      - targets: ["admin-api:8083"]
+        labels: { application: Admin-API }
+      - targets: ["automatic-search:8085"]
+        labels: { application: Automatic-Search }
+      # Notification тимчасово вимкнений (виключений з <modules>)
+      # - targets: ["notification:8084"]
+      #   labels: { application: Notification }
+
+  - job_name: minio
+    metrics_path: /minio/v2/metrics/cluster
+    static_configs:
+      - targets: ["minio:9000"]

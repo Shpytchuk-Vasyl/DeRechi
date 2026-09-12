@@ -1,0 +1,142 @@
+#
+#   docker compose -f docker-compose.yml -f docker-compose.services.yml up -d --build
+#
+name: derechi
+
+x-service-base: &service-base
+  build:
+    context: .
+    dockerfile: Dockerfile
+  restart: unless-stopped
+  depends_on:
+    discovery:
+      condition: service_started
+
+x-eureka: &eureka
+  EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://discovery:8761/eureka
+
+x-postgres: &postgres
+  SPRING_DATASOURCE_USERNAME: derechi
+  SPRING_DATASOURCE_PASSWORD: derechi
+
+x-rabbitmq: &rabbitmq
+  SPRING_RABBITMQ_HOST: rabbitmq
+  SPRING_RABBITMQ_PORT: 5672
+  SPRING_RABBITMQ_USERNAME: derechi
+  SPRING_RABBITMQ_PASSWORD: derechi
+
+services:
+
+  prometheus:
+    command:
+      - --config.file=/etc/prometheus/prometheus-full.yml
+      - --storage.tsdb.retention.time=15d
+      - --web.enable-lifecycle
+
+  discovery:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: Discovery
+    container_name: derechi-discovery
+    restart: unless-stopped
+    ports:
+      - "8761:8761"
+
+  auth:
+    <<: *service-base
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: Auth
+    container_name: derechi-auth
+    ports:
+      - "8081:8081"
+    environment:
+      <<: [*eureka, *postgres]
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/derechi
+      SPRING_SECURITY_OAUTH2_AUTHORIZATIONSERVER_ISSUER: http://auth:8081
+    depends_on:
+      discovery:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+
+  getaway:
+    <<: *service-base
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: Getaway
+    container_name: derechi-getaway
+    ports:
+      - "8080:8080"
+    environment:
+      <<: *eureka
+
+  client-api:
+    <<: *service-base
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: Client-API
+    container_name: derechi-client-api
+    ports:
+      - "8082:8082"
+    environment:
+      <<: [*eureka, *postgres, *rabbitmq]
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/derechi
+    depends_on:
+      discovery:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  admin-api:
+    <<: *service-base
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: Admin-API
+    container_name: derechi-admin-api
+    ports:
+      - "8083:8083"
+    environment:
+      <<: [*eureka, *postgres, *rabbitmq]
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/derechi
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://auth:8081
+    depends_on:
+      discovery:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  automatic-search:
+    <<: *service-base
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: Automatic-Search
+    container_name: derechi-automatic-search
+    ports:
+      - "8085:8085"
+    environment:
+      <<: [*eureka, *postgres, *rabbitmq]
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/derechi
+    depends_on:
+      discovery:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/Admin-API/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Auth/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Automatic-Search/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Client-API/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/DB-Postgres/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Discovery/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Getaway/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Geteay/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Notification/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+  </component>
+</project>
