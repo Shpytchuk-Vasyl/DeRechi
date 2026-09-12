@@ -16,10 +16,6 @@ spring:
     hibernate:
       ddl-auto: none
 
-  # міграції веде модуль DB-postgres і накочує їх вручну
-  flyway:
-    enabled: false
-
   rabbitmq:
     host: localhost
     port: 5672

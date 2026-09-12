@@ -37,6 +37,9 @@
 
         <spring-cloud.version>2025.1.3</spring-cloud.version>
         <springdoc.version>3.1.0</springdoc.version>
+
+        <liquibase.version>5.0.4</liquibase.version>
+        <liquibase-hibernate.version>5.0.4</liquibase-hibernate.version>
     </properties>
 
     <dependencyManagement>
@@ -80,6 +83,11 @@
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
+                </plugin>
+                <plugin>
+                    <groupId>org.liquibase</groupId>
+                    <artifactId>liquibase-maven-plugin</artifactId>
+                    <version>${liquibase.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

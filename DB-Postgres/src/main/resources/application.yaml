@@ -1,6 +1,3 @@
-# Модуль запускається вручну (з IDEA або ./mvnw -pl DB-Postgres spring-boot:run)
-# для генерації схеми з JPA-ентіті. Web-стартера немає, тож застосунок
-# відпрацьовує і одразу завершується.
 spring:
   application:
     name: DB-Postgres
@@ -12,21 +9,10 @@ spring:
 
   jpa:
     open-in-view: false
-    # у режимі генерації скрипта Hibernate не ходить у БД,
-    # тому діалект треба вказати явно — інакше "Unable to determine Dialect"
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      # схему змінюють тільки міграції, Hibernate до БД не торкається
-      ddl-auto: none
-    properties:
-      jakarta.persistence.schema-generation:
-        scripts:
-          action: create
-          create-source: metadata
-          create-target: target/generated-schema.sql
+      ddl-auto: validate
 
-  # під час генерації міграції накатувати не треба:
-  # спершу дивимось, що згенерував Hibernate, потім оформлюємо як V__*.sql
-  flyway:
-    enabled: false
-    locations: classpath:db/migration
+  liquibase:
+    enabled: true
+    change-log: classpath:changelog/changelog-master.yaml
