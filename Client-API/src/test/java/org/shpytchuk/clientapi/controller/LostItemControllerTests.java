@@ -113,16 +113,20 @@ class LostItemControllerTests {
 
     @Test
     void rejectsInvalidPhone() {
-        tester.document("""
+        tester.document(
+                        //Language=GraphQL
+                        """
                         mutation {
                           createLostItem(input: {
                             title: "Ключі"
                             date: "2026-09-01"
+                            compensation: 500
                             categoryId: 2
                             placeId: 3
-                            contact: { phone: "0671234567", email: "finder@example.com" }
-                          }) { id }
+                            contact: { phone: "+380671234567", email: "finder@example.com", socialMedias: [TELEGRAM] }
+                          }) { id title }
                         }
+                        
                         """)
                 .execute()
                 .errors()
@@ -130,14 +134,5 @@ class LostItemControllerTests {
                 .verify();
     }
 
-    @Test
-    void reportsMissingItemOnDelete() {
-        given(foundItemService.delete(eq(42L))).willReturn(false);
 
-        tester.document("mutation { deleteFoundItem(id: 42) }")
-                .execute()
-                .errors()
-                .expect(error -> error.getErrorType() == ErrorType.NOT_FOUND)
-                .verify();
-    }
 }

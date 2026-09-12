@@ -4,16 +4,16 @@ import org.springframework.data.jpa.domain.Specification;
 
 public class SpecificationBuilder<T> {
 
-    private Specification<T> specification = Specification.where((Specification<T>) null);
+    private Specification<T> specification = Specification.unrestricted();
 
-    protected <V> SpecificationBuilder<T> applyIfPresent(
+    protected <V> SpecificationBuilder<T> applyAndIfValuePresent(
             V value,
-            SpecificationBuilder<T> spec
+            Specification<T> spec
     ) {
         if (value == null)
             return this;
 
-        return spec;
+        return and(spec);
     }
 
     public SpecificationBuilder<T> and(
@@ -28,9 +28,9 @@ public class SpecificationBuilder<T> {
             String field,
             V value
     ) {
-        return applyIfPresent(value,
-                and((root, query, cb) ->
-                        cb.equal(root.get(field), value))
+        return applyAndIfValuePresent(value,
+                (root, query, cb) ->
+                        cb.equal(root.get(field), value)
         );
     }
 
@@ -38,9 +38,9 @@ public class SpecificationBuilder<T> {
             String field,
             V value
     ) {
-        return applyIfPresent(value,
-                and((root, query, cb) ->
-                        cb.greaterThanOrEqualTo(root.get(field), value))
+        return applyAndIfValuePresent(value,
+                (root, query, cb) ->
+                        cb.greaterThanOrEqualTo(root.get(field), value)
         );
 
     }
@@ -49,9 +49,9 @@ public class SpecificationBuilder<T> {
             String field,
             V value
     ) {
-        return applyIfPresent(value,
-                and((root, query, cb) ->
-                        cb.lessThanOrEqualTo(root.get(field), value)));
+        return applyAndIfValuePresent(value,
+                (root, query, cb) ->
+                        cb.lessThanOrEqualTo(root.get(field), value));
     }
 
     public <V> SpecificationBuilder<T> equalNested(
@@ -59,12 +59,12 @@ public class SpecificationBuilder<T> {
             String field,
             V value
     ) {
-        return applyIfPresent(value,
-                and((root, query, cb) ->
+        return applyAndIfValuePresent(value,
+                (root, query, cb) ->
                         cb.equal(
                                 root.get(parent).get(field),
                                 value
-                        )));
+                        ));
     }
 
     public SpecificationBuilder<T> like(
@@ -75,7 +75,7 @@ public class SpecificationBuilder<T> {
             and((root, query, cb) ->
                     cb.like(
                             cb.lower(root.get(field)),
-                            "%" + value.toLowerCase() + "%"
+                            "%%%s%%".formatted(value.toLowerCase())
                     ));
         }
 

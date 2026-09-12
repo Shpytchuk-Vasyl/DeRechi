@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.shpytchuk.clientapi.dto.ItemDto;
 import org.shpytchuk.clientapi.input.ItemFilterInput;
 import org.shpytchuk.clientapi.input.ItemInput;
+import org.shpytchuk.clientapi.input.PlaceInput;
 import org.shpytchuk.clientapi.dto.ItemSort;
 import org.shpytchuk.clientapi.entity.ContactInfo;
 import org.shpytchuk.clientapi.entity.ContactInfo.SocialMediaEnum;
@@ -17,6 +18,10 @@ import org.shpytchuk.clientapi.repository.PlaceRepository;
 import org.shpytchuk.clientapi.repository.ThingCategoryRepository;
 import org.shpytchuk.clientapi.repository.ThingRepository;
 import org.shpytchuk.clientapi.specification.ThingSpecifications;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.data.domain.*;
 import org.springframework.graphql.data.query.ScrollSubrange;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +35,8 @@ public abstract class ItemService<T extends Thing> {
 
     private static final int DEFAULT_SIZE = 20;
     private static final int MAX_SIZE = 100;
+
+    private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory(new PrecisionModel(), 4326);
 
     private final ThingRepository<T> repository;
     private final ThingCategoryRepository categoryRepository;
@@ -65,29 +72,29 @@ public abstract class ItemService<T extends Thing> {
         return ItemMapper.toDto(repository.save(item));
     }
 
-    @Transactional
-    public ItemDto update(Long id, ItemInput input) {
-        T item = repository.findWithDetailsById(id).orElseThrow(() -> new NotFoundException(entityName, id));
-        apply(input, item, item.getInfo());
-        return ItemMapper.toDto(repository.save(item));
-    }
-
-    @Transactional
-    public boolean delete(Long id) {
-        if (!repository.existsById(id)) {
-            throw new NotFoundException(entityName, id);
-        }
-        repository.deleteById(id);
-        return true;
-    }
+//    @Transactional
+//    public ItemDto update(Long id, ItemInput input) {
+//        T item = repository.findWithDetailsById(id).orElseThrow(() -> new NotFoundException(entityName, id));
+//        apply(input, item, item.getInfo());
+//        return ItemMapper.toDto(repository.save(item));
+//    }
+//
+//    @Transactional
+//    public boolean delete(Long id) {
+//        if (!repository.existsById(id)) {
+//            throw new NotFoundException(entityName, id);
+//        }
+//        repository.deleteById(id);
+//        return true;
+//    }
 
     private void apply(ItemInput input, T item, ContactInfo info) {
         if (imageRequired && (input.image() == null || input.image().isBlank())) {
             throw new IllegalArgumentException("Для знайденої речі фото обовʼязкове");
         }
 
-        ThingCategory category = categoryRepository.findById(input.categoryId()).orElseThrow(() -> new NotFoundException("Категорію", input.categoryId()));
-        Place place = placeRepository.findById(input.placeId()).orElseThrow(() -> new NotFoundException("Місце", input.placeId()));
+        ThingCategory category = categoryRepository.findById(input.categoryId()).orElseThrow(() -> new NotFoundException("Category", input.categoryId()));
+        Place place = placeRepository.save(toPlace(input.place()));
 
         buildItemFromInput(input, item, info, category, place);
     }
@@ -105,6 +112,15 @@ public abstract class ItemService<T extends Thing> {
         item.setCategory(category);
         item.setPlace(place);
         item.setInfo(info);
+    }
+
+    private static Place toPlace(PlaceInput input) {
+        Place place = new Place();
+        place.setGooglePlaceId(input.id());
+        place.setName(input.name());
+        Point coordinate = GEOMETRY_FACTORY.createPoint(new Coordinate(input.lon(), input.lat()));
+        place.setCoordinate(coordinate);
+        return place;
     }
 
     private static SocialMediaEnum[] toArray(List<SocialMediaEnum> socialMedias) {

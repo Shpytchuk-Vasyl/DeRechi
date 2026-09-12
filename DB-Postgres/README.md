@@ -133,8 +133,8 @@ explicitly. Without it the diff produces `ContactInfo` and `socialMedias` instea
 which the PostGIS extension owns. To reset a dev database, recreate it:
 
 ```bash
-docker exec derechi-postgres psql -U derechi -c "DROP DATABASE derechi;"
-docker exec derechi-postgres psql -U derechi -c "CREATE DATABASE derechi OWNER derechi;"
+docker exec derechi-postgres psql -U derechi -d postgres -c "DROP DATABASE derechi;"
+docker exec derechi-postgres psql -U derechi -d postgres -c "CREATE DATABASE derechi OWNER derechi;"
 ```
 
 ## Rules
@@ -151,3 +151,101 @@ reference-data seeds — anything that should re-run whenever its definition cha
 
 **Indexes are not generated** unless declared in `@Table(indexes = ...)`. The GiST index for
 geo queries on `place.coordinate`, for instance, has to be written into a migration by hand.
+## Command reference
+
+Every goal below is run from the **reactor root**, and every one of them reads
+`liquibase.properties` through the `<propertyFile>` configured on the plugin, so the
+connection details never go on the command line.
+
+`process-resources` is what copies `changelog/` into `target/classes`. The plugin resolves
+changesets from there, not from the source tree, so run it whenever a changeset file changed:
+
+```bash
+./mvnw -pl DB-Postgres process-resources
+```
+
+### Applying
+
+| Command | What it does |
+|---|---|
+| `./mvnw -pl DB-Postgres liquibase:update` | Applies every pending changeset. |
+| `./mvnw -pl DB-Postgres liquibase:updateSQL` | Dry run: prints the SQL instead of executing it. |
+| `./mvnw -pl DB-Postgres liquibase:update -Dliquibase.changesToApply=1` | Applies only the next N changesets. |
+| `./mvnw -pl DB-Postgres liquibase:update -Dliquibase.toTag=v1` | Applies everything up to a tag, then stops. |
+| `./mvnw -pl DB-Postgres liquibase:updateTestingRollback` | Applies, rolls back, applies again — proves the rollback works. |
+
+### Inspecting
+
+| Command | What it does |
+|---|---|
+| `./mvnw -pl DB-Postgres liquibase:status -Dliquibase.verbose=true` | Lists changesets not yet applied. First thing to run when a migration "did nothing". |
+| `./mvnw -pl DB-Postgres liquibase:history` | Lists what has been applied, in order. |
+| `./mvnw -pl DB-Postgres liquibase:validate` | Parses the changelog and checks for duplicate ids and checksum conflicts, without touching the schema. |
+| `./mvnw -pl DB-Postgres liquibase:unexpectedChangeSets` | Finds rows in `databasechangelog` with no matching file — typically a renamed or deleted changeset. |
+| `./mvnw -pl DB-Postgres liquibase:listLocks` | Shows who holds the changelog lock. |
+| `./mvnw -pl DB-Postgres liquibase:snapshot -Dliquibase.outputFile=snapshot.json` | Dumps the current schema as JSON. |
+| `./mvnw -pl DB-Postgres liquibase:dbDoc -Dliquibase.outputDirectory=target/dbdoc` | Generates browsable HTML docs for the schema. |
+
+### Generating
+
+| Command | What it does |
+|---|---|
+| `./mvnw -pl DB-Postgres liquibase:diff` | Entities vs. live database; writes `diffChangeLogFile`. The main one. |
+| `./mvnw -pl DB-Postgres liquibase:diff -Dliquibase.diffChangeLogFile=DB-Postgres/changelog/changes/004-something.postgresql.sql` | Same, but names the output file up front so it does not need renaming afterwards. |
+| `./mvnw -pl DB-Postgres liquibase:diff -Dliquibase.outputFile=diff.txt` | Report only — prints the differences instead of writing a changeset. |
+| `./mvnw -pl DB-Postgres liquibase:generateChangeLog` | Builds a changelog from the **existing database**, ignoring the entities. For adopting a schema that has no changelog yet. |
+
+### Tags and rollback
+
+| Command | What it does |
+|---|---|
+| `./mvnw -pl DB-Postgres liquibase:tag -Dliquibase.tag=v1` | Marks the current state so it can be rolled back to later. |
+| `./mvnw -pl DB-Postgres liquibase:tagExists -Dliquibase.tag=v1` | Checks whether that tag is present. |
+| `./mvnw -pl DB-Postgres liquibase:rollback -Dliquibase.rollbackCount=1` | Reverts the last N changesets. |
+| `./mvnw -pl DB-Postgres liquibase:rollback -Dliquibase.rollbackTag=v1` | Reverts back to a tag. |
+| `./mvnw -pl DB-Postgres liquibase:rollback -Dliquibase.rollbackDate=2026-09-12` | Reverts everything applied after a date. |
+| `./mvnw -pl DB-Postgres liquibase:rollbackSQL -Dliquibase.rollbackCount=1` | Dry run of the above. |
+| `./mvnw -pl DB-Postgres liquibase:futureRollbackSQL` | Prints the SQL that would undo the *pending* changesets, before applying them. |
+
+Rollback only works for changesets Liquibase can reverse automatically or that carry an
+explicit `--rollback` line. Raw SQL changesets without one cannot be rolled back.
+
+### Recovery
+
+These rewrite bookkeeping rather than schema. Reach for them only when the changelog and the
+database have drifted apart.
+
+| Command | What it does |
+|---|---|
+| `./mvnw -pl DB-Postgres liquibase:changelogSync` | Marks every pending changeset as applied **without running it**. For a schema that already exists. |
+| `./mvnw -pl DB-Postgres liquibase:changelogSyncSQL` | Dry run of the above. |
+| `./mvnw -pl DB-Postgres liquibase:changelogSyncToTag -Dliquibase.toTag=v1` | Same, but stops at a tag. |
+| `./mvnw -pl DB-Postgres liquibase:clearCheckSums` | Clears stored checksums so they are recomputed on the next run. Fixes "checksum changed" after an applied file was edited. |
+| `./mvnw -pl DB-Postgres liquibase:releaseLocks` | Releases a stale changelog lock left by a killed run. |
+| `./mvnw -pl DB-Postgres liquibase:update -Dliquibase.dropFirst=true` | Drops everything, then applies. Does **not** work here — see `dropAll` under [Known quirks](#known-quirks). |
+
+To reset a dev database, recreate it instead:
+
+```bash
+docker exec derechi-postgres psql -U derechi -d postgres -c "DROP DATABASE derechi;"
+docker exec derechi-postgres psql -U derechi -d postgres -c "CREATE DATABASE derechi OWNER derechi;"
+./mvnw -pl DB-Postgres process-resources liquibase:update
+```
+
+### Useful flags
+
+| Flag | Effect |
+|---|---|
+| `-Dliquibase.propertyFile=other.properties` | Uses a different properties file than the one in `pom.xml`. |
+| `-Dliquibase.logLevel=debug` | Full Liquibase logging. |
+| `-Dliquibase.skip=true` | No-op, for skipping the plugin in a larger build. |
+
+Goals ignore properties that belong to another goal and say so:
+
+```
+'diffChangeLogFile' in properties file is not being used by this task.
+java.lang.NoSuchFieldException: ...
+```
+
+That is informational — `liquibase.properties` is shared by every goal, and `update` has no
+`diffChangeLogFile` field. The build still succeeds.

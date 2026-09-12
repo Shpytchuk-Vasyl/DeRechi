@@ -2,3 +2,8 @@ databaseChangeLog:
   - includeAll:
       path: changes
       relativeToChangelogFile: true
+
+
+#```bash
+# ./mvnw -pl DB-Postgres liquibase:update
+#```

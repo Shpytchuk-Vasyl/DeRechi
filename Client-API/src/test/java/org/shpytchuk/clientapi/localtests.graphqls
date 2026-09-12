@@ -1,0 +1,102 @@
+query  {
+    #    lostItem(id: 2) {
+    #        id
+    #        category {
+    #            id
+    #            key
+    #        }
+    #        contact {
+    #            id
+    #            email
+    #            phone
+    #        }
+    #        compensation
+    #        date
+    #        description
+    #        image
+    #        place {
+    #            name
+    #            lat
+    #            lon
+    #            id
+    #        }
+    #        title
+    #    }
+    lostItems(filter: {placeId: "ChIJq6q6q6q6q6qRq6q6q6q6q6q"})
+     {
+        edges {
+            node {
+                id
+                category {
+                    id
+                    key
+                }
+                contact {
+                    id
+                    email
+                    phone
+                }
+                compensation
+                date
+                description
+                image
+                place {
+                    name
+                    lat
+                    lon
+                    id
+                }
+                title
+            }
+        }
+        pageInfo  {
+            endCursor
+            startCursor
+        }
+    }
+}
+#
+#mutation  {
+#    createFoundItem(input: {
+#        title: "test"
+#        description: "test description"
+#        date: "2026-09-12"
+#        compensation: 500
+#        image: "test"
+#        categoryId: 1
+#        place: {
+#            id: "ChIJq6q6q6q6q6qRq6q6q6q6q6q"
+#            name: "Площа Ринок"
+#            lat: 49.8419
+#            lon: 24.0315
+#        }
+#        contact: {
+#            phone: "+380671234567"
+#            email: "test@example.com"
+#            socialMedias: [TELEGRAM]
+#        }
+#    }) {
+#        id
+#        title
+#        description
+#        date
+#        compensation
+#        image
+#        category {
+#            id
+#            key
+#        }
+#        place {
+#            id
+#            name
+#            lat
+#            lon
+#        }
+#        contact {
+#            id
+#            phone
+#            email
+#            socialMedias
+#        }
+#    }
+#}

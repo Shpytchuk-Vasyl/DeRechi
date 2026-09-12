@@ -15,7 +15,7 @@ public record ItemInput(
         @PositiveOrZero Integer compensation,
         @Size(max = 200) String image,
         @NotNull Long categoryId,
-        @NotNull Long placeId,
+        @NotNull @Valid PlaceInput place,
         @NotNull @Valid ContactInfoInput contact
 ) {
 }

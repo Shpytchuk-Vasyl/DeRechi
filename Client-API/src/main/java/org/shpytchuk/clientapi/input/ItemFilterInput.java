@@ -5,7 +5,7 @@ import java.time.LocalDate;
 public record ItemFilterInput(
         String search,
         Long categoryId,
-        Long placeId,
+        String placeId,
         LocalDate dateFrom,
         LocalDate dateTo
 ) {

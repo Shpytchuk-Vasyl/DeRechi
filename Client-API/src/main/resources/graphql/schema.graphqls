@@ -76,6 +76,16 @@ input ContactInfoInput {
     socialMedias: [SocialMedia!]
 }
 
+input PlaceInput {
+    "ID Google Places"
+    id: ID!
+    name: String!
+    "latitude, -90..90"
+    lat: Float!
+    "longitude, -180..180"
+    lon: Float!
+}
+
 input ItemInput {
     title: String!
     description: String
@@ -83,7 +93,7 @@ input ItemInput {
     compensation: Int
     image: String
     categoryId: ID!
-    placeId: ID!
+    place: PlaceInput!
     contact: ContactInfoInput!
 }
 
@@ -95,15 +105,14 @@ type Query {
     foundItems(filter: ItemFilterInput, sort: ItemSort = DATE_DESC, first: Int, after: String): FoundItemConnection!
 
     categories: [Category!]!
-    places(name: String): [Place!]!
 }
 
 type Mutation {
     createLostItem(input: ItemInput!): LostItem!
-    updateLostItem(id: ID!, input: ItemInput!): LostItem!
-    deleteLostItem(id: ID!): Boolean!
+#    updateLostItem(id: ID!, input: ItemInput!): LostItem!
+#    deleteLostItem(id: ID!): Boolean!
 
     createFoundItem(input: ItemInput!): FoundItem!
-    updateFoundItem(id: ID!, input: ItemInput!): FoundItem!
-    deleteFoundItem(id: ID!): Boolean!
+#    updateFoundItem(id: ID!, input: ItemInput!): FoundItem!
+#    deleteFoundItem(id: ID!): Boolean!
 }

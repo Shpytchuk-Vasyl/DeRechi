@@ -8,6 +8,7 @@ import org.shpytchuk.clientapi.entity.ContactInfo;
 import org.shpytchuk.clientapi.entity.Place;
 import org.shpytchuk.clientapi.entity.Thing;
 import org.shpytchuk.clientapi.entity.ThingCategory;
+import org.locationtech.jts.geom.Point;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,7 +37,13 @@ public final class ItemMapper {
     }
 
     public static PlaceDto toDto(Place place) {
-        return new PlaceDto(place.getId(), place.getName(), null, null);
+        Point coordinate = place.getCoordinate();
+        return new PlaceDto(
+                place.getGooglePlaceId(),
+                place.getName(),
+                coordinate == null ? null : coordinate.getY(),
+                coordinate == null ? null : coordinate.getX()
+        );
     }
 
     public static ContactInfoDto toDto(ContactInfo info) {

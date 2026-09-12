@@ -16,16 +16,9 @@ import java.util.List;
 public class ReferenceService {
 
     private final ThingCategoryRepository categoryRepository;
-    private final PlaceRepository placeRepository;
 
     public List<CategoryDto> categories() {
         return categoryRepository.findAll().stream().map(ItemMapper::toDto).toList();
     }
 
-    public List<PlaceDto> places(String name) {
-        List<Place> places = name == null || name.isBlank()
-                ? placeRepository.findAll()
-                : placeRepository.findByNameContainingIgnoreCaseOrderByName(name);
-        return places.stream().map(ItemMapper::toDto).toList();
-    }
 }

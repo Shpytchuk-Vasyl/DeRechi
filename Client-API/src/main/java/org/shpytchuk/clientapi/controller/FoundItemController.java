@@ -37,13 +37,13 @@ public class FoundItemController {
         return service.create(input);
     }
 
-    @MutationMapping
-    public ItemDto updateFoundItem(@Argument Long id, @Argument @Valid ItemInput input) {
-        return service.update(id, input);
-    }
-
-    @MutationMapping
-    public boolean deleteFoundItem(@Argument Long id) {
-        return service.delete(id);
-    }
+//    @MutationMapping
+//    public ItemDto updateFoundItem(@Argument Long id, @Argument @Valid ItemInput input) {
+//        return service.update(id, input);
+//    }
+//
+//    @MutationMapping
+//    public boolean deleteFoundItem(@Argument Long id) {
+//        return service.delete(id);
+//    }
 }

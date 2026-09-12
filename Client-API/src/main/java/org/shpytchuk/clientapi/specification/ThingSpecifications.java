@@ -12,7 +12,7 @@ public final class ThingSpecifications {
         return new SpecificationBuilder<T>()
                 .like("title", filter.search())
                 .equalNested("category", "id", filter.categoryId())
-                .equalNested("place", "id", filter.placeId())
+                .equalNested("place", "googlePlaceId", filter.placeId())
                 .greaterThanOrEqualTo("date", filter.dateFrom())
                 .lessThanOrEqualTo("date", filter.dateTo())
                 .build();

@@ -7,7 +7,5 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface PlaceRepository extends JpaRepository<Place, Long> {
-
-    List<Place> findByNameContainingIgnoreCaseOrderByName(String name);
+public interface PlaceRepository extends JpaRepository<Place, String> {
 }

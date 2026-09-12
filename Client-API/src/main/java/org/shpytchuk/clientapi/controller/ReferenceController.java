@@ -23,8 +23,8 @@ public class ReferenceController {
         return service.categories();
     }
 
-    @QueryMapping
-    public List<PlaceDto> places(@Argument String name) {
-        return service.places(name);
-    }
+//    @QueryMapping
+//    public List<PlaceDto> places(@Argument String name) {
+//        return service.places(name);
+//    }
 }

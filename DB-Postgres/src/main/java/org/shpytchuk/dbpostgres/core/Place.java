@@ -1,7 +1,9 @@
 package org.shpytchuk.dbpostgres.core;
 
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -13,8 +15,10 @@ import org.locationtech.jts.geom.Point;
 public class Place {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @NotBlank
+    @Size(max = 255)
+    @Column(nullable = false, length = 255)
+    private String googlePlaceId;
 
     @NotBlank
     @Size(max = 100)
