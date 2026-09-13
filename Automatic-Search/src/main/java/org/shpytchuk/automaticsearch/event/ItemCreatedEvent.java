@@ -6,7 +6,6 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,5 +16,5 @@ public class ItemCreatedEvent {
     private Long category;
     private Double lat;
     private Double lon;
-
+    private String title;
 }

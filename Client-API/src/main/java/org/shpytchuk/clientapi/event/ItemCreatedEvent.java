@@ -11,6 +11,7 @@ public class ItemCreatedEvent {
     public Long category;
     public Double lat;
     public Double lon;
+    public String title;
 
     public ItemCreatedEvent() {}
 
@@ -20,5 +21,6 @@ public class ItemCreatedEvent {
         this.category = dto.category().id();
         this.lat = dto.place().lat();
         this.lon = dto.place().lon();
+        this.title = dto.title();
     }
 }
