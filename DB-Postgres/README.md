@@ -229,7 +229,7 @@ To reset a dev database, recreate it instead:
 ```bash
 docker exec derechi-postgres psql -U derechi -d postgres -c "DROP DATABASE derechi;"
 docker exec derechi-postgres psql -U derechi -d postgres -c "CREATE DATABASE derechi OWNER derechi;"
-./mvnw -pl DB-Postgres process-resources liquibase:update
+./mvnw -pl DB-Postgres spring-boot:run
 ```
 
 ### Useful flags

@@ -16,7 +16,7 @@ import java.time.Period;
 
 public final class ThingSpecifications {
 
-    private static final Period PERIOD = Period.ofDays(5);
+    private static final Period PERIOD = Period.ofDays(3);
 
     private static final double RADIUS_METERS = 50_000;
 
@@ -49,12 +49,11 @@ public final class ThingSpecifications {
             }
 
             Expression<String> document = cb.concat(
-                    cb.concat(root.<String>get("title"), " "),
-                    cb.coalesce(root.<String>get("description"), ""));
+                    cb.concat(root.get("title"), " "),
+                    cb.coalesce(root.get("description"), ""));
 
             Expression<Double> rank = cb.function(
                     language.rankFunction(), Double.class, document, cb.literal(title));
-
             query.orderBy(cb.desc(rank), cb.asc(root.get("id")));
             return null;
         };

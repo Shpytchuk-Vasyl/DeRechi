@@ -23,9 +23,8 @@ public abstract class Thing {
     @Column()
     private String description;
 
-//
-//    @Column()
-//    private String image;
+    @Column()
+    private String image;
 
     @Column(nullable = false)
     private LocalDate date;
@@ -41,4 +40,6 @@ public abstract class Thing {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private ContactInfo info;
+
+    private Double orderMatch;
 }
