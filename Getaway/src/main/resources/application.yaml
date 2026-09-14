@@ -6,12 +6,11 @@ spring:
     gateway:
       server:
         webflux:
-          # lb:// -> адреси беруться з Eureka, порти сервісів тут не зашиті
           routes:
-            - id: auth
-              uri: lb://AUTH
+            - id: keycloak
+              uri: http://localhost:8180
               predicates:
-                - Path=/oauth2/**,/login/**,/.well-known/**
+                - Path=/realms/**,/resources/**
             - id: client-api
               uri: lb://CLIENT-API
               predicates:

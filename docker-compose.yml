@@ -43,6 +43,27 @@ services:
       timeout: 10s
       retries: 5
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.4
+    container_name: derechi-keycloak
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: derechi
+      KC_DB_PASSWORD: derechi
+      KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
+    ports:
+      - "8180:8080"     # Console -> http://localhost:8180  (admin / admin)
+    volumes:
+      - ./docker/keycloak/realms:/opt/keycloak/data/import:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   prometheus:
     image: prom/prometheus:v3.14.0
     container_name: derechi-prometheus

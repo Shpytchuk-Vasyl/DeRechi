@@ -7,7 +7,6 @@ COPY .mvn .mvn
 COPY mvnw pom.xml ./
 COPY DB-Postgres DB-Postgres
 COPY Discovery Discovery
-COPY Auth Auth
 COPY Getaway Getaway
 COPY Client-API Client-API
 COPY Admin-API Admin-API

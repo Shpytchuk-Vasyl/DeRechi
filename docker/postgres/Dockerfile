@@ -13,4 +13,5 @@ FROM postgis/postgis:17-3.5
 COPY --from=dict /dict/uk_ua.dict /dict/uk_ua.affix /usr/share/postgresql/17/tsearch_data/
 
 COPY ukrainian.stop /usr/share/postgresql/17/tsearch_data/
+COPY initdb/ /docker-entrypoint-initdb.d/
 RUN test "$(pg_config --sharedir)" = /usr/share/postgresql/17
