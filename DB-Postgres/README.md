@@ -16,7 +16,7 @@ DB-Postgres/
 ├── changelog/
 │   ├── changelog-master.yaml            # includeAll of changes/, sorted by filename
 │   └── changes/
-│       ├── 001-enable-postgis.sql
+│       ├── 001-extentions-and-configuration.sql
 │       └── 002-init-schema.postgresql.sql
 ├── liquibase.properties                 # config for liquibase-maven-plugin
 └── src/main/resources/application.yaml  # config for the Spring runtime

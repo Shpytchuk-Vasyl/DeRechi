@@ -13,8 +13,6 @@ public class ItemCreatedEvent {
     public Double lon;
     public String title;
 
-    public ItemCreatedEvent() {}
-
     public ItemCreatedEvent(ItemDto dto) {
         this.id = dto.id();
         this.date = dto.date();

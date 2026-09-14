@@ -36,8 +36,4 @@ public class ContactInfo {
     @Column
     private SocialMediaEnum[] socialMedias;
 
-
-    @OneToOne
-    @JoinColumn(nullable = false)
-    private Thing thing;
 }

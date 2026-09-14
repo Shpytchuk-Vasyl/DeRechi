@@ -2,13 +2,13 @@ package org.shpytchuk.automaticsearch.specification;
 
 import jakarta.persistence.criteria.Expression;
 import org.hibernate.spatial.predicate.JTSSpatialPredicates;
-import org.shpytchuk.automaticsearch.config.FullTextFunctionContributor;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.shpytchuk.automaticsearch.entity.Thing;
 import org.shpytchuk.automaticsearch.event.ItemCreatedEvent;
+import org.shpytchuk.automaticsearch.language.SearchLanguage;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
@@ -25,13 +25,13 @@ public final class ThingSpecifications {
     private ThingSpecifications() {
     }
 
-    public static <T extends Thing> Specification<T> byFilter(ItemCreatedEvent event) {
+    public static <T extends Thing> Specification<T> byFilter(ItemCreatedEvent event, SearchLanguage language) {
         LocalDate date = event.getDate();
 
         return ThingSpecifications.<T>categoryIs(event.getCategory())
                 .and(dateBetween(date.minus(PERIOD), date.plus(PERIOD)))
                 .and(nearTo(event.getLat(), event.getLon()))
-                .and(orderByRelevance(event.getTitle()));
+                .and(orderByRelevance(event.getTitle(), language));
     }
 
     private static <T extends Thing> Specification<T> categoryIs(Long categoryId) {
@@ -42,7 +42,7 @@ public final class ThingSpecifications {
         return (root, query, cb) -> cb.between(root.get("date"), from, to);
     }
 
-    private static <T extends Thing> Specification<T> orderByRelevance(String title) {
+    private static <T extends Thing> Specification<T> orderByRelevance(String title, SearchLanguage language) {
         return (root, query, cb) -> {
             if (query == null || title == null || title.isBlank()) {
                 return null;
@@ -53,7 +53,7 @@ public final class ThingSpecifications {
                     cb.coalesce(root.<String>get("description"), ""));
 
             Expression<Double> rank = cb.function(
-                    FullTextFunctionContributor.TS_RANK_SIMPLE, Double.class, document, cb.literal(title));
+                    language.rankFunction(), Double.class, document, cb.literal(title));
 
             query.orderBy(cb.desc(rank), cb.asc(root.get("id")));
             return null;

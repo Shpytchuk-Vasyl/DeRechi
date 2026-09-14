@@ -37,4 +37,8 @@ public abstract class Thing {
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private ThingCategory category;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private ContactInfo info;
 }
