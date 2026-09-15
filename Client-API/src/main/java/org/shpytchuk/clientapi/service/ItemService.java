@@ -90,7 +90,7 @@ public abstract class ItemService<T extends Thing> {
 
     private void apply(ItemInput input, T item, ContactInfo info) {
         if (imageRequired && (input.image() == null || input.image().isBlank())) {
-            throw new IllegalArgumentException("Для знайденої речі фото обовʼязкове");
+            throw new IllegalArgumentException("Image is required");
         }
 
         ThingCategory category = categoryRepository.findById(input.categoryId()).orElseThrow(() -> new NotFoundException("Category", input.categoryId()));

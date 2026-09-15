@@ -69,7 +69,7 @@ services:
       - "8080:8080"
     environment:
       <<: *eureka
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_0_URI: http://keycloak:8080
+      KEYCLOAK_URI: http://keycloak:8080
 
   client-api:
     <<: *service-base

@@ -6,19 +6,30 @@ spring:
     gateway:
       server:
         webflux:
+          globalcors:
+            add-to-simple-url-handler-mapping: true
+            cors-configurations:
+              '[/**]':
+                allowed-origins:
+                  - http://localhost:3000
+                  - http://localhost:5173
+                allowed-methods: [GET, POST, PUT, PATCH, DELETE, OPTIONS]
+                allowed-headers: "*"
+                allow-credentials: true
+                max-age: 3600
           routes:
             - id: keycloak
-              uri: http://localhost:8180
+              uri: ${KEYCLOAK_URI:http://localhost:8180}
               predicates:
                 - Path=/realms/**,/resources/**
             - id: client-api
               uri: lb://CLIENT-API
               predicates:
-                - Path=/graphql/**,/api/client/**
+                - Path=/graphql/**,/graphiql/**,/api/client/**
             - id: admin-api
               uri: lb://ADMIN-API
               predicates:
-                - Path=/api/admin/**
+                - Path=/api/admin/**,/swagger-ui.html,/swagger-ui/**,/v3/api-docs/**
 
 server:
   port: 8080
