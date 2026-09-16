@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Не знайдено')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+<main>
+    <h1>404 — не знайдено</h1>
+    <p th:text="${message}">Запису не існує.</p>
+    <a th:href="@{/admin/matches}">На головну</a>
+</main>
+</body>
+</html>

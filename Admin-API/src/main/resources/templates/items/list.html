@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${title})}"></head>
+<body>
+
+<header th:replace="~{fragments/layout :: nav}"></header>
+<div th:replace="~{fragments/layout :: flash}"></div>
+
+<main>
+    <div class="head">
+        <h1 th:text="${title}">Речі</h1>
+        <a class="button" th:if="${perms.can(scope, 'CREATE')}" th:href="@{${basePath} + '/new'}">Додати</a>
+    </div>
+
+    <table class="grid">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Назва</th>
+            <th>Категорія</th>
+            <th>Дата</th>
+            <th>Місце</th>
+            <th>Контакти</th>
+            <th>Винагорода</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${items.content}">
+            <td th:text="${item.id}">1</td>
+            <td>
+                <strong th:text="${item.title}">Назва</strong>
+                <div class="meta" th:if="${item.description}" th:text="${item.description}">опис</div>
+            </td>
+            <td th:text="${item.categoryKey}">OTHER</td>
+            <td th:text="${item.date}">2026-01-01</td>
+            <td th:text="${item.placeName}">Місце</td>
+            <td>
+                <div th:text="${item.phone}">+380</div>
+                <div th:text="${item.email}">mail</div>
+            </td>
+            <td th:text="${item.compensation}"></td>
+            <td class="actions">
+                <a th:if="${perms.can(scope, 'EDIT')}" th:href="@{${basePath} + '/' + ${item.id} + '/edit'}">Редагувати</a>
+                <form th:if="${perms.can(scope, 'DELETE')}"
+                      th:action="@{${basePath} + '/' + ${item.id} + '/delete'}" method="post"
+                      onsubmit="return confirm('Видалити запис разом зі звʼязками в матчах?')">
+                    <button type="submit" class="danger">Видалити</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${items.empty}">
+            <td colspan="8" class="empty">Записів ще немає</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <nav th:replace="~{fragments/layout :: pager(${items}, ${basePath})}"></nav>
+</main>
+
+</body>
+</html>

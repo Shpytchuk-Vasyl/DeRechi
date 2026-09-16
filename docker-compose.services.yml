@@ -105,7 +105,7 @@ services:
     environment:
       <<: [*eureka, *postgres, *rabbitmq]
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/derechi
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/derechi
+      SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI: ${KEYCLOAK_ISSUER_URI:-http://localhost:8180/realms/derechi}
     depends_on:
       discovery:
         condition: service_started

@@ -21,8 +21,67 @@
       {
         "name": "ADMIN",
         "description": "Адміністратор: модерація, довідники, Admin-API"
+      },
+      {
+        "name": "ADMIN_VIEWER",
+        "description": "Адмінка: лише перегляд матчів, загублених і знайдених речей",
+        "composite": true,
+        "composites": {
+          "client": {
+            "derechi-admin": [
+              "MATCH:VIEW",
+              "LOST_ITEM:VIEW",
+              "FOUND_ITEM:VIEW"
+            ]
+          }
+        }
+      },
+      {
+        "name": "ADMIN_EDITOR",
+        "description": "Адмінка: перегляд, створення, редагування та сповіщення про знахідку",
+        "composite": true,
+        "composites": {
+          "realm": ["ADMIN_VIEWER"],
+          "client": {
+            "derechi-admin": [
+              "MATCH:NOTIFY",
+              "LOST_ITEM:CREATE",
+              "LOST_ITEM:EDIT",
+              "FOUND_ITEM:CREATE",
+              "FOUND_ITEM:EDIT"
+            ]
+          }
+        }
+      },
+      {
+        "name": "ADMIN_SUPER",
+        "description": "Адмінка: повний доступ, включно з видаленням",
+        "composite": true,
+        "composites": {
+          "realm": ["ADMIN", "ADMIN_EDITOR"],
+          "client": {
+            "derechi-admin": [
+              "LOST_ITEM:DELETE",
+              "FOUND_ITEM:DELETE"
+            ]
+          }
+        }
       }
-    ]
+    ],
+    "client": {
+      "derechi-admin": [
+        { "name": "MATCH:VIEW", "description": "Таблиця загублених речей та їхніх знайдених кандидатів" },
+        { "name": "MATCH:NOTIFY", "description": "Повідомити користувача про знахідку" },
+        { "name": "LOST_ITEM:VIEW", "description": "Перегляд загублених речей" },
+        { "name": "LOST_ITEM:CREATE", "description": "Створення загубленої речі" },
+        { "name": "LOST_ITEM:EDIT", "description": "Редагування загубленої речі" },
+        { "name": "LOST_ITEM:DELETE", "description": "Видалення загубленої речі" },
+        { "name": "FOUND_ITEM:VIEW", "description": "Перегляд знайдених речей" },
+        { "name": "FOUND_ITEM:CREATE", "description": "Створення знайденої речі" },
+        { "name": "FOUND_ITEM:EDIT", "description": "Редагування знайденої речі" },
+        { "name": "FOUND_ITEM:DELETE", "description": "Видалення знайденої речі" }
+      ]
+    }
   },
   "clients": [
     {
@@ -47,6 +106,57 @@
       },
       "defaultClientScopes": ["openid", "profile", "email", "roles", "web-origins"],
       "optionalClientScopes": ["offline_access"]
+    },
+    {
+      "clientId": "derechi-admin",
+      "name": "DeRechi Admin panel",
+      "description": "Публічний клієнт адмінки (Spring MVC, Authorization Code + PKCE). Клієнтські ролі = скоуп:акшин",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://localhost:8083/*"
+      ],
+      "webOrigins": ["+"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:8083/*"
+      },
+      "defaultClientScopes": ["openid", "profile", "email", "roles", "web-origins"],
+      "protocolMappers": [
+        {
+          "name": "realm roles in id token",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "claim.name": "realm_access.roles",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "admin permissions in id token",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-client-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "usermodel.clientRoleMapping.clientId": "derechi-admin",
+            "claim.name": "resource_access.derechi-admin.roles",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
     },
     {
       "clientId": "derechi-services",
@@ -79,7 +189,39 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["ADMIN", "USER"]
+      "realmRoles": ["ADMIN_SUPER", "USER"]
+    },
+    {
+      "username": "moderator@derechi.local",
+      "email": "moderator@derechi.local",
+      "emailVerified": true,
+      "firstName": "Dev",
+      "lastName": "Moderator",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "moderator",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["ADMIN_EDITOR", "USER"]
+    },
+    {
+      "username": "viewer@derechi.local",
+      "email": "viewer@derechi.local",
+      "emailVerified": true,
+      "firstName": "Dev",
+      "lastName": "Viewer",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "viewer",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["ADMIN_VIEWER", "USER"]
     },
     {
       "username": "user@derechi.local",

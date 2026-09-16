@@ -26,10 +26,6 @@ spring:
               uri: lb://CLIENT-API
               predicates:
                 - Path=/graphql/**,/graphiql/**,/api/client/**
-            - id: admin-api
-              uri: lb://ADMIN-API
-              predicates:
-                - Path=/api/admin/**,/swagger-ui.html,/swagger-ui/**,/v3/api-docs/**
 
 server:
   port: 8080

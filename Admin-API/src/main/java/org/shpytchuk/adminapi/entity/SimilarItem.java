@@ -1,14 +1,24 @@
-package org.shpytchuk.dbpostgres.analysis;
+package org.shpytchuk.adminapi.entity;
 
-import jakarta.persistence.*;
-import org.shpytchuk.dbpostgres.core.thing.FoundItem;
-import org.shpytchuk.dbpostgres.core.thing.LostItem;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class SimilarItem {
 
     @EmbeddedId
@@ -28,14 +38,26 @@ public class SimilarItem {
     @Column
     private Instant notifiedAt;
 
-    @Column(length = 100)
+    @Column
     private String notifiedBy;
 
+    public boolean isNotified() {
+        return notifiedAt != null;
+    }
+
     @Embeddable
+    @Getter
+    @Setter
+    @NoArgsConstructor
     public static class SimilarItemId implements Serializable {
 
         private Long foundItemId;
         private Long lostItemId;
+
+        public SimilarItemId(Long foundItemId, Long lostItemId) {
+            this.foundItemId = foundItemId;
+            this.lostItemId = lostItemId;
+        }
 
         @Override
         public boolean equals(Object o) {

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(pageTitle)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="'DeRechi · ' + ${pageTitle}">DeRechi</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+
+<header th:fragment="nav" class="nav">
+    <a class="brand" th:href="@{/admin/matches}">DeRechi · адмінка</a>
+    <nav>
+        <a th:if="${perms.can('MATCH', 'VIEW')}" th:href="@{/admin/matches}">Матчі</a>
+        <a th:if="${perms.can('LOST_ITEM', 'VIEW')}" th:href="@{/admin/lost-items}">Загублені</a>
+        <a th:if="${perms.can('FOUND_ITEM', 'VIEW')}" th:href="@{/admin/found-items}">Знайдені</a>
+    </nav>
+    <form class="logout" th:action="@{/logout}" method="post">
+        <span class="user" th:text="${currentUser}">admin</span>
+        <button type="submit">Вийти</button>
+    </form>
+</header>
+
+<div th:fragment="flash" th:if="${message}" class="flash" th:text="${message}"></div>
+
+<div th:fragment="pager(page, basePath)">
+    <nav class="pager" th:if="${page != null and page.totalPages > 1}">
+        <a th:if="${!page.first}" th:href="@{${basePath}(page=${page.number - 1})}">← назад</a>
+        <span th:text="${(page.number + 1) + ' / ' + page.totalPages}">1 / 1</span>
+        <a th:if="${!page.last}" th:href="@{${basePath}(page=${page.number + 1})}">далі →</a>
+    </nav>
+</div>
+
+</body>
+</html>

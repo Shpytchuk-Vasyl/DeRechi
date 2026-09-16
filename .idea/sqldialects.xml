@@ -3,5 +3,6 @@
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/Automatic-Search/src/main/java/org/shpytchuk/automaticsearch/repository/SimilarItemRepository.java" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/DB-Postgres/changelog" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/docker/postgres/initdb/01-keycloak.sql" dialect="PostgreSQL" />
   </component>
 </project>

@@ -9,4 +9,3 @@ docker/
 docker-compose*.yml
 Dockerfile
 .dockerignore
-aaaaaaa.txt

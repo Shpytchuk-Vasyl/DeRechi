@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${title})}"></head>
+<body>
+
+<header th:replace="~{fragments/layout :: nav}"></header>
+
+<main>
+    <h1 th:text="${creating} ? ${title} + ': нова' : ${title} + ': #' + ${form.id}">Форма</h1>
+
+    <form class="form"
+          th:object="${form}"
+          th:action="${creating} ? @{${basePath}} : @{${basePath} + '/' + ${form.id}}"
+          method="post">
+
+        <div th:if="${#fields.hasErrors('*')}" class="errors">
+            <p th:each="error : ${#fields.errors('*')}" th:text="${error}">помилка</p>
+        </div>
+
+        <label>Назва
+            <input type="text" th:field="*{title}" required maxlength="100">
+        </label>
+
+        <label>Опис
+            <textarea th:field="*{description}" maxlength="250"></textarea>
+        </label>
+
+        <label>Зображення (шлях)
+            <input type="text" th:field="*{image}" maxlength="200">
+        </label>
+
+        <label>Дата
+            <input type="date" th:field="*{date}" required>
+        </label>
+
+        <label>Винагорода
+            <input type="number" th:field="*{compensation}" min="0">
+        </label>
+
+        <label>Категорія
+            <select th:field="*{categoryId}" required>
+                <option th:each="category : ${categories}"
+                        th:value="${category.id}" th:text="${category.key}">OTHER</option>
+            </select>
+        </label>
+
+        <fieldset>
+            <legend>Місце</legend>
+            <label>Google place id
+                <input type="text" th:field="*{placeId}" required maxlength="255">
+            </label>
+            <label>Назва місця
+                <input type="text" th:field="*{placeName}" required maxlength="100">
+            </label>
+            <label>Широта
+                <input type="number" step="any" th:field="*{lat}" required>
+            </label>
+            <label>Довгота
+                <input type="number" step="any" th:field="*{lon}" required>
+            </label>
+        </fieldset>
+
+        <fieldset>
+            <legend>Контакти</legend>
+            <label>Телефон
+                <input type="text" th:field="*{phone}" required placeholder="+380671234567">
+            </label>
+            <label>Email
+                <input type="email" th:field="*{email}" required maxlength="50">
+            </label>
+            <div class="checkboxes">
+                <label th:each="social : ${allSocialMedias}">
+                    <input type="checkbox" th:field="*{socialMedias}" th:value="${social}">
+                    <span th:text="${social}">TELEGRAM</span>
+                </label>
+            </div>
+        </fieldset>
+
+        <div class="actions">
+            <button type="submit" th:text="${creating} ? 'Створити' : 'Зберегти'">Зберегти</button>
+            <a th:href="@{${basePath}}">Скасувати</a>
+        </div>
+    </form>
+</main>
+
+</body>
+</html>
