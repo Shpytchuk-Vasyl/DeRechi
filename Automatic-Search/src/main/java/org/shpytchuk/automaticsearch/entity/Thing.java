@@ -41,5 +41,6 @@ public abstract class Thing {
     @JoinColumn(nullable = false)
     private ContactInfo info;
 
+    @Transient
     private Double orderMatch;
 }

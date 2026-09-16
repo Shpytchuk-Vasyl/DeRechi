@@ -56,7 +56,8 @@ services:
       KC_DB_PASSWORD: derechi
       KC_HEALTH_ENABLED: "true"
       KC_METRICS_ENABLED: "true"
-      JAVA_OPTS_APPEND: "-Xms64m -Xmx256m"
+      MALLOC_ARENA_MAX: "2"
+      JAVA_OPTS_APPEND: "-Xms64m -Xmx256m -XX:MaxMetaspaceSize=192m -XX:ReservedCodeCacheSize=64m -XX:MaxDirectMemorySize=64m -XX:-UseG1GC -XX:+UseSerialGC"
     ports:
       - "8180:8080"     # Console -> http://localhost:8180  (admin / admin)
     volumes:

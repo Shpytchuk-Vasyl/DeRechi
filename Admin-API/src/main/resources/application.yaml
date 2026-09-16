@@ -42,7 +42,6 @@ spring:
 
 derechi:
   admin:
-    # Keycloak-клієнт, чиї клієнтські ролі (SCOPE:ACTION) стають authorities адмінки
     client-id: derechi-admin
     page-size: 20
   notifications:
