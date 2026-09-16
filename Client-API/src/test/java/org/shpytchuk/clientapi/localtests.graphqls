@@ -100,3 +100,33 @@ query  {
 #        }
 #    }
 #}
+
+
+#
+#mutation {
+#    createFoundItem(
+#        input: {
+#            categoryId: 2
+#            compensation: 0
+#            contact: {
+#                email: "find@derechi.com"
+#                phone: "+38011111111"
+#                socialMedias: []
+#            }
+#            date: "2026-09-07"
+#            description: "Знайшов ключі стрийському парку біля лавочки"
+#            title: "Ключі стрийський парк"
+#            image: "https://sigma.ua/resize_img/nabor-klyuchey-rozhkovo-nakidnykh-treshchotochnykh-8sht-8-10-12-13-14-15-17-19mm-crv-satine-sigma-60_detail_1.jpeg"
+#            place: {id: "Стрийськийпарк", lon: 49.8179, lat: 24.00651, name: "Парк"}
+#        }
+#    ) {
+#        id
+#        contact {
+#            email
+#            id
+#            phone
+#        }
+#        description
+#        title
+#    }
+#}
