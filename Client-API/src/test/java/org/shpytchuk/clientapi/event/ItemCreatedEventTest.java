@@ -18,7 +18,7 @@ class ItemCreatedEventTest {
         ItemDto dto = new ItemDto(1L, "Ключі", "опис", LocalDate.of(2026, 9, 1), 500, "keys.png",
                 new CategoryDto(2L, "keys"),
                 new PlaceDto("ChIJplaceId", "Площа Ринок", 49.8419, 24.0315),
-                new ContactInfoDto(4L, "+380671234567", "finder@example.com", List.of()));
+                new ContactInfoDto(4L, "+380671234567", "finder@example.com"));
 
         ItemCreatedEvent event = new ItemCreatedEvent(dto);
 

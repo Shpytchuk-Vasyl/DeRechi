@@ -28,6 +28,10 @@ spring:
           enabled: true
           max-attempts: 3
 
+derechi:
+  items:
+    queue: automatic-search.items
+
 server:
   port: 8085
 

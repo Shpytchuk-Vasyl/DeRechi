@@ -17,8 +17,6 @@ public class ContactInfo {
         TELEGRAM,
         VIBER,
         WHATSAPP,
-        SIGNAL,
-        MESSENGER
     }
 
     @Id

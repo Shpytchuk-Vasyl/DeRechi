@@ -53,7 +53,7 @@
       "arguments": {}
     },
     {
-      "name": "derechi.matches",
+      "name": "derechi.notifications",
       "vhost": "/",
       "type": "topic",
       "durable": true,
@@ -62,7 +62,7 @@
       "arguments": {}
     },
     {
-      "name": "derechi.matches.dlx",
+      "name": "derechi.notifications.dlx",
       "vhost": "/",
       "type": "topic",
       "durable": true,
@@ -93,17 +93,17 @@
       }
     },
     {
-      "name": "notification.matches",
+      "name": "notification.events",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
       "arguments": {
         "x-queue-type": "quorum",
-        "x-dead-letter-exchange": "derechi.matches.dlx"
+        "x-dead-letter-exchange": "derechi.notifications.dlx"
       }
     },
     {
-      "name": "notification.matches.dlq",
+      "name": "notification.events.dlq",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
@@ -119,15 +119,7 @@
       "vhost": "/",
       "destination": "automatic-search.items",
       "destination_type": "queue",
-      "routing_key": "item.lost.created",
-      "arguments": {}
-    },
-    {
-      "source": "derechi.items",
-      "vhost": "/",
-      "destination": "automatic-search.items",
-      "destination_type": "queue",
-      "routing_key": "item.found.created",
+      "routing_key": "item.*.created",
       "arguments": {}
     },
     {
@@ -139,17 +131,17 @@
       "arguments": {}
     },
     {
-      "source": "derechi.matches",
+      "source": "derechi.notifications",
       "vhost": "/",
-      "destination": "notification.matches",
+      "destination": "notification.events",
       "destination_type": "queue",
-      "routing_key": "match.found",
+      "routing_key": "notification.#",
       "arguments": {}
     },
     {
-      "source": "derechi.matches.dlx",
+      "source": "derechi.notifications.dlx",
       "vhost": "/",
-      "destination": "notification.matches.dlq",
+      "destination": "notification.events.dlq",
       "destination_type": "queue",
       "routing_key": "#",
       "arguments": {}

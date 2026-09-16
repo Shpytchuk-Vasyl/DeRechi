@@ -26,20 +26,20 @@ class ContactInfoRepositoryTests extends AbstractRepositoryTests {
     @Test
     void roundTripsTheSocialMediaArray() {
         ContactInfo saved = contactInfoRepository.save(
-                contact(SocialMediaEnum.TELEGRAM, SocialMediaEnum.SIGNAL));
+                contact(SocialMediaEnum.TELEGRAM, SocialMediaEnum.WHATSAPP));
         entityManager.flush();
         entityManager.clear();
 
         ContactInfo found = contactInfoRepository.findById(saved.getId()).orElseThrow();
 
         assertThat(found.getSocialMedias())
-                .containsExactly(SocialMediaEnum.TELEGRAM, SocialMediaEnum.SIGNAL);
+                .containsExactly(SocialMediaEnum.TELEGRAM, SocialMediaEnum.WHATSAPP);
     }
 
     @Test
     void storesEnumsAsTheirOrdinalsInASmallintArray() {
         ContactInfo saved = contactInfoRepository.save(
-                contact(SocialMediaEnum.VIBER, SocialMediaEnum.MESSENGER));
+                contact(SocialMediaEnum.VIBER, SocialMediaEnum.WHATSAPP));
         entityManager.flush();
         entityManager.clear();
 
@@ -52,7 +52,7 @@ class ContactInfoRepositoryTests extends AbstractRepositoryTests {
                 saved.getId());
 
         assertThat(stored).containsExactly(
-                SocialMediaEnum.VIBER.ordinal(), SocialMediaEnum.MESSENGER.ordinal());
+                SocialMediaEnum.VIBER.ordinal(), SocialMediaEnum.WHATSAPP.ordinal());
     }
 
     @Test

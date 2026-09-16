@@ -95,14 +95,14 @@ class FoundItemControllerTests extends AbstractGraphQlTests {
 
         tester.document("""
                         query Read($id: ID!) {
-                          foundItem(id: $id) { title image contact { socialMedias } }
+                          foundItem(id: $id) { title image contact { phone email } }
                         }
                         """)
                 .variable("id", id)
                 .execute()
                 .path("foundItem.title").entity(String.class).isEqualTo("Парасолька")
-                .path("foundItem.contact.socialMedias").entityList(String.class)
-                .containsExactly("TELEGRAM");
+                .path("foundItem.contact.phone").entity(String.class).isEqualTo("+38067*****67")
+                .path("foundItem.contact.email").entity(String.class).isEqualTo("f*****r@example.com");
     }
 
     @Test

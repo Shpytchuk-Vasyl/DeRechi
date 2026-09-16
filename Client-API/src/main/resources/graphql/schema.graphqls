@@ -31,7 +31,6 @@ type ContactInfo {
     id: ID!
     phone: String!
     email: String!
-    socialMedias: [SocialMedia!]!
 }
 
 "Lost Item Notice."

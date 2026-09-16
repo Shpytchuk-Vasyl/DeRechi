@@ -14,9 +14,7 @@ public class ContactInfo {
     public enum SocialMediaEnum {
         TELEGRAM,
         VIBER,
-        WHATSAPP,
-        SIGNAL,
-        MESSENGER
+        WHATSAPP
     }
 
     @Id

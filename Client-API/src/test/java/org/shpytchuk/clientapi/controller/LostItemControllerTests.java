@@ -27,7 +27,7 @@ class LostItemControllerTests extends AbstractGraphQlTests {
                 id title description date compensation image
                 category { id key }
                 place { id name lat lon }
-                contact { id phone email socialMedias }
+                contact { id phone email }
               }
             }
             """;
@@ -50,8 +50,10 @@ class LostItemControllerTests extends AbstractGraphQlTests {
                 .path("createLostItem.category.key").entity(String.class).isEqualTo("DOCUMENTS")
                 .path("createLostItem.place.lat").entity(Double.class).isEqualTo(49.8419)
                 .path("createLostItem.place.lon").entity(Double.class).isEqualTo(24.0315)
-                .path("createLostItem.contact.socialMedias").entityList(String.class)
-                .containsExactly("TELEGRAM");
+                .path("createLostItem.contact.phone").entity(String.class)
+                .isEqualTo("+38067*****67")
+                .path("createLostItem.contact.email").entity(String.class)
+                .isEqualTo("f*****r@example.com");
     }
 
     @Test
@@ -93,7 +95,7 @@ class LostItemControllerTests extends AbstractGraphQlTests {
                 .execute()
                 .path("lostItem.title").entity(String.class).isEqualTo("Ключі")
                 .path("lostItem.place.name").entity(String.class).isEqualTo("Площа Ринок")
-                .path("lostItem.contact.phone").entity(String.class).isEqualTo("+380671234567")
+                .path("lostItem.contact.phone").entity(String.class).isEqualTo("+38067*****67")
                 .path("lostItem.category.key").entity(String.class).isEqualTo("DOCUMENTS");
     }
 

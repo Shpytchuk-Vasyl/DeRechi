@@ -134,3 +134,24 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+
+  notification:
+    <<: *service-base
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: Notification
+    container_name: derechi-notification
+    ports:
+      - "8084:8084"
+    environment:
+      <<: [*eureka, *rabbitmq]
+      NOTIFY_EMAIL_HOST: mailpit
+    depends_on:
+      discovery:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+      mailpit:
+        condition: service_healthy

@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
-@EventType("item.created")
+@EventType("ITEM_CREATED")
 public class ItemCreatedEvent {
     private Long id;
     private LocalDate date;

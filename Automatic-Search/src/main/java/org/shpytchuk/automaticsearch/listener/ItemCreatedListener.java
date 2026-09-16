@@ -19,7 +19,6 @@ public class ItemCreatedListener {
 
     private static final Logger log = LoggerFactory.getLogger(ItemCreatedListener.class);
 
-    private static final String ITEMS_QUEUE = "automatic-search.items";
 
     private final Map<String, ItemCreatedHandler> handlers;
 
@@ -28,7 +27,7 @@ public class ItemCreatedListener {
                 .collect(Collectors.toMap(ItemCreatedHandler::routingKey, Function.identity()));
     }
 
-    @RabbitListener(queues = ITEMS_QUEUE)
+    @RabbitListener(queues = "${derechi.items.queue}")
     public void onItemCreated(ItemCreatedEvent event, Message message) {
         String routingKey = message.getMessageProperties().getReceivedRoutingKey();
         log.debug("Get {} with {} key", event, routingKey);

@@ -42,7 +42,7 @@ class ItemEventAspectTest {
             1L, "Ключі", null, LocalDate.of(2026, 9, 1), 500, "keys.png",
             new CategoryDto(2L, "keys"),
             new PlaceDto("ChIJplaceId", "Площа Ринок", 49.8419, 24.0315),
-            new ContactInfoDto(4L, "+380671234567", "finder@example.com", List.of()));
+            new ContactInfoDto(4L, "+380671234567", "finder@example.com"));
 
     @Mock
     private RabbitTemplate rabbitTemplate;
@@ -95,7 +95,6 @@ class ItemEventAspectTest {
         try {
             proxy.create(INPUT);
         } catch (IllegalArgumentException expected) {
-            // the advice is @AfterReturning, so a failed create must stay silent
         }
 
         verify(rabbitTemplate, never()).convertAndSend(any(String.class), any(String.class), any(Object.class));

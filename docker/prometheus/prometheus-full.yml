@@ -23,9 +23,8 @@ scrape_configs:
         labels: { application: Admin-API }
       - targets: ["automatic-search:8085"]
         labels: { application: Automatic-Search }
-      # Notification тимчасово вимкнений (виключений з <modules>)
-      # - targets: ["notification:8084"]
-      #   labels: { application: Notification }
+      - targets: ["notification:8084"]
+        labels: { application: Notification }
 
   - job_name: keycloak
     metrics_path: /metrics

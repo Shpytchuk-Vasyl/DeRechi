@@ -12,6 +12,6 @@ class EventTypeScannerTest {
     void picksUpAnnotatedEventsSoRabbitCanResolveThemByTypeId() {
         Map<String, Class<?>> mapping = EventTypeScanner.scan();
 
-        assertThat(mapping).containsEntry("item.created", ItemCreatedEvent.class);
+        assertThat(mapping).containsEntry("ITEM_CREATED", ItemCreatedEvent.class);
     }
 }
