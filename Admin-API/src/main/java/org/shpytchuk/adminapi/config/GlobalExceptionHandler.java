@@ -1,4 +1,4 @@
-package org.shpytchuk.adminapi.controller;
+package org.shpytchuk.adminapi.config;
 
 import org.shpytchuk.adminapi.exception.NotFoundException;
 import org.shpytchuk.adminapi.security.AdminPermissions;

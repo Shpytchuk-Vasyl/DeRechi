@@ -25,7 +25,7 @@ public class SecurityConfig {
                                                    LogoutSuccessHandler logoutSuccessHandler) throws Exception {
         return http
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/actuator/**", "/css/**", "/error").permitAll()
+                        .requestMatchers("/actuator/**", "/css/**", "/js/**", "/error").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(Customizer.withDefaults())
                 .logout(logout -> logout.logoutSuccessHandler(logoutSuccessHandler))

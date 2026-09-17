@@ -1,11 +1,11 @@
 package org.shpytchuk.adminapi.service;
 
 import lombok.AllArgsConstructor;
-import org.shpytchuk.adminapi.entity.LostItem;
-import org.shpytchuk.adminapi.entity.SimilarItem;
+import org.shpytchuk.adminapi.entity.items.LostItem;
+import org.shpytchuk.adminapi.entity.items.SimilarItem;
 import org.shpytchuk.adminapi.mapper.ItemMapper;
-import org.shpytchuk.adminapi.repository.LostItemRepository;
-import org.shpytchuk.adminapi.repository.SimilarItemRepository;
+import org.shpytchuk.adminapi.repository.items.LostItemRepository;
+import org.shpytchuk.adminapi.repository.items.SimilarItemRepository;
 import org.shpytchuk.adminapi.view.CandidateView;
 import org.shpytchuk.adminapi.view.MatchRow;
 import org.springframework.data.domain.Page;

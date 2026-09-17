@@ -1,81 +1,123 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html class="has-navbar-fixed-top" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head('Матчі')}"></head>
-<body>
+<body class="is-flex is-flex-direction-column">
 
 <header th:replace="~{fragments/layout :: nav}"></header>
 <div th:replace="~{fragments/layout :: flash}"></div>
 
-<main>
-    <h1>Загублені речі та знайдені кандидати</h1>
+<main class="section pt-5 is-flex-grow-1">
+    <div class="container is-fluid">
 
-    <table class="grid">
-        <thead>
-        <tr>
-            <th>Загублена річ</th>
-            <th>Знайдені кандидати</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="row : ${matches.content}">
-            <td class="lost">
-                <div class="title">
-                    <span th:text="'#' + ${row.lost.id}">#1</span>
-                    <strong th:text="${row.lost.title}">Річ</strong>
-                </div>
-                <div class="meta">
-                    <span th:text="${row.lost.categoryKey}">OTHER</span> ·
-                    <span th:text="${row.lost.date}">2026-01-01</span> ·
-                    <span th:text="${row.lost.placeName}">Місце</span>
-                </div>
-                <div class="meta" th:text="${row.lost.phone} + ' · ' + ${row.lost.email}">контакти</div>
-                <div class="meta" th:if="${row.lost.compensation != null}"
-                     th:text="'Винагорода: ' + ${row.lost.compensation}">Винагорода</div>
-            </td>
+        <h1 class="title is-4">Загублені речі та знайдені кандидати</h1>
 
-            <td>
-                <p class="empty" th:unless="${row.hasCandidates()}">Кандидатів ще немає</p>
-
-                <table class="candidates" th:if="${row.hasCandidates()}">
-                    <tr th:each="candidate : ${row.candidates}">
+        <div class="box p-0">
+            <div class="table-container">
+                <table class="table is-fullwidth is-hoverable mb-0 matches-table">
+                    <thead>
+                    <tr>
+                        <th class="is-size-7 is-uppercase has-text-grey">Загублена річ</th>
+                        <th class="is-size-7 is-uppercase has-text-grey">Знайдені кандидати</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="row : ${matches.content}">
                         <td>
-                            <div class="title">
-                                <span th:text="'#' + ${candidate.found.id}">#2</span>
-                                <strong th:text="${candidate.found.title}">Знахідка</strong>
-                                <span class="rank" th:text="'ранг ' + ${#numbers.formatDecimal(candidate.matchOrder, 1, 4)}">ранг</span>
-                            </div>
-                            <div class="meta">
-                                <span th:text="${candidate.found.categoryKey}">OTHER</span> ·
-                                <span th:text="${candidate.found.date}">2026-01-01</span> ·
-                                <span th:text="${candidate.found.placeName}">Місце</span>
-                            </div>
-                            <div class="meta notified" th:if="${candidate.notified}"
-                                 th:text="'Сповіщено ' + ${candidate.notifiedAt} + ' (' + ${candidate.notifiedBy} + ')'">
-                                Сповіщено
+                            <div class="media mb-0">
+                                <div class="media-left">
+                                    <th:block th:replace="~{fragments/dialogs :: thumb('lost', ${row.lost}, 'is-48x48')}"></th:block>
+                                </div>
+                                <div class="media-content">
+                            <p>
+                                <span class="has-text-grey" th:text="'#' + ${row.lost.id}">#1</span>
+                                <th:block th:replace="~{fragments/dialogs :: trigger('lost', ${row.lost})}"></th:block>
+                            </p>
+                            <p class="is-size-7 has-text-grey">
+                                <span class="icon is-small has-text-grey" aria-hidden="true"><i class="fa-solid fa-calendar-days"></i></span> <span th:text="${row.lost.date}">2026-01-01</span> ·
+                                <span class="icon is-small has-text-grey" aria-hidden="true"><i class="fa-solid fa-location-dot"></i></span> <span th:text="${row.lost.placeName}">Місце</span>
+                            </p>
+                                </div>
                             </div>
                         </td>
-                        <td class="actions">
-                            <form th:if="${perms.can('MATCH', 'NOTIFY')}"
-                                  th:action="@{/admin/matches/notify}" method="post">
-                                <input type="hidden" name="lostItemId" th:value="${row.lost.id}">
-                                <input type="hidden" name="foundItemId" th:value="${candidate.found.id}">
-                                <input type="hidden" name="page" th:value="${matches.number}">
-                                <button type="submit"
-                                        th:text="${candidate.notified} ? 'Повідомити ще раз' : 'Повідомити'">Повідомити</button>
-                            </form>
+
+                        <td>
+                            <p class="is-size-7 has-text-grey" th:unless="${row.hasCandidates()}">
+                                <span class="icon is-small has-text-grey" aria-hidden="true"><i class="fa-solid fa-inbox"></i></span> Кандидатів ще немає
+                            </p>
+
+                            <table class="table is-fullwidth is-narrow candidates mb-0"
+                                   th:if="${row.hasCandidates()}">
+                                <tr th:each="candidate : ${row.candidates}">
+                                    <td>
+                                        <div class="media mb-0">
+                                            <div class="media-left">
+                                                <th:block th:replace="~{fragments/dialogs :: thumb('found', ${candidate.found}, 'is-48x48')}"></th:block>
+                                            </div>
+                                            <div class="media-content">
+                                        <p>
+                                            <span class="has-text-grey" th:text="'#' + ${candidate.found.id}">#2</span>
+                                            <th:block th:replace="~{fragments/dialogs :: trigger('found', ${candidate.found})}"></th:block>
+                                            <span class="tag is-light is-rounded"
+                                                  th:text="'ранг ' + ${#numbers.formatDecimal(candidate.matchOrder, 1, 4)}">ранг</span>
+                                        </p>
+                                        <p class="is-size-7 has-text-grey">
+                                            <span class="icon is-small has-text-grey" aria-hidden="true"><i class="fa-solid fa-calendar-days"></i></span> <span th:text="${candidate.found.date}">2026-01-01</span> ·
+                                            <span class="icon is-small has-text-grey" aria-hidden="true"><i class="fa-solid fa-location-dot"></i></span> <span th:text="${candidate.found.placeName}">Місце</span>
+                                        </p>
+                                        <p class="is-size-7 has-text-success" th:if="${candidate.notified}">
+                                            <span class="icon is-small has-text-grey" aria-hidden="true"><i class="fa-solid fa-circle-check"></i></span>
+                                            <span th:text="'Сповіщено ' + ${candidate.notifiedAt} + ' (' + ${candidate.notifiedBy} + ')'">
+                                                Сповіщено
+                                            </span>
+                                        </p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="has-text-right is-narrow">
+                                        <form th:if="${perms.can('MATCH', 'NOTIFY')}"
+                                              th:action="@{/admin/matches/notify}" method="post">
+                                            <input type="hidden" name="lostItemId" th:value="${row.lost.id}">
+                                            <input type="hidden" name="foundItemId" th:value="${candidate.found.id}">
+                                            <input type="hidden" name="page" th:value="${matches.number}">
+                                            <button type="submit" class="button is-small"
+                                                    th:classappend="${candidate.notified} ? 'is-light' : 'is-link'">
+                                                <span class="icon" aria-hidden="true">
+                                                    <i class="fa-solid"
+                                                       th:classappend="${candidate.notified} ? 'fa-rotate-right' : 'fa-bullhorn'"></i>
+                                                </span>
+                                                <span th:text="${candidate.notified} ? 'Повідомити ще раз' : 'Повідомити'">
+                                                    Повідомити
+                                                </span>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </table>
                         </td>
                     </tr>
+                    <tr th:if="${matches.empty}">
+                        <td colspan="2" class="has-text-centered has-text-grey py-6">
+                            <span class="icon is-large has-text-grey-lighter mb-3" aria-hidden="true">
+                                <i class="fa-2x fa-solid fa-inbox"></i>
+                            </span>
+                            <p class="has-text-weight-medium">Загублених речей ще немає</p>
+                        </td>
+                    </tr>
+                    </tbody>
                 </table>
-            </td>
-        </tr>
-        <tr th:if="${matches.empty}">
-            <td colspan="2" class="empty">Загублених речей ще немає</td>
-        </tr>
-        </tbody>
-    </table>
+            </div>
+        </div>
 
-    <nav th:replace="~{fragments/layout :: pager(${matches}, '/admin/matches')}"></nav>
+        <nav th:replace="~{fragments/layout :: pager(${matches}, '/admin/matches')}"></nav>
+    </div>
 </main>
+
+<th:block th:each="row : ${matches.content}">
+    <th:block th:replace="~{fragments/dialogs :: dialogs('lost', ${row.lost}, '/admin/lost-items', 'LOST_ITEM')}"></th:block>
+    <th:block th:each="candidate : ${row.candidates}">
+        <th:block th:replace="~{fragments/dialogs :: dialogs('found', ${candidate.found}, '/admin/found-items', 'FOUND_ITEM')}"></th:block>
+    </th:block>
+</th:block>
 
 </body>
 </html>

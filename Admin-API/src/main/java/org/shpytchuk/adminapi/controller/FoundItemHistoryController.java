@@ -2,12 +2,12 @@ package org.shpytchuk.adminapi.controller;
 
 import jakarta.validation.Valid;
 import org.shpytchuk.adminapi.config.AdminProperties;
-import org.shpytchuk.adminapi.entity.items.FoundItem;
+import org.shpytchuk.adminapi.entity.items.FoundItemHistory;
 import org.shpytchuk.adminapi.form.ItemForm;
 import org.shpytchuk.adminapi.security.Action;
 import org.shpytchuk.adminapi.security.RequirePermission;
 import org.shpytchuk.adminapi.security.Scope;
-import org.shpytchuk.adminapi.service.FoundItemAdminService;
+import org.shpytchuk.adminapi.service.FoundItemHistoryAdminService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,33 +20,33 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping(FoundItemController.BASE_PATH)
-public class FoundItemController extends ItemController<FoundItem> {
+@RequestMapping(FoundItemHistoryController.BASE_PATH)
+public class FoundItemHistoryController extends ItemController<FoundItemHistory> {
 
-    static final String BASE_PATH = "/admin/found-items";
-    private static final String TITLE = "Знайдені речі";
+    static final String BASE_PATH = "/admin/found-items-history";
+    private static final String TITLE = "Архів знайдених речей";
 
-    public FoundItemController(FoundItemAdminService service, ItemModel itemModel, AdminProperties properties) {
-        super(service, itemModel, properties, Scope.FOUND_ITEM, BASE_PATH, TITLE);
+    public FoundItemHistoryController(FoundItemHistoryAdminService service, ItemModel itemModel, AdminProperties properties) {
+        super(service, itemModel, properties, Scope.FOUND_ITEM_HISTORY, BASE_PATH, TITLE);
     }
 
     @Override
     @GetMapping
-    @RequirePermission(scope = Scope.FOUND_ITEM, action = Action.VIEW)
+    @RequirePermission(scope = Scope.FOUND_ITEM_HISTORY, action = Action.VIEW)
     public String list(@RequestParam(defaultValue = "0") int page, Model model) {
         return super.list(page, model);
     }
 
     @Override
     @GetMapping("/new")
-    @RequirePermission(scope = Scope.FOUND_ITEM, action = Action.CREATE)
+    @RequirePermission(scope = Scope.FOUND_ITEM_HISTORY, action = Action.CREATE)
     public String createForm(Model model) {
         return super.createForm(model);
     }
 
     @Override
     @PostMapping
-    @RequirePermission(scope = Scope.FOUND_ITEM, action = Action.CREATE)
+    @RequirePermission(scope = Scope.FOUND_ITEM_HISTORY, action = Action.CREATE)
     public String create(@Valid @ModelAttribute("form") ItemForm form,
                          BindingResult binding,
                          Model model,
@@ -56,14 +56,14 @@ public class FoundItemController extends ItemController<FoundItem> {
 
     @Override
     @GetMapping("/{id}/edit")
-    @RequirePermission(scope = Scope.FOUND_ITEM, action = Action.EDIT)
+    @RequirePermission(scope = Scope.FOUND_ITEM_HISTORY, action = Action.EDIT)
     public String editForm(@PathVariable Long id, Model model) {
         return super.editForm(id, model);
     }
 
     @Override
     @PostMapping("/{id}")
-    @RequirePermission(scope = Scope.FOUND_ITEM, action = Action.EDIT)
+    @RequirePermission(scope = Scope.FOUND_ITEM_HISTORY, action = Action.EDIT)
     public String update(@PathVariable Long id,
                          @Valid @ModelAttribute("form") ItemForm form,
                          BindingResult binding,
@@ -74,7 +74,7 @@ public class FoundItemController extends ItemController<FoundItem> {
 
     @Override
     @PostMapping("/{id}/delete")
-    @RequirePermission(scope = Scope.FOUND_ITEM, action = Action.DELETE)
+    @RequirePermission(scope = Scope.FOUND_ITEM_HISTORY, action = Action.DELETE)
     public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         return super.delete(id, redirectAttributes);
     }

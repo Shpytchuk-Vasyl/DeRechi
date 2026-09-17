@@ -1,12 +1,21 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html class="has-navbar-fixed-top" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head('Не знайдено')}"></head>
-<body>
+<body class="is-flex is-flex-direction-column">
 <header th:replace="~{fragments/layout :: nav}"></header>
-<main>
-    <h1>404 — не знайдено</h1>
-    <p th:text="${message}">Запису не існує.</p>
-    <a th:href="@{/admin/matches}">На головну</a>
+<main class="section is-flex-grow-1">
+    <div class="container is-max-desktop">
+        <div class="notification is-danger is-light">
+            <h1 class="title is-4">
+                <span class="icon is-large" aria-hidden="true"><i class="fa-2x fa-solid fa-magnifying-glass"></i></span>
+                <span>404 — не знайдено</span>
+            </h1>
+            <p class="mb-4" th:text="${message}">Запису не існує.</p>
+            <a class="button is-light" th:href="@{/admin/matches}">
+                <span class="icon" aria-hidden="true"><i class="fa-solid fa-compass"></i></span><span>На головну</span>
+            </a>
+        </div>
+    </div>
 </main>
 </body>
 </html>

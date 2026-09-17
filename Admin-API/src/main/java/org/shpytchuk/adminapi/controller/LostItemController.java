@@ -1,8 +1,8 @@
 package org.shpytchuk.adminapi.controller;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import org.shpytchuk.adminapi.config.AdminProperties;
+import org.shpytchuk.adminapi.entity.items.LostItem;
 import org.shpytchuk.adminapi.form.ItemForm;
 import org.shpytchuk.adminapi.security.Action;
 import org.shpytchuk.adminapi.security.RequirePermission;
@@ -21,59 +21,47 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping(LostItemController.BASE_PATH)
-@AllArgsConstructor
-public class LostItemController {
+public class LostItemController extends ItemController<LostItem> {
 
     static final String BASE_PATH = "/admin/lost-items";
     private static final String TITLE = "Загублені речі";
 
-    private final LostItemAdminService service;
-    private final ItemModel itemModel;
-    private final AdminProperties properties;
+    public LostItemController(LostItemAdminService service, ItemModel itemModel, AdminProperties properties) {
+        super(service, itemModel, properties, Scope.LOST_ITEM, BASE_PATH, TITLE);
+    }
 
+    @Override
     @GetMapping
     @RequirePermission(scope = Scope.LOST_ITEM, action = Action.VIEW)
     public String list(@RequestParam(defaultValue = "0") int page, Model model) {
-        describe(model);
-        model.addAttribute("items", service.page(page, properties.pageSize()));
-        return "items/list";
+        return super.list(page, model);
     }
 
+    @Override
     @GetMapping("/new")
     @RequirePermission(scope = Scope.LOST_ITEM, action = Action.CREATE)
     public String createForm(Model model) {
-        describe(model);
-        itemModel.forForm(model, true);
-        model.addAttribute("form", new ItemForm());
-        return "items/form";
+        return super.createForm(model);
     }
 
+    @Override
     @PostMapping
     @RequirePermission(scope = Scope.LOST_ITEM, action = Action.CREATE)
     public String create(@Valid @ModelAttribute("form") ItemForm form,
                          BindingResult binding,
                          Model model,
                          RedirectAttributes redirectAttributes) {
-        if (binding.hasErrors()) {
-            describe(model);
-            itemModel.forForm(model, true);
-            return "items/form";
-        }
-
-        Long id = service.create(form).getId();
-        redirectAttributes.addFlashAttribute("message", "Загублену річ #%d створено.".formatted(id));
-        return "redirect:" + BASE_PATH;
+        return super.create(form, binding, model, redirectAttributes);
     }
 
+    @Override
     @GetMapping("/{id}/edit")
     @RequirePermission(scope = Scope.LOST_ITEM, action = Action.EDIT)
     public String editForm(@PathVariable Long id, Model model) {
-        describe(model);
-        itemModel.forForm(model, false);
-        model.addAttribute("form", service.form(id));
-        return "items/form";
+        return super.editForm(id, model);
     }
 
+    @Override
     @PostMapping("/{id}")
     @RequirePermission(scope = Scope.LOST_ITEM, action = Action.EDIT)
     public String update(@PathVariable Long id,
@@ -81,26 +69,13 @@ public class LostItemController {
                          BindingResult binding,
                          Model model,
                          RedirectAttributes redirectAttributes) {
-        if (binding.hasErrors()) {
-            describe(model);
-            itemModel.forForm(model, false);
-            return "items/form";
-        }
-
-        service.update(id, form);
-        redirectAttributes.addFlashAttribute("message", "Загублену річ #%d оновлено.".formatted(id));
-        return "redirect:" + BASE_PATH;
+        return super.update(id, form, binding, model, redirectAttributes);
     }
 
+    @Override
     @PostMapping("/{id}/delete")
     @RequirePermission(scope = Scope.LOST_ITEM, action = Action.DELETE)
     public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        service.delete(id);
-        redirectAttributes.addFlashAttribute("message", "Загублену річ #%d видалено.".formatted(id));
-        return "redirect:" + BASE_PATH;
-    }
-
-    private void describe(Model model) {
-        itemModel.describe(model, Scope.LOST_ITEM, BASE_PATH, TITLE);
+        return super.delete(id, redirectAttributes);
     }
 }

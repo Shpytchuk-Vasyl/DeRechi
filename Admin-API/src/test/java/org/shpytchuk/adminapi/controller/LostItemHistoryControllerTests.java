@@ -3,21 +3,16 @@ package org.shpytchuk.adminapi.controller;
 import org.junit.jupiter.api.Test;
 import org.shpytchuk.adminapi.config.GlobalExceptionHandler;
 import org.shpytchuk.adminapi.config.SecurityConfig;
-import org.shpytchuk.adminapi.entity.items.LostItem;
+import org.shpytchuk.adminapi.entity.items.LostItemHistory;
 import org.shpytchuk.adminapi.security.Action;
 import org.shpytchuk.adminapi.security.Permissions;
 import org.shpytchuk.adminapi.security.Scope;
 import org.shpytchuk.adminapi.repository.ThingCategoryRepository;
-import org.shpytchuk.adminapi.service.LostItemAdminService;
+import org.shpytchuk.adminapi.service.LostItemHistoryAdminService;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.shpytchuk.adminapi.view.ItemView;
-
-import java.time.LocalDate;
-import java.util.List;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
@@ -37,26 +32,22 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-@WebMvcTest(value = LostItemController.class,
+@WebMvcTest(value = LostItemHistoryController.class,
         properties = {"derechi.admin.client-id=derechi-admin", "derechi.admin.page-size=20",
                 "derechi.notifications.exchange=derechi.notifications",
                 "derechi.notifications.routing-key=notification.match.found"})
 @Import({SecurityConfig.class, GlobalModelAdvice.class, GlobalExceptionHandler.class, ItemModel.class,
-        LostItemControllerTests.TestClients.class})
-class LostItemControllerTests {
+        LostItemHistoryControllerTests.TestClients.class})
+class LostItemHistoryControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockitoBean
-    private LostItemAdminService service;
+    private LostItemHistoryAdminService service;
 
     @MockitoBean
     private ThingCategoryRepository categoryRepository;
@@ -65,55 +56,17 @@ class LostItemControllerTests {
     void showsTheTableToAnAdminWithViewPermission() throws Exception {
         when(service.page(anyInt(), anyInt())).thenReturn(Page.empty());
 
-        mockMvc.perform(get("/admin/lost-items").with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.VIEW))))
+        mockMvc.perform(get("/admin/lost-items-history").with(oidcLogin().authorities(authority(Scope.LOST_ITEM_HISTORY, Action.VIEW))))
                 .andExpect(status().isOk())
                 .andExpect(view().name("items/list"));
     }
 
     @Test
-    void rendersThumbnailAndDialogTriggersForEachRow() throws Exception {
-        when(service.page(anyInt(), anyInt())).thenReturn(new PageImpl<>(List.of(itemView())));
-
-        mockMvc.perform(get("/admin/lost-items").with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.VIEW))))
-                .andExpect(status().isOk())
-                .andExpect(content().string(allOf(
-                        containsString("command=\"show-modal\""),
-                        containsString("commandfor=\"item-7\""),
-                        containsString("commandfor=\"photo-item-7\""),
-                        containsString("command=\"close\""),
-                        containsString("<dialog class=\"app-dialog\" closedby=\"any\" id=\"item-7\">"),
-                        containsString("<dialog class=\"photo-dialog\" closedby=\"any\" id=\"photo-item-7\">"),
-                        containsString("class=\"thumb-img\""))));
-    }
-
-    @Test
-    void fallsBackToThePlaceholderWhenAnItemHasNoImage() throws Exception {
-        when(service.page(anyInt(), anyInt())).thenReturn(new PageImpl<>(List.of(itemViewWithoutImage())));
-
-        mockMvc.perform(get("/admin/lost-items").with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.VIEW))))
-                .andExpect(status().isOk())
-                .andExpect(content().string(allOf(
-                        containsString("thumb image is-48x48"),
-                        not(containsString("thumb-img")),
-                        not(containsString("commandfor=\"photo-item-7\"")),
-                        not(containsString("photo-dialog")))));
-    }
-
-    private static ItemView itemView() {
-        return new ItemView(7L, "Rukzak", "Opys", LocalDate.of(2026, 1, 2), 500,
-                "https://example.test/photo.jpg", "BAG", "Park", 49.8, 24.0,
-                "+380671234567", "a@b.test", List.of());
-    }
-
-    private static ItemView itemViewWithoutImage() {
-        return new ItemView(7L, "Rukzak", null, LocalDate.of(2026, 1, 2), null,
-                null, "BAG", "Park", 49.8, 24.0,
-                "+380671234567", "a@b.test", List.of());
-    }
-
-    @Test
-    void hidesTheTableFromAnAdminWithoutViewPermission() throws Exception {
-        mockMvc.perform(get("/admin/lost-items").with(oidcLogin().authorities(authority(Scope.FOUND_ITEM, Action.VIEW))))
+    void hidesTheArchiveFromAPlainAdmin() throws Exception {
+        mockMvc.perform(get("/admin/lost-items-history").with(oidcLogin().authorities(
+                        authority(Scope.LOST_ITEM, Action.VIEW),
+                        authority(Scope.LOST_ITEM, Action.EDIT),
+                        authority(Scope.FOUND_ITEM, Action.VIEW))))
                 .andExpect(status().isForbidden());
 
         verify(service, never()).page(anyInt(), anyInt());
@@ -121,14 +74,14 @@ class LostItemControllerTests {
 
     @Test
     void deletesOnlyWithDeletePermission() throws Exception {
-        mockMvc.perform(post("/admin/lost-items/7/delete")
-                        .with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.EDIT)))
+        mockMvc.perform(post("/admin/lost-items-history/7/delete")
+                        .with(oidcLogin().authorities(authority(Scope.LOST_ITEM_HISTORY, Action.EDIT)))
                         .with(csrf()))
                 .andExpect(status().isForbidden());
         verify(service, never()).delete(anyLong());
 
-        mockMvc.perform(post("/admin/lost-items/7/delete")
-                        .with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.DELETE)))
+        mockMvc.perform(post("/admin/lost-items-history/7/delete")
+                        .with(oidcLogin().authorities(authority(Scope.LOST_ITEM_HISTORY, Action.DELETE)))
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection());
         verify(service).delete(7L);
@@ -138,15 +91,15 @@ class LostItemControllerTests {
     void createsOnlyWithCreatePermission() throws Exception {
         when(service.create(org.mockito.ArgumentMatchers.any())).thenReturn(lostItem());
 
-        mockMvc.perform(post("/admin/lost-items")
-                        .with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.VIEW)))
+        mockMvc.perform(post("/admin/lost-items-history")
+                        .with(oidcLogin().authorities(authority(Scope.LOST_ITEM_HISTORY, Action.VIEW)))
                         .with(csrf())
                         .param("title", "Рюкзак"))
                 .andExpect(status().isForbidden());
     }
 
-    private static LostItem lostItem() {
-        LostItem item = new LostItem();
+    private static LostItemHistory lostItem() {
+        LostItemHistory item = new LostItemHistory();
         item.setId(7L);
         return item;
     }

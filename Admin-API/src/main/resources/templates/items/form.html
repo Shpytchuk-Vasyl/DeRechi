@@ -1,86 +1,181 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html class="has-navbar-fixed-top" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head(${title})}"></head>
-<body>
+<body class="is-flex is-flex-direction-column">
 
 <header th:replace="~{fragments/layout :: nav}"></header>
 
-<main>
-    <h1 th:text="${creating} ? ${title} + ': нова' : ${title} + ': #' + ${form.id}">Форма</h1>
+<main class="section pt-5 is-flex-grow-1">
+    <div class="container is-max-desktop">
 
-    <form class="form"
-          th:object="${form}"
-          th:action="${creating} ? @{${basePath}} : @{${basePath} + '/' + ${form.id}}"
-          method="post">
+        <nav class="breadcrumb is-small" aria-label="breadcrumbs">
+            <ul>
+                <li><a th:href="@{${basePath}}" th:text="${title}">Речі</a></li>
+                <li class="is-active">
+                    <a aria-current="page"
+                       th:text="${creating} ? 'нова' : '#' + ${form.id}">нова</a>
+                </li>
+            </ul>
+        </nav>
 
-        <div th:if="${#fields.hasErrors('*')}" class="errors">
-            <p th:each="error : ${#fields.errors('*')}" th:text="${error}">помилка</p>
-        </div>
+        <h1 class="title is-4"
+            th:text="${creating} ? ${title} + ': нова' : ${title} + ': #' + ${form.id}">Форма</h1>
 
-        <label>Назва
-            <input type="text" th:field="*{title}" required maxlength="100">
-        </label>
+        <form th:object="${form}"
+              th:action="${creating} ? @{${basePath}} : @{${basePath} + '/' + ${form.id}}"
+              method="post">
 
-        <label>Опис
-            <textarea th:field="*{description}" maxlength="250"></textarea>
-        </label>
-
-        <label>Зображення (шлях)
-            <input type="text" th:field="*{image}" maxlength="200">
-        </label>
-
-        <label>Дата
-            <input type="date" th:field="*{date}" required>
-        </label>
-
-        <label>Винагорода
-            <input type="number" th:field="*{compensation}" min="0">
-        </label>
-
-        <label>Категорія
-            <select th:field="*{categoryId}" required>
-                <option th:each="category : ${categories}"
-                        th:value="${category.id}" th:text="${category.key}">OTHER</option>
-            </select>
-        </label>
-
-        <fieldset>
-            <legend>Місце</legend>
-            <label>Google place id
-                <input type="text" th:field="*{placeId}" required maxlength="255">
-            </label>
-            <label>Назва місця
-                <input type="text" th:field="*{placeName}" required maxlength="100">
-            </label>
-            <label>Широта
-                <input type="number" step="any" th:field="*{lat}" required>
-            </label>
-            <label>Довгота
-                <input type="number" step="any" th:field="*{lon}" required>
-            </label>
-        </fieldset>
-
-        <fieldset>
-            <legend>Контакти</legend>
-            <label>Телефон
-                <input type="text" th:field="*{phone}" required placeholder="+380671234567">
-            </label>
-            <label>Email
-                <input type="email" th:field="*{email}" required maxlength="50">
-            </label>
-            <div class="checkboxes">
-                <label th:each="social : ${allSocialMedias}">
-                    <input type="checkbox" th:field="*{socialMedias}" th:value="${social}">
-                    <span th:text="${social}">TELEGRAM</span>
-                </label>
+            <div th:if="${#fields.hasErrors('*')}" class="notification is-danger is-light">
+                <p class="has-text-weight-semibold">
+                    <span aria-hidden="true"><i class="fa-solid fa-triangle-exclamation"></i></span> Перевір форму
+                </p>
+                <p th:each="error : ${#fields.errors('*')}" th:text="${error}">помилка</p>
             </div>
-        </fieldset>
 
-        <div class="actions">
-            <button type="submit" th:text="${creating} ? 'Створити' : 'Зберегти'">Зберегти</button>
-            <a th:href="@{${basePath}}">Скасувати</a>
-        </div>
-    </form>
+            <div class="box">
+                <div class="field">
+                    <label class="label">Назва</label>
+                    <div class="control">
+                        <input class="input" th:classappend="${#fields.hasErrors('title')} ? 'is-danger'"
+                               type="text" th:field="*{title}" required maxlength="100">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">Опис</label>
+                    <div class="control">
+                        <textarea class="textarea" rows="3" th:field="*{description}" maxlength="250"></textarea>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-image"></i></span>Зображення (шлях)</label>
+                    <div class="control">
+                        <input class="input" type="text" th:field="*{image}" maxlength="200">
+                    </div>
+                </div>
+
+                <div class="columns">
+                    <div class="column">
+                        <div class="field">
+                            <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-calendar-days"></i></span>Дата</label>
+                            <div class="control">
+                                <input class="input" type="date" th:field="*{date}" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="field">
+                            <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-coins"></i></span>Винагорода</label>
+                            <div class="control">
+                                <input class="input" type="number" th:field="*{compensation}" min="0">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="field">
+                            <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-tag"></i></span>Категорія</label>
+                            <div class="control">
+                                <div class="select is-fullwidth">
+                                    <select th:field="*{categoryId}" required>
+                                        <option th:each="category : ${categories}"
+                                                th:value="${category.id}" th:text="${category.key}">OTHER</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box">
+                <h2 class="title is-6"><span aria-hidden="true"><i class="fa-solid fa-location-dot"></i></span> Місце</h2>
+
+                <div class="field">
+                    <label class="label">Google place id</label>
+                    <div class="control">
+                        <input class="input" type="text" th:field="*{placeId}" required maxlength="255">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">Назва місця</label>
+                    <div class="control">
+                        <input class="input" type="text" th:field="*{placeName}" required maxlength="100">
+                    </div>
+                </div>
+
+                <div class="columns">
+                    <div class="column">
+                        <div class="field">
+                            <label class="label">Широта</label>
+                            <div class="control">
+                                <input class="input" type="number" step="any" th:field="*{lat}" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="field">
+                            <label class="label">Довгота</label>
+                            <div class="control">
+                                <input class="input" type="number" step="any" th:field="*{lon}" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box">
+                <h2 class="title is-6"><span aria-hidden="true"><i class="fa-solid fa-address-card"></i></span> Контакти</h2>
+
+                <div class="columns">
+                    <div class="column">
+                        <div class="field">
+                            <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-phone"></i></span>Телефон</label>
+                            <div class="control">
+                                <input class="input" type="text" th:field="*{phone}" required
+                                       placeholder="+380671234567">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="field">
+                            <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-envelope"></i></span>Email</label>
+                            <div class="control">
+                                <input class="input" type="email" th:field="*{email}" required maxlength="50">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-comments"></i></span>Соцмережі</label>
+                    <div class="control">
+                        <label class="checkbox mr-4" th:each="social : ${allSocialMedias}">
+                            <input type="checkbox" th:field="*{socialMedias}" th:value="${social}">
+                            <span th:text="${social}">TELEGRAM</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field is-grouped">
+                <div class="control">
+                    <button type="submit" class="button is-primary">
+                        <span class="icon" aria-hidden="true">
+                            <i class="fa-solid" th:classappend="${creating} ? 'fa-plus' : 'fa-floppy-disk'"></i>
+                        </span>
+                        <span th:text="${creating} ? 'Створити' : 'Зберегти'">Зберегти</span>
+                    </button>
+                </div>
+                <div class="control">
+                    <a class="button is-light" th:href="@{${basePath}}">
+                        <span class="icon" aria-hidden="true"><i class="fa-solid fa-xmark"></i></span><span>Скасувати</span>
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
 </main>
 
 </body>

@@ -1,4 +1,4 @@
-package org.shpytchuk.adminapi.entity;
+package org.shpytchuk.adminapi.entity.items;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

@@ -5,13 +5,13 @@ import org.junit.jupiter.api.Test;
 import org.shpytchuk.adminapi.config.NotificationProperties;
 import org.shpytchuk.adminapi.entity.ContactInfo;
 import org.shpytchuk.adminapi.entity.ContactInfo.SocialMediaEnum;
-import org.shpytchuk.adminapi.entity.FoundItem;
-import org.shpytchuk.adminapi.entity.LostItem;
+import org.shpytchuk.adminapi.entity.items.FoundItem;
+import org.shpytchuk.adminapi.entity.items.LostItem;
 import org.shpytchuk.adminapi.entity.Place;
-import org.shpytchuk.adminapi.entity.SimilarItem;
+import org.shpytchuk.adminapi.entity.items.SimilarItem;
 import org.shpytchuk.adminapi.event.NotificationRequestedEvent;
 import org.shpytchuk.adminapi.exception.NotFoundException;
-import org.shpytchuk.adminapi.repository.SimilarItemRepository;
+import org.shpytchuk.adminapi.repository.items.SimilarItemRepository;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import java.time.Instant;

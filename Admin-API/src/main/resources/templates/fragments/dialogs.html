@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+
+<th:block th:fragment="thumb(prefix, item, size)">
+    <button type="button" class="thumb image" th:classappend="${size}" th:if="${item.image}"
+            command="show-modal" th:commandfor="'photo-' + ${prefix} + '-' + ${item.id}"
+            th:attr="aria-label='Відкрити зображення: ' + ${item.title}">
+        <img class="thumb-img" th:src="${item.image}" th:alt="${item.title}">
+        <span class="thumb-fallback icon has-text-grey-light is-hidden" aria-hidden="true">
+            <i class="fa-solid fa-image"></i>
+        </span>
+    </button>
+    <span class="thumb image" th:classappend="${size}" th:unless="${item.image}" aria-hidden="true">
+        <span class="icon has-text-grey-light"><i class="fa-solid fa-image"></i></span>
+    </span>
+</th:block>
+
+<button th:fragment="trigger(prefix, item)" type="button" class="button is-ghost p-0 has-text-weight-bold"
+        command="show-modal" th:commandfor="${prefix} + '-' + ${item.id}"
+        th:text="${item.title}">Назва</button>
+
+<th:block th:fragment="dialogs(prefix, item, editBase, scope)">
+
+    <dialog class="app-dialog" closedby="any" th:id="${prefix} + '-' + ${item.id}">
+        <div class="card" tabindex="-1" autofocus>
+            <header class="card-header">
+                <div class="card-header-title is-block">
+                    <p class="title is-5 mb-2" th:text="${item.title}">Назва</p>
+                    <div class="tags mb-0">
+                        <span class="tag is-light is-rounded" th:text="'#' + ${item.id}">#1</span>
+                        <span class="tag is-info is-light is-rounded" th:text="${item.categoryKey}">OTHER</span>
+                        <span class="tag is-success is-light is-rounded"
+                              th:if="${item.compensation != null and item.compensation > 0}"
+                              th:text="'Винагорода ' + ${#numbers.formatInteger(item.compensation, 1, 'WHITESPACE')} + ' ₴'">
+                            Винагорода</span>
+                    </div>
+                </div>
+                <button class="card-header-icon" type="button" aria-label="Закрити"
+                        command="close" th:commandfor="${prefix} + '-' + ${item.id}">
+                    <span class="icon has-text-grey"><i class="fa-solid fa-xmark"></i></span>
+                </button>
+            </header>
+
+            <div class="card-content">
+                <div class="media">
+                    <div class="media-left">
+                        <th:block th:replace="~{fragments/dialogs :: thumb(${prefix}, ${item}, 'is-96x96')}"></th:block>
+                    </div>
+
+                    <div class="media-content">
+                        <div class="columns is-multiline is-mobile mb-0">
+                            <div class="column is-half py-2">
+                                <p class="is-size-7 is-uppercase has-text-weight-semibold has-text-grey">Дата</p>
+                                <p class="numeric" th:text="${item.date}">2026-01-01</p>
+                            </div>
+
+                            <div class="column is-half py-2">
+                                <p class="is-size-7 is-uppercase has-text-weight-semibold has-text-grey">Місце</p>
+                                <p>
+                                    <span th:text="${item.placeName}">Парк</span>
+                                    <a class="is-size-7 ml-1" target="_blank" rel="noopener"
+                                       th:if="${item.lat != null and item.lon != null}"
+                                       th:href="'https://www.google.com/maps/search/?api=1&query=' + ${item.lat} + ',' + ${item.lon}">
+                                        на карті
+                                    </a>
+                                </p>
+                            </div>
+
+                            <div class="column is-half py-2">
+                                <p class="is-size-7 is-uppercase has-text-weight-semibold has-text-grey">Телефон</p>
+                                <p class="numeric" th:text="${item.phone}">+380</p>
+                            </div>
+
+                            <div class="column is-half py-2">
+                                <p class="is-size-7 is-uppercase has-text-weight-semibold has-text-grey">Email</p>
+                                <p th:text="${item.email}">mail</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="has-text-grey mt-4" th:if="${item.description}" th:text="${item.description}">опис</p>
+
+                <div class="tags mt-4 mb-0" th:if="${!item.socialMedias.isEmpty()}">
+                    <span class="tag is-light" th:each="social : ${item.socialMedias}"
+                          th:text="${social}">TELEGRAM</span>
+                </div>
+            </div>
+
+            <footer class="card-footer">
+                <a class="card-footer-item"
+                   th:if="${editBase != null and perms.can(scope, 'EDIT')}"
+                   th:href="@{${editBase} + '/' + ${item.id} + '/edit'}">
+                    <span class="icon" aria-hidden="true"><i class="fa-solid fa-pen"></i></span>
+                    <span class="ml-2">Редагувати</span>
+                </a>
+                <button class="card-footer-item" type="button"
+                        command="close" th:commandfor="${prefix} + '-' + ${item.id}">Закрити</button>
+            </footer>
+        </div>
+    </dialog>
+
+    <dialog class="photo-dialog" closedby="any" th:if="${item.image}"
+            th:id="'photo-' + ${prefix} + '-' + ${item.id}">
+        <button class="delete is-large" type="button" aria-label="Закрити"
+                command="close" th:commandfor="'photo-' + ${prefix} + '-' + ${item.id}"></button>
+        <button type="button" class="photo-dialog-image" tabindex="-1" aria-hidden="true"
+                command="close" th:commandfor="'photo-' + ${prefix} + '-' + ${item.id}">
+            <img th:src="${item.image}" th:alt="${item.title}">
+        </button>
+    </dialog>
+
+</th:block>
+
+</body>
+</html>

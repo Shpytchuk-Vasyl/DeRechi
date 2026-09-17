@@ -1,6 +1,6 @@
-package org.shpytchuk.adminapi.repository;
+package org.shpytchuk.adminapi.repository.items;
 
-import org.shpytchuk.adminapi.entity.SimilarItem;
+import org.shpytchuk.adminapi.entity.items.SimilarItem;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

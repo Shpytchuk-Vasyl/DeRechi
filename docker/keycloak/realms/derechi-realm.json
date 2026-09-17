@@ -55,14 +55,16 @@
       },
       {
         "name": "ADMIN_SUPER",
-        "description": "Адмінка: повний доступ, включно з видаленням",
+        "description": "Адмінка: повний доступ, включно з видаленням та архівом",
         "composite": true,
         "composites": {
           "realm": ["ADMIN", "ADMIN_EDITOR"],
           "client": {
             "derechi-admin": [
               "LOST_ITEM:DELETE",
-              "FOUND_ITEM:DELETE"
+              "FOUND_ITEM:DELETE",
+              "LOST_ITEM_HISTORY:VIEW",
+              "FOUND_ITEM_HISTORY:VIEW"
             ]
           }
         }
@@ -79,7 +81,15 @@
         { "name": "FOUND_ITEM:VIEW", "description": "Перегляд знайдених речей" },
         { "name": "FOUND_ITEM:CREATE", "description": "Створення знайденої речі" },
         { "name": "FOUND_ITEM:EDIT", "description": "Редагування знайденої речі" },
-        { "name": "FOUND_ITEM:DELETE", "description": "Видалення знайденої речі" }
+        { "name": "FOUND_ITEM:DELETE", "description": "Видалення знайденої речі" },
+        { "name": "LOST_ITEM_HISTORY:VIEW", "description": "Перегляд архіву загублених речей" },
+        { "name": "LOST_ITEM_HISTORY:CREATE", "description": "Створення запису в архіві загублених речей" },
+        { "name": "LOST_ITEM_HISTORY:EDIT", "description": "Редагування запису в архіві загублених речей" },
+        { "name": "LOST_ITEM_HISTORY:DELETE", "description": "Видалення запису з архіву загублених речей" },
+        { "name": "FOUND_ITEM_HISTORY:VIEW", "description": "Перегляд архіву знайдених речей" },
+        { "name": "FOUND_ITEM_HISTORY:CREATE", "description": "Створення запису в архіві знайдених речей" },
+        { "name": "FOUND_ITEM_HISTORY:EDIT", "description": "Редагування запису в архіві знайдених речей" },
+        { "name": "FOUND_ITEM_HISTORY:DELETE", "description": "Видалення запису з архіву знайдених речей" }
       ]
     }
   },
