@@ -9,12 +9,12 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.QueryTimeoutException;
 import org.springframework.http.HttpStatus;
-import org.springframework.transaction.TransactionTimedOutException;
-import org.springframework.web.ErrorResponse;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.TransactionTimedOutException;
 import org.springframework.ui.Model;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -92,6 +92,8 @@ public class GlobalExceptionHandler {
     private static void describeAdmin(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         model.addAttribute("perms", AdminPermissions.of(authentication));
+        model.addAttribute("languages", LocaleConfig.SUPPORTED);
+        model.addAttribute("currentLanguage", LocaleConfig.current());
         model.addAttribute("currentUser", authentication == null ? null : authentication.getName());
     }
 }

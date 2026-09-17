@@ -2,6 +2,10 @@ package org.shpytchuk.adminapi.controller;
 
 import org.junit.jupiter.api.Test;
 import org.shpytchuk.adminapi.config.GlobalExceptionHandler;
+import org.shpytchuk.adminapi.config.MapsConfig;
+import org.shpytchuk.adminapi.view.Formats;
+import org.shpytchuk.adminapi.view.Plurals;
+import org.shpytchuk.adminapi.view.SocialMediaIcons;
 import org.shpytchuk.adminapi.config.SecurityConfig;
 import org.shpytchuk.adminapi.entity.items.LostItemHistory;
 import org.shpytchuk.adminapi.security.Action;
@@ -38,8 +42,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = LostItemHistoryController.class,
         properties = {"derechi.admin.client-id=derechi-admin", "derechi.admin.page-size=20",
                 "derechi.notifications.exchange=derechi.notifications",
-                "derechi.notifications.routing-key=notification.match.found"})
-@Import({SecurityConfig.class, GlobalModelAdvice.class, GlobalExceptionHandler.class, ItemModel.class,
+                "derechi.notifications.routing-key=notification.match.found",
+                "derechi.maps.api-key="})
+@Import({SecurityConfig.class, MapsConfig.class, GlobalModelAdvice.class, GlobalExceptionHandler.class, ItemModel.class,
+        Formats.class, Plurals.class, SocialMediaIcons.class,
         LostItemHistoryControllerTests.TestClients.class})
 class LostItemHistoryControllerTests {
 
@@ -79,6 +85,8 @@ class LostItemHistoryControllerTests {
                         .with(csrf()))
                 .andExpect(status().isForbidden());
         verify(service, never()).delete(anyLong());
+
+        when(service.scopeKey()).thenReturn("LOST_ITEM_HISTORY");
 
         mockMvc.perform(post("/admin/lost-items-history/7/delete")
                         .with(oidcLogin().authorities(authority(Scope.LOST_ITEM_HISTORY, Action.DELETE)))

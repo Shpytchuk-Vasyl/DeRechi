@@ -1,6 +1,7 @@
 package org.shpytchuk.adminapi.config;
 
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -22,6 +23,14 @@ public class LocaleConfig implements WebMvcConfigurer {
             Locale.of("de", "DE"), Locale.of("fr", "FR"));
 
     public static final String LANGUAGE_PARAM = "lang";
+
+    public static Locale current() {
+        String language = LocaleContextHolder.getLocale().getLanguage();
+        return SUPPORTED.stream()
+                .filter(supported -> supported.getLanguage().equals(language))
+                .findFirst()
+                .orElse(SUPPORTED.getFirst());
+    }
 
     @Bean
     public LocaleResolver localeResolver() {

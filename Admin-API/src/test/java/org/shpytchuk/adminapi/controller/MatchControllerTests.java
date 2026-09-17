@@ -2,6 +2,10 @@ package org.shpytchuk.adminapi.controller;
 
 import org.junit.jupiter.api.Test;
 import org.shpytchuk.adminapi.config.GlobalExceptionHandler;
+import org.shpytchuk.adminapi.config.MapsConfig;
+import org.shpytchuk.adminapi.view.Formats;
+import org.shpytchuk.adminapi.view.Plurals;
+import org.shpytchuk.adminapi.view.SocialMediaIcons;
 import org.shpytchuk.adminapi.config.SecurityConfig;
 import org.shpytchuk.adminapi.repository.ThingCategoryRepository;
 import org.shpytchuk.adminapi.security.Action;
@@ -44,8 +48,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = MatchController.class,
         properties = {"derechi.admin.client-id=derechi-admin", "derechi.admin.page-size=20",
                 "derechi.notifications.exchange=derechi.notifications",
-                "derechi.notifications.routing-key=notification.match.found"})
-@Import({SecurityConfig.class, GlobalModelAdvice.class, GlobalExceptionHandler.class, ItemModel.class,
+                "derechi.notifications.routing-key=notification.match.found",
+                "derechi.maps.api-key="})
+@Import({SecurityConfig.class, MapsConfig.class, GlobalModelAdvice.class, GlobalExceptionHandler.class, ItemModel.class,
+        Formats.class, Plurals.class, SocialMediaIcons.class,
         MatchControllerTests.TestClients.class})
 class MatchControllerTests {
 
@@ -61,10 +67,6 @@ class MatchControllerTests {
     @MockitoBean
     private ThingCategoryRepository categoryRepository;
 
-    /**
-     * Загублена і знайдена речі можуть мати однаковий id, тому фрагмент діалогу отримує
-     * префікс простору імен — інакше обидві картки на сторінці мали б один id.
-     */
     @Test
     void rendersSeparateDialogsForLostAndFoundItemsWithTheSameId() throws Exception {
         when(matchService.page(any(), any())).thenReturn(new PageImpl<>(List.of(

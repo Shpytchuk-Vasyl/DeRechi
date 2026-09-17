@@ -17,6 +17,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
+
 @CachedPage
 public abstract class ItemController<T extends Thing> {
 
@@ -60,7 +62,10 @@ public abstract class ItemController<T extends Thing> {
     protected String createForm(Model model) {
         describe(model);
         itemModel.forForm(model, true);
-        model.addAttribute("form", new ItemForm());
+
+        ItemForm form = new ItemForm();
+        form.setDate(LocalDate.now());
+        model.addAttribute("form", form);
         return FORM_VIEW;
     }
 

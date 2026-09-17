@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.shpytchuk.adminapi.entity.ContactInfo.SocialMediaEnum;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class ItemForm {
 
     @NotNull
     @PastOrPresent
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate date;
 
     @PositiveOrZero

@@ -27,129 +27,242 @@
 
             <div th:if="${#fields.hasErrors('*')}" class="notification is-danger is-light">
                 <p class="has-text-weight-semibold">
-                    <span aria-hidden="true"><i class="fa-solid fa-triangle-exclamation"></i></span> <span th:text="#{form.invalid}">Check the form</span>
+                    <span class="icon" aria-hidden="true"><i class="fa-solid fa-triangle-exclamation"></i></span>
+                    <span th:text="#{form.invalid}">Check the form</span>
                 </p>
-                <p th:each="error : ${#fields.errors('*')}" th:text="${error}">error</p>
+                <p th:each="error : ${#fields.globalErrors()}" th:text="${error}">error</p>
             </div>
 
             <div class="box">
+                <h2 class="form-section-title title is-6">
+                    <span class="icon has-text-grey" aria-hidden="true"><i class="fa-solid fa-box-open"></i></span>
+                    <span th:text="#{form.section.item}">Item</span>
+                </h2>
+
                 <div class="field">
-                    <label class="label" th:text="#{field.title}">Title</label>
+                    <label class="label" for="title" th:text="#{field.title}">Title</label>
                     <div class="control">
-                        <input class="input" th:classappend="${#fields.hasErrors('title')} ? 'is-danger'"
-                               type="text" th:field="*{title}" required maxlength="100">
+                        <input class="input" type="text" id="title" th:field="*{title}" th:errorclass="is-danger"
+                               required maxlength="100" autocomplete="off" autofocus
+                               th:placeholder="#{placeholder.title}">
                     </div>
+                    <p class="help is-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">error</p>
                 </div>
 
                 <div class="field">
-                    <label class="label" th:text="#{field.description}">Description</label>
+                    <label class="label" for="description" th:text="#{field.description}">Description</label>
                     <div class="control">
-                        <textarea class="textarea" rows="3" th:field="*{description}" maxlength="250"></textarea>
+                        <textarea class="textarea" rows="3" id="description" th:field="*{description}"
+                                  th:errorclass="is-danger" maxlength="250" autocomplete="off"
+                                  th:placeholder="#{placeholder.description}"></textarea>
                     </div>
+                    <p class="help is-danger" th:if="${#fields.hasErrors('description')}"
+                       th:errors="*{description}">error</p>
                 </div>
 
                 <div class="field">
-                    <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-image"></i></span><span th:text="#{field.imagePath}">Image (path)</span></label>
+                    <label class="label" for="image">
+                        <span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-image"></i></span>
+                        <span th:text="#{field.imagePath}">Image (path)</span>
+                    </label>
                     <div class="control">
-                        <input class="input" type="text" th:field="*{image}" maxlength="200">
+                        <input class="input" type="text" id="image" th:field="*{image}" th:errorclass="is-danger"
+                               maxlength="200" autocomplete="off" inputmode="url"
+                               th:placeholder="#{placeholder.image}">
                     </div>
+                    <p class="help" th:text="#{form.image.hint}">Path or URL</p>
+                    <p class="help is-danger" th:if="${#fields.hasErrors('image')}" th:errors="*{image}">error</p>
                 </div>
 
                 <div class="columns">
                     <div class="column">
                         <div class="field">
-                            <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-calendar-days"></i></span><span th:text="#{field.date}">Date</span></label>
+                            <label class="label" for="date">
+                                <span class="icon has-text-grey mr-1" aria-hidden="true"><i
+                                        class="fa-solid fa-calendar-days"></i></span>
+                                <span th:text="#{field.date}">Date</span>
+                            </label>
                             <div class="control">
-                                <input class="input" type="date" th:field="*{date}" required>
+                                <input class="input" type="date" id="date" th:field="*{date}"
+                                       th:errorclass="is-danger" required autocomplete="off">
                             </div>
+                            <p class="help is-danger" th:if="${#fields.hasErrors('date')}"
+                               th:errors="*{date}">error</p>
                         </div>
                     </div>
                     <div class="column">
                         <div class="field">
-                            <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-coins"></i></span><span th:text="#{field.compensation}">Reward</span></label>
+                            <label class="label" for="compensation">
+                                <span class="icon has-text-grey mr-1" aria-hidden="true"><i
+                                        class="fa-solid fa-coins"></i></span>
+                                <span th:text="#{field.compensation}">Reward</span>
+                            </label>
                             <div class="control">
-                                <input class="input" type="number" th:field="*{compensation}" min="0">
+                                <input class="input" type="number" id="compensation" th:field="*{compensation}"
+                                       th:errorclass="is-danger" min="0" step="1" inputmode="numeric"
+                                       autocomplete="off" placeholder="0">
                             </div>
+                            <p class="help is-danger" th:if="${#fields.hasErrors('compensation')}"
+                               th:errors="*{compensation}">error</p>
                         </div>
                     </div>
                     <div class="column">
                         <div class="field">
-                            <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-tag"></i></span><span th:text="#{field.category}">Category</span></label>
+                            <label class="label" for="categoryId">
+                                <span class="icon has-text-grey mr-1" aria-hidden="true"><i
+                                        class="fa-solid fa-tag"></i></span>
+                                <span th:text="#{field.category}">Category</span>
+                            </label>
                             <div class="control">
                                 <div class="select is-fullwidth">
-                                    <select th:field="*{categoryId}" required>
+                                    <select id="categoryId" th:field="*{categoryId}" required>
                                         <option th:each="category : ${categories}"
-                                                th:value="${category.id}" th:text="#{category.__${category.key}__}">OTHER</option>
+                                                th:value="${category.id}"
+                                                th:text="#{category.__${category.key}__}">OTHER</option>
                                     </select>
                                 </div>
                             </div>
+                            <p class="help is-danger" th:if="${#fields.hasErrors('categoryId')}"
+                               th:errors="*{categoryId}">error</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="box">
-                <h2 class="title is-6"><span aria-hidden="true"><i class="fa-solid fa-location-dot"></i></span> <span th:text="#{field.place}">Place</span></h2>
+                <h2 class="form-section-title title is-6">
+                    <span class="icon has-text-grey" aria-hidden="true"><i
+                            class="fa-solid fa-location-dot"></i></span>
+                    <span th:text="#{field.place}">Place</span>
+                </h2>
 
-                <div class="field">
-                    <label class="label">Google place id</label>
-                    <div class="control">
-                        <input class="input" type="text" th:field="*{placeId}" required maxlength="255">
+                <!-- Поле навмисно без `name`: воно лише керує віджетом, а на сервер
+                     їдуть placeId/placeName/lat/lon, які той заповнює. -->
+                <div class="field" th:if="${maps.enabled}">
+                    <label class="label" for="place-search" th:text="#{form.place.search}">Find a place</label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="text" id="place-search" autocomplete="off"
+                               th:data-region="${maps.region}" th:placeholder="#{placeholder.placeSearch}">
+                        <span class="icon is-small is-left has-text-grey" aria-hidden="true">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </span>
                     </div>
+                    <p class="help" th:text="#{form.place.hint}">The fields below fill in automatically.</p>
+                    <p class="help has-text-weight-medium is-hidden" id="place-chosen"></p>
+                </div>
+
+                <div class="notification is-warning is-light py-2 px-3 mb-4" th:unless="${maps.enabled}">
+                    <span class="icon has-text-grey mr-1" aria-hidden="true"><i
+                            class="fa-solid fa-circle-info"></i></span>
+                    <span th:text="#{form.place.unavailable}">Place search is off</span>
                 </div>
 
                 <div class="field">
-                    <label class="label" th:text="#{field.placeName}">Place name</label>
+                    <label class="label" for="placeName" th:text="#{field.placeName}">Place name</label>
                     <div class="control">
-                        <input class="input" type="text" th:field="*{placeName}" required maxlength="100">
+                        <input class="input" type="text" id="placeName" th:field="*{placeName}"
+                               th:errorclass="is-danger" required maxlength="100" autocomplete="off"
+                               th:placeholder="#{placeholder.placeName}">
                     </div>
+                    <p class="help is-danger" th:if="${#fields.hasErrors('placeName')}"
+                       th:errors="*{placeName}">error</p>
                 </div>
 
-                <div class="columns">
-                    <div class="column">
-                        <div class="field">
-                            <label class="label" th:text="#{field.latitude}">Latitude</label>
-                            <div class="control">
-                                <input class="input" type="number" step="any" th:field="*{lat}" required>
+                <!-- Технічні поля: їх заповнює віджет, але без ключа (чи коли Google мовчить)
+                     місце має лишатися доступним вручну. `required` тут навмисно немає —
+                     браузер не вміє фокусувати порожнє поле всередині згорнутого <details>. -->
+                <details class="place-manual" id="place-manual"
+                         th:open="${!maps.enabled or #fields.hasErrors('placeId') or #fields.hasErrors('lat') or #fields.hasErrors('lon')}">
+                    <summary class="is-size-7 has-text-grey" th:text="#{form.place.manual}">Enter manually</summary>
+
+                    <div class="field mt-3">
+                        <label class="label" for="placeId" th:text="#{field.placeId}">Google place id</label>
+                        <div class="control">
+                            <input class="input" type="text" id="placeId" th:field="*{placeId}"
+                                   th:errorclass="is-danger" maxlength="255" autocomplete="off"
+                                   placeholder="ChIJ...">
+                        </div>
+                        <p class="help is-danger" th:if="${#fields.hasErrors('placeId')}"
+                           th:errors="*{placeId}">error</p>
+                    </div>
+
+                    <div class="columns">
+                        <div class="column">
+                            <div class="field">
+                                <label class="label" for="lat" th:text="#{field.latitude}">Latitude</label>
+                                <div class="control">
+                                    <input class="input numeric" type="number" step="any" id="lat" th:field="*{lat}"
+                                           th:errorclass="is-danger" min="-90" max="90" inputmode="decimal"
+                                           autocomplete="off" placeholder="50.4501">
+                                </div>
+                                <p class="help is-danger" th:if="${#fields.hasErrors('lat')}"
+                                   th:errors="*{lat}">error</p>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class="field">
+                                <label class="label" for="lon" th:text="#{field.longitude}">Longitude</label>
+                                <div class="control">
+                                    <input class="input numeric" type="number" step="any" id="lon" th:field="*{lon}"
+                                           th:errorclass="is-danger" min="-180" max="180" inputmode="decimal"
+                                           autocomplete="off" placeholder="30.5234">
+                                </div>
+                                <p class="help is-danger" th:if="${#fields.hasErrors('lon')}"
+                                   th:errors="*{lon}">error</p>
                             </div>
                         </div>
                     </div>
-                    <div class="column">
-                        <div class="field">
-                            <label class="label" th:text="#{field.longitude}">Longitude</label>
-                            <div class="control">
-                                <input class="input" type="number" step="any" th:field="*{lon}" required>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                </details>
             </div>
 
             <div class="box">
-                <h2 class="title is-6"><span aria-hidden="true"><i class="fa-solid fa-address-card"></i></span> <span th:text="#{field.contacts}">Contacts</span></h2>
+                <h2 class="form-section-title title is-6">
+                    <span class="icon has-text-grey" aria-hidden="true"><i
+                            class="fa-solid fa-address-card"></i></span>
+                    <span th:text="#{field.contacts}">Contacts</span>
+                </h2>
 
                 <div class="columns">
                     <div class="column">
                         <div class="field">
-                            <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-phone"></i></span><span th:text="#{field.phone}">Phone</span></label>
+                            <label class="label" for="phone">
+                                <span class="icon has-text-grey mr-1" aria-hidden="true"><i
+                                        class="fa-solid fa-phone"></i></span>
+                                <span th:text="#{field.phone}">Phone</span>
+                            </label>
                             <div class="control">
-                                <input class="input" type="text" th:field="*{phone}" required
+                                <input class="input numeric" type="tel" id="phone" th:field="*{phone}"
+                                       th:errorclass="is-danger" required autocomplete="tel" inputmode="tel"
                                        placeholder="+380671234567">
                             </div>
+                            <p class="help is-danger" th:if="${#fields.hasErrors('phone')}"
+                               th:errors="*{phone}">error</p>
                         </div>
                     </div>
                     <div class="column">
                         <div class="field">
-                            <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-envelope"></i></span>Email</label>
+                            <label class="label" for="email">
+                                <span class="icon has-text-grey mr-1" aria-hidden="true"><i
+                                        class="fa-solid fa-envelope"></i></span>
+                                <span>Email</span>
+                            </label>
                             <div class="control">
-                                <input class="input" type="email" th:field="*{email}" required maxlength="50">
+                                <input class="input" type="email" id="email" th:field="*{email}"
+                                       th:errorclass="is-danger" required maxlength="50" autocomplete="email"
+                                       inputmode="email" th:placeholder="#{placeholder.email}">
                             </div>
+                            <p class="help is-danger" th:if="${#fields.hasErrors('email')}"
+                               th:errors="*{email}">error</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="field">
-                    <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-comments"></i></span><span th:text="#{field.socialMedia}">Social media</span></label>
+                    <label class="label">
+                        <span class="icon has-text-grey mr-1" aria-hidden="true"><i
+                                class="fa-solid fa-comments"></i></span>
+                        <span th:text="#{field.socialMedia}">Social media</span>
+                    </label>
                     <div class="control">
                         <label class="checkbox mr-4" th:each="messenger : ${allSocialMedias}">
                             <input type="checkbox" th:field="*{socialMedias}" th:value="${messenger}">
@@ -173,13 +286,19 @@
                 </div>
                 <div class="control">
                     <a class="button is-light" th:href="@{${basePath}}">
-                        <span class="icon" aria-hidden="true"><i class="fa-solid fa-xmark"></i></span><span th:text="#{action.cancel}">Cancel</span>
+                        <span class="icon" aria-hidden="true"><i class="fa-solid fa-xmark"></i></span><span
+                            th:text="#{action.cancel}">Cancel</span>
                     </a>
                 </div>
             </div>
         </form>
     </div>
 </main>
+
+<th:block th:if="${maps.enabled}">
+    <script th:src="@{/js/place-autocomplete.js}"></script>
+    <script async th:src="${maps.scriptUrl}"></script>
+</th:block>
 
 </body>
 </html>

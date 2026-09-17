@@ -5,6 +5,7 @@ import org.shpytchuk.adminapi.entity.ContactInfo.SocialMediaEnum;
 import org.shpytchuk.adminapi.form.ItemFilter;
 import org.shpytchuk.adminapi.repository.ThingCategoryRepository;
 import org.shpytchuk.adminapi.security.Scope;
+import org.shpytchuk.adminapi.view.GoogleMaps;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 
@@ -13,6 +14,7 @@ import org.springframework.ui.Model;
 public class ItemModel {
 
     private final ThingCategoryRepository categoryRepository;
+    private final GoogleMaps maps;
 
 
     public void describe(Model model, Scope scope, String basePath, String titleKey) {
@@ -30,5 +32,6 @@ public class ItemModel {
         model.addAttribute("creating", creating);
         model.addAttribute("categories", categoryRepository.findAllByOrderByKeyAsc());
         model.addAttribute("allSocialMedias", SocialMediaEnum.values());
+        model.addAttribute("maps", maps);
     }
 }

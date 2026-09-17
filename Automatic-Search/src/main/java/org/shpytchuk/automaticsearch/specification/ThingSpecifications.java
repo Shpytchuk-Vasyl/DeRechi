@@ -18,7 +18,7 @@ public final class ThingSpecifications {
 
     private static final Period PERIOD = Period.ofDays(3);
 
-    private static final double RADIUS_METERS = 50_000;
+    private static final double RADIUS_METERS = 20_000;
 
     private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory(new PrecisionModel(), 4326);
 

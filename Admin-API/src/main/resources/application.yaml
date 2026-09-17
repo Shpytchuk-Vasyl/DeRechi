@@ -75,6 +75,9 @@ derechi:
   admin:
     client-id: derechi-admin
     page-size: 20
+  maps:
+    api-key: ${GOOGLE_MAPS_API_KEY:AIzaSyAEEnJ1r3fU7C33iy1slMkdA9mTOLnzzOk}
+    region: UA
   notifications:
     exchange: derechi.notifications
     routing-key: notification.match.found

@@ -3,6 +3,10 @@ package org.shpytchuk.adminapi.controller;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.shpytchuk.adminapi.config.GlobalExceptionHandler;
+import org.shpytchuk.adminapi.config.MapsConfig;
+import org.shpytchuk.adminapi.view.Formats;
+import org.shpytchuk.adminapi.view.Plurals;
+import org.shpytchuk.adminapi.view.SocialMediaIcons;
 import org.shpytchuk.adminapi.config.SecurityConfig;
 import org.shpytchuk.adminapi.entity.items.LostItem;
 import org.shpytchuk.adminapi.form.ItemFilter;
@@ -50,8 +54,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = LostItemController.class,
         properties = {"derechi.admin.client-id=derechi-admin", "derechi.admin.page-size=20",
                 "derechi.notifications.exchange=derechi.notifications",
-                "derechi.notifications.routing-key=notification.match.found"})
-@Import({SecurityConfig.class, GlobalModelAdvice.class, GlobalExceptionHandler.class, ItemModel.class,
+                "derechi.notifications.routing-key=notification.match.found",
+                "derechi.maps.api-key="})
+@Import({SecurityConfig.class, MapsConfig.class, GlobalModelAdvice.class, GlobalExceptionHandler.class, ItemModel.class,
+        Formats.class, Plurals.class, SocialMediaIcons.class,
         LostItemControllerTests.TestClients.class})
 class LostItemControllerTests {
 
@@ -172,11 +178,37 @@ class LostItemControllerTests {
                 .andExpect(status().isForbidden());
         verify(service, never()).delete(anyLong());
 
+        when(service.scopeKey()).thenReturn("LOST_ITEM");
+
         mockMvc.perform(post("/admin/lost-items/7/delete")
                         .with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.DELETE)))
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection());
         verify(service).delete(7L);
+    }
+
+    @Test
+    void rendersTheCreateFormWithPlaceholdersAndAutofillHints() throws Exception {
+        mockMvc.perform(get("/admin/lost-items/new")
+                        .with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.CREATE))))
+                .andExpect(status().isOk())
+                .andExpect(view().name("items/form"))
+                .andExpect(content().string(allOf(
+                        containsString("autocomplete=\"tel\""),
+                        containsString("autocomplete=\"email\""),
+                        containsString("placeholder=\"+380671234567\""))));
+    }
+
+
+    @Test
+    void offersManualPlaceFieldsWhenTheMapsKeyIsMissing() throws Exception {
+        mockMvc.perform(get("/admin/lost-items/new")
+                        .with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.CREATE))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(allOf(
+                        not(containsString("maps.googleapis.com")),
+                        containsString("id=\"place-manual\""),
+                        containsString("open"))));
     }
 
     @Test

@@ -187,6 +187,37 @@ button.card-footer-item {
     min-width: 0;
 }
 
+/* ---------- Forms ---------- */
+
+.form-section-title {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--bulma-border-weak);
+}
+
+.place-manual > summary {
+    cursor: pointer;
+    width: fit-content;
+    user-select: none;
+}
+
+.place-manual > summary:hover {
+    color: var(--bulma-link);
+}
+
+.pac-container {
+    font-family: var(--bulma-family-primary);
+    border: 1px solid var(--bulma-border-weak);
+    border-radius: var(--bulma-radius-small);
+}
+
+.pac-item {
+    padding: 0.2rem 0.75rem;
+    cursor: pointer;
+}
+
 /* ---------- Messengers ---------- */
 
 .phone-line {
