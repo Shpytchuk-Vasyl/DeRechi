@@ -5,6 +5,8 @@ import org.shpytchuk.adminapi.exception.NotFoundException;
 import org.shpytchuk.adminapi.security.AdminPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.QueryTimeoutException;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.TransactionTimedOutException;
@@ -22,11 +24,18 @@ public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    private final MessageSource messages;
+
+    public GlobalExceptionHandler(MessageSource messages) {
+        this.messages = messages;
+    }
+
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String notFound(NotFoundException exception, Model model) {
         describeAdmin(model);
-        model.addAttribute("message", exception.getMessage());
+        model.addAttribute("message", text("error.notFound",
+                text(exception.getEntityKey()), exception.getId()));
         return "error/404";
     }
 
@@ -35,7 +44,7 @@ public class GlobalExceptionHandler {
     public String accessDenied(AccessDeniedException exception, Model model) {
         log.debug("Відмова в доступі", exception);
         describeAdmin(model);
-        model.addAttribute("message", "Для цієї дії бракує прав.");
+        model.addAttribute("message", text("error.forbidden"));
         return "error/403";
     }
 
@@ -49,14 +58,14 @@ public class GlobalExceptionHandler {
             log.warn("Таймаут при обробці запиту", exception);
             response.setStatus(HttpStatus.REQUEST_TIMEOUT.value());
             describeAdmin(model);
-            model.addAttribute("message", "Запит виконувався надто довго і був перерваний.");
+            model.addAttribute("message", text("error.timeout"));
             return "error/408";
         }
 
         log.error("Необроблена помилка", exception);
         response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         describeAdmin(model);
-        model.addAttribute("message", "Щось пішло не так. Спробуй ще раз або звернись до розробників.");
+        model.addAttribute("message", text("error.unexpected"));
         return "error/500";
     }
 
@@ -74,6 +83,10 @@ public class GlobalExceptionHandler {
             }
         }
         return false;
+    }
+
+    private String text(String key, Object... args) {
+        return messages.getMessage(key, args, LocaleContextHolder.getLocale());
     }
 
     private static void describeAdmin(Model model) {

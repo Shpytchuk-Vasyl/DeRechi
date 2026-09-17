@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<form th:fragment="bar(filter, categories, basePath, sort)"
+      class="box filters mb-4" method="get" th:action="@{${basePath}}">
+    <!-- Форма шле GET, тож без цього поля застосування фільтра скидало б сортування. -->
+    <input type="hidden" name="sort" th:if="${sort}" th:value="${sort}">
+
+    <div class="columns is-variable is-2 is-multiline is-align-items-flex-end">
+        <div class="column is-12-tablet is-4-desktop">
+            <div class="field mb-0">
+                <label class="label is-size-7 has-text-grey" for="filter-q" th:text="#{filter.search}">Search</label>
+                <div class="control has-icons-left">
+                    <input class="input" type="search" id="filter-q" name="q" maxlength="255"
+                           th:value="${filter.q}" th:placeholder="#{filter.searchHint}">
+                    <span class="icon is-small is-left" aria-hidden="true">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="column is-6-tablet is-3-desktop">
+            <div class="field mb-0">
+                <label class="label is-size-7 has-text-grey" for="filter-category" th:text="#{filter.category}">Category</label>
+                <div class="control">
+                    <div class="select is-fullwidth">
+                        <select id="filter-category" name="categoryId">
+                            <option value="" th:text="#{filter.allCategories}">All categories</option>
+                            <option th:each="category : ${categories}"
+                                    th:value="${category.id}"
+                                    th:selected="${filter.categoryId != null and filter.categoryId == category.id}"
+                                    th:text="#{category.__${category.key}__}">OTHER
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="column is-3-tablet is-2-desktop">
+            <div class="field mb-0">
+                <label class="label is-size-7 has-text-grey" for="filter-from" th:text="#{filter.dateFrom}">Date from</label>
+                <div class="control">
+                    <input class="input" type="date" id="filter-from" name="from" th:value="${filter.from}">
+                </div>
+            </div>
+        </div>
+
+        <div class="column is-3-tablet is-2-desktop">
+            <div class="field mb-0">
+                <label class="label is-size-7 has-text-grey" for="filter-to" th:text="#{filter.dateTo}">Date to</label>
+                <div class="control">
+                    <input class="input" type="date" id="filter-to" name="to" th:value="${filter.to}">
+                </div>
+            </div>
+        </div>
+
+        <div class="column is-narrow">
+            <div class="field is-grouped mb-0">
+                <div class="control">
+                    <button type="submit" class="button is-link"
+                            th:title="#{action.apply}" th:aria-label="#{action.apply}">
+                        <span class="icon" aria-hidden="true"><i class="fa-solid fa-filter"></i></span>
+                    </button>
+                </div>
+                <div class="control" th:if="${filter.active()}">
+                    <a class="button is-light" th:href="@{${basePath}}"
+                       th:title="#{action.reset}" th:aria-label="#{action.reset}">
+                        <span class="icon" aria-hidden="true"><i class="fa-solid fa-xmark"></i></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<th:block th:fragment="hidden(filter)">
+    <input type="hidden" name="q" th:if="${filter.q}" th:value="${filter.q}">
+    <input type="hidden" name="categoryId" th:if="${filter.categoryId}" th:value="${filter.categoryId}">
+    <input type="hidden" name="from" th:if="${filter.from}" th:value="${filter.from}">
+    <input type="hidden" name="to" th:if="${filter.to}" th:value="${filter.to}">
+</th:block>
+
+</body>
+</html>

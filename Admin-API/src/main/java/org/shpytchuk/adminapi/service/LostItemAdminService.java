@@ -26,7 +26,7 @@ public class LostItemAdminService extends AdminItemService<LostItem> {
                                 SimilarItemRepository similarItemRepository,
                                 LostItemHistoryRepository historyRepository) {
         super(repository, categoryRepository, placeRepository, contactInfoRepository,
-                LostItem::new, "Загублену річ");
+                LostItem::new, "LOST_ITEM");
         this.similarItemRepository = similarItemRepository;
         this.historyRepository = historyRepository;
     }

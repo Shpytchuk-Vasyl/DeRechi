@@ -9,7 +9,8 @@ class ReferenceControllerTests extends AbstractGraphQlTests {
         tester.document("{ categories { id key } }")
                 .execute()
                 .path("categories[*].key").entityList(String.class)
-                .contains("DOCUMENTS", "WALLET", "MACHINERY", "JEWELRY", "ANIMALS", "OTHER");
+                .contains("DOCUMENTS", "WALLET", "ELECTRONICS", "JEWELRY", "ANIMALS", "OTHER",
+                        "KEYS", "BAGS", "CLOTHING");
     }
 
     @Test

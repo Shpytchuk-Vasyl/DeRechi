@@ -8,7 +8,9 @@ import org.shpytchuk.adminapi.security.Scope;
 import org.shpytchuk.adminapi.service.AdminItemService;
 import org.shpytchuk.adminapi.view.ItemView;
 import org.shpytchuk.adminapi.view.Pager;
-import org.shpytchuk.adminapi.view.Plural;
+import org.shpytchuk.adminapi.view.SortView;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.ui.Model;
@@ -23,28 +25,34 @@ public abstract class ItemController<T extends Thing> {
 
     private final AdminItemService<T> service;
     private final ItemModel itemModel;
+    private final MessageSource messages;
     private final Scope scope;
     private final String basePath;
-    private final String title;
+    private final String titleKey;
 
     protected ItemController(AdminItemService<T> service,
                              ItemModel itemModel,
+                             MessageSource messages,
                              Scope scope,
                              String basePath,
-                             String title) {
+                             String titleKey) {
         this.service = service;
         this.itemModel = itemModel;
+        this.messages = messages;
         this.scope = scope;
         this.basePath = basePath;
-        this.title = title;
+        this.titleKey = titleKey;
     }
 
     protected String list(Pageable pageable, ItemFilter filter, Model model) {
         describe(model);
         Page<ItemView> items = service.page(pageable, filter);
         model.addAttribute("items", items);
-        model.addAttribute("itemsLabel", Plural.records(items.getTotalElements()));
         model.addAttribute("pages", Pager.of(items));
+
+        SortView sort = SortView.of(items.getSort());
+        model.addAttribute("sort", sort);
+        model.addAttribute("sortQuery", sort.queryString());
         itemModel.forFilter(model, filter);
         return LIST_VIEW;
     }
@@ -67,7 +75,7 @@ public abstract class ItemController<T extends Thing> {
         }
 
         Long id = service.create(form).getId();
-        return redirectWithMessage(redirectAttributes, id, "створено");
+        return redirectWithMessage(redirectAttributes, id, "created");
     }
 
     protected String editForm(Long id, Model model) {
@@ -89,26 +97,27 @@ public abstract class ItemController<T extends Thing> {
         }
 
         service.update(id, form);
-        return redirectWithMessage(redirectAttributes, id, "оновлено");
+        return redirectWithMessage(redirectAttributes, id, "updated");
     }
 
     protected String archive(Long id, RedirectAttributes redirectAttributes) {
         service.archive(id);
-        return redirectWithMessage(redirectAttributes, id, "заархівовано");
+        return redirectWithMessage(redirectAttributes, id, "archived");
     }
 
     protected String delete(Long id, RedirectAttributes redirectAttributes) {
         service.delete(id);
-        return redirectWithMessage(redirectAttributes, id, "видалено");
+        return redirectWithMessage(redirectAttributes, id, "deleted");
     }
 
     private void describe(Model model) {
-        itemModel.describe(model, scope, basePath, title);
+        itemModel.describe(model, scope, basePath, titleKey);
     }
 
     private String redirectWithMessage(RedirectAttributes redirectAttributes, Long id, String action) {
+        String key = "flash.%s.%s".formatted(service.scopeKey().toLowerCase(), action);
         redirectAttributes.addFlashAttribute("message",
-                "%s #%d %s.".formatted(service.entityName(), id, action));
+                messages.getMessage(key, new Object[]{id}, LocaleContextHolder.getLocale()));
         return "redirect:" + basePath;
     }
 }

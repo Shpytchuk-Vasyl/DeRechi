@@ -58,7 +58,7 @@ public class ItemForm {
     private Double lon;
 
     @NotBlank
-    @Pattern(regexp = "^\\+[1-9]\\d{7,14}$", message = "Телефон у форматі +380671234567")
+    @Pattern(regexp = "^\\+[1-9]\\d{7,14}$", message = "{validation.phone}")
     private String phone;
 
     @NotBlank

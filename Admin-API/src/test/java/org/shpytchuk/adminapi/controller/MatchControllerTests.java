@@ -3,6 +3,7 @@ package org.shpytchuk.adminapi.controller;
 import org.junit.jupiter.api.Test;
 import org.shpytchuk.adminapi.config.GlobalExceptionHandler;
 import org.shpytchuk.adminapi.config.SecurityConfig;
+import org.shpytchuk.adminapi.repository.ThingCategoryRepository;
 import org.shpytchuk.adminapi.security.Action;
 import org.shpytchuk.adminapi.security.Permissions;
 import org.shpytchuk.adminapi.security.Scope;
@@ -44,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         properties = {"derechi.admin.client-id=derechi-admin", "derechi.admin.page-size=20",
                 "derechi.notifications.exchange=derechi.notifications",
                 "derechi.notifications.routing-key=notification.match.found"})
-@Import({SecurityConfig.class, GlobalModelAdvice.class, GlobalExceptionHandler.class,
+@Import({SecurityConfig.class, GlobalModelAdvice.class, GlobalExceptionHandler.class, ItemModel.class,
         MatchControllerTests.TestClients.class})
 class MatchControllerTests {
 
@@ -57,15 +58,18 @@ class MatchControllerTests {
     @MockitoBean
     private MatchNotificationService notificationService;
 
+    @MockitoBean
+    private ThingCategoryRepository categoryRepository;
+
     /**
      * Загублена і знайдена речі можуть мати однаковий id, тому фрагмент діалогу отримує
      * префікс простору імен — інакше обидві картки на сторінці мали б один id.
      */
     @Test
     void rendersSeparateDialogsForLostAndFoundItemsWithTheSameId() throws Exception {
-        when(matchService.page(any())).thenReturn(new PageImpl<>(List.of(
+        when(matchService.page(any(), any())).thenReturn(new PageImpl<>(List.of(
                 new MatchRow(item(3L, "Lost"), List.of(
-                        new CandidateView(item(3L, "Found"), 0.94, null, null))))));
+                        new CandidateView(item(3L, "Found"), 0.94, null, null)), 1))));
 
         mockMvc.perform(get("/admin/matches")
                         .with(oidcLogin().authorities(authority(Scope.MATCH, Action.VIEW))))

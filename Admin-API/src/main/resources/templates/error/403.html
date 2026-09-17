@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('Немає доступу')}"></head>
+<head th:replace="~{fragments/layout :: head(#{error.403.head})}"></head>
 <body class="is-flex is-flex-direction-column">
 <header th:replace="~{fragments/layout :: navbar}"></header>
 <main class="section is-flex-grow-1">
@@ -8,11 +8,11 @@
         <div class="notification is-warning is-light">
             <h1 class="title is-4">
                 <span class="icon is-large" aria-hidden="true"><i class="fa-2x fa-solid fa-lock"></i></span>
-                <span>403 — немає доступу</span>
+                <span th:text="#{error.403.title}">403</span>
             </h1>
-            <p class="mb-4" th:text="${message}">Для цієї дії бракує прав.</p>
+            <p class="mb-4" th:text="${message}">error</p>
             <a class="button is-light" th:href="@{/admin/matches}">
-                <span class="icon" aria-hidden="true"><i class="fa-solid fa-compass"></i></span><span>На головну</span>
+                <span class="icon" aria-hidden="true"><i class="fa-solid fa-compass"></i></span><span th:text="#{action.home}">Home</span>
             </a>
         </div>
     </div>

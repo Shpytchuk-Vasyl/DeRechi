@@ -26,7 +26,7 @@ public class FoundItemAdminService extends AdminItemService<FoundItem> {
                                  SimilarItemRepository similarItemRepository,
                                 FoundItemHistoryRepository historyRepository) {
         super(repository, categoryRepository, placeRepository, contactInfoRepository,
-                FoundItem::new, "Знайдену річ");
+                FoundItem::new, "FOUND_ITEM");
         this.similarItemRepository = similarItemRepository;
         this.historyRepository = historyRepository;
     }

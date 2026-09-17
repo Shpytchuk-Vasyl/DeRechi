@@ -1,6 +1,7 @@
 package org.shpytchuk.adminapi.repository.items;
 
 import org.shpytchuk.adminapi.entity.items.SimilarItem;
+import org.shpytchuk.adminapi.view.CandidateCount;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -16,7 +17,28 @@ import java.util.Optional;
 public interface SimilarItemRepository extends JpaRepository<SimilarItem, SimilarItem.SimilarItemId> {
 
     @EntityGraph(attributePaths = {"foundItem", "foundItem.info", "foundItem.place", "foundItem.category"})
-    List<SimilarItem> findByLostItemIdInOrderByMatchOrderDesc(Collection<Long> lostItemIds);
+    @Query("""
+            select s from SimilarItem s
+            where s.id.lostItemId in :lostItemIds
+              and (select count(o) from SimilarItem o
+                   where o.id.lostItemId = s.id.lostItemId
+                     and (o.matchOrder > s.matchOrder
+                          or (o.matchOrder = s.matchOrder and o.id.foundItemId < s.id.foundItemId))) < :limit
+            order by s.id.lostItemId, s.matchOrder desc, s.id.foundItemId
+            """)
+    List<SimilarItem> findTopByLostItemIdIn(@Param("lostItemIds") Collection<Long> lostItemIds,
+                                            @Param("limit") long limit);
+
+    @Query("""
+            select new org.shpytchuk.adminapi.view.CandidateCount(s.id.lostItemId, count(s))
+            from SimilarItem s
+            where s.id.lostItemId in :lostItemIds
+            group by s.id.lostItemId
+            """)
+    List<CandidateCount> countByLostItemIdIn(@Param("lostItemIds") Collection<Long> lostItemIds);
+
+    @EntityGraph(attributePaths = {"foundItem", "foundItem.info", "foundItem.place", "foundItem.category"})
+    List<SimilarItem> findByLostItemIdOrderByMatchOrderDescFoundItemIdAsc(@Param("lostItemId") Long lostItemId);
 
     @Override
     @EntityGraph(attributePaths = {

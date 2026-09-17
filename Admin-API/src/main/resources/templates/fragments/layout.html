@@ -3,7 +3,7 @@
 <head th:fragment="head(pageTitle)">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title th:text="'DeRechi · ' + ${pageTitle}">DeRechi</title>
+    <title th:text="#{app.title(${pageTitle})}">DeRechi</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet"
@@ -12,19 +12,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
           integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
           crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@7.5.0/css/flag-icons.min.css">
     <link rel="stylesheet" th:href="@{/css/admin.css}">
     <script defer th:src="@{/js/admin.js}"></script>
 </head>
 <body>
 
 <header th:fragment="navbar">
-    <nav class="navbar is-fixed-top is-spaced" role="navigation" aria-label="main navigation">
+    <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
         <div class="container is-fluid">
             <div class="navbar-brand">
                 <a class="navbar-item has-text-weight-semibold" th:href="@{/admin/matches}">
                     <span class="icon-text">
                         <span class="icon has-text-grey" aria-hidden="true"><i class="fa-solid fa-compass"></i></span>
-                        <span>DeRechi</span>
+                        <span th:text="#{app.name}">DeRechi</span>
                     </span>
                 </a>
                 <a role="button" class="navbar-burger" data-target="admin-menu"
@@ -39,46 +40,74 @@
                 <div class="navbar-start">
                     <a class="navbar-item" th:if="${perms.can('MATCH', 'VIEW')}"
                        th:href="@{/admin/matches}">
-                        <span class="icon has-text-grey" aria-hidden="true"><i class="fa-solid fa-link"></i></span><span>Матчі</span>
+                        <span class="icon has-text-grey" aria-hidden="true"><i class="fa-solid fa-link"></i></span><span
+                            th:text="#{nav.matches}">Matches</span>
                     </a>
                     <a class="navbar-item" th:if="${perms.can('LOST_ITEM', 'VIEW')}"
                        th:href="@{/admin/lost-items}">
-                        <span class="icon has-text-grey" aria-hidden="true"><i class="fa-solid fa-circle-question"></i></span><span>Загублені</span>
+                        <span class="icon has-text-grey" aria-hidden="true"><i class="fa-solid fa-circle-question"></i></span><span
+                            th:text="#{nav.lostItems}">Lost</span>
                     </a>
                     <a class="navbar-item" th:if="${perms.can('FOUND_ITEM', 'VIEW')}"
                        th:href="@{/admin/found-items}">
-                        <span class="icon has-text-grey" aria-hidden="true"><i class="fa-solid fa-box-open"></i></span><span>Знайдені</span>
+                        <span class="icon has-text-grey" aria-hidden="true"><i
+                                class="fa-solid fa-box-open"></i></span><span th:text="#{nav.foundItems}">Found</span>
                     </a>
 
                     <div class="navbar-item has-dropdown is-hoverable"
                          th:if="${perms.can('LOST_ITEM_HISTORY', 'VIEW') or perms.can('FOUND_ITEM_HISTORY', 'VIEW')}">
                         <a class="navbar-link">
-                            <span class="icon has-text-grey" aria-hidden="true"><i class="fa-solid fa-box-archive"></i></span><span>Архів</span>
+                            <span class="icon has-text-grey" aria-hidden="true"><i class="fa-solid fa-box-archive"></i></span><span
+                                th:text="#{nav.archive}">Archive</span>
                         </a>
                         <div class="navbar-dropdown">
                             <a class="navbar-item" th:if="${perms.can('LOST_ITEM_HISTORY', 'VIEW')}"
                                th:href="@{/admin/lost-items-history}">
-                                <span class="icon has-text-grey" aria-hidden="true"><i class="fa-solid fa-circle-question"></i></span><span>Архів загублених</span>
+                                <span class="icon has-text-grey" aria-hidden="true"><i
+                                        class="fa-solid fa-circle-question"></i></span><span
+                                    th:text="#{nav.lostItemsArchive}">Lost archive</span>
                             </a>
                             <a class="navbar-item" th:if="${perms.can('FOUND_ITEM_HISTORY', 'VIEW')}"
                                th:href="@{/admin/found-items-history}">
-                                <span class="icon has-text-grey" aria-hidden="true"><i class="fa-solid fa-box-open"></i></span><span>Архів знайдених</span>
+                                <span class="icon has-text-grey" aria-hidden="true"><i class="fa-solid fa-box-open"></i></span><span
+                                    th:text="#{nav.foundItemsArchive}">Found archive</span>
                             </a>
                         </div>
                     </div>
                 </div>
 
                 <div class="navbar-end">
+
+
                     <div class="navbar-item">
-                        <span class="icon-text has-text-grey">
-                            <span class="icon has-text-grey" aria-hidden="true"><i class="fa-solid fa-user"></i></span>
-                            <span class="tag is-rounded" th:text="${currentUser}">admin</span>
-                        </span>
+                        <span class="tag is-rounded" th:text="${currentUser}">admin</span>
+                         <div class="dropdown languages-menu">
+                            <button type="button" class="button is-light is-small languages-trigger"
+                                    popovertarget="languages"
+                                    th:title="${currentLanguage.getDisplayLanguage(currentLanguage)}"
+                                    th:aria-label="${currentLanguage.getDisplayLanguage(currentLanguage)}">
+                                <span class="fi"
+                                      th:classappend="'fi-' + ${#strings.toLowerCase(currentLanguage.country)}"></span>
+                                <span class="icon is-small" aria-hidden="true"><i
+                                        class="fa-solid fa-angle-down"></i></span>
+                            </button>
+
+                            <div class="dropdown-content languages" popover id="languages">
+                                <a class="dropdown-item" th:each="language : ${languages}"
+                                   th:classappend="${language.language == currentLanguage.language} ? 'is-active'"
+                                   th:href="@{''(lang=${language.language})}">
+                                    <span class="fi"
+                                          th:classappend="'fi-' + ${#strings.toLowerCase(language.country)}"></span>
+                                    <span th:text="${language.getDisplayLanguage(language)}">English</span>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                     <div class="navbar-item">
                         <form th:action="@{/logout}" method="post">
                             <button type="submit" class="button is-light is-small">
-                                <span class="icon has-text-grey" aria-hidden="true"><i class="fa-solid fa-right-from-bracket"></i></span><span>Вийти</span>
+                                <span class="icon has-text-grey" aria-hidden="true"><i
+                                        class="fa-solid fa-right-from-bracket"></i></span><span th:text="#{nav.logout}">Sign out</span>
                             </button>
                         </form>
                     </div>
@@ -97,31 +126,31 @@
 
 <div th:fragment="pager(pages, basePath, query)">
     <nav class="pagination is-centered mt-5" th:if="${pages != null and pages.visible()}"
-         role="navigation" aria-label="Сторінки">
+         role="navigation" th:aria-label="#{pager.label}">
         <a class="pagination-previous" th:if="${pages.hasPrevious()}"
            th:href="@{${basePath}(page=${pages.previous()})} + ${query}">
             <span class="icon is-small" aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
-            <span>Назад</span>
+            <span th:text="#{pager.previous}">Previous</span>
         </a>
         <span class="pagination-previous" th:unless="${pages.hasPrevious()}" disabled>
             <span class="icon is-small" aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
-            <span>Назад</span>
+            <span th:text="#{pager.previous}">Previous</span>
         </span>
 
         <a class="pagination-next" th:if="${pages.hasNext()}"
            th:href="@{${basePath}(page=${pages.next()})} + ${query}">
-            <span>Далі</span>
+            <span th:text="#{pager.next}">Next</span>
             <span class="icon is-small" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
         </a>
         <span class="pagination-next" th:unless="${pages.hasNext()}" disabled>
-            <span>Далі</span>
+            <span th:text="#{pager.next}">Next</span>
             <span class="icon is-small" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
         </span>
 
         <ul class="pagination-list">
             <li th:if="${pages.showsFirst()}">
                 <a class="pagination-link" th:href="@{${basePath}(page=0)} + ${query}"
-                   aria-label="Сторінка 1">1</a>
+                   th:aria-label="#{pager.page(1)}">1</a>
             </li>
             <li th:if="${pages.gapBefore()}">
                 <span class="pagination-ellipsis">&hellip;</span>
@@ -132,7 +161,7 @@
                    th:classappend="${number == pages.current()} ? 'is-current'"
                    th:href="@{${basePath}(page=${number})} + ${query}"
                    th:aria-current="${number == pages.current()} ? 'page' : null"
-                   th:aria-label="'Сторінка ' + ${number + 1}"
+                   th:aria-label="#{pager.page(${number + 1})}"
                    th:text="${number + 1}">1</a>
             </li>
 
@@ -141,7 +170,7 @@
             </li>
             <li th:if="${pages.showsLast()}">
                 <a class="pagination-link" th:href="@{${basePath}(page=${pages.last()})} + ${query}"
-                   th:aria-label="'Сторінка ' + ${pages.total()}"
+                   th:aria-label="#{pager.page(${pages.total()})}"
                    th:text="${pages.total()}">42</a>
             </li>
         </ul>

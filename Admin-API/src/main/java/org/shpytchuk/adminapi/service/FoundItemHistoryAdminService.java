@@ -17,7 +17,7 @@ public class FoundItemHistoryAdminService extends AdminItemService<FoundItemHist
                                        PlaceRepository placeRepository,
                                        ContactInfoRepository contactInfoRepository) {
         super(repository, categoryRepository, placeRepository, contactInfoRepository,
-                FoundItemHistoryAdminService::archived, "Архівну знайдену річ");
+                FoundItemHistoryAdminService::archived, "FOUND_ITEM_HISTORY");
     }
 
     @Override

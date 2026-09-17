@@ -6,7 +6,7 @@
 <th:block th:fragment="thumb(prefix, item, size)">
     <button type="button" class="thumb image" th:classappend="${size}" th:if="${item.image}"
             command="show-modal" th:commandfor="'photo-' + ${prefix} + '-' + ${item.id}"
-            th:attr="aria-label='Відкрити зображення: ' + ${item.title}">
+            th:aria-label="#{action.openImage(${item.title})}">
         <img class="thumb-img" th:src="${item.image}" th:alt="${item.title}">
         <span class="thumb-fallback icon has-text-grey-light is-hidden" aria-hidden="true">
             <i class="fa-solid fa-image"></i>
@@ -30,14 +30,14 @@
                     <p class="title is-5 mb-2" th:text="${item.title}">Назва</p>
                     <div class="tags mb-0">
                         <span class="tag is-light is-rounded" th:text="'#' + ${item.id}">#1</span>
-                        <span class="tag is-info is-light is-rounded" th:text="${item.categoryKey}">OTHER</span>
+                        <span class="tag is-info is-light is-rounded" th:text="#{category.__${item.categoryKey}__}">OTHER</span>
                         <span class="tag is-success is-light is-rounded"
                               th:if="${item.compensation != null and item.compensation > 0}"
-                              th:text="'Винагорода ' + ${#numbers.formatInteger(item.compensation, 1, 'WHITESPACE')} + ' ₴'">
-                            Винагорода</span>
+                              th:text="#{form.compensationHint(${fmt.money(item.compensation)})}">
+                            Reward</span>
                     </div>
                 </div>
-                <button class="card-header-icon" type="button" aria-label="Закрити"
+                <button class="card-header-icon" type="button" th:aria-label="#{action.close}"
                         command="close" th:commandfor="${prefix} + '-' + ${item.id}">
                     <span class="icon has-text-grey"><i class="fa-solid fa-xmark"></i></span>
                 </button>
@@ -52,29 +52,29 @@
                     <div class="media-content">
                         <div class="columns is-multiline is-mobile mb-0">
                             <div class="column is-half py-2">
-                                <p class="is-size-7 is-uppercase has-text-weight-semibold has-text-grey">Дата</p>
-                                <p class="numeric" th:text="${item.date}">2026-01-01</p>
+                                <p class="is-size-7 is-uppercase has-text-weight-semibold has-text-grey" th:text="#{field.date}">Date</p>
+                                <p class="numeric" th:text="${fmt.date(item.date)}">2026-01-01</p>
                             </div>
 
                             <div class="column is-half py-2">
-                                <p class="is-size-7 is-uppercase has-text-weight-semibold has-text-grey">Місце</p>
+                                <p class="is-size-7 is-uppercase has-text-weight-semibold has-text-grey" th:text="#{field.place}">Place</p>
                                 <p>
                                     <span th:text="${item.placeName}">Парк</span>
                                     <a class="is-size-7 ml-1" target="_blank" rel="noopener"
                                        th:if="${item.lat != null and item.lon != null}"
                                        th:href="'https://www.google.com/maps/search/?api=1&query=' + ${item.lat} + ',' + ${item.lon}">
-                                        на карті
+                                        <span th:text="#{field.onMap}">on the map</span>
                                     </a>
                                 </p>
                             </div>
 
                             <div class="column is-half py-2">
-                                <p class="is-size-7 is-uppercase has-text-weight-semibold has-text-grey">Телефон</p>
-                                <p class="numeric" th:text="${item.phone}">+380</p>
+                                <p class="is-size-7 is-uppercase has-text-weight-semibold has-text-grey" th:text="#{field.phone}">Phone</p>
+                                <p class="numeric" th:text="${fmt.phone(item.phone)}">+380</p>
                             </div>
 
                             <div class="column is-half py-2">
-                                <p class="is-size-7 is-uppercase has-text-weight-semibold has-text-grey">Email</p>
+                                <p class="is-size-7 is-uppercase has-text-weight-semibold has-text-grey" th:text="#{field.email}">Email</p>
                                 <p th:text="${item.email}">mail</p>
                             </div>
                         </div>
@@ -94,17 +94,17 @@
                    th:if="${editBase != null and perms.can(scope, 'EDIT')}"
                    th:href="@{${editBase} + '/' + ${item.id} + '/edit'}">
                     <span class="icon" aria-hidden="true"><i class="fa-solid fa-pen"></i></span>
-                    <span class="ml-2">Редагувати</span>
+                    <span class="ml-2" th:text="#{action.edit}">Edit</span>
                 </a>
                 <button class="card-footer-item" type="button"
-                        command="close" th:commandfor="${prefix} + '-' + ${item.id}">Закрити</button>
+                        command="close" th:commandfor="${prefix} + '-' + ${item.id}" th:text="#{action.close}">Close</button>
             </footer>
         </div>
     </dialog>
 
     <dialog class="photo-dialog" closedby="any" th:if="${item.image}"
             th:id="'photo-' + ${prefix} + '-' + ${item.id}">
-        <button class="delete is-large" type="button" aria-label="Закрити"
+        <button class="delete is-large" type="button" th:aria-label="#{action.close}"
                 command="close" th:commandfor="'photo-' + ${prefix} + '-' + ${item.id}"></button>
         <button type="button" class="photo-dialog-image" tabindex="-1" aria-hidden="true"
                 command="close" th:commandfor="'photo-' + ${prefix} + '-' + ${item.id}">

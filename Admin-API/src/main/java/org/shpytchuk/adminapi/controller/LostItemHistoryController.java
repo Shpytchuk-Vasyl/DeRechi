@@ -8,6 +8,7 @@ import org.shpytchuk.adminapi.security.Action;
 import org.shpytchuk.adminapi.security.RequirePermission;
 import org.shpytchuk.adminapi.security.Scope;
 import org.shpytchuk.adminapi.service.LostItemHistoryAdminService;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,10 +25,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class LostItemHistoryController extends ItemController<LostItemHistory> {
 
     static final String BASE_PATH = "/admin/lost-items-history";
-    private static final String TITLE = "Архів загублених речей";
+    private static final String TITLE_KEY = "page.lost_item_history";
 
-    public LostItemHistoryController(LostItemHistoryAdminService service, ItemModel itemModel) {
-        super(service, itemModel, Scope.LOST_ITEM_HISTORY, BASE_PATH, TITLE);
+    public LostItemHistoryController(LostItemHistoryAdminService service, ItemModel itemModel, MessageSource messages) {
+        super(service, itemModel, messages, Scope.LOST_ITEM_HISTORY, BASE_PATH, TITLE_KEY);
     }
 
     @Override

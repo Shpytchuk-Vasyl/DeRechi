@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head(${title})}"></head>
+<head th:replace="~{fragments/layout :: head(#{__${titleKey}__})}"></head>
 <body class="is-flex is-flex-direction-column">
 
 <header th:replace="~{fragments/layout :: navbar}"></header>
@@ -10,16 +10,16 @@
 
         <nav class="breadcrumb is-small" aria-label="breadcrumbs">
             <ul>
-                <li><a th:href="@{${basePath}}" th:text="${title}">Речі</a></li>
+                <li><a th:href="@{${basePath}}" th:text="#{__${titleKey}__}">Items</a></li>
                 <li class="is-active">
                     <a aria-current="page"
-                       th:text="${creating} ? 'нова' : '#' + ${form.id}">нова</a>
+                       th:text="${creating} ? #{form.new} : '#' + ${form.id}">new</a>
                 </li>
             </ul>
         </nav>
 
         <h1 class="title is-4"
-            th:text="${creating} ? ${title} + ': нова' : ${title} + ': #' + ${form.id}">Форма</h1>
+            th:text="#{__${titleKey}__} + ': ' + (${creating} ? #{form.new} : '#' + ${form.id})">Form</h1>
 
         <form th:object="${form}"
               th:action="${creating} ? @{${basePath}} : @{${basePath} + '/' + ${form.id}}"
@@ -27,14 +27,14 @@
 
             <div th:if="${#fields.hasErrors('*')}" class="notification is-danger is-light">
                 <p class="has-text-weight-semibold">
-                    <span aria-hidden="true"><i class="fa-solid fa-triangle-exclamation"></i></span> Перевір форму
+                    <span aria-hidden="true"><i class="fa-solid fa-triangle-exclamation"></i></span> <span th:text="#{form.invalid}">Check the form</span>
                 </p>
-                <p th:each="error : ${#fields.errors('*')}" th:text="${error}">помилка</p>
+                <p th:each="error : ${#fields.errors('*')}" th:text="${error}">error</p>
             </div>
 
             <div class="box">
                 <div class="field">
-                    <label class="label">Назва</label>
+                    <label class="label" th:text="#{field.title}">Title</label>
                     <div class="control">
                         <input class="input" th:classappend="${#fields.hasErrors('title')} ? 'is-danger'"
                                type="text" th:field="*{title}" required maxlength="100">
@@ -42,14 +42,14 @@
                 </div>
 
                 <div class="field">
-                    <label class="label">Опис</label>
+                    <label class="label" th:text="#{field.description}">Description</label>
                     <div class="control">
                         <textarea class="textarea" rows="3" th:field="*{description}" maxlength="250"></textarea>
                     </div>
                 </div>
 
                 <div class="field">
-                    <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-image"></i></span>Зображення (шлях)</label>
+                    <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-image"></i></span><span th:text="#{field.imagePath}">Image (path)</span></label>
                     <div class="control">
                         <input class="input" type="text" th:field="*{image}" maxlength="200">
                     </div>
@@ -58,7 +58,7 @@
                 <div class="columns">
                     <div class="column">
                         <div class="field">
-                            <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-calendar-days"></i></span>Дата</label>
+                            <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-calendar-days"></i></span><span th:text="#{field.date}">Date</span></label>
                             <div class="control">
                                 <input class="input" type="date" th:field="*{date}" required>
                             </div>
@@ -66,7 +66,7 @@
                     </div>
                     <div class="column">
                         <div class="field">
-                            <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-coins"></i></span>Винагорода</label>
+                            <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-coins"></i></span><span th:text="#{field.compensation}">Reward</span></label>
                             <div class="control">
                                 <input class="input" type="number" th:field="*{compensation}" min="0">
                             </div>
@@ -74,12 +74,12 @@
                     </div>
                     <div class="column">
                         <div class="field">
-                            <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-tag"></i></span>Категорія</label>
+                            <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-tag"></i></span><span th:text="#{field.category}">Category</span></label>
                             <div class="control">
                                 <div class="select is-fullwidth">
                                     <select th:field="*{categoryId}" required>
                                         <option th:each="category : ${categories}"
-                                                th:value="${category.id}" th:text="${category.key}">OTHER</option>
+                                                th:value="${category.id}" th:text="#{category.__${category.key}__}">OTHER</option>
                                     </select>
                                 </div>
                             </div>
@@ -89,7 +89,7 @@
             </div>
 
             <div class="box">
-                <h2 class="title is-6"><span aria-hidden="true"><i class="fa-solid fa-location-dot"></i></span> Місце</h2>
+                <h2 class="title is-6"><span aria-hidden="true"><i class="fa-solid fa-location-dot"></i></span> <span th:text="#{field.place}">Place</span></h2>
 
                 <div class="field">
                     <label class="label">Google place id</label>
@@ -99,7 +99,7 @@
                 </div>
 
                 <div class="field">
-                    <label class="label">Назва місця</label>
+                    <label class="label" th:text="#{field.placeName}">Place name</label>
                     <div class="control">
                         <input class="input" type="text" th:field="*{placeName}" required maxlength="100">
                     </div>
@@ -108,7 +108,7 @@
                 <div class="columns">
                     <div class="column">
                         <div class="field">
-                            <label class="label">Широта</label>
+                            <label class="label" th:text="#{field.latitude}">Latitude</label>
                             <div class="control">
                                 <input class="input" type="number" step="any" th:field="*{lat}" required>
                             </div>
@@ -116,7 +116,7 @@
                     </div>
                     <div class="column">
                         <div class="field">
-                            <label class="label">Довгота</label>
+                            <label class="label" th:text="#{field.longitude}">Longitude</label>
                             <div class="control">
                                 <input class="input" type="number" step="any" th:field="*{lon}" required>
                             </div>
@@ -126,12 +126,12 @@
             </div>
 
             <div class="box">
-                <h2 class="title is-6"><span aria-hidden="true"><i class="fa-solid fa-address-card"></i></span> Контакти</h2>
+                <h2 class="title is-6"><span aria-hidden="true"><i class="fa-solid fa-address-card"></i></span> <span th:text="#{field.contacts}">Contacts</span></h2>
 
                 <div class="columns">
                     <div class="column">
                         <div class="field">
-                            <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-phone"></i></span>Телефон</label>
+                            <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-phone"></i></span><span th:text="#{field.phone}">Phone</span></label>
                             <div class="control">
                                 <input class="input" type="text" th:field="*{phone}" required
                                        placeholder="+380671234567">
@@ -149,7 +149,7 @@
                 </div>
 
                 <div class="field">
-                    <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-comments"></i></span>Соцмережі</label>
+                    <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-comments"></i></span><span th:text="#{field.socialMedia}">Social media</span></label>
                     <div class="control">
                         <label class="checkbox mr-4" th:each="social : ${allSocialMedias}">
                             <input type="checkbox" th:field="*{socialMedias}" th:value="${social}">
@@ -165,12 +165,12 @@
                         <span class="icon" aria-hidden="true">
                             <i class="fa-solid" th:classappend="${creating} ? 'fa-plus' : 'fa-floppy-disk'"></i>
                         </span>
-                        <span th:text="${creating} ? 'Створити' : 'Зберегти'">Зберегти</span>
+                        <span th:text="${creating} ? #{action.create} : #{action.save}">Save</span>
                     </button>
                 </div>
                 <div class="control">
                     <a class="button is-light" th:href="@{${basePath}}">
-                        <span class="icon" aria-hidden="true"><i class="fa-solid fa-xmark"></i></span><span>Скасувати</span>
+                        <span class="icon" aria-hidden="true"><i class="fa-solid fa-xmark"></i></span><span th:text="#{action.cancel}">Cancel</span>
                     </a>
                 </div>
             </div>

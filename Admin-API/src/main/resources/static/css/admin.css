@@ -187,6 +187,24 @@ button.card-footer-item {
     min-width: 0;
 }
 
+/* ---------- Sortable headers ---------- */
+
+.sortable {
+    display: inline-flex;
+    gap: 0.25rem;
+    align-items: center;
+    color: inherit;
+}
+
+.sortable .icon {
+    opacity: 0.35;
+}
+
+.sortable:hover .icon,
+.sortable.is-active .icon {
+    opacity: 1;
+}
+
 /* ---------- Dropdown ---------- */
 
 .row-actions-menu {
@@ -211,4 +229,32 @@ button.card-footer-item {
 
 .row-actions .dropdown-item {
     text-align: left;
+}
+
+/* ---------- Language switch ---------- */
+
+.languages-menu {
+    anchor-scope: --languages;
+}
+
+.languages-trigger {
+    anchor-name: --languages;
+}
+
+.languages[popover] {
+    position-anchor: --languages;
+    top: anchor(bottom);
+    right: anchor(right);
+    bottom: auto;
+    left: auto;
+    min-width: 11rem;
+    margin: 0.25rem 0 0;
+    padding-inline: 0;
+    border: 1px solid var(--bulma-border-weak);
+}
+
+.languages .dropdown-item {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
 }

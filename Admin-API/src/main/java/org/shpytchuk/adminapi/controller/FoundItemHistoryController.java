@@ -8,6 +8,7 @@ import org.shpytchuk.adminapi.security.Action;
 import org.shpytchuk.adminapi.security.RequirePermission;
 import org.shpytchuk.adminapi.security.Scope;
 import org.shpytchuk.adminapi.service.FoundItemHistoryAdminService;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,10 +25,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class FoundItemHistoryController extends ItemController<FoundItemHistory> {
 
     static final String BASE_PATH = "/admin/found-items-history";
-    private static final String TITLE = "Архів знайдених речей";
+    private static final String TITLE_KEY = "page.found_item_history";
 
-    public FoundItemHistoryController(FoundItemHistoryAdminService service, ItemModel itemModel) {
-        super(service, itemModel, Scope.FOUND_ITEM_HISTORY, BASE_PATH, TITLE);
+    public FoundItemHistoryController(FoundItemHistoryAdminService service, ItemModel itemModel, MessageSource messages) {
+        super(service, itemModel, messages, Scope.FOUND_ITEM_HISTORY, BASE_PATH, TITLE_KEY);
     }
 
     @Override

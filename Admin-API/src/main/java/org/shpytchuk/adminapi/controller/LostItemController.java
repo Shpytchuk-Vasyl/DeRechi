@@ -8,6 +8,7 @@ import org.shpytchuk.adminapi.security.Action;
 import org.shpytchuk.adminapi.security.RequirePermission;
 import org.shpytchuk.adminapi.security.Scope;
 import org.shpytchuk.adminapi.service.LostItemAdminService;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,10 +21,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class LostItemController extends ItemController<LostItem> {
 
     static final String BASE_PATH = "/admin/lost-items";
-    private static final String TITLE = "Загублені речі";
+    private static final String TITLE_KEY = "page.lost_item";
 
-    public LostItemController(LostItemAdminService service, ItemModel itemModel) {
-        super(service, itemModel, Scope.LOST_ITEM, BASE_PATH, TITLE);
+    public LostItemController(LostItemAdminService service, ItemModel itemModel, MessageSource messages) {
+        super(service, itemModel, messages, Scope.LOST_ITEM, BASE_PATH, TITLE_KEY);
     }
 
     @Override

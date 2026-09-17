@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('Запит не вклався в час')}"></head>
+<head th:replace="~{fragments/layout :: head(#{error.408.head})}"></head>
 <body class="is-flex is-flex-direction-column">
 <header th:replace="~{fragments/layout :: navbar}"></header>
 <main class="section is-flex-grow-1">
@@ -8,15 +8,15 @@
         <div class="notification is-warning is-light">
             <h1 class="title is-4">
                 <span class="icon is-large" aria-hidden="true"><i class="fa-2x fa-solid fa-hourglass-half"></i></span>
-                <span>408 — запит тривав надто довго</span>
+                <span th:text="#{error.408.title}">408</span>
             </h1>
-            <p class="mb-4" th:text="${message}">Запит виконувався надто довго і був перерваний.</p>
+            <p class="mb-4" th:text="${message}">error</p>
             <div class="buttons">
                 <a class="button is-light" th:href="@{/admin/matches}">
-                    <span class="icon" aria-hidden="true"><i class="fa-solid fa-compass"></i></span><span>На головну</span>
+                    <span class="icon" aria-hidden="true"><i class="fa-solid fa-compass"></i></span><span th:text="#{action.home}">Home</span>
                 </a>
                 <a class="button is-light" href="#" onclick="location.reload(); return false;">
-                    <span class="icon" aria-hidden="true"><i class="fa-solid fa-rotate-right"></i></span><span>Повторити</span>
+                    <span class="icon" aria-hidden="true"><i class="fa-solid fa-rotate-right"></i></span><span th:text="#{action.retry}">Retry</span>
                 </a>
             </div>
         </div>

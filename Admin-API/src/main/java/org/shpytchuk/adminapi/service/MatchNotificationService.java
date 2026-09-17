@@ -38,7 +38,7 @@ public class MatchNotificationService {
     public Instant notifyOwner(Long lostItemId, Long foundItemId, String actor) {
         SimilarItem match = similarItemRepository
                 .findById(new SimilarItem.SimilarItemId(foundItemId, lostItemId))
-                .orElseThrow(() -> new NotFoundException("Збіг", lostItemId + "/" + foundItemId));
+                .orElseThrow(() -> new NotFoundException("entity.match", lostItemId + "/" + foundItemId));
 
         NotificationRequestedEvent event = getEvent(lostItemId, foundItemId, match);
 

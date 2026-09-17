@@ -31,20 +31,20 @@ public abstract class AdminItemService<T extends Thing> {
     private final PlaceRepository placeRepository;
     private final ContactInfoRepository contactInfoRepository;
     private final Supplier<T> factory;
-    private final String entityName;
+    private final String scopeKey;
 
     protected AdminItemService(ThingRepository<T> repository,
                                ThingCategoryRepository categoryRepository,
                                PlaceRepository placeRepository,
                                ContactInfoRepository contactInfoRepository,
                                Supplier<T> factory,
-                               String entityName) {
+                               String scopeKey) {
         this.repository = repository;
         this.categoryRepository = categoryRepository;
         this.placeRepository = placeRepository;
         this.contactInfoRepository = contactInfoRepository;
         this.factory = factory;
-        this.entityName = entityName;
+        this.scopeKey = scopeKey;
     }
 
     protected abstract void deleteMatches(Long id);
@@ -53,7 +53,7 @@ public abstract class AdminItemService<T extends Thing> {
 
     @Transactional(readOnly = true)
     public Page<ItemView> page(Pageable pageable, ItemFilter filter) {
-        return repository.findAll(ThingSpecifications.matching(filter), pageable).map(ItemMapper::toView);
+        return repository.findAll(ThingSpecifications.matching(filter), Pages.safe(pageable)).map(ItemMapper::toView);
     }
 
     @Transactional(readOnly = true)
@@ -92,18 +92,18 @@ public abstract class AdminItemService<T extends Thing> {
         repository.delete(item);
     }
 
-    public String entityName() {
-        return entityName;
+    public String scopeKey() {
+        return scopeKey;
     }
 
     private T require(Long id) {
         return repository.findWithDetailsById(id)
-                .orElseThrow(() -> new NotFoundException(entityName, id));
+                .orElseThrow(() -> new NotFoundException("entity." + scopeKey, id));
     }
 
     private void apply(ItemForm form, T item, ContactInfo info) {
         ThingCategory category = categoryRepository.findById(form.getCategoryId())
-                .orElseThrow(() -> new NotFoundException("Категорію", form.getCategoryId()));
+                .orElseThrow(() -> new NotFoundException("entity.category", form.getCategoryId()));
         Place place = placeRepository.save(toPlace(form));
 
         info.setPhone(form.getPhone());

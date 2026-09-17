@@ -17,7 +17,7 @@ public class LostItemHistoryAdminService extends AdminItemService<LostItemHistor
                                        PlaceRepository placeRepository,
                                        ContactInfoRepository contactInfoRepository) {
         super(repository, categoryRepository, placeRepository, contactInfoRepository,
-                LostItemHistoryAdminService::archived, "Архівну загублену річ");
+                LostItemHistoryAdminService::archived, "LOST_ITEM_HISTORY");
     }
 
     @Override

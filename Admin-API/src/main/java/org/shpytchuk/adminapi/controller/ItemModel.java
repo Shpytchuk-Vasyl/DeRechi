@@ -15,10 +15,10 @@ public class ItemModel {
     private final ThingCategoryRepository categoryRepository;
 
 
-    public void describe(Model model, Scope scope, String basePath, String title) {
+    public void describe(Model model, Scope scope, String basePath, String titleKey) {
         model.addAttribute("scope", scope.name());
         model.addAttribute("basePath", basePath);
-        model.addAttribute("title", title);
+        model.addAttribute("titleKey", titleKey);
     }
 
     public void forFilter(Model model, ItemFilter filter) {
