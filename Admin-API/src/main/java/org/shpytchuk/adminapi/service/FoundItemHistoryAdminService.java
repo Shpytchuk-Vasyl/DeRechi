@@ -25,6 +25,11 @@ public class FoundItemHistoryAdminService extends AdminItemService<FoundItemHist
         // no-op
     }
 
+    @Override
+    protected void archiveItem(FoundItemHistory item) {
+        throw new UnsupportedOperationException("Архів уже є архівом");
+    }
+
     private static FoundItemHistory archived() {
         FoundItemHistory item = new FoundItemHistory();
         item.setArchivedAt(Instant.now());

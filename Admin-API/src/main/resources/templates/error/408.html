@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Запит не вклався в час')}"></head>
+<body class="is-flex is-flex-direction-column">
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="section is-flex-grow-1">
+    <div class="container is-max-desktop">
+        <div class="notification is-warning is-light">
+            <h1 class="title is-4">
+                <span class="icon is-large" aria-hidden="true"><i class="fa-2x fa-solid fa-hourglass-half"></i></span>
+                <span>408 — запит тривав надто довго</span>
+            </h1>
+            <p class="mb-4" th:text="${message}">Запит виконувався надто довго і був перерваний.</p>
+            <div class="buttons">
+                <a class="button is-light" th:href="@{/admin/matches}">
+                    <span class="icon" aria-hidden="true"><i class="fa-solid fa-compass"></i></span><span>На головну</span>
+                </a>
+                <a class="button is-light" href="#" onclick="location.reload(); return false;">
+                    <span class="icon" aria-hidden="true"><i class="fa-solid fa-rotate-right"></i></span><span>Повторити</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

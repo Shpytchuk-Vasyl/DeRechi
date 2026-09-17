@@ -2,7 +2,7 @@ package org.shpytchuk.adminapi.service;
 
 import lombok.AllArgsConstructor;
 import org.jspecify.annotations.NonNull;
-import org.shpytchuk.adminapi.config.NotificationProperties;
+import org.shpytchuk.adminapi.config.property.NotificationProperties;
 import org.shpytchuk.adminapi.entity.ContactInfo;
 import org.shpytchuk.adminapi.entity.items.FoundItem;
 import org.shpytchuk.adminapi.entity.items.LostItem;

@@ -1,13 +1,14 @@
 package org.shpytchuk.adminapi.controller;
 
 import jakarta.validation.Valid;
-import org.shpytchuk.adminapi.config.AdminProperties;
 import org.shpytchuk.adminapi.entity.items.FoundItem;
+import org.shpytchuk.adminapi.form.ItemFilter;
 import org.shpytchuk.adminapi.form.ItemForm;
 import org.shpytchuk.adminapi.security.Action;
 import org.shpytchuk.adminapi.security.RequirePermission;
 import org.shpytchuk.adminapi.security.Scope;
 import org.shpytchuk.adminapi.service.FoundItemAdminService;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -26,15 +26,17 @@ public class FoundItemController extends ItemController<FoundItem> {
     static final String BASE_PATH = "/admin/found-items";
     private static final String TITLE = "Знайдені речі";
 
-    public FoundItemController(FoundItemAdminService service, ItemModel itemModel, AdminProperties properties) {
-        super(service, itemModel, properties, Scope.FOUND_ITEM, BASE_PATH, TITLE);
+    public FoundItemController(FoundItemAdminService service, ItemModel itemModel) {
+        super(service, itemModel, Scope.FOUND_ITEM, BASE_PATH, TITLE);
     }
 
     @Override
     @GetMapping
     @RequirePermission(scope = Scope.FOUND_ITEM, action = Action.VIEW)
-    public String list(@RequestParam(defaultValue = "0") int page, Model model) {
-        return super.list(page, model);
+    public String list(Pageable pageable,
+                       @ModelAttribute("filter") ItemFilter filter,
+                       Model model) {
+        return super.list(pageable, filter, model);
     }
 
     @Override
@@ -70,6 +72,13 @@ public class FoundItemController extends ItemController<FoundItem> {
                          Model model,
                          RedirectAttributes redirectAttributes) {
         return super.update(id, form, binding, model, redirectAttributes);
+    }
+
+    @Override
+    @PostMapping("/{id}/archive")
+    @RequirePermission(scope = Scope.FOUND_ITEM, action = Action.ARCHIVE)
+    public String archive(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        return super.archive(id, redirectAttributes);
     }
 
     @Override

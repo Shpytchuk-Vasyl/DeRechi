@@ -37,6 +37,17 @@ public final class ItemMapper {
         );
     }
 
+    public static void copy(Thing from, Thing to) {
+        to.setTitle(from.getTitle());
+        to.setDescription(from.getDescription());
+        to.setImage(from.getImage());
+        to.setDate(from.getDate());
+        to.setCompensation(from.getCompensation());
+        to.setInfo(from.getInfo());
+        to.setPlace(from.getPlace());
+        to.setCategory(from.getCategory());
+    }
+
     public static ItemForm toForm(Thing item) {
         Place place = item.getPlace();
         Point coordinate = place.getCoordinate();

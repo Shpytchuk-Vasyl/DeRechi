@@ -1,4 +1,4 @@
-package org.shpytchuk.adminapi.config;
+package org.shpytchuk.adminapi.config.property;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

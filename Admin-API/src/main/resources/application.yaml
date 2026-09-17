@@ -10,11 +10,40 @@ spring:
     url: jdbc:postgresql://localhost:5432/derechi
     username: derechi
     password: derechi
+    hikari:
+      connection-timeout: 30000
+
+  transaction:
+    default-timeout: 30s
+
+  cache:
+    type: caffeine
+    cache-names: categories
+    caffeine:
+      # Довідник категорій міняється поза адмінкою і рідко, тож година — компроміс
+      # між зайвим запитом на кожен рендер форми і часом, поки нова категорія не видна.
+      spec: expireAfterWrite=1h
+
+  web:
+    resources:
+      chain:
+        strategy:
+          content:
+            enabled: true
+            paths: /**
+      cache:
+        cachecontrol:
+          # Імена файлів версіонуються хешем вмісту (chain.strategy.content),
+          # тож віддавати їх на рік безпечно: зміна css дає новий URL.
+          max-age: 365d
+          cache-public: true
 
   jpa:
     open-in-view: false
     hibernate:
       ddl-auto: none
+    properties:
+      jakarta.persistence.query.timeout: 30000
 
   rabbitmq:
     host: localhost

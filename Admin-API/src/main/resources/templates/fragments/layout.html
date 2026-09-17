@@ -17,7 +17,7 @@
 </head>
 <body>
 
-<header th:fragment="nav">
+<header th:fragment="navbar">
     <nav class="navbar is-fixed-top is-spaced" role="navigation" aria-label="main navigation">
         <div class="container is-fluid">
             <div class="navbar-brand">
@@ -95,33 +95,54 @@
     </div>
 </div>
 
-<div th:fragment="pager(page, basePath)">
-    <nav class="pagination is-centered mt-5" th:if="${page != null and page.totalPages > 1}"
-         role="navigation" aria-label="pagination">
-        <a class="pagination-previous" th:if="${!page.first}"
-           th:href="@{${basePath}(page=${page.number - 1})}">
+<div th:fragment="pager(pages, basePath, query)">
+    <nav class="pagination is-centered mt-5" th:if="${pages != null and pages.visible()}"
+         role="navigation" aria-label="Сторінки">
+        <a class="pagination-previous" th:if="${pages.hasPrevious()}"
+           th:href="@{${basePath}(page=${pages.previous()})} + ${query}">
             <span class="icon is-small" aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
             <span>Назад</span>
         </a>
-        <span class="pagination-previous" th:if="${page.first}" disabled>
+        <span class="pagination-previous" th:unless="${pages.hasPrevious()}" disabled>
             <span class="icon is-small" aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
             <span>Назад</span>
         </span>
 
-        <a class="pagination-next" th:if="${!page.last}"
-           th:href="@{${basePath}(page=${page.number + 1})}">
+        <a class="pagination-next" th:if="${pages.hasNext()}"
+           th:href="@{${basePath}(page=${pages.next()})} + ${query}">
             <span>Далі</span>
             <span class="icon is-small" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
         </a>
-        <span class="pagination-next" th:if="${page.last}" disabled>
+        <span class="pagination-next" th:unless="${pages.hasNext()}" disabled>
             <span>Далі</span>
             <span class="icon is-small" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
         </span>
 
         <ul class="pagination-list">
-            <li>
-                <span class="pagination-link is-current"
-                      th:text="${(page.number + 1) + ' / ' + page.totalPages}">1 / 1</span>
+            <li th:if="${pages.showsFirst()}">
+                <a class="pagination-link" th:href="@{${basePath}(page=0)} + ${query}"
+                   aria-label="Сторінка 1">1</a>
+            </li>
+            <li th:if="${pages.gapBefore()}">
+                <span class="pagination-ellipsis">&hellip;</span>
+            </li>
+
+            <li th:each="number : ${pages.numbers()}">
+                <a class="pagination-link"
+                   th:classappend="${number == pages.current()} ? 'is-current'"
+                   th:href="@{${basePath}(page=${number})} + ${query}"
+                   th:aria-current="${number == pages.current()} ? 'page' : null"
+                   th:aria-label="'Сторінка ' + ${number + 1}"
+                   th:text="${number + 1}">1</a>
+            </li>
+
+            <li th:if="${pages.gapAfter()}">
+                <span class="pagination-ellipsis">&hellip;</span>
+            </li>
+            <li th:if="${pages.showsLast()}">
+                <a class="pagination-link" th:href="@{${basePath}(page=${pages.last()})} + ${query}"
+                   th:aria-label="'Сторінка ' + ${pages.total()}"
+                   th:text="${pages.total()}">42</a>
             </li>
         </ul>
     </nav>

@@ -10,16 +10,13 @@ import org.shpytchuk.adminapi.entity.Place;
 import org.shpytchuk.adminapi.entity.Thing;
 import org.shpytchuk.adminapi.entity.ThingCategory;
 import org.shpytchuk.adminapi.exception.NotFoundException;
+import org.shpytchuk.adminapi.form.ItemFilter;
 import org.shpytchuk.adminapi.form.ItemForm;
 import org.shpytchuk.adminapi.mapper.ItemMapper;
-import org.shpytchuk.adminapi.repository.ContactInfoRepository;
-import org.shpytchuk.adminapi.repository.PlaceRepository;
-import org.shpytchuk.adminapi.repository.ThingCategoryRepository;
-import org.shpytchuk.adminapi.repository.ThingRepository;
+import org.shpytchuk.adminapi.repository.*;
 import org.shpytchuk.adminapi.view.ItemView;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -52,10 +49,11 @@ public abstract class AdminItemService<T extends Thing> {
 
     protected abstract void deleteMatches(Long id);
 
+    protected abstract void archiveItem(T item);
+
     @Transactional(readOnly = true)
-    public Page<ItemView> page(int page, int size) {
-        PageRequest pageRequest = PageRequest.of(Math.max(page, 0), size, Sort.by(Sort.Order.desc("id")));
-        return repository.findAll(pageRequest).map(ItemMapper::toView);
+    public Page<ItemView> page(Pageable pageable, ItemFilter filter) {
+        return repository.findAll(ThingSpecifications.matching(filter), pageable).map(ItemMapper::toView);
     }
 
     @Transactional(readOnly = true)
@@ -77,6 +75,14 @@ public abstract class AdminItemService<T extends Thing> {
         T item = require(id);
         apply(form, item, item.getInfo());
         return repository.save(item);
+    }
+
+    @Transactional
+    public void archive(Long id) {
+        T item = require(id);
+        archiveItem(item);
+        deleteMatches(id);
+        repository.delete(item);
     }
 
     @Transactional

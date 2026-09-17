@@ -3,7 +3,7 @@
 <head th:replace="~{fragments/layout :: head(${title})}"></head>
 <body class="is-flex is-flex-direction-column">
 
-<header th:replace="~{fragments/layout :: nav}"></header>
+<header th:replace="~{fragments/layout :: navbar}"></header>
 <div th:replace="~{fragments/layout :: flash}"></div>
 
 <main class="section pt-5 is-flex-grow-1">
@@ -27,6 +27,76 @@
                 </div>
             </div>
         </div>
+
+        <form class="box filters mb-4" method="get" th:action="@{${basePath}}">
+            <div class="columns is-variable is-2 is-multiline is-align-items-flex-end">
+                <div class="column is-12-tablet is-4-desktop">
+                    <div class="field mb-0">
+                        <label class="label is-size-7 has-text-grey" for="filter-q">Пошук</label>
+                        <div class="control has-icons-left">
+                            <input class="input" type="search" id="filter-q" name="q" maxlength="255"
+                                   th:value="${filter.q}" placeholder="Назва, опис або місце">
+                            <span class="icon is-small is-left" aria-hidden="true">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column is-6-tablet is-3-desktop">
+                    <div class="field mb-0">
+                        <label class="label is-size-7 has-text-grey" for="filter-category">Категорія</label>
+                        <div class="control">
+                            <div class="select is-fullwidth">
+                                <select id="filter-category" name="categoryId">
+                                    <option value="">Усі категорії</option>
+                                    <option th:each="category : ${categories}"
+                                            th:value="${category.id}"
+                                            th:selected="${filter.categoryId != null and filter.categoryId == category.id}"
+                                            th:text="${category.key}">OTHER
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column is-3-tablet is-2-desktop">
+                    <div class="field mb-0">
+                        <label class="label is-size-7 has-text-grey" for="filter-from">Дата від</label>
+                        <div class="control">
+                            <input class="input" type="date" id="filter-from" name="from" th:value="${filter.from}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column is-3-tablet is-2-desktop">
+                    <div class="field mb-0">
+                        <label class="label is-size-7 has-text-grey" for="filter-to">Дата до</label>
+                        <div class="control">
+                            <input class="input" type="date" id="filter-to" name="to" th:value="${filter.to}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column is-narrow">
+                    <div class="field is-grouped mb-0">
+                        <div class="control">
+                            <button type="submit" class="button is-link"
+                                    title="Застосувати" aria-label="Застосувати">
+                                <span class="icon" aria-hidden="true"><i class="fa-solid fa-filter"></i></span>
+                            </button>
+                        </div>
+                        <div class="control" th:if="${filter.active()}">
+                            <a class="button is-light" th:href="@{${basePath}}"
+                               title="Скинути фільтри" aria-label="Скинути фільтри">
+                                <span class="icon" aria-hidden="true"><i class="fa-solid fa-xmark"></i></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
 
         <div class="box p-0">
             <div class="table-container">
@@ -62,21 +132,42 @@
                         <td class="is-vcentered py-3" th:text="${item.date}">2026-01-01</td>
                         <td class="is-vcentered py-3" th:text="${item.placeName}">Місце</td>
 
-                        <td class="is-vcentered py-3">
-                            <div class="buttons are-small is-right is-flex-wrap-nowrap mb-0">
-                                <a class="button is-light" th:if="${perms.can(scope, 'EDIT')}"
-                                   th:href="@{${basePath} + '/' + ${item.id} + '/edit'}"
-                                   title="Редагувати" aria-label="Редагувати">
-                                    <span class="icon" aria-hidden="true"><i class="fa-solid fa-pen"></i></span>
-                                </a>
-                                <form th:if="${perms.can(scope, 'DELETE')}"
-                                      th:action="@{${basePath} + '/' + ${item.id} + '/delete'}" method="post"
-                                      onsubmit="return confirm('Видалити запис разом зі звʼязками в матчах?')">
-                                    <button type="submit" class="button is-danger is-light"
-                                            title="Видалити" aria-label="Видалити">
-                                        <span class="icon" aria-hidden="true"><i class="fa-solid fa-trash"></i></span>
-                                    </button>
-                                </form>
+                        <td class="is-vcentered py-3 has-text-right">
+                            <div class="dropdown row-actions-menu">
+                                <button type="button" class="button is-light is-small row-actions-trigger"
+                                        th:popovertarget="'actions-' + ${item.id}"
+                                        title="Дії" aria-label="Дії">
+                                    <span class="icon" aria-hidden="true"><i class="fa-solid fa-ellipsis-vertical"></i></span>
+                                </button>
+
+                                <div class="dropdown-content row-actions" popover
+                                     th:id="'actions-' + ${item.id}">
+                                    <a class="dropdown-item" th:if="${perms.can(scope, 'EDIT')}"
+                                       th:href="@{${basePath} + '/' + ${item.id} + '/edit'}">
+                                        <span class="icon has-text-grey" aria-hidden="true"><i class="fa-solid fa-pen"></i></span>
+                                        <span>Редагувати</span>
+                                    </a>
+
+                                    <form th:if="${perms.can(scope, 'ARCHIVE')}" method="post"
+                                          th:action="@{${basePath} + '/' + ${item.id} + '/archive'}"
+                                          onsubmit="return confirm('Перенести запис в архів? Звʼязки в матчах зникнуть.')">
+                                        <button type="submit" class="dropdown-item">
+                                            <span class="icon has-text-grey" aria-hidden="true"><i class="fa-solid fa-box-archive"></i></span>
+                                            <span>Архівувати</span>
+                                        </button>
+                                    </form>
+
+                                    <hr class="dropdown-divider" th:if="${perms.can(scope, 'DELETE')}">
+
+                                    <form th:if="${perms.can(scope, 'DELETE')}" method="post"
+                                          th:action="@{${basePath} + '/' + ${item.id} + '/delete'}"
+                                          onsubmit="return confirm('Видалити запис разом зі звʼязками в матчах?')">
+                                        <button type="submit" class="dropdown-item has-text-danger">
+                                            <span class="icon" aria-hidden="true"><i class="fa-solid fa-trash"></i></span>
+                                            <span>Видалити</span>
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </td>
                     </tr>
@@ -85,10 +176,12 @@
                             <span class="icon is-large has-text-grey-lighter mb-3" aria-hidden="true">
                                 <i class="fa-2x fa-solid fa-inbox"></i>
                             </span>
-                            <p class="has-text-weight-medium">Записів ще немає</p>
-                            <p class="is-size-7" th:if="${perms.can(scope, 'CREATE')}">
+                            <p class="has-text-weight-medium" th:if="${!filter.active()}">Записів ще немає</p>
+                            <p class="is-size-7" th:if="${!filter.active() and perms.can(scope, 'CREATE')}">
                                 Натисни «Додати», щоб створити перший.
                             </p>
+                            <p class="has-text-weight-medium" th:if="${filter.active()}">Нічого не знайдено</p>
+                            <p class="is-size-7" th:if="${filter.active()}">Спробуй послабити фільтри.</p>
                         </td>
                     </tr>
                     </tbody>
@@ -96,7 +189,7 @@
             </div>
         </div>
 
-        <nav th:replace="~{fragments/layout :: pager(${items}, ${basePath})}"></nav>
+        <nav th:replace="~{fragments/layout :: pager(${pages}, ${basePath}, ${filterQuery})}"></nav>
     </div>
 </main>
 

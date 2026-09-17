@@ -23,7 +23,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -54,7 +54,7 @@ class LostItemHistoryControllerTests {
 
     @Test
     void showsTheTableToAnAdminWithViewPermission() throws Exception {
-        when(service.page(anyInt(), anyInt())).thenReturn(Page.empty());
+        when(service.page(any(), any())).thenReturn(Page.empty());
 
         mockMvc.perform(get("/admin/lost-items-history").with(oidcLogin().authorities(authority(Scope.LOST_ITEM_HISTORY, Action.VIEW))))
                 .andExpect(status().isOk())
@@ -69,7 +69,7 @@ class LostItemHistoryControllerTests {
                         authority(Scope.FOUND_ITEM, Action.VIEW))))
                 .andExpect(status().isForbidden());
 
-        verify(service, never()).page(anyInt(), anyInt());
+        verify(service, never()).page(any(), any());
     }
 
     @Test

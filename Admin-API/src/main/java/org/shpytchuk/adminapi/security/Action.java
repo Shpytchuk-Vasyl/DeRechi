@@ -5,5 +5,6 @@ public enum Action {
     CREATE,
     EDIT,
     DELETE,
+    ARCHIVE,
     NOTIFY
 }

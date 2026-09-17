@@ -1,17 +1,21 @@
 package org.shpytchuk.adminapi.controller;
 
-import org.shpytchuk.adminapi.config.AdminProperties;
+import org.shpytchuk.adminapi.config.cache.CachedPage;
 import org.shpytchuk.adminapi.entity.Thing;
+import org.shpytchuk.adminapi.form.ItemFilter;
 import org.shpytchuk.adminapi.form.ItemForm;
 import org.shpytchuk.adminapi.security.Scope;
 import org.shpytchuk.adminapi.service.AdminItemService;
 import org.shpytchuk.adminapi.view.ItemView;
+import org.shpytchuk.adminapi.view.Pager;
 import org.shpytchuk.adminapi.view.Plural;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+@CachedPage
 public abstract class ItemController<T extends Thing> {
 
     private static final String LIST_VIEW = "items/list";
@@ -19,30 +23,29 @@ public abstract class ItemController<T extends Thing> {
 
     private final AdminItemService<T> service;
     private final ItemModel itemModel;
-    private final AdminProperties properties;
     private final Scope scope;
     private final String basePath;
     private final String title;
 
     protected ItemController(AdminItemService<T> service,
                              ItemModel itemModel,
-                             AdminProperties properties,
                              Scope scope,
                              String basePath,
                              String title) {
         this.service = service;
         this.itemModel = itemModel;
-        this.properties = properties;
         this.scope = scope;
         this.basePath = basePath;
         this.title = title;
     }
 
-    protected String list(int page, Model model) {
+    protected String list(Pageable pageable, ItemFilter filter, Model model) {
         describe(model);
-        Page<ItemView> items = service.page(page, properties.pageSize());
+        Page<ItemView> items = service.page(pageable, filter);
         model.addAttribute("items", items);
         model.addAttribute("itemsLabel", Plural.records(items.getTotalElements()));
+        model.addAttribute("pages", Pager.of(items));
+        itemModel.forFilter(model, filter);
         return LIST_VIEW;
     }
 
@@ -87,6 +90,11 @@ public abstract class ItemController<T extends Thing> {
 
         service.update(id, form);
         return redirectWithMessage(redirectAttributes, id, "оновлено");
+    }
+
+    protected String archive(Long id, RedirectAttributes redirectAttributes) {
+        service.archive(id);
+        return redirectWithMessage(redirectAttributes, id, "заархівовано");
     }
 
     protected String delete(Long id, RedirectAttributes redirectAttributes) {

@@ -28,6 +28,12 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
+textarea {
+    field-sizing: content;
+    max-height: var(--bulma-textarea-max-height);
+    min-height: var(--bulma-textarea-min-height);
+}
+
 /* ---------- Tables ---------- */
 
 .table thead th {
@@ -47,13 +53,13 @@ body {
     white-space: normal;
 }
 
-/* Перша колонка матчів — третина ширини (is-one-third працює лише в columns) */
+
 .matches-table th:first-child,
 .matches-table td:first-child {
     width: 34%;
 }
 
-/* Вкладена таблиця кандидатів усередині клітинки матчів */
+
 .table td .candidates {
     background-color: transparent;
 }
@@ -125,7 +131,7 @@ dialog::backdrop {
     overflow-y: auto;
 }
 
-/* Шапка картки: заголовок і теги стовпчиком, хрестик — зверху */
+
 .app-dialog .card-header-title {
     padding-right: 0;
 }
@@ -134,7 +140,7 @@ dialog::backdrop {
     align-self: flex-start;
 }
 
-/* Фокус після showModal() лягає на картку, а не на хрестик — без видимої рамки */
+
 .app-dialog .card:focus {
     outline: none;
 }
@@ -168,4 +174,41 @@ button.card-footer-item {
     max-height: calc(100vh - 4rem);
     object-fit: contain;
     border-radius: var(--bulma-radius);
+}
+
+
+
+.filters .label {
+    margin-bottom: 0.375rem;
+}
+
+
+.filters input[type="date"] {
+    min-width: 0;
+}
+
+/* ---------- Dropdown ---------- */
+
+.row-actions-menu {
+    anchor-scope: --row-actions;
+}
+
+.row-actions-trigger {
+    anchor-name: --row-actions;
+}
+
+.row-actions[popover] {
+    position-anchor: --row-actions;
+    top: anchor(bottom);
+    right: anchor(right);
+    bottom: auto;
+    left: auto;
+    min-width: 12rem;
+    margin: 0.25rem 0 0;
+    padding-inline: 0;
+    border: 1px solid var(--bulma-border-weak);
+}
+
+.row-actions .dropdown-item {
+    text-align: left;
 }

@@ -9,8 +9,7 @@ import org.shpytchuk.adminapi.repository.items.SimilarItemRepository;
 import org.shpytchuk.adminapi.view.CandidateView;
 import org.shpytchuk.adminapi.view.MatchRow;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,9 +25,8 @@ public class MatchService {
     private final SimilarItemRepository similarItemRepository;
 
     @Transactional(readOnly = true)
-    public Page<MatchRow> page(int page, int size) {
-        PageRequest pageRequest = PageRequest.of(Math.max(page, 0), size, Sort.by(Sort.Order.desc("id")));
-        Page<LostItem> lostItems = lostItemRepository.findAll(pageRequest);
+    public Page<MatchRow> page(Pageable pageable) {
+        Page<LostItem> lostItems = lostItemRepository.findAll(pageable);
 
         Map<Long, List<CandidateView>> candidates = candidatesByLostItem(lostItems.getContent());
 

@@ -2,6 +2,7 @@ package org.shpytchuk.adminapi.controller;
 
 import lombok.AllArgsConstructor;
 import org.shpytchuk.adminapi.entity.ContactInfo.SocialMediaEnum;
+import org.shpytchuk.adminapi.form.ItemFilter;
 import org.shpytchuk.adminapi.repository.ThingCategoryRepository;
 import org.shpytchuk.adminapi.security.Scope;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,11 @@ public class ItemModel {
         model.addAttribute("scope", scope.name());
         model.addAttribute("basePath", basePath);
         model.addAttribute("title", title);
+    }
+
+    public void forFilter(Model model, ItemFilter filter) {
+        model.addAttribute("categories", categoryRepository.findAllByOrderByKeyAsc());
+        model.addAttribute("filterQuery", filter.queryString());
     }
 
     public void forForm(Model model, boolean creating) {

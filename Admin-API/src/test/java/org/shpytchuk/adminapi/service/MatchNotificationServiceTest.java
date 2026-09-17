@@ -2,7 +2,7 @@ package org.shpytchuk.adminapi.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.shpytchuk.adminapi.config.NotificationProperties;
+import org.shpytchuk.adminapi.config.property.NotificationProperties;
 import org.shpytchuk.adminapi.entity.ContactInfo;
 import org.shpytchuk.adminapi.entity.ContactInfo.SocialMediaEnum;
 import org.shpytchuk.adminapi.entity.items.FoundItem;

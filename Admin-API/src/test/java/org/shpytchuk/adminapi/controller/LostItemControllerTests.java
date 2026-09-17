@@ -1,9 +1,11 @@
 package org.shpytchuk.adminapi.controller;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.shpytchuk.adminapi.config.GlobalExceptionHandler;
 import org.shpytchuk.adminapi.config.SecurityConfig;
 import org.shpytchuk.adminapi.entity.items.LostItem;
+import org.shpytchuk.adminapi.form.ItemFilter;
 import org.shpytchuk.adminapi.security.Action;
 import org.shpytchuk.adminapi.security.Permissions;
 import org.shpytchuk.adminapi.security.Scope;
@@ -28,8 +30,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -63,7 +66,7 @@ class LostItemControllerTests {
 
     @Test
     void showsTheTableToAnAdminWithViewPermission() throws Exception {
-        when(service.page(anyInt(), anyInt())).thenReturn(Page.empty());
+        when(service.page(any(), any())).thenReturn(Page.empty());
 
         mockMvc.perform(get("/admin/lost-items").with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.VIEW))))
                 .andExpect(status().isOk())
@@ -71,8 +74,50 @@ class LostItemControllerTests {
     }
 
     @Test
+    void bindsTheFilterAndKeepsItInTheFormAndThePager() throws Exception {
+        when(service.page(any(), any())).thenReturn(Page.empty());
+
+        mockMvc.perform(get("/admin/lost-items")
+                        .param("q", "  rukzak  ")
+                        .param("categoryId", "3")
+                        .param("from", "2026-03-01")
+                        .param("to", "2026-01-31")
+                        .with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.VIEW))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(allOf(
+                        containsString("value=\"rukzak\""),
+                        containsString("value=\"2026-01-31\""),
+                        containsString("value=\"2026-03-01\""),
+                        containsString("Скинути"))));
+
+        ArgumentCaptor<ItemFilter> filter = ArgumentCaptor.forClass(ItemFilter.class);
+        verify(service).page(any(), filter.capture());
+
+        assertThat(filter.getValue().q()).as("пошук обрізається").isEqualTo("rukzak");
+        assertThat(filter.getValue().categoryId()).isEqualTo(3L);
+        assertThat(filter.getValue().from()).as("перевернутий діапазон").isEqualTo(LocalDate.of(2026, 1, 31));
+        assertThat(filter.getValue().to()).isEqualTo(LocalDate.of(2026, 3, 1));
+    }
+
+    @Test
+    void treatsBlankFilterFieldsAsNoFilter() throws Exception {
+        when(service.page(any(), any())).thenReturn(Page.empty());
+
+        mockMvc.perform(get("/admin/lost-items")
+                        .param("q", "   ").param("categoryId", "").param("from", "").param("to", "")
+                        .with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.VIEW))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(not(containsString("Скинути"))));
+
+        ArgumentCaptor<ItemFilter> filter = ArgumentCaptor.forClass(ItemFilter.class);
+        verify(service).page(any(), filter.capture());
+
+        assertThat(filter.getValue().active()).isFalse();
+    }
+
+    @Test
     void rendersThumbnailAndDialogTriggersForEachRow() throws Exception {
-        when(service.page(anyInt(), anyInt())).thenReturn(new PageImpl<>(List.of(itemView())));
+        when(service.page(any(), any())).thenReturn(new PageImpl<>(List.of(itemView())));
 
         mockMvc.perform(get("/admin/lost-items").with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.VIEW))))
                 .andExpect(status().isOk())
@@ -88,7 +133,7 @@ class LostItemControllerTests {
 
     @Test
     void fallsBackToThePlaceholderWhenAnItemHasNoImage() throws Exception {
-        when(service.page(anyInt(), anyInt())).thenReturn(new PageImpl<>(List.of(itemViewWithoutImage())));
+        when(service.page(any(), any())).thenReturn(new PageImpl<>(List.of(itemViewWithoutImage())));
 
         mockMvc.perform(get("/admin/lost-items").with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.VIEW))))
                 .andExpect(status().isOk())
@@ -116,7 +161,7 @@ class LostItemControllerTests {
         mockMvc.perform(get("/admin/lost-items").with(oidcLogin().authorities(authority(Scope.FOUND_ITEM, Action.VIEW))))
                 .andExpect(status().isForbidden());
 
-        verify(service, never()).page(anyInt(), anyInt());
+        verify(service, never()).page(any(), any());
     }
 
     @Test

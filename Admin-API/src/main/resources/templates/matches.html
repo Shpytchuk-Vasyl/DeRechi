@@ -3,7 +3,7 @@
 <head th:replace="~{fragments/layout :: head('Матчі')}"></head>
 <body class="is-flex is-flex-direction-column">
 
-<header th:replace="~{fragments/layout :: nav}"></header>
+<header th:replace="~{fragments/layout :: navbar}"></header>
 <div th:replace="~{fragments/layout :: flash}"></div>
 
 <main class="section pt-5 is-flex-grow-1">
@@ -108,7 +108,7 @@
             </div>
         </div>
 
-        <nav th:replace="~{fragments/layout :: pager(${matches}, '/admin/matches')}"></nav>
+        <nav th:replace="~{fragments/layout :: pager(${pages}, '/admin/matches', '')}"></nav>
     </div>
 </main>
 

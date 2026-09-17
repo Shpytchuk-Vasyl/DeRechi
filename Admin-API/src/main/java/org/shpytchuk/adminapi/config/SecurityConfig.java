@@ -1,5 +1,7 @@
 package org.shpytchuk.adminapi.config;
 
+import org.shpytchuk.adminapi.config.property.AdminProperties;
+import org.shpytchuk.adminapi.config.property.NotificationProperties;
 import org.shpytchuk.adminapi.security.KeycloakAuthoritiesMapper;
 import org.shpytchuk.adminapi.security.PermissionChecker;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -9,6 +11,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.core.annotation.AnnotationTemplateExpressionDefaults;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -27,6 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/actuator/**", "/css/**", "/js/**", "/error").permitAll()
                         .anyRequest().authenticated())
+                .headers(headers -> headers.cacheControl(HeadersConfigurer.CacheControlConfig::disable))
                 .oauth2Login(Customizer.withDefaults())
                 .logout(logout -> logout.logoutSuccessHandler(logoutSuccessHandler))
                 .build();

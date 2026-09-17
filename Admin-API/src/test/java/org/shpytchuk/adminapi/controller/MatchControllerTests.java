@@ -32,7 +32,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -63,7 +63,7 @@ class MatchControllerTests {
      */
     @Test
     void rendersSeparateDialogsForLostAndFoundItemsWithTheSameId() throws Exception {
-        when(matchService.page(anyInt(), anyInt())).thenReturn(new PageImpl<>(List.of(
+        when(matchService.page(any())).thenReturn(new PageImpl<>(List.of(
                 new MatchRow(item(3L, "Lost"), List.of(
                         new CandidateView(item(3L, "Found"), 0.94, null, null))))));
 

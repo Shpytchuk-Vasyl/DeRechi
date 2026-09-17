@@ -63,6 +63,8 @@
             "derechi-admin": [
               "LOST_ITEM:DELETE",
               "FOUND_ITEM:DELETE",
+              "LOST_ITEM:ARCHIVE",
+              "FOUND_ITEM:ARCHIVE",
               "LOST_ITEM_HISTORY:VIEW",
               "FOUND_ITEM_HISTORY:VIEW"
             ]
@@ -82,6 +84,8 @@
         { "name": "FOUND_ITEM:CREATE", "description": "Створення знайденої речі" },
         { "name": "FOUND_ITEM:EDIT", "description": "Редагування знайденої речі" },
         { "name": "FOUND_ITEM:DELETE", "description": "Видалення знайденої речі" },
+        { "name": "LOST_ITEM:ARCHIVE", "description": "Перенесення загубленої речі в архів" },
+        { "name": "FOUND_ITEM:ARCHIVE", "description": "Перенесення знайденої речі в архів" },
         { "name": "LOST_ITEM_HISTORY:VIEW", "description": "Перегляд архіву загублених речей" },
         { "name": "LOST_ITEM_HISTORY:CREATE", "description": "Створення запису в архіві загублених речей" },
         { "name": "LOST_ITEM_HISTORY:EDIT", "description": "Редагування запису в архіві загублених речей" },

@@ -25,6 +25,11 @@ public class LostItemHistoryAdminService extends AdminItemService<LostItemHistor
         // no-op
     }
 
+    @Override
+    protected void archiveItem(LostItemHistory item) {
+        throw new UnsupportedOperationException("Архів уже є архівом");
+    }
+
     private static LostItemHistory archived() {
         LostItemHistory item = new LostItemHistory();
         item.setArchivedAt(Instant.now());
