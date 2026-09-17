@@ -5,6 +5,7 @@ import org.shpytchuk.adminapi.config.LocaleConfig;
 import org.shpytchuk.adminapi.security.AdminPermissions;
 import org.shpytchuk.adminapi.view.Formats;
 import org.shpytchuk.adminapi.view.Plurals;
+import org.shpytchuk.adminapi.service.ImageStorage;
 import org.shpytchuk.adminapi.view.SocialMediaIcons;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -20,6 +21,7 @@ public class GlobalModelAdvice {
     private final Formats formats;
     private final Plurals plurals;
     private final SocialMediaIcons socialMediaIcons;
+    private final ImageStorage uploads;
 
     @ModelAttribute("fmt")
     public Formats formats() {
@@ -34,6 +36,11 @@ public class GlobalModelAdvice {
     @ModelAttribute("social")
     public SocialMediaIcons socialMediaIcons() {
         return socialMediaIcons;
+    }
+
+    @ModelAttribute("uploads")
+    public ImageStorage uploads() {
+        return uploads;
     }
 
     @ModelAttribute("languages")

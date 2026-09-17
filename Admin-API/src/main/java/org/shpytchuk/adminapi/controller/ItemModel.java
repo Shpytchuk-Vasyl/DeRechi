@@ -33,5 +33,6 @@ public class ItemModel {
         model.addAttribute("categories", categoryRepository.findAllByOrderByKeyAsc());
         model.addAttribute("allSocialMedias", SocialMediaEnum.values());
         model.addAttribute("maps", maps);
+        model.addAttribute("uploadPath", UploadController.BASE_PATH);
     }
 }

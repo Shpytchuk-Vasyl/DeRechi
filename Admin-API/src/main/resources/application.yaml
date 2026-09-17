@@ -47,6 +47,22 @@ spring:
     properties:
       jakarta.persistence.query.timeout: 30000
 
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+
+  cloud:
+    aws:
+      region:
+        static: us-east-1
+      credentials:
+        access-key: ${MINIO_ACCESS_KEY:derechi}
+        secret-key: ${MINIO_SECRET_KEY:derechi123}
+      s3:
+        endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
+        path-style-access-enabled: true
+
   rabbitmq:
     host: localhost
     port: 5672
@@ -78,6 +94,12 @@ derechi:
   maps:
     api-key: ${GOOGLE_MAPS_API_KEY:AIzaSyAEEnJ1r3fU7C33iy1slMkdA9mTOLnzzOk}
     region: UA
+  storage:
+    bucket: derechi-files
+    # Адреса для браузера: у контейнерах сервіс ходить у http://minio:9000,
+    # якого зовні не існує, тому це окрема властивість, а не той самий endpoint.
+    public-url: ${MINIO_PUBLIC_URL:http://localhost:9000}
+    max-size: 5MB
   notifications:
     exchange: derechi.notifications
     routing-key: notification.match.found

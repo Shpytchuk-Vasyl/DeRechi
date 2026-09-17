@@ -218,6 +218,28 @@ button.card-footer-item {
     cursor: pointer;
 }
 
+/* ---------- Image dropzone ---------- */
+
+.filepond--root {
+    margin-bottom: 0.5rem;
+    font-family: var(--bulma-family-primary);
+}
+
+.filepond--panel-root {
+    border: 1px dashed var(--bulma-border);
+    background-color: var(--bulma-scheme-main-bis);
+}
+
+.filepond--drop-label {
+    color: var(--bulma-text-weak);
+}
+
+.image-current img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
+
 /* ---------- Messengers ---------- */
 
 .phone-line {

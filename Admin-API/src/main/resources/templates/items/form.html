@@ -61,16 +61,26 @@
                 </div>
 
                 <div class="field">
-                    <label class="label" for="image">
+                    <label class="label">
                         <span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-image"></i></span>
-                        <span th:text="#{field.imagePath}">Image (path)</span>
+                        <span th:text="#{field.image}">Image</span>
                     </label>
-                    <div class="control">
-                        <input class="input" type="text" id="image" th:field="*{image}" th:errorclass="is-danger"
-                               maxlength="200" autocomplete="off" inputmode="url"
-                               th:placeholder="#{placeholder.image}">
-                    </div>
-                    <p class="help" th:text="#{form.image.hint}">Path or URL</p>
+
+                    <input type="hidden" th:field="*{image}">
+
+                    <figure class="image-current thumb image is-96x96 mb-3"
+                            th:if="${form.image != null and !form.image.isBlank()}" id="image-current">
+                        <img th:src="${uploads.urlOf(form.image)}" alt="">
+                    </figure>
+
+                    <input type="file" id="image-upload" accept="image/*"
+                           th:data-url="@{${uploadPath}}"
+                           th:data-max-size="${uploads.maxBytes}"
+                           th:data-label="#{form.image.drop}"
+                           th:data-too-large="#{upload.tooLarge}"
+                           th:data-unsupported="#{upload.unsupportedType}">
+
+                    <p class="help" th:text="#{form.image.hint}">Drop an image or pick a file</p>
                     <p class="help is-danger" th:if="${#fields.hasErrors('image')}" th:errors="*{image}">error</p>
                 </div>
 
@@ -294,6 +304,12 @@
         </form>
     </div>
 </main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/filepond/4.32.10/filepond.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/filepond-plugin-image-preview@4/dist/filepond-plugin-image-preview.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/filepond-plugin-file-validate-type@1/dist/filepond-plugin-file-validate-type.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/filepond-plugin-file-validate-size@2/dist/filepond-plugin-file-validate-size.min.js"></script>
+<script th:src="@{/js/image-upload.js}"></script>
 
 <th:block th:if="${maps.enabled}">
     <script th:src="@{/js/place-autocomplete.js}"></script>

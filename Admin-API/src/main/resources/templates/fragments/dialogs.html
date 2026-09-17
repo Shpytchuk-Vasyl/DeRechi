@@ -7,7 +7,7 @@
     <button type="button" class="thumb image" th:classappend="${size}" th:if="${item.image}"
             command="show-modal" th:commandfor="'photo-' + ${prefix} + '-' + ${item.id}"
             th:aria-label="#{action.openImage(${item.title})}">
-        <img class="thumb-img" th:src="${item.image}" th:alt="${item.title}">
+        <img class="thumb-img" th:src="${uploads.urlOf(item.image)}" th:alt="${item.title}">
         <span class="thumb-fallback icon has-text-grey-light is-hidden" aria-hidden="true">
             <i class="fa-solid fa-image"></i>
         </span>
@@ -112,7 +112,7 @@
                 command="close" th:commandfor="'photo-' + ${prefix} + '-' + ${item.id}"></button>
         <button type="button" class="photo-dialog-image" tabindex="-1" aria-hidden="true"
                 command="close" th:commandfor="'photo-' + ${prefix} + '-' + ${item.id}">
-            <img th:src="${item.image}" th:alt="${item.title}">
+            <img th:src="${uploads.urlOf(item.image)}" th:alt="${item.title}">
         </button>
     </dialog>
 

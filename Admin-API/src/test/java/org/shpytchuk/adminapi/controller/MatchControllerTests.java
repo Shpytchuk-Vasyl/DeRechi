@@ -3,6 +3,7 @@ package org.shpytchuk.adminapi.controller;
 import org.junit.jupiter.api.Test;
 import org.shpytchuk.adminapi.config.GlobalExceptionHandler;
 import org.shpytchuk.adminapi.config.MapsConfig;
+import org.shpytchuk.adminapi.service.ImageStorage;
 import org.shpytchuk.adminapi.view.Formats;
 import org.shpytchuk.adminapi.view.Plurals;
 import org.shpytchuk.adminapi.view.SocialMediaIcons;
@@ -66,6 +67,9 @@ class MatchControllerTests {
 
     @MockitoBean
     private ThingCategoryRepository categoryRepository;
+
+    @MockitoBean
+    private ImageStorage imageStorage;
 
     @Test
     void rendersSeparateDialogsForLostAndFoundItemsWithTheSameId() throws Exception {

@@ -35,6 +35,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <spring-cloud.version>2025.1.3</spring-cloud.version>
+        <spring-cloud-aws.version>4.1.1</spring-cloud-aws.version>
         <springdoc.version>3.1.0</springdoc.version>
         <notify-hub.version>1.1.0</notify-hub.version>
         <graphql-extended-scalars.version>24.0</graphql-extended-scalars.version>
@@ -50,6 +51,14 @@
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
                 <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.awspring.cloud</groupId>
+                <artifactId>spring-cloud-aws-dependencies</artifactId>
+                <version>${spring-cloud-aws.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

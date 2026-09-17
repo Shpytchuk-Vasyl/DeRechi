@@ -3,6 +3,7 @@ package org.shpytchuk.adminapi.controller;
 import org.junit.jupiter.api.Test;
 import org.shpytchuk.adminapi.config.GlobalExceptionHandler;
 import org.shpytchuk.adminapi.config.MapsConfig;
+import org.shpytchuk.adminapi.service.ImageStorage;
 import org.shpytchuk.adminapi.view.Formats;
 import org.shpytchuk.adminapi.view.Plurals;
 import org.shpytchuk.adminapi.view.SocialMediaIcons;
@@ -57,6 +58,10 @@ class LostItemHistoryControllerTests {
 
     @MockitoBean
     private ThingCategoryRepository categoryRepository;
+
+    /** Реальне сховище тягне S3-клієнт, якого у зрізі @WebMvcTest немає. */
+    @MockitoBean
+    private ImageStorage imageStorage;
 
     @Test
     void showsTheTableToAnAdminWithViewPermission() throws Exception {
