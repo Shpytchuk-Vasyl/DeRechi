@@ -19,6 +19,7 @@ const initImageUpload = () => {
 
     const pond = FilePond.create(input, {
         credits: false,
+        name: 'file',
         labelIdle: input.dataset.label,
         acceptedFileTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
         labelFileTypeNotAllowed: input.dataset.unsupported,

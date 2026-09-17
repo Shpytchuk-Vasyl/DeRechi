@@ -96,8 +96,6 @@ derechi:
     region: UA
   storage:
     bucket: derechi-files
-    # Адреса для браузера: у контейнерах сервіс ходить у http://minio:9000,
-    # якого зовні не існує, тому це окрема властивість, а не той самий endpoint.
     public-url: ${MINIO_PUBLIC_URL:http://localhost:9000}
     max-size: 5MB
   notifications:

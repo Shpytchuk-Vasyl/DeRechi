@@ -73,7 +73,7 @@
                         <img th:src="${uploads.urlOf(form.image)}" alt="">
                     </figure>
 
-                    <input type="file" id="image-upload" accept="image/*"
+                    <input type="file" id="image-upload" name="file" accept="image/*"
                            th:data-url="@{${uploadPath}}"
                            th:data-max-size="${uploads.maxBytes}"
                            th:data-label="#{form.image.drop}"

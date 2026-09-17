@@ -27,6 +27,18 @@ spring:
               predicates:
                 - Path=/graphql/**,/graphiql/**,/api/client/**
 
+            - id: files
+              uri: ${MINIO_URI:http://localhost:9000}
+              predicates:
+                - Path=/files/**
+                - Method=GET
+              filters:
+                - RewritePath=/files/(?<key>.*), /${MINIO_BUCKET:derechi-files}/$\{key}
+                - name: AddResponseHeader
+                  args:
+                    name: Cache-Control
+                    value: "public, max-age=31536000, immutable"
+
 server:
   port: 8080
 

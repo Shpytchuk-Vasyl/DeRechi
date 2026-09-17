@@ -67,9 +67,15 @@ services:
     container_name: derechi-getaway
     ports:
       - "8080:8080"
+    depends_on:
+      discovery:
+        condition: service_started
+      minio:
+        condition: service_healthy
     environment:
       <<: *eureka
       KEYCLOAK_URI: http://keycloak:8080
+      MINIO_URI: http://minio:9000
 
   client-api:
     <<: *service-base
@@ -106,6 +112,8 @@ services:
       <<: [*eureka, *postgres, *rabbitmq]
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/derechi
       SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI: ${KEYCLOAK_ISSUER_URI:-http://localhost:8180/realms/derechi}
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL:-http://localhost:8080/files}
     depends_on:
       discovery:
         condition: service_started
@@ -113,6 +121,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
 
   automatic-search:
     <<: *service-base
