@@ -6,6 +6,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.shpytchuk.adminapi.security.AdminPermissions;
 import org.shpytchuk.adminapi.view.Formats;
 import org.shpytchuk.adminapi.view.Plurals;
+import org.shpytchuk.adminapi.view.SocialMediaIcons;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -19,6 +20,7 @@ public class GlobalModelAdvice {
 
     private final Formats formats;
     private final Plurals plurals;
+    private final SocialMediaIcons socialMediaIcons;
 
     @ModelAttribute("fmt")
     public Formats formats() {
@@ -28,6 +30,11 @@ public class GlobalModelAdvice {
     @ModelAttribute("plural")
     public Plurals plurals() {
         return plurals;
+    }
+
+    @ModelAttribute("social")
+    public SocialMediaIcons socialMediaIcons() {
+        return socialMediaIcons;
     }
 
     @ModelAttribute("languages")

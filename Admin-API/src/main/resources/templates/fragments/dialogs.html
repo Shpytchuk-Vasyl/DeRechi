@@ -69,7 +69,16 @@
                             </div>
 
                             <div class="column is-half py-2">
-                                <p class="is-size-7 is-uppercase has-text-weight-semibold has-text-grey" th:text="#{field.phone}">Phone</p>
+                                <p class="phone-line">
+                                    <span class="is-size-7 is-uppercase has-text-weight-semibold has-text-grey"
+                                          th:text="#{field.phone}">Phone</span>
+                                    <span class="icon is-small messenger" th:each="messenger : ${item.socialMedias}"
+                                          th:classappend="'messenger-' + ${#strings.toLowerCase(messenger)}"
+                                          role="img" th:title="#{social.__${messenger}__}"
+                                          th:aria-label="#{social.__${messenger}__}">
+                                        <i th:class="${social.icon(messenger)}"></i>
+                                    </span>
+                                </p>
                                 <p class="numeric" th:text="${fmt.phone(item.phone)}">+380</p>
                             </div>
 
@@ -82,11 +91,6 @@
                 </div>
 
                 <p class="has-text-grey mt-4" th:if="${item.description}" th:text="${item.description}">опис</p>
-
-                <div class="tags mt-4 mb-0" th:if="${!item.socialMedias.isEmpty()}">
-                    <span class="tag is-light" th:each="social : ${item.socialMedias}"
-                          th:text="${social}">TELEGRAM</span>
-                </div>
             </div>
 
             <footer class="card-footer">

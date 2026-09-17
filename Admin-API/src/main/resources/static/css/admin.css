@@ -187,6 +187,31 @@ button.card-footer-item {
     min-width: 0;
 }
 
+/* ---------- Messengers ---------- */
+
+.phone-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    align-items: center;
+}
+
+.messenger-telegram {
+    color: #29a9eb;
+}
+
+.messenger-viber {
+    color: #7360f2;
+}
+
+.messenger-whatsapp {
+    color: #25d366;
+}
+
+.checkbox .messenger {
+    vertical-align: text-bottom;
+}
+
 /* ---------- Sortable headers ---------- */
 
 .sortable {

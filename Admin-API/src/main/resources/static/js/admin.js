@@ -53,7 +53,7 @@ document.addEventListener('click', async (event) => {
     try {
         const response = await fetch(button.dataset.url, {headers: {Accept: 'text/html'}});
         if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
+            return;
         }
 
         const parsed = document.createElement('template');

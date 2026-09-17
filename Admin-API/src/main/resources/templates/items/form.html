@@ -151,9 +151,12 @@
                 <div class="field">
                     <label class="label"><span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-comments"></i></span><span th:text="#{field.socialMedia}">Social media</span></label>
                     <div class="control">
-                        <label class="checkbox mr-4" th:each="social : ${allSocialMedias}">
-                            <input type="checkbox" th:field="*{socialMedias}" th:value="${social}">
-                            <span th:text="${social}">TELEGRAM</span>
+                        <label class="checkbox mr-4" th:each="messenger : ${allSocialMedias}">
+                            <input type="checkbox" th:field="*{socialMedias}" th:value="${messenger}">
+                            <span class="icon is-small messenger"
+                                  th:classappend="'messenger-' + ${#strings.toLowerCase(messenger)}"
+                                  aria-hidden="true"><i th:class="${social.icon(messenger)}"></i></span>
+                            <span th:text="#{social.__${messenger}__}">TELEGRAM</span>
                         </label>
                     </div>
                 </div>
