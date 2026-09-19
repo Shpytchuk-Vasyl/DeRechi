@@ -25,6 +25,15 @@ x-rabbitmq: &rabbitmq
   SPRING_RABBITMQ_USERNAME: derechi
   SPRING_RABBITMQ_PASSWORD: derechi
 
+x-jvm: &jvm
+#  only for local development
+  JAVA_OPTS: >-
+    -Xms64m -Xmx128m
+    -XX:MaxMetaspaceSize=128m
+    -XX:ReservedCodeCacheSize=34m
+    -XX:MaxDirectMemorySize=34m
+    -XX:-UseG1GC -XX:+UseSerialGC
+
 services:
 
   prometheus:
@@ -56,6 +65,8 @@ services:
     restart: unless-stopped
     ports:
       - "8761:8761"
+    environment:
+      <<: *jvm
 
   getaway:
     <<: *service-base
@@ -73,7 +84,7 @@ services:
       minio:
         condition: service_healthy
     environment:
-      <<: *eureka
+      <<: [*jvm, *eureka]
       KEYCLOAK_URI: http://keycloak:8080
       MINIO_URI: http://minio:9000
 
@@ -88,7 +99,7 @@ services:
     ports:
       - "8082:8082"
     environment:
-      <<: [*eureka, *postgres, *rabbitmq]
+      <<: [*jvm, *eureka, *postgres, *rabbitmq]
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/derechi
     depends_on:
       discovery:
@@ -109,9 +120,11 @@ services:
     ports:
       - "8083:8083"
     environment:
-      <<: [*eureka, *postgres, *rabbitmq]
+      <<: [*jvm, *eureka, *postgres, *rabbitmq]
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/derechi
-      SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI: ${KEYCLOAK_ISSUER_URI:-http://localhost:8180/realms/derechi}
+      SPRING_PROFILES_ACTIVE: docker
+      KEYCLOAK_URI: http://keycloak:8080
+      KEYCLOAK_PUBLIC_URI: ${KEYCLOAK_PUBLIC_URI:-http://localhost:8180}
       MINIO_ENDPOINT: http://minio:9000
       MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL:-http://localhost:8080/files}
     depends_on:
@@ -135,7 +148,7 @@ services:
     ports:
       - "8085:8085"
     environment:
-      <<: [*eureka, *postgres, *rabbitmq]
+      <<: [*jvm, *eureka, *postgres, *rabbitmq]
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/derechi
     depends_on:
       discovery:
@@ -156,7 +169,7 @@ services:
     ports:
       - "8084:8084"
     environment:
-      <<: [*eureka, *rabbitmq]
+      <<: [*jvm, *eureka, *rabbitmq]
       NOTIFY_EMAIL_HOST: mailpit
     depends_on:
       discovery:

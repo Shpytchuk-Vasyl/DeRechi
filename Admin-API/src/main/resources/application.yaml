@@ -84,7 +84,6 @@ spring:
             scope: openid,profile,email,roles
         provider:
           keycloak:
-            issuer-uri: http://localhost:8180/realms/derechi
             user-name-attribute: preferred_username
 
 derechi:
@@ -120,3 +119,30 @@ eureka:
       defaultZone: http://localhost:8761/eureka
   instance:
     prefer-ip-address: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: "!docker"
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8180/realms/derechi
+
+---
+spring:
+  config:
+    activate:
+      on-profile: "docker"
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            authorization-uri: ${KEYCLOAK_PUBLIC_URI:http://localhost:8180}/realms/derechi/protocol/openid-connect/auth
+            token-uri: ${KEYCLOAK_URI:http://keycloak:8080}/realms/derechi/protocol/openid-connect/token
+            jwk-set-uri: ${KEYCLOAK_URI:http://keycloak:8080}/realms/derechi/protocol/openid-connect/certs
+            user-info-uri: ${KEYCLOAK_URI:http://keycloak:8080}/realms/derechi/protocol/openid-connect/userinfo

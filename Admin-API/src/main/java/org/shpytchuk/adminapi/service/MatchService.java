@@ -3,6 +3,7 @@ package org.shpytchuk.adminapi.service;
 import lombok.AllArgsConstructor;
 import org.shpytchuk.adminapi.entity.items.LostItem;
 import org.shpytchuk.adminapi.entity.items.SimilarItem;
+import org.shpytchuk.adminapi.exception.NotFoundException;
 import org.shpytchuk.adminapi.form.ItemFilter;
 import org.shpytchuk.adminapi.mapper.ItemMapper;
 import org.shpytchuk.adminapi.repository.items.LostItemRepository;
@@ -46,11 +47,16 @@ public class MatchService {
     }
 
     @Transactional(readOnly = true)
-    public List<CandidateView> candidatesAfterPreview(Long lostItemId) {
-        return similarItemRepository.findByLostItemIdOrderByMatchOrderDescFoundItemIdAsc(lostItemId).stream()
-                .skip(PREVIEW_SIZE)
+    public MatchRow rowWithAllCandidates(Long lostItemId) {
+        LostItem lost = lostItemRepository.findById(lostItemId)
+                .orElseThrow(() -> new NotFoundException("entity.LOST_ITEM", lostItemId));
+
+        List<CandidateView> candidates = similarItemRepository
+                .findByLostItemIdOrderByMatchOrderDescFoundItemIdAsc(lostItemId).stream()
                 .map(MatchService::toCandidate)
                 .toList();
+
+        return new MatchRow(ItemMapper.toView(lost), candidates, candidates.size());
     }
 
     private Map<Long, List<CandidateView>> previewByLostItem(List<Long> ids) {

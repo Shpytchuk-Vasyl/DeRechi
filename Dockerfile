@@ -24,4 +24,5 @@ USER spring
 
 COPY --from=build /workspace/${MODULE}/target/*.jar app.jar
 
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+ENV JAVA_OPTS=""
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar"]

@@ -36,38 +36,27 @@ const formatLocalTimes = (root) => {
 
 document.addEventListener('DOMContentLoaded', () => formatLocalTimes(document));
 
-document.addEventListener('click', async (event) => {
-    const button = event.target.closest('.load-candidates');
-    if (!button) {
-        return;
-    }
+/* ---------- htmx ---------- */
 
-    const rows = document.querySelector(button.dataset.target);
-    if (!rows) {
-        return;
-    }
+document.addEventListener('htmx:load', (event) => formatLocalTimes(event.target));
 
-    button.classList.add('is-loading');
-    button.disabled = true;
-
-    try {
-        const response = await fetch(button.dataset.url, {headers: {Accept: 'text/html'}});
-        if (!response.ok) {
-            return;
-        }
-
-        const parsed = document.createElement('template');
-        parsed.innerHTML = await response.text();
-        parsed.content.querySelectorAll('dialog').forEach((dialog) => document.body.append(dialog));
-        rows.append(parsed.content);
-        formatLocalTimes(rows);
-
-        button.closest('.more-candidates').remove();
-    } catch (error) {
-        console.error('Не вдалося довантажити кандидатів', error);
-        button.classList.remove('is-loading');
-        button.disabled = false;
-        button.classList.add('is-danger', 'is-light');
-        button.querySelector('span:last-child').textContent = button.dataset.error;
-    }
+document.addEventListener('htmx:beforeRequest', (event) => {
+    event.detail.elt.classList.add('is-loading');
 });
+
+document.addEventListener('htmx:afterRequest', (event) => {
+    event.detail.elt.classList.remove('is-loading');
+});
+
+const failed = (event) => {
+    const element = event.detail.elt;
+    const message = element.dataset.error;
+    if (!message) {
+        return;
+    }
+    element.classList.add('is-danger', 'is-light');
+    element.querySelector('span:last-child').textContent = message;
+};
+
+document.addEventListener('htmx:responseError', failed);
+document.addEventListener('htmx:sendError', failed);

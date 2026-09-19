@@ -38,6 +38,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
@@ -89,6 +90,39 @@ class MatchControllerTests {
                         containsString("commandfor=\"lost-3\""),
                         containsString("commandfor=\"found-3\""),
                         containsString("class=\"thumb-img\""))));
+    }
+
+    @Test
+    void showMoreButtonPointsAtTheCandidatesCell() throws Exception {
+        when(matchService.page(any(), any())).thenReturn(new PageImpl<>(List.of(
+                new MatchRow(item(3L, "Lost"), List.of(
+                        new CandidateView(item(7L, "Found"), 0.94, null, null)), 5))));
+
+        mockMvc.perform(get("/admin/matches")
+                        .with(oidcLogin().authorities(authority(Scope.MATCH, Action.VIEW))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(allOf(
+                        containsString("id=\"candidates-3\""),
+                        containsString("hx-get=\"/admin/matches/3/candidates?page=0\""),
+                        containsString("hx-target=\"#candidates-3\""),
+                        containsString("hx-swap=\"outerHTML\""))));
+    }
+
+    @Test
+    void candidatesFragmentReplacesTheWholeCellWithoutShowMore() throws Exception {
+        when(matchService.rowWithAllCandidates(3L)).thenReturn(
+                new MatchRow(item(3L, "Lost"), List.of(
+                        new CandidateView(item(7L, "Found"), 0.94, null, null),
+                        new CandidateView(item(8L, "Found"), 0.91, null, null)), 2));
+
+        mockMvc.perform(get("/admin/matches/3/candidates").param("page", "0")
+                        .with(oidcLogin().authorities(authority(Scope.MATCH, Action.VIEW))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(allOf(
+                        containsString("id=\"candidates-3\""),
+                        containsString("id=\"found-7\""),
+                        containsString("id=\"found-8\""),
+                        not(containsString("hx-get")))));
     }
 
     private static ItemView item(Long id, String title) {

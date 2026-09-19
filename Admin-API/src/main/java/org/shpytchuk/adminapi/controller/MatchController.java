@@ -54,10 +54,9 @@ public class MatchController {
                              @RequestParam(defaultValue = "0") int page,
                              @ModelAttribute("filter") ItemFilter filter,
                              Model model) {
-        model.addAttribute("candidates", matchService.candidatesAfterPreview(lostItemId));
-        model.addAttribute("lostItemId", lostItemId);
+        model.addAttribute("row", matchService.rowWithAllCandidates(lostItemId));
         model.addAttribute("page", page);
-        return "matches :: moreCandidates";
+        return "fragments/candidates :: cell(row=${row}, page=${page}, filter=${filter})";
     }
 
     @PostMapping("/notify")
