@@ -14,10 +14,17 @@ import org.shpytchuk.adminapi.event.NotificationRequestedEvent;
 import org.shpytchuk.adminapi.exception.NotFoundException;
 import org.shpytchuk.adminapi.form.NotifyChannel;
 import org.shpytchuk.adminapi.repository.items.SimilarItemRepository;
+import org.shpytchuk.adminapi.view.Formats;
 import org.shpytchuk.adminapi.view.NotifiedMatch;
+import org.junit.jupiter.api.AfterEach;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.Locale;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,9 +48,22 @@ class MatchNotificationServiceTest {
 
     @BeforeEach
     void setUp() {
+        LocaleContextHolder.setLocale(Locale.of("uk", "UA"));
         repository = mock(SimilarItemRepository.class);
         rabbitTemplate = mock(RabbitTemplate.class);
-        service = new MatchNotificationService(repository, rabbitTemplate, PROPERTIES);
+        service = new MatchNotificationService(repository, rabbitTemplate, PROPERTIES, messages(), new Formats());
+    }
+
+    @AfterEach
+    void tearDown() {
+        LocaleContextHolder.resetLocaleContext();
+    }
+
+    private static MessageSource messages() {
+        ResourceBundleMessageSource source = new ResourceBundleMessageSource();
+        source.setBasename("messages");
+        source.setDefaultEncoding(StandardCharsets.UTF_8.name());
+        return source;
     }
 
     @Test
@@ -60,7 +80,10 @@ class MatchNotificationServiceTest {
         assertThat(event.getValue().phone()).isEqualTo("+380671234567");
         assertThat(event.getValue().socialMedias()).containsExactly(SocialMediaEnum.TELEGRAM);
         assertThat(event.getValue().deduplicationKey()).isEqualTo("match:1:2");
-        assertThat(event.getValue().message()).contains("Загублений рюкзак", "Знайдений рюкзак", "Метро Хрещатик");
+        assertThat(event.getValue().subject()).isEqualTo("DeRechi: вашу річ знайшли");
+        assertThat(event.getValue().message())
+                .contains("Загублений рюкзак", "Знайдений рюкзак", "Метро Хрещатик", "finder@example.com")
+                .doesNotContain("{0}", "notification.match.body");
 
         assertThat(match.getNotifiedAt()).isNotNull();
         assertThat(match.getNotifiedBy()).isEqualTo("admin@derechi.local");

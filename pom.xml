@@ -26,7 +26,7 @@
         <module>Admin-API</module>
         <module>Automatic-Search</module>
         <module>Notification</module>
-        <module>Launcher</module>
+<!--        <module>Launcher</module>-->
     </modules>
 
     <properties>

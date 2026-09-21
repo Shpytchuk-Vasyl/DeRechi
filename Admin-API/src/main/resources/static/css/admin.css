@@ -320,7 +320,6 @@ button.card-footer-item {
 /* ---------- Split-button ---------- */
 
 .notify-menu {
-    display: inline-block;
     anchor-scope: --notify;
 }
 

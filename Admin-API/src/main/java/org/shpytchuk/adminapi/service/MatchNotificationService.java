@@ -13,10 +13,14 @@ import org.shpytchuk.adminapi.exception.NotFoundException;
 import org.shpytchuk.adminapi.form.NotifyChannel;
 import org.shpytchuk.adminapi.mapper.ItemMapper;
 import org.shpytchuk.adminapi.repository.items.SimilarItemRepository;
+import org.shpytchuk.adminapi.view.Formats;
 import org.shpytchuk.adminapi.view.NotifiedMatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.AmqpConnectException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,14 +32,14 @@ public class MatchNotificationService {
 
     private static final Logger log = LoggerFactory.getLogger(MatchNotificationService.class);
 
-    private static final String SUBJECT = "DeRechi: можливо, вашу річ знайшли";
-    private static final String MESSAGE = """
-            Вітаємо! Щодо вашої заявки «%s» (%s) знайшовся схожий предмет: «%s», %s, %s.
-            Зайдіть у DeRechi, щоб переглянути знахідку та звʼязатися з тим, хто її знайшов.""";
+    private static final String SUBJECT_KEY = "notification.match.subject";
+    private static final String BODY_KEY = "notification.match.body";
 
     private final SimilarItemRepository similarItemRepository;
     private final RabbitTemplate rabbitTemplate;
     private final NotificationProperties properties;
+    private final MessageSource messages;
+    private final Formats formats;
 
 
     @Transactional
@@ -44,11 +48,16 @@ public class MatchNotificationService {
                 .findById(new SimilarItem.SimilarItemId(foundItemId, lostItemId))
                 .orElseThrow(() -> new NotFoundException("entity.match", lostItemId + "/" + foundItemId));
 
-        NotificationRequestedEvent event = getEvent(lostItemId, foundItemId, match);
+        NotificationRequestedEvent event = getEvent(match, channel);
 
-        rabbitTemplate.convertAndSend(properties.exchange(), properties.routingKey(), event);
+        try {
+            rabbitTemplate.convertAndSend(properties.exchange(), properties.routingKey(), event);
         log.info("Сповістили власника загубленої {} про знайдену {} каналом {} (адмін {})",
                 lostItemId, foundItemId, channel, actor);
+        } catch (AmqpConnectException e) {
+            log.error("Rabbit зараз не доступний.");
+            throw e;
+        }
 
         match.setNotifiedAt(Instant.now());
         match.setNotifiedBy(actor);
@@ -57,21 +66,31 @@ public class MatchNotificationService {
         return new NotifiedMatch(ItemMapper.toView(match.getLostItem()), ItemMapper.toCandidate(match));
     }
 
-    private static @NonNull NotificationRequestedEvent getEvent(Long lostItemId, Long foundItemId, SimilarItem match) {
+    private @NonNull NotificationRequestedEvent getEvent(SimilarItem match, NotifyChannel notifyChannel) {
         LostItem lost = match.getLostItem();
         FoundItem found = match.getFoundItem();
         ContactInfo owner = lost.getInfo();
 
         NotificationRequestedEvent event = new NotificationRequestedEvent(
-                SUBJECT,
-                MESSAGE.formatted(
-                        lost.getTitle(), lost.getDate(),
-                        found.getTitle(), found.getPlace().getName(), found.getDate()),
-                owner.getPhone(),
-                owner.getEmail(),
-                owner.getSocialMedias(),
-                deduplicationKey(lostItemId, foundItemId));
+                text(SUBJECT_KEY),
+                text(BODY_KEY,
+                        lost.getTitle(), formats.date(lost.getDate()),
+                        found.getTitle(), found.getPlace().getName(), formats.date(found.getDate()),
+                        formats.phone(found.getInfo().getPhone()), found.getInfo().getEmail()),
+                notifyChannel.isNeedPhone() ? owner.getPhone() : "",
+                notifyChannel.isNeedEmail() ? owner.getEmail() : "",
+                socialMedias(notifyChannel),
+                deduplicationKey(lost.getId(), found.getId()));
         return event;
+    }
+
+    private static SocialMediaEnum[] socialMedias(NotifyChannel channel) {
+        SocialMediaEnum social = channel.social();
+        return social == null ? new SocialMediaEnum[0] : new SocialMediaEnum[]{social};
+    }
+
+    private String text(String key, Object... arguments) {
+        return messages.getMessage(key, arguments, LocaleContextHolder.getLocale());
     }
 
     private static String deduplicationKey(Long lostItemId, Long foundItemId) {

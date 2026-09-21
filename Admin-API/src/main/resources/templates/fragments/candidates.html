@@ -64,7 +64,7 @@
         </div>
     </td>
     <td class="has-text-right is-narrow">
-        <form th:if="${perms.can('MATCH', 'NOTIFY')}" class="notify-menu"
+        <form th:if="${perms.can('MATCH', 'NOTIFY')}" class="dropdown notify-menu"
               th:action="@{/admin/matches/notify}" method="post"
               th:hx-target="'#candidate-' + ${lost.id} + '-' + ${candidate.found.id}" hx-swap="outerHTML"
               th:with="notifyId = 'notify-' + ${lost.id} + '-' + ${candidate.found.id},

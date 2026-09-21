@@ -25,24 +25,29 @@ public class NotificationSender {
 
     public void send(NotificationRequestedEvent event) {
         try {
-            sendVia(Channel.EMAIL, event.email(), event);
-            sendVia(Channel.SMS, event.phone(), event);
-
-            for (var target : targets(event)) {
-                sendVia(target, event.phone(), event);
+            if (event.email() != null) {
+                sendVia(Channel.EMAIL, event);
             }
 
+            List<Channel> targets = targets(event);
+
+            if (targets.isEmpty() && event.phone() != null) {
+                sendVia(Channel.SMS, event);
+            }
+
+            for (var target : targets) {
+                sendVia(target, event);
+            }
         } catch (DuplicateNotificationException e) {
         }
         return;
     }
 
     private void sendVia(Channel target,
-                         String recipient,
                          NotificationRequestedEvent event) {
         log.debug("Надсилаємо {} через {}", event.subject(), target);
 
-        notify.to(recipient)
+        notify.to(event.getRecipient(target))
                 .via(target)
                 .subject(event.subject())
                 .content(event.message())
@@ -67,6 +72,6 @@ public class NotificationSender {
 
 
     private static String deduplicationKey(NotificationRequestedEvent event, Channel target) {
-        return "%s:%s".formatted(event.phone(), target.name());
+        return "%s:%s".formatted(event.getRecipient(target), target.name());
     }
 }

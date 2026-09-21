@@ -62,7 +62,7 @@ public class GlobalExceptionHandler {
             return "error/408";
         }
 
-        log.error("Необроблена помилка", exception);
+        log.error("Необроблена помилка");
         response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         describeAdmin(model);
         model.addAttribute("message", text("error.unexpected"));

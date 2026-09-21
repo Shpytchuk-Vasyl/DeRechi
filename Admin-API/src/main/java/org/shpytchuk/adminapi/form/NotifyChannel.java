@@ -18,4 +18,18 @@ public enum NotifyChannel {
             default -> SocialMediaEnum.valueOf(name());
         };
     }
+
+    public boolean isNeedPhone() {
+        return switch (this) {
+            case EMAIL -> false;
+            default -> true;
+        };
+    }
+
+    public boolean isNeedEmail() {
+        return switch (this) {
+            case ALL, EMAIL -> true;
+            default -> false;
+        };
+    }
 }
