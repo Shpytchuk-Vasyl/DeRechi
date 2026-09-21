@@ -96,7 +96,7 @@
                                         class="fa-solid fa-angle-down"></i></span>
                             </button>
 
-                            <div class="dropdown-content languages" popover id="languages">
+                            <div class="dropdown-content anchored-menu languages" popover id="languages">
                                 <a class="dropdown-item" th:each="language : ${languages}"
                                    th:classappend="${language.language == currentLanguage.language} ? 'is-active'"
                                    th:href="@{''(lang=${language.language})}">

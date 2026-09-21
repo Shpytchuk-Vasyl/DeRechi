@@ -53,7 +53,7 @@ public class MatchService {
 
         List<CandidateView> candidates = similarItemRepository
                 .findByLostItemIdOrderByMatchOrderDescFoundItemIdAsc(lostItemId).stream()
-                .map(MatchService::toCandidate)
+                .map(ItemMapper::toCandidate)
                 .toList();
 
         return new MatchRow(ItemMapper.toView(lost), candidates, candidates.size());
@@ -67,7 +67,7 @@ public class MatchService {
         Map<Long, List<CandidateView>> grouped = new LinkedHashMap<>();
         for (SimilarItem similar : similarItemRepository.findTopByLostItemIdIn(ids, PREVIEW_SIZE)) {
             grouped.computeIfAbsent(similar.getId().getLostItemId(), key -> new ArrayList<>())
-                    .add(toCandidate(similar));
+                    .add(ItemMapper.toCandidate(similar));
         }
         return grouped;
     }
@@ -78,13 +78,5 @@ public class MatchService {
         }
         return similarItemRepository.countByLostItemIdIn(ids).stream()
                 .collect(Collectors.toMap(CandidateCount::lostItemId, CandidateCount::total));
-    }
-
-    private static CandidateView toCandidate(SimilarItem similar) {
-        return new CandidateView(
-                ItemMapper.toView(similar.getFoundItem()),
-                similar.getMatchOrder(),
-                similar.getNotifiedAt(),
-                similar.getNotifiedBy());
     }
 }

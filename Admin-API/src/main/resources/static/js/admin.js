@@ -55,7 +55,12 @@ const failed = (event) => {
         return;
     }
     element.classList.add('is-danger', 'is-light');
-    element.querySelector('span:last-child').textContent = message;
+    element.title = message;
+
+    const text = element.querySelector('span:not(.icon)');
+    if (text) {
+        text.textContent = message;
+    }
 };
 
 document.addEventListener('htmx:responseError', failed);

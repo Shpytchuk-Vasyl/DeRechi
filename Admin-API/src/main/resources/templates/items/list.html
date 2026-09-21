@@ -71,7 +71,7 @@
                                     <span class="icon" aria-hidden="true"><i class="fa-solid fa-ellipsis-vertical"></i></span>
                                 </button>
 
-                                <div class="dropdown-content row-actions" popover
+                                <div class="dropdown-content anchored-menu row-actions" popover
                                      th:id="'actions-' + ${item.id}">
                                     <a class="dropdown-item" th:if="${perms.can(scope, 'EDIT')}"
                                        th:href="@{${basePath} + '/' + ${item.id} + '/edit'}">

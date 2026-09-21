@@ -70,7 +70,7 @@ spring:
     password: derechi
 
   thymeleaf:
-    cache: false
+    cache: true
 
   security:
     oauth2:
@@ -103,6 +103,10 @@ derechi:
 
 server:
   port: 8083
+  compression:
+    enabled: true
+    mime-types: text/html,text/css,text/javascript,application/javascript,application/json,image/svg+xml
+    min-response-size: 1KB
 
 management:
   endpoints:

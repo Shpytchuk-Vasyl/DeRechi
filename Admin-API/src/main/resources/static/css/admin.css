@@ -283,6 +283,26 @@ button.card-footer-item {
     opacity: 1;
 }
 
+/* ---------- Anchored menu ---------- */
+
+.anchored-menu[popover] {
+    top: anchor(bottom);
+    right: anchor(right);
+    bottom: auto;
+    left: auto;
+    min-width: 12rem;
+    margin: 0.25rem 0 0;
+    padding-inline: 0;
+    border: 1px solid var(--bulma-border-weak);
+}
+
+.anchored-menu .dropdown-item {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    text-align: left;
+}
+
 /* ---------- Dropdown ---------- */
 
 .row-actions-menu {
@@ -295,18 +315,21 @@ button.card-footer-item {
 
 .row-actions[popover] {
     position-anchor: --row-actions;
-    top: anchor(bottom);
-    right: anchor(right);
-    bottom: auto;
-    left: auto;
-    min-width: 12rem;
-    margin: 0.25rem 0 0;
-    padding-inline: 0;
-    border: 1px solid var(--bulma-border-weak);
 }
 
-.row-actions .dropdown-item {
-    text-align: left;
+/* ---------- Split-button ---------- */
+
+.notify-menu {
+    display: inline-block;
+    anchor-scope: --notify;
+}
+
+.notify-trigger {
+    anchor-name: --notify;
+}
+
+.notify-options[popover] {
+    position-anchor: --notify;
 }
 
 /* ---------- Language switch ---------- */
@@ -321,18 +344,5 @@ button.card-footer-item {
 
 .languages[popover] {
     position-anchor: --languages;
-    top: anchor(bottom);
-    right: anchor(right);
-    bottom: auto;
-    left: auto;
     min-width: 11rem;
-    margin: 0.25rem 0 0;
-    padding-inline: 0;
-    border: 1px solid var(--bulma-border-weak);
-}
-
-.languages .dropdown-item {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
 }
