@@ -29,7 +29,7 @@ public class NotificationRequestedListener {
             sender.send(event);
         } catch (Exception e) {
             String erroMsg = "Can't notify user :" + event.email();
-            log.error(erroMsg, e);
+            log.error(erroMsg);
             throw new AmqpRejectAndDontRequeueException(erroMsg);
         }
     }

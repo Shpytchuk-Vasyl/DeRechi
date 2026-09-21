@@ -77,8 +77,8 @@ public class MatchNotificationService {
                         lost.getTitle(), formats.date(lost.getDate()),
                         found.getTitle(), found.getPlace().getName(), formats.date(found.getDate()),
                         formats.phone(found.getInfo().getPhone()), found.getInfo().getEmail()),
-                notifyChannel.isNeedPhone() ? owner.getPhone() : "",
-                notifyChannel.isNeedEmail() ? owner.getEmail() : "",
+                notifyChannel.isNeedPhone() ? owner.getPhone() : null,
+                notifyChannel.isNeedEmail() ? owner.getEmail() : null,
                 socialMedias(notifyChannel),
                 deduplicationKey(lost.getId(), found.getId()));
         return event;
