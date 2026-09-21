@@ -29,15 +29,10 @@ public class NotificationSender {
                 sendVia(Channel.EMAIL, event);
             }
 
-            List<Channel> targets = targets(event);
-
-            if (targets.isEmpty() && event.phone() != null) {
+            if (event.phone() != null) {
                 sendVia(Channel.SMS, event);
             }
 
-            for (var target : targets) {
-                sendVia(target, event);
-            }
         } catch (DuplicateNotificationException e) {
         }
         return;
@@ -55,20 +50,20 @@ public class NotificationSender {
                 .send();
     }
 
-    private List<Channel> targets(NotificationRequestedEvent event) {
-        Set<String> registered = notify.getRegisteredChannels();
-
-        return Arrays.stream(event.socialMedias())
-                .map(m -> m.toChanel())
-                .filter(channel -> {
-                    if (!registered.contains(channel.name())) {
-                        log.warn("Канал {} не налаштований — пропускаємо", channel);
-                        return false;
-                    }
-                    return true;
-                })
-                .toList();
-    }
+//    private List<Channel> targets(NotificationRequestedEvent event) {
+//        Set<String> registered = notify.getRegisteredChannels();
+//
+//        return Arrays.stream(event.socialMedias())
+//                .map(m -> m.toChanel())
+//                .filter(channel -> {
+//                    if (!registered.contains(channel.name())) {
+//                        log.warn("Канал {} не налаштований — пропускаємо", channel);
+//                        return false;
+//                    }
+//                    return true;
+//                })
+//                .toList();
+//    }
 
 
     private static String deduplicationKey(NotificationRequestedEvent event, Channel target) {

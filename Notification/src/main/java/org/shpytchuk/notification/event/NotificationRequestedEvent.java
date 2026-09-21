@@ -26,16 +26,15 @@ public record NotificationRequestedEvent(
             this.channel = channel;
         }
 
-        public Channel toChanel() {
-            return channel;
-        }
+//        public Channel toChanel() {
+//            return channel;
+//        }
     }
 
 
 
     public String getRecipient(Channel channel) {
         return switch (channel) {
-            case SMS, WHATSAPP, TELEGRAM, DISCORD -> phone;
             case EMAIL -> email;
             default -> phone;
         };

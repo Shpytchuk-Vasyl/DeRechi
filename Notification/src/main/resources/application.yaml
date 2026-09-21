@@ -40,8 +40,6 @@ notify:
       from: no-reply@derechi.local
       from-name: DeRechi
       tls: false
-    telegram:
-      bot-token: ${NOTIFY_TELEGRAM_BOT_TOKEN:6106178867:AAFbZJffxoOks2DIbk-8w1xWwdb-5QbHC_Y}
 
 server:
   port: 8084
