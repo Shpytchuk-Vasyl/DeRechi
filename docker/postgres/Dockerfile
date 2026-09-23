@@ -10,6 +10,7 @@ RUN apk add --no-cache curl \
     && mv /dict/uk_UA.aff /dict/uk_ua.affix
 
 FROM postgis/postgis:17-3.5
+# FROM imresamu/postgis:17-3.5 # for macOS 
 COPY --from=dict /dict/uk_ua.dict /dict/uk_ua.affix /usr/share/postgresql/17/tsearch_data/
 
 COPY ukrainian.stop /usr/share/postgresql/17/tsearch_data/
