@@ -32,6 +32,10 @@ spring:
                 - Method=PUT
               filters:
                 - PreserveHostHeader
+                - name: DedupeResponseHeader
+                  args:
+                    name: Access-Control-Allow-Origin Access-Control-Allow-Credentials
+                    strategy: RETAIN_UNIQUE
                 - name: RequestSize
                   args:
                     maxSize: ${MINIO_MAX_UPLOAD:5MB}
