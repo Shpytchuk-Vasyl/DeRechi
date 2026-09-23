@@ -10,9 +10,7 @@ spring:
             add-to-simple-url-handler-mapping: true
             cors-configurations:
               '[/**]':
-                allowed-origins:
-                  - http://localhost:3000
-                  - http://localhost:5173
+                allowed-origin-patterns: ${WEB_ORIGIN_PATTERNS:http://localhost:[*],http://127.0.0.1:[*],http://192.168.*:[*],http://10.*:[*]}
                 allowed-methods: [GET, POST, PUT, PATCH, DELETE, OPTIONS]
                 allowed-headers: "*"
                 allow-credentials: true
@@ -26,6 +24,17 @@ spring:
               uri: lb://CLIENT-API
               predicates:
                 - Path=/graphql/**,/graphiql/**,/api/client/**
+
+            - id: files-upload
+              uri: ${MINIO_URI:http://localhost:9000}
+              predicates:
+                - Path=/${MINIO_BUCKET:derechi-files}/**
+                - Method=PUT
+              filters:
+                - PreserveHostHeader
+                - name: RequestSize
+                  args:
+                    maxSize: ${MINIO_MAX_UPLOAD:5MB}
 
             - id: files
               uri: ${MINIO_URI:http://localhost:9000}
