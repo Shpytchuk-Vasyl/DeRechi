@@ -155,6 +155,45 @@ class LostItemControllerTests extends AbstractGraphQlTests {
     }
 
     @Test
+    void filtersByDistanceAgainstTheDatabase() {
+        createKeys();
+
+        String query = """
+                query Search($filter: ItemFilterInput) {
+                  lostItems(filter: $filter, first: 10) { edges { node { title } } }
+                }
+                """;
+
+        tester.document(query)
+                .variable("filter", Map.of("near", Map.of("lat", 49.84, "lon", 24.03)))
+                .execute()
+                .path("lostItems.edges[*].node.title").entityList(String.class)
+                .containsExactly("Ключі");
+
+        tester.document(query)
+                .variable("filter", Map.of("near", Map.of("lat", 50.4501, "lon", 30.5234)))
+                .execute()
+                .path("lostItems.edges").entityList(Object.class).hasSize(0);
+    }
+
+    @Test
+    void rejectsAFilterPointOutsideTheGlobe() {
+        tester.document("""
+                        query Search($filter: ItemFilterInput) {
+                          lostItems(filter: $filter, first: 10) { edges { node { title } } }
+                        }
+                        """)
+                .variable("filter", Map.of("near", Map.of("lat", 91.0, "lon", 24.03)))
+                .execute()
+                .errors()
+                .satisfy(errors -> {
+                    assertThat(errors).hasSize(1);
+                    assertThat(errors.getFirst().getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
+                    assertThat(errors.getFirst().getMessage()).contains("lat");
+                });
+    }
+
+    @Test
     void sortsByTitleAscending() {
         create("Бандана", documents.getId());
         create("Ананас", documents.getId());

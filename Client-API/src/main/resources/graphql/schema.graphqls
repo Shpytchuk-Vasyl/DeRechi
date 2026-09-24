@@ -63,9 +63,19 @@ type FoundItem {
 input ItemFilterInput {
     search: String
     categoryId: ID
-    placeId: ID
     dateFrom: Date
     dateTo: Date
+    near: NearInput
+}
+
+"Only items within the radius of this point"
+input NearInput {
+    "latitude, -90..90"
+    lat: Float!
+    "longitude, -180..180"
+    lon: Float!
+    "radius in kilometres, up to 500"
+    radiusKm: Float! = 50
 }
 
 input ContactInfoInput {

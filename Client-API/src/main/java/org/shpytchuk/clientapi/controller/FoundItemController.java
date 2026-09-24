@@ -28,7 +28,7 @@ public class FoundItemController {
     }
 
     @QueryMapping
-    public Window<ItemDto> foundItems(@Argument ItemFilterInput filter, @Argument ItemSort sort, ScrollSubrange subrange) {
+    public Window<ItemDto> foundItems(@Argument @Valid ItemFilterInput filter, @Argument ItemSort sort, ScrollSubrange subrange) {
         return service.findAll(filter, sort, subrange);
     }
 

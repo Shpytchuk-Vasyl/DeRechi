@@ -10,6 +10,7 @@ import org.shpytchuk.clientapi.entity.Place;
 import org.shpytchuk.clientapi.entity.Thing;
 import org.shpytchuk.clientapi.entity.ThingCategory;
 import org.shpytchuk.clientapi.input.ItemFilterInput;
+import org.shpytchuk.clientapi.input.NearInput;
 import org.shpytchuk.clientapi.specification.ThingSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
@@ -88,8 +89,39 @@ class ThingRepositoryTests extends AbstractRepositoryTests {
         persistLost("Гаманець", SEPTEMBER_1, wallet, rynok);
         entityManager.flush();
 
-        assertThat(titlesMatching(new ItemFilterInput("КЛЮЧІ", null, null, null, null)))
+        assertThat(titlesMatching(searching("КЛЮЧІ")))
                 .containsExactly("Ключі від авто");
+    }
+
+    @Test
+    void searchFilterMatchesTitleOrDescription() {
+        persistLost("Ключі від авто", SEPTEMBER_1, keys, rynok);
+        persistLost("Гаманець", SEPTEMBER_1, wallet, rynok).setDescription("Шкіряний, всередині ключі");
+        persistLost("Паспорт", SEPTEMBER_1, keys, rynok).setDescription("Синя обкладинка");
+        entityManager.flush();
+
+        assertThat(titlesMatching(searching("ключі")))
+                .containsExactlyInAnyOrder("Ключі від авто", "Гаманець");
+    }
+
+    @Test
+    void searchFilterAlsoMatchesThePlaceName() {
+        persistLost("Ключі", SEPTEMBER_1, keys, rynok);
+        persistLost("Гаманець", SEPTEMBER_1, wallet, opera);
+        entityManager.flush();
+
+        assertThat(titlesMatching(searching("оперний")))
+                .containsExactly("Гаманець");
+    }
+
+    @Test
+    void searchFilterTreatsLikeWildcardsAsPlainCharacters() {
+        persistLost("Знижка 50% на ключі", SEPTEMBER_1, keys, rynok);
+        persistLost("Гаманець", SEPTEMBER_1, wallet, rynok);
+        entityManager.flush();
+
+        assertThat(titlesMatching(searching("%"))).containsExactly("Знижка 50% на ключі");
+        assertThat(titlesMatching(searching("_"))).isEmpty();
     }
 
     @Test
@@ -103,13 +135,26 @@ class ThingRepositoryTests extends AbstractRepositoryTests {
     }
 
     @Test
-    void placeFilterUsesTheGooglePlaceId() {
+    void nearFilterKeepsOnlyItemsWithinTheRadius() {
+        Place kyiv = entityManager.persist(place("ChIJkyiv", "Майдан Незалежності", 50.4501, 30.5234));
+        persistLost("Ключі", SEPTEMBER_1, keys, rynok);
+        persistLost("Гаманець", SEPTEMBER_1, wallet, opera);
+        persistLost("Паспорт", SEPTEMBER_1, keys, kyiv);
+        entityManager.flush();
+
+        assertThat(titlesMatching(nearRynok(50.0)))
+                .containsExactlyInAnyOrder("Ключі", "Гаманець");
+    }
+
+    @Test
+    void nearFilterRadiusIsInKilometres() {
+        // Від Ринку до Оперного ~450 м
         persistLost("Ключі", SEPTEMBER_1, keys, rynok);
         persistLost("Гаманець", SEPTEMBER_1, wallet, opera);
         entityManager.flush();
 
-        assertThat(titlesMatching(new ItemFilterInput(null, null, "ChIJopera", null, null)))
-                .containsExactly("Гаманець");
+        assertThat(titlesMatching(nearRynok(0.1))).containsExactly("Ключі");
+        assertThat(titlesMatching(nearRynok(1.0))).containsExactlyInAnyOrder("Ключі", "Гаманець");
     }
 
     @Test
@@ -121,7 +166,7 @@ class ThingRepositoryTests extends AbstractRepositoryTests {
         entityManager.flush();
 
         assertThat(titlesMatching(new ItemFilterInput(
-                null, null, null, SEPTEMBER_1, SEPTEMBER_1.plusDays(2))))
+                null, null, SEPTEMBER_1, SEPTEMBER_1.plusDays(2), null)))
                 .containsExactlyInAnyOrder("Початок", "Кінець");
     }
 
@@ -130,11 +175,12 @@ class ThingRepositoryTests extends AbstractRepositoryTests {
         persistLost("Ключі", SEPTEMBER_1, keys, rynok);
         persistLost("Ключі", SEPTEMBER_1, wallet, rynok);
         persistLost("Ключі", SEPTEMBER_1.plusDays(10), keys, rynok);
+        persistLost("Ключі", SEPTEMBER_1, keys, opera);
         entityManager.flush();
 
         Page<LostItem> page = lostItemRepository.findAll(
                 ThingSpecifications.byFilter(new ItemFilterInput(
-                        "ключ", keys.getId(), "ChIJrynok", SEPTEMBER_1, SEPTEMBER_1)),
+                        "ключ", keys.getId(), SEPTEMBER_1, SEPTEMBER_1, new NearInput(49.8419, 24.0315, 0.1))),
                 PageRequest.of(0, 10));
 
         assertThat(page.getTotalElements()).isEqualTo(1);
@@ -162,6 +208,14 @@ class ThingRepositoryTests extends AbstractRepositoryTests {
         assertThat(Hibernate.isInitialized(item.getPlace())).isTrue();
         assertThat(Hibernate.isInitialized(item.getInfo())).isTrue();
         assertThat(Hibernate.isInitialized(item.getCategory())).isTrue();
+    }
+
+    private static ItemFilterInput searching(String search) {
+        return new ItemFilterInput(search, null, null, null, null);
+    }
+
+    private static ItemFilterInput nearRynok(double radiusKm) {
+        return new ItemFilterInput(null, null, null, null, new NearInput(49.8419, 24.0315, radiusKm));
     }
 
     private Iterable<String> titlesMatching(ItemFilterInput filter) {

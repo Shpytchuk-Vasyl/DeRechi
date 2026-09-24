@@ -1,15 +1,17 @@
 package org.shpytchuk.clientapi.input;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDate;
 
 public record ItemFilterInput(
-        String search,
+        @Size(max = 100) String search,
         Long categoryId,
-        String placeId,
         LocalDate dateFrom,
-        LocalDate dateTo
+        LocalDate dateTo,
+        @Valid NearInput near
 ) {
     public static final ItemFilterInput EMPTY =
             new ItemFilterInput(null, null, null, null, null);
 }
-

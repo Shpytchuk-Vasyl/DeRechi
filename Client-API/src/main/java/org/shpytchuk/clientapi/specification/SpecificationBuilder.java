@@ -1,89 +1,105 @@
 package org.shpytchuk.clientapi.specification;
 
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Root;
+import org.hibernate.spatial.predicate.JTSSpatialPredicates;
+import org.locationtech.jts.geom.Point;
 import org.springframework.data.jpa.domain.Specification;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 public class SpecificationBuilder<T> {
 
+    private static final char LIKE_ESCAPE = '\\';
+
     private Specification<T> specification = Specification.unrestricted();
 
-    protected <V> SpecificationBuilder<T> applyAndIfValuePresent(
-            V value,
-            Specification<T> spec
-    ) {
-        if (value == null)
-            return this;
-
-        return and(spec);
-    }
-
-    public SpecificationBuilder<T> and(
-            Specification<T> spec
-    ) {
+    public SpecificationBuilder<T> and(Specification<T> spec) {
         if (spec != null)
             specification = specification.and(spec);
         return this;
     }
 
-    public <V> SpecificationBuilder<T> equal(
-            String field,
-            V value
-    ) {
-        return applyAndIfValuePresent(value,
-                (root, query, cb) ->
-                        cb.equal(root.get(field), value)
-        );
+    @SafeVarargs
+    public final SpecificationBuilder<T> or(Specification<T>... specs) {
+        List<Specification<T>> present = Arrays.stream(specs)
+                .filter(Objects::nonNull)
+                .toList();
+        if (present.isEmpty())
+            return this;
+
+        return and(Specification.anyOf(present));
     }
 
-    public <V extends Comparable<? super V>> SpecificationBuilder<T> greaterThanOrEqualTo(
-            String field,
-            V value
-    ) {
-        return applyAndIfValuePresent(value,
-                (root, query, cb) ->
-                        cb.greaterThanOrEqualTo(root.get(field), value)
-        );
+    public <V> SpecificationBuilder<T> equal(String field, V value) {
+        if (value == null)
+            return this;
 
+        return and((root, query, cb) -> cb.equal(path(root, field), value));
     }
 
-    public <V extends Comparable<? super V>> SpecificationBuilder<T> lessThanOrEqualTo(
-            String field,
-            V value
-    ) {
-        return applyAndIfValuePresent(value,
-                (root, query, cb) ->
-                        cb.lessThanOrEqualTo(root.get(field), value));
+    public <V extends Comparable<? super V>> SpecificationBuilder<T> greaterThanOrEqualTo(String field, V value) {
+        if (value == null)
+            return this;
+
+        return and((root, query, cb) -> cb.greaterThanOrEqualTo(path(root, field), value));
     }
 
-    public <V> SpecificationBuilder<T> equalNested(
-            String parent,
-            String field,
-            V value
-    ) {
-        return applyAndIfValuePresent(value,
-                (root, query, cb) ->
-                        cb.equal(
-                                root.get(parent).get(field),
-                                value
-                        ));
+    public <V extends Comparable<? super V>> SpecificationBuilder<T> lessThanOrEqualTo(String field, V value) {
+        if (value == null)
+            return this;
+
+        return and((root, query, cb) -> cb.lessThanOrEqualTo(path(root, field), value));
     }
 
-    public SpecificationBuilder<T> like(
-            String field,
-            String value
-    ) {
-        if (value != null && !value.isBlank()) {
-            and((root, query, cb) ->
-                    cb.like(
-                            cb.lower(root.get(field)),
-                            "%%%s%%".formatted(value.toLowerCase())
-                    ));
-        }
+    public SpecificationBuilder<T> likeAny(String value, String... fields) {
+        if (value == null || value.isBlank())
+            return this;
 
-        return this;
+        String pattern = containsPattern(value);
+        return and(Specification.anyOf(Arrays.stream(fields)
+                .map(field -> likeSpec(field, pattern))
+                .toList()));
+    }
+
+    public SpecificationBuilder<T> like(String field, String value) {
+        return likeAny(value, field);
+    }
+
+    public SpecificationBuilder<T> within(String field, Point center, double meters) {
+        if (center == null)
+            return this;
+
+        return and((root, query, cb) ->
+                JTSSpatialPredicates.distanceWithin(cb, path(root, field), center, meters));
     }
 
     public Specification<T> build() {
         return specification;
     }
-}
 
+    private Specification<T> likeSpec(String field, String pattern) {
+        return (root, query, cb) ->
+                cb.like(cb.lower(path(root, field)), pattern, LIKE_ESCAPE);
+    }
+
+    private static String containsPattern(String value) {
+        String escaped = value.strip()
+                .toLowerCase(Locale.ROOT)
+                .replace("\\", "\\\\")
+                .replace("%", "\\%")
+                .replace("_", "\\_");
+        return "%" + escaped + "%";
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <Y> Path<Y> path(Root<?> root, String field) {
+        Path<?> path = root;
+        for (String part : field.split("\\."))
+            path = path.get(part);
+        return (Path<Y>) path;
+    }
+}

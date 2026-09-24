@@ -28,7 +28,7 @@ public class LostItemController {
     }
 
     @QueryMapping
-    public Window<ItemDto> lostItems(@Argument ItemFilterInput filter, @Argument ItemSort sort, ScrollSubrange subrange) {
+    public Window<ItemDto> lostItems(@Argument @Valid ItemFilterInput filter, @Argument ItemSort sort, ScrollSubrange subrange) {
         return service.findAll(filter, sort, subrange);
     }
 

@@ -22,7 +22,7 @@ query  {
     #        }
     #        title
     #    }
-    lostItems(filter: {placeId: "ChIJq6q6q6q6q6qRq6q6q6q6q6q"})
+    lostItems(filter: {near: {lat: 49.8419, lon: 24.0315, radiusKm: 5}})
      {
         edges {
             node {

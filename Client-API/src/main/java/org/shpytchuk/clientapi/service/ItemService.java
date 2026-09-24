@@ -18,10 +18,7 @@ import org.shpytchuk.clientapi.repository.PlaceRepository;
 import org.shpytchuk.clientapi.repository.ThingCategoryRepository;
 import org.shpytchuk.clientapi.repository.ThingRepository;
 import org.shpytchuk.clientapi.specification.ThingSpecifications;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.PrecisionModel;
+import org.shpytchuk.clientapi.util.GeoPoints;
 import org.springframework.data.domain.*;
 import org.springframework.graphql.data.query.ScrollSubrange;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,8 +32,6 @@ public abstract class ItemService<T extends Thing> {
 
     private static final int DEFAULT_SIZE = 20;
     private static final int MAX_SIZE = 100;
-
-    private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory(new PrecisionModel(), 4326);
 
     private final ThingRepository<T> repository;
     private final ThingCategoryRepository categoryRepository;
@@ -118,8 +113,7 @@ public abstract class ItemService<T extends Thing> {
         Place place = new Place();
         place.setGooglePlaceId(input.id());
         place.setName(input.name());
-        Point coordinate = GEOMETRY_FACTORY.createPoint(new Coordinate(input.lon(), input.lat()));
-        place.setCoordinate(coordinate);
+        place.setCoordinate(GeoPoints.point(input.lat(), input.lon()));
         return place;
     }
 
