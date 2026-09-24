@@ -30,9 +30,6 @@ import java.util.function.Supplier;
 @AllArgsConstructor
 public abstract class ItemService<T extends Thing> {
 
-    private static final int DEFAULT_SIZE = 20;
-    private static final int MAX_SIZE = 100;
-
     private final ThingRepository<T> repository;
     private final ThingCategoryRepository categoryRepository;
     private final PlaceRepository placeRepository;
@@ -49,13 +46,9 @@ public abstract class ItemService<T extends Thing> {
 
     public Window<ItemDto> findAll(ItemFilterInput filter, ItemSort sort, ScrollSubrange subrange) {
         ItemFilterInput effectiveFilter = filter == null ? ItemFilterInput.EMPTY : filter;
-        int size = size(subrange);
-
-        PageRequest pageRequest = PageRequest.of((int) (offset(subrange) / size), size, toSort(sort));
+        PageRequest pageRequest = OffsetPagination.pageRequest(subrange, toSort(sort));
         Page<T> result = repository.findAll(ThingSpecifications.byFilter(effectiveFilter), pageRequest);
-
-        List<ItemDto> content = result.getContent().stream().map(ItemMapper::toDto).toList();
-        return Window.from(content, OffsetScrollPosition.positionFunction(pageRequest.getOffset()), result.hasNext());
+        return OffsetPagination.window(result, ItemMapper::toDto);
     }
 
     @Transactional
@@ -119,25 +112,6 @@ public abstract class ItemService<T extends Thing> {
 
     private static SocialMediaEnum[] toArray(List<SocialMediaEnum> socialMedias) {
         return socialMedias == null ? null : socialMedias.toArray(SocialMediaEnum[]::new);
-    }
-
-    private static int size(ScrollSubrange subrange) {
-        int size = subrange.count().orElse(DEFAULT_SIZE);
-        if (size < 1 || size > MAX_SIZE) {
-            throw new IllegalArgumentException("first має бути в межах 1.." + MAX_SIZE);
-        }
-        return size;
-    }
-
-    private static long offset(ScrollSubrange subrange) {
-        ScrollPosition position = subrange.position().orElse(null);
-        if (position == null || position.isInitial()) {
-            return 0;
-        }
-        if (!(position instanceof OffsetScrollPosition offsetPosition)) {
-            throw new IllegalArgumentException("Непідтримуваний курсор");
-        }
-        return offsetPosition.getOffset() + 1;
     }
 
     private static Sort toSort(ItemSort sort) {

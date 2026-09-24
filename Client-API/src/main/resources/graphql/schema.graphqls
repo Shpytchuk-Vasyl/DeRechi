@@ -114,6 +114,9 @@ type Query {
     foundItems(filter: ItemFilterInput, sort: ItemSort = DATE_DESC, first: Int, after: String): FoundItemConnection!
 
     categories: [Category!]!
+
+    "Places sorted by name; `name` is a case-insensitive substring"
+    places(name: String, first: Int, after: String): PlaceConnection!
 }
 
 type Mutation {
