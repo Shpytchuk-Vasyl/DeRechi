@@ -4,7 +4,8 @@ FROM eclipse-temurin:26-jdk AS build
 WORKDIR /workspace
 
 COPY .mvn .mvn
-COPY mvnw pom.xml ./
+COPY --chmod=755 mvnw ./
+COPY pom.xml ./
 COPY DB-Postgres DB-Postgres
 COPY Discovery Discovery
 COPY Getaway Getaway
