@@ -1,0 +1,193 @@
+{
+  "updated": "Last updated",
+  "terms": {
+    "title": "Terms of use",
+    "summary": "The rules DeRechi runs by: a free board of lost and found notices. By posting a notice you agree to them.",
+    "sections": [
+      {
+        "heading": "1. What DeRechi is",
+        "body": [
+          "DeRechi helps people who lost something and people who found something find each other. The service is free, needs no registration and shows no ads. The site is run by {operator}.",
+          "We don't keep items, don't act as a go-between in handing them over and take no commission. The owner and the finder arrange the return themselves."
+        ]
+      },
+      {
+        "heading": "2. Posting notices",
+        "body": [
+          "Anyone can post a notice. It needs the item's title, category, date, place and your phone and email; a found notice needs a photo as well. If you are under 14, ask a parent to post the notice for you.",
+          "By posting a notice you confirm that:",
+          [
+            "you describe a real loss or find, not an advert for goods or services, a test of demand or a sale of what you found;",
+            "the contacts you give are your own, not someone else's;",
+            "you have the right to the text and photo you publish;",
+            "you post each item once, without duplicates."
+          ],
+          "Notices must not contain:",
+          [
+            "other people's personal data, including document numbers and pages of documents with personal details;",
+            "photos of official IDs or documents of state bodies, the military or law enforcement;",
+            "links to other websites;",
+            "calls to violence, or propaganda of war or extremism;",
+            "insults, discrimination, obscene or erotic content;",
+            "spam, scams and pyramid schemes, or any other illegal or misleading content."
+          ],
+          "The date of the loss or find must be no more than 30 days ago."
+        ]
+      },
+      {
+        "heading": "3. Using the site",
+        "body": [
+          "Without our written permission you may not collect notices automatically (with bots or scrapers), interfere with how the site works, or use contacts from notices for anything other than returning an item, such as advertising."
+        ]
+      },
+      {
+        "heading": "4. Contacts",
+        "body": [
+          "Your phone and email are only partly visible on a notice, to keep you safe from spam.",
+          "That is all other people see for now. A way to request a notice author's full contacts through the site is planned; when it arrives, this section will say how it works."
+        ]
+      },
+      {
+        "heading": "5. Rights to content",
+        "body": [
+          "The text and photo of your notice remain yours. By publishing them you let us show them on the site free of charge for as long as the notice is published.",
+          "The DeRechi name, the site's design and its code belong to the operator."
+        ]
+      },
+      {
+        "heading": "6. Finds and rewards",
+        "body": [
+          "The Civil Code of Ukraine requires a finder to tell the owner, or the police or local council if the owner is unknown (art. 337). The finder is entitled to ask the owner for a reward of up to 20% of the item's value (art. 339).",
+          "A reward stated in a notice is the author's offer. DeRechi doesn't guarantee it is paid and takes no part in any payment."
+        ]
+      },
+      {
+        "heading": "7. Safety",
+        "body": [
+          "Before handing an item over, ask the owner to describe details the photo doesn't show. Meet in busy places.",
+          "Never pay in advance to someone who says they found your thing, and never give anyone your card details or SMS codes. DeRechi is free and never asks for payment or for such data: anyone who does is a scammer. In case of fraud, contact the police and let us know at {email}.",
+          "DeRechi doesn't verify users' identity and isn't responsible for what they do when they meet."
+        ]
+      },
+      {
+        "heading": "8. Changing and removing notices",
+        "body": [
+          "You can't edit or remove a notice yourself yet. If the item has been returned or the notice needs correcting, write to {email}.",
+          "We may remove a notice that breaks these terms or the law, or strip personal data from it, without warning. To report a breach in someone else's notice, also write to {email}."
+        ]
+      },
+      {
+        "heading": "9. Liability",
+        "body": [
+          "The service is provided “as is”. We don't guarantee that an item will be found and aren't responsible for the accuracy of notices: their authors are.",
+          "We aren't responsible for interruptions, technical failures or loss of data caused by circumstances beyond our control."
+        ]
+      },
+      {
+        "heading": "10. Disputes",
+        "body": [
+          "These terms are governed by the law of Ukraine. We first offer to settle any dispute by writing to {email}; if that fails, it goes to court under Ukrainian law."
+        ]
+      },
+      {
+        "heading": "11. Changes to these terms",
+        "body": [
+          "We may update these terms. The date of the latest version is shown at the top of the page. By using the site after a change you accept the new version.",
+          "Send questions about these terms to {email}."
+        ]
+      }
+    ]
+  },
+  "privacy": {
+    "title": "Privacy policy",
+    "summary": "What data DeRechi collects, why, who can see it and how you control it. This policy follows the Law of Ukraine “On Personal Data Protection”.",
+    "sections": [
+      {
+        "heading": "1. Who processes the data",
+        "body": [
+          "The controller of personal data is {operator}. For anything about your data, write to {email}."
+        ]
+      },
+      {
+        "heading": "2. What we collect",
+        "body": [
+          "When you post a notice:",
+          [
+            "the item: title, description, category, date, photo and the reward, if you set one;",
+            "the place: the name and coordinates of the point you picked or found by location;",
+            "your contacts: phone number, email address and the messengers you ticked."
+          ],
+          "We have no accounts or passwords, so we keep no other data about you.",
+          "Don't put information about health, religion, biometrics or other sensitive data in a notice, about yourself or anyone else.",
+          "When you visit the site, the server, like any web server, may record technical details of the request, such as the IP address, browser type and time, to protect against abuse."
+        ]
+      },
+      {
+        "heading": "3. What others can see",
+        "body": [
+          "The item's description, the place with its coordinates and the photo are public. The phone and email on a notice are only partly shown (for example, +38067*****67); messengers aren't shown at all."
+        ]
+      },
+      {
+        "heading": "4. Why we use the data",
+        "body": [
+          [
+            "to show your notice to other people and let them find it by search;",
+            "to protect the site from spam and abuse."
+          ],
+          "The legal basis is your consent, which you give by posting a notice."
+        ]
+      },
+      {
+        "heading": "5. Location",
+        "body": [
+          "On the found items page and in the notice form the site may ask for your location. You can refuse: everything works without it.",
+          "For the nearby search, the coordinates are rounded to about 100 m and passed in the page address for that search only; we don't store them. In the notice form, the coordinates become the notice's place and are published with it."
+        ]
+      },
+      {
+        "heading": "6. Third-party services",
+        "body": [
+          [
+            "Google Maps Platform: address suggestions and looking up an address from coordinates in the notice form; what you type into the place field, and the coordinates, are sent to Google;",
+            "Vercel BotID: checks that the form is sent by a person, not a bot;"
+          ],
+          "These services process data under their own privacy policies, including outside Ukraine. We don't sell your data or pass it to advertisers."
+        ]
+      },
+      {
+        "heading": "7. Cookies and browser storage",
+        "body": [
+          "We use only what is necessary:",
+          ["the DERECHI_LOCALE cookie: remembers your language for a year;"],
+          "There are no analytics or advertising cookies on the site."
+        ]
+      },
+      {
+        "heading": "8. How long we keep data",
+        "body": [
+          "A notice is kept until it is taken down. After that it moves to an archive and is no longer shown on the site."
+        ]
+      },
+      {
+        "heading": "9. Your rights",
+        "body": [
+          "Under Article 8 of the Law of Ukraine “On Personal Data Protection” you have the right to:",
+          [
+            "know what data of yours we process and get access to it;",
+            "ask for inaccurate data to be corrected or deleted;",
+            "withdraw your consent to processing;",
+            "complain to the Ukrainian Parliament Commissioner for Human Rights."
+          ],
+          "To use these rights, write to {email}."
+        ]
+      },
+      {
+        "heading": "10. Changes to this policy",
+        "body": [
+          "We may update this policy. The date of the latest version is shown at the top of the page."
+        ]
+      }
+    ]
+  }
+}

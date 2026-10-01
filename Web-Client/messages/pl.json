@@ -1,0 +1,347 @@
+{
+  "app": {
+    "name": "DeRechi",
+    "titleTemplate": "{page} · DeRechi",
+    "description": "Ogłoszenia o rzeczach zgubionych i znalezionych. Dodasz w minutę, bez konta."
+  },
+  "nav": {
+    "home": "Strona główna",
+    "lost": "Zgubione",
+    "found": "Znalezione",
+    "reportFound": "Zgłoś znalezisko",
+    "reportLost": "Zgłoś zgubę",
+    "menu": "Menu",
+    "language": "Język",
+    "terms": "Regulamin",
+    "privacy": "Prywatność",
+    "tour": "Pokaż, jak to działa",
+    "footerNotices": "Ogłoszenia",
+    "footerDocuments": "Dokumenty"
+  },
+  "home": {
+    "heroTitle": "Zgubione? Ktoś mógł to znaleźć",
+    "heroText": "Tablica rzeczy zgubionych i znalezionych. Opisz swoją zgubę albo przejrzyj znaleziska: za darmo i bez konta.",
+    "rewardNote": "Znalazcy przysługuje wynagrodzenie za zwrot: artykuł 339 Kodeksu cywilnego Ukrainy.",
+    "scrollCue": "Jak to działa",
+    "searchTitle": "Sprawdź, czy rzecz już się znalazła",
+    "searchWhat": "Czego szukasz",
+    "searchWhatPlaceholder": "Portfel, klucze, plecak…",
+    "searchHintDesktop": "Naciśnij <kbd>Enter</kbd>, aby wyszukać",
+    "searchHintTouch": "Stuknij <kbd>Szukaj</kbd> na klawiaturze, aby wyszukać",
+    "searchExamples": [
+      "Portfel z kartą",
+      "Klucze z brelokiem",
+      "Czarny plecak",
+      "Paszport",
+      "Słuchawki bezprzewodowe"
+    ],
+    "searchQuick": "Często szukane:",
+    "recentFound": "Ostatnio znalezione",
+    "seeAllFound": "Wszystkie znalezione rzeczy",
+    "recentLost": "Ostatnio zgubione",
+    "seeAllLost": "Wszystkie zgubione rzeczy",
+    "recentFoundError": "Nie udało się wczytać ostatnich znalezionych rzeczy.",
+    "recentLostError": "Nie udało się wczytać ostatnich zgubionych rzeczy.",
+    "foundTitle": "Masz cudzą rzecz?",
+    "foundText": "Oddaj ją właścicielowi i pozwól sobie podziękować. Dodanie ogłoszenia zajmuje minutę, a Twój numer pozostanie częściowo ukryty.",
+    "foundPoint1": "Bezpłatne ogłoszenie",
+    "foundPoint2": "Prawo do wynagrodzenia za zwrot",
+    "foundPoint3": "Kontakty widoczne tylko częściowo",
+    "lostTitle": "Szukasz swojej?",
+    "lostText": "Opisz rzecz, zaznacz miejsce i datę, a zobaczy je ten, kto coś tam podniósł.",
+    "lostPoint1": "Minuta na dodanie",
+    "lostPoint2": "Bez konta",
+    "lostPoint3": "Można podać nagrodę",
+    "benefitsTitle": "Dlaczego DeRechi",
+    "benefit1Title": "Za darmo",
+    "benefit1Text": "Dodanie ogłoszenia i przeszukiwanie tablicy nic nie kosztują.",
+    "benefit2Title": "Bez konta",
+    "benefit2Text": "Bez rejestracji i hasła: wystarczy kontakt do Ciebie.",
+    "benefit3Title": "Ukryte kontakty",
+    "benefit3Text": "Telefon i e-mail pokazujemy częściowo, żeby chronić Cię przed spamem.",
+    "benefit4Title": "Pięć języków",
+    "benefit4Text": "Ukraiński, angielski, polski, niemiecki i francuski.",
+    "benefit5Title": "Moderacja",
+    "benefit5Text": "Ogłoszenie pojawia się od razu. Moderator wkracza tylko w razie potrzeby: poprawia lub usuwa to, co tu nie pasuje.",
+    "benefit6Title": "Bez reklam",
+    "benefit6Text": "Żadnych banerów, tylko ogłoszenia ludzi.",
+    "faqTitle": "Częste pytania",
+    "faqQ1": "Jak skontaktować się z osobą, która znalazła rzecz?",
+    "faqA1": "Kontakty w ogłoszeniu są pokazane częściowo, żeby chronić Cię przed spamem. Prośba o pełne kontakty prosto z ogłoszenia pojawi się wkrótce. Tymczasem dodaj ogłoszenie przeciwnego typu: osoba, która ma Twoją rzecz, też może przeglądać listę.",
+    "faqQ2": "Jak upewnić się, że oddaję rzecz prawdziwemu właścicielowi?",
+    "faqA2": "Nie pokazuj w ogłoszeniu wszystkich cech. Poproś właściciela, by opisał to, czego nie widać na zdjęciu: co jest w portfelu, jaki brelok wisi przy kluczach, co jest na ekranie blokady telefonu. Umówcie się w ruchliwym miejscu.",
+    "faqQ3": "Znalezione dokumenty. Co z nimi zrobić?",
+    "faqA3": "Dodaj ogłoszenie, ale nie fotografuj stron z danymi osobowymi i nie podawaj numeru dokumentu: wystarczy jego rodzaj i w razie potrzeby imię właściciela. Jeśli właściciel się nie odezwie, dokumenty możesz przekazać policji.",
+    "faqQ4": "Czy mogę zatrzymać znalezisko albo poprosić o nagrodę?",
+    "faqA4": "Kodeks cywilny Ukrainy zobowiązuje do powiadomienia właściciela, a jeśli jest nieznany, policji lub organu samorządu lokalnego (art. 337). Jeśli w ciągu sześciu miesięcy od takiego zgłoszenia właściciel się nie znajdzie, rzecz staje się Twoja (art. 338). A gdy właściciel odzyska rzecz, masz prawo poprosić o nagrodę do 20% jej wartości (art. 339).",
+    "faqQ5": "Jak szybciej znaleźć swoją rzecz na liście?",
+    "faqA5": "Wybierz kategorię i daty, kiedy rzecz zaginęła: to daty najbardziej zawężają listę. Wśród znalezionych włącz „W pobliżu”, aby widzieć rzeczy znalezione w promieniu 10 km od Ciebie. Szukaj prostymi słowami: wyszukiwarka przegląda tytuły i opisy.",
+    "ctaReturnedLabel": "{count, plural, one {rzecz wróciła do właściciela w tym tygodniu} few {rzeczy wróciły do właścicieli w tym tygodniu} many {rzeczy wróciło do właścicieli w tym tygodniu} other {rzeczy wróciło do właścicieli w tym tygodniu}}",
+    "ctaTodayLabel": "{count, plural, one {znalezisko dodane dziś} few {znaleziska dodane dziś} many {znalezisk dodanych dziś} other {znaleziska dodane dziś}}",
+    "sample": {
+      "keys": {
+        "title": "Klucze z czerwonym brelokiem",
+        "place": "Park Szewczenki, Kijów"
+      },
+      "student": {
+        "title": "Legitymacja studencka",
+        "place": "Dworzec, Lwów"
+      },
+      "wallet": {
+        "title": "Brązowy skórzany portfel",
+        "place": "Tramwaj nr 1, Lwów"
+      },
+      "backpack": {
+        "title": "Niebieski plecak",
+        "place": "Metro Złote Wrota, Kijów"
+      },
+      "earbuds": {
+        "title": "Słuchawki w białym etui",
+        "place": "Kawiarnia na Podolu, Kijów"
+      },
+      "cat": {
+        "title": "Rudy kot Bublik",
+        "place": "Sychów, Lwów"
+      },
+      "returned": "Zwrócono właścicielowi",
+      "new": "Właśnie dodane"
+    },
+    "benefitsKit": {
+      "statusPublished": "Opublikowane",
+      "statusModerated": "Pod okiem moderatora"
+    }
+  },
+  "list": {
+    "lostTitle": "Rzeczy zgubione",
+    "foundTitle": "Rzeczy znalezione",
+    "lostDescription": "Ogłoszenia osób, które coś zgubiły. Jeśli któraś z tych rzeczy jest u Ciebie, odezwij się, właściciel czeka.",
+    "foundDescription": "Rzeczy, które ktoś podniósł i chce oddać. Znajdź swoją i nawiąż kontakt.",
+    "search": "Szukaj",
+    "searchHint": "Dopasowuje tytuł ogłoszenia",
+    "category": "Kategoria",
+    "allCategories": "Wszystkie kategorie",
+    "apply": "Zastosuj",
+    "applyHint": "Coś zmienione? Naciśnij Enter lub przycisk filtra, aby zastosować.",
+    "filters": "Filtry",
+    "showResults": "Pokaż ogłoszenia",
+    "reset": "Wyczyść filtry",
+    "sort": "Sortowanie",
+    "showingSome": "{shown, plural, one {# ogłoszenie} few {# ogłoszenia} many {# ogłoszeń} other {# ogłoszeń}}",
+    "showMore": "Pokaż więcej",
+    "loading": "Ładowanie…",
+    "empty": "Nic nie pasuje do tych filtrów",
+    "emptyHint": "Spróbuj szerszego zakresu dat albo usuń filtr miejsca.",
+    "emptyAction": "Wyczyść filtry",
+    "emptyFound": "Nikt jeszcze niczego nie znalazł",
+    "emptyFoundHint": "Brakuje Ci czegoś? Dodaj ogłoszenie, żeby znalazca rozpoznał Twoją rzecz.",
+    "emptyLost": "Nikt jeszcze nie zgłosił zguby",
+    "emptyLostHint": "Masz cudzą rzecz? Dodaj ogłoszenie, aby właściciel mógł Cię znaleźć.",
+    "dateRange": "Daty",
+    "anyDate": "Dowolna data",
+    "nearby": "W pobliżu",
+    "nearbyLocating": "Ustalamy, gdzie jesteś…",
+    "nearbyDenied": "Bez dostępu do lokalizacji nie pokażemy rzeczy znalezionych w pobliżu, a tak najłatwiej odnaleźć swoją. Możesz na to zezwolić w ustawieniach witryny: ikona po lewej stronie adresu w przeglądarce.",
+    "nearbyUnavailable": "Nie udało się ustalić, gdzie teraz jesteś. Spróbuj ponownie za chwilę.",
+    "nearbyDismiss": "Zamknij"
+  },
+  "sort": {
+    "DATE_DESC": "Najpierw nowe",
+    "DATE_ASC": "Najpierw stare",
+    "TITLE_ASC": "Tytuł A–Z",
+    "TITLE_DESC": "Tytuł Z–A"
+  },
+  "item": {
+    "lost": "Zgubione",
+    "found": "Znalezione",
+    "reward": "Nagroda {amount}",
+    "lostOn": "Zgubiono",
+    "foundOn": "Znaleziono",
+    "place": "Miejsce",
+    "category": "Kategoria",
+    "description": "Opis",
+    "noDescription": "Autor nie zostawił opisu.",
+    "openInMaps": "Otwórz w Google Maps",
+    "contactTitle": "Skontaktuj się z właścicielem",
+    "contactFinderTitle": "Skontaktuj się ze znalazcą",
+    "phone": "Telefon",
+    "email": "E-mail",
+    "maskedNote": "Kontakty są częściowo ukryte, żeby chronić ludzi przed spamem. Pełne dane będą dostępne na życzenie.",
+    "unlockSoon": "Pełne kontakty: wkrótce",
+    "didYouFind": "Masz tę rzecz?",
+    "didYouFindText": "Dodaj ogłoszenie o znalezieniu, a właściciel zobaczy je na tablicy.",
+    "isItYours": "To Twoja rzecz?",
+    "isItYoursText": "Dodaj ogłoszenie o zgubieniu, żeby znalazca mógł Cię rozpoznać.",
+    "photoOf": "Zdjęcie: {title}",
+    "openPhoto": "Otwórz zdjęcie na pełnym ekranie",
+    "closePhoto": "Zamknij",
+    "noPhoto": "Bez zdjęcia",
+    "metaTitle": "{kind}: {title} – {place}, {date}",
+    "metaSummary": "{category} · {place} · {date}"
+  },
+  "category": {
+    "DOCUMENTS": "Dokumenty",
+    "KEYS": "Klucze",
+    "ELECTRONICS": "Elektronika",
+    "WALLET": "Portfele",
+    "ANIMALS": "Zwierzęta",
+    "JEWELRY": "Biżuteria",
+    "CLOTHING": "Odzież",
+    "BAGS": "Torby",
+    "OTHER": "Inne"
+  },
+  "error": {
+    "notFoundTitle": "Taka strona nie istnieje",
+    "notFoundText": "Ogłoszenie mogło trafić do archiwum po odzyskaniu rzeczy.",
+    "notFoundJoke": "Nawet strony czasem się gubią. Może ktoś już znalazł tę.",
+    "notFoundHint": "Przesuń kursor po cyfrach i patrz, jak płoną.",
+    "browseFound": "Przeglądaj znalezione rzeczy",
+    "genericTitle": "Coś poszło nie tak",
+    "genericText": "Żądanie nie doszło. Spróbuj ponownie za chwilę.",
+    "retry": "Spróbuj ponownie",
+    "home": "Wróć na stronę główną"
+  },
+  "upload": {
+    "label": "Przeciągnij zdjęcie tutaj albo wybierz plik",
+    "hint": "JPEG, PNG, WebP lub GIF, do {size} MB.",
+    "choose": "Wybierz plik",
+    "uploading": "Wysyłanie…",
+    "uploaded": "Zdjęcie wysłane",
+    "remove": "Usuń zdjęcie",
+    "preview": "Wybrane zdjęcie",
+    "unsupportedType": "Ten typ pliku nie jest obsługiwany.",
+    "tooLarge": "Plik jest za duży.",
+    "failed": "Wysyłanie nie powiodło się. Spróbuj ponownie."
+  },
+  "form": {
+    "pageTitleLost": "Ogłoszenie o zgubieniu",
+    "pageTitleFound": "Ogłoszenie o znalezieniu",
+    "pageDescription": "Bez konta. Im więcej szczegółów, tym łatwiej rozpoznać rzecz.",
+    "steps": {
+      "details": "Rzecz",
+      "whereWhen": "Zdjęcie, data i miejsce",
+      "contacts": "Nagroda i kontakt"
+    },
+    "stepOf": "Krok {current} z {total}",
+    "next": "Dalej",
+    "back": "Wstecz",
+    "draftRestored": "Przywrócono szkic: wpisane dane zostały zachowane.",
+    "titleLost": "Co zaginęło?",
+    "titleFound": "Co znaleziono?",
+    "category": "Kategoria",
+    "categoryPlaceholder": "Wybierz kategorię",
+    "dateLost": "Data zgubienia",
+    "dateFound": "Data znalezienia",
+    "reward": "Nagroda, ₴",
+    "description": "Opis",
+    "descriptionHintLost": "Opisz wszystko, co pomoże rozpoznać rzecz: rysy, przetarcia, zawartość",
+    "descriptionHintFound": "Opisz ogólne cechy, a jeden szczegół zostaw do sprawdzenia właściciela",
+    "photo": "Zdjęcie",
+    "photoRequired": "Zdjęcie (wymagane)",
+    "photoPrivacy": "Na zdjęciu dokumentu nie może być danych osobowych: numeru podatkowego, adresu zamieszkania, podpisu. Zamaluj je przed wysłaniem.",
+    "place": "Miejsce",
+    "placePlaceholder": "Zacznij wpisywać adres",
+    "placeHintLost": "Zaznacz ostatnie pewne miejsce: właśnie tam będą jej szukać.",
+    "placeHintFound": "Zaznacz miejsce, w którym rzecz została znaleziona.",
+    "placeLocate": "Użyj mojej lokalizacji",
+    "placeLocating": "Ustalamy adres…",
+    "placeLocateDenied": "Dostęp do lokalizacji jest zablokowany. Wpisz adres ręcznie albo zezwól na dostęp w ustawieniach witryny.",
+    "placeLocateFailed": "Nie udało się automatycznie ustalić adresu, wpisz go ręcznie.",
+    "placeSearching": "Szukamy…",
+    "placeNoResults": "Tego miejsca nie ma jeszcze w ogłoszeniach, więc oznaczymy je tam, gdzie teraz jesteś.",
+    "placeAddHere": "Dodaj „{name}” tutaj, gdzie jestem",
+    "placeAddHereHint": "Jeśli żadne z miejsc powyżej nie pasuje.",
+    "placeAddDenied": "Aby dodać nowe miejsce, potrzebny jest dostęp do lokalizacji: zezwól na niego w ustawieniach witryny albo wybierz miejsce z listy.",
+    "placeAddFailed": "Nie udało się ustalić, gdzie jesteś. Spróbuj ponownie albo wybierz miejsce z listy.",
+    "placeManual": "Podpowiedzi Google są wyłączone, więc szukamy wśród miejsc, które są już w ogłoszeniach.",
+    "placeUnavailable": "Nie udało się wczytać podpowiedzi Google, więc szukamy wśród miejsc, które są już w ogłoszeniach.",
+    "phone": "Telefon",
+    "email": "E-mail",
+    "messengers": "Komunikatory na tym numerze",
+    "messengersHint": "Przekażemy je, żeby można było się z Tobą skontaktować wygodnie.",
+    "publish": "Opublikuj ogłoszenie",
+    "publishing": "Publikowanie…",
+    "cancel": "Anuluj",
+    "consent": "Publikując, akceptujesz <terms>warunki korzystania</terms> i <privacy>politykę prywatności</privacy>, w tym to, że na ogłoszeniu widoczne będą Twoje częściowo ukryte kontakty.",
+    "previewTitle": "Podgląd",
+    "previewEmpty": "Tu pojawi się tytuł",
+    "previewNoPlace": "Nie wybrano jeszcze miejsca",
+    "tipsTitle": "Wskazówki",
+    "lostTip1": "Nazwij rzecz wprost: „Czarny portfel”, nie „Zgubiłam portfel, pomóżcie!!!”.",
+    "lostTip2": "Zaznacz ostatnie pewne miejsce.",
+    "lostTip3": "Opisz wszystko, co pomoże rozpoznać rzecz: rysy, naklejki, zawartość.",
+    "foundTip1": "Nazwij rzecz wprost: „Czarny portfel”, nie „Znalazłem portfel, czyj???”.",
+    "foundTip2": "Zaznacz miejsce, w którym rzecz została znaleziona.",
+    "foundTip3": "Jednego szczegółu nie podawaj w opisie: sprawdzisz nim tego, kto się odezwie.",
+    "social": {
+      "TELEGRAM": "Telegram",
+      "VIBER": "Viber",
+      "WHATSAPP": "WhatsApp"
+    },
+    "error": {
+      "required": "To pole jest wymagane.",
+      "tooLong": "Za długie.",
+      "invalid": "Nieprawidłowa wartość.",
+      "future": "Data nie może być z przyszłości.",
+      "tooOld": "Przyjmujemy ogłoszenia tylko z ostatnich 30 dni.",
+      "rewardMax": "Nagroda nie może przekraczać 99 999 UAH.",
+      "photoRequired": "Ogłoszenie o znalezieniu wymaga zdjęcia.",
+      "placeRequired": "Wybierz miejsce.",
+      "outOfRange": "Współrzędne poza zakresem.",
+      "phoneFormat": "Użyj formatu międzynarodowego, na przykład +380671234567.",
+      "emailFormat": "Ten adres e-mail wygląda nieprawidłowo.",
+      "validation": "Niektóre pola wymagają poprawy.",
+      "captcha": "Weryfikacja antyspamowa nie powiodła się. Spróbuj ponownie.",
+      "failed": "Nie udało się opublikować ogłoszenia. Spróbuj za chwilę."
+    },
+    "pickDate": "Wybierz datę"
+  },
+  "tour": {
+    "progress": "Krok {current} z {total}",
+    "next": "Dalej",
+    "back": "Wstecz",
+    "done": "Jasne",
+    "home": {
+      "report": {
+        "title": "Zacznij od swojej strony",
+        "text": "Zguba czy znalezisko? Jedno i drugie zajmuje minutę i nie wymaga konta."
+      },
+      "search": {
+        "title": "Najpierw sprawdź, czy już się znalazła",
+        "text": "Szukaj po nazwie rzeczy i przybliżonej dacie. To, co ustawisz, trafia do adresu strony, więc wyszukiwanie można zapisać albo komuś wysłać."
+      },
+      "recent": {
+        "title": "Ostatnie znaleziska",
+        "text": "Rzeczy podniesione w ostatnich dniach. Otwórz dowolną, żeby zobaczyć miejsce, datę i sposób kontaktu."
+      },
+      "language": {
+        "title": "Pięć języków",
+        "text": "Ukraiński, angielski, polski, niemiecki i francuski. Wybór jest zapamiętywany i działa też w panelu administracyjnym."
+      }
+    },
+    "report": {
+      "details": {
+        "title": "Nazwij rzecz wprost",
+        "text": "Najlepiej działa krótka, zwyczajna nazwa: rysy, przetarcia i zawartość wpisz w opisie."
+      },
+      "photo": {
+        "title": "Zdjęcie robi najwięcej",
+        "text": "Przeciągnij plik tutaj, a trafi prosto do naszego magazynu. Ogłoszenia o znalezieniu bez zdjęcia nie opublikujesz."
+      },
+      "place": {
+        "title": "Ostatnie miejsce, którego jesteś pewien",
+        "text": "Wybierz je z podpowiedzi, żeby razem z nazwą zapisały się współrzędne."
+      },
+      "contacts": {
+        "title": "Kto widzi Twoje kontakty",
+        "text": "Twoje kontakty pokazujemy tylko częściowo; o pełne będzie można wkrótce poprosić z ogłoszenia."
+      }
+    }
+  },
+  "game": {
+    "catch": "Złap Znajdę",
+    "caught": "Znajda złapany! {count} z {total}",
+    "prizeTitle": "Znajda złapany pięć razy!",
+    "prizeText": "Poddaje się: jesteś oficjalnie jego najlepszym przyjacielem. Nikt nie dostrzega zgub szybciej niż ty.",
+    "prizeHome": "Wróć do ogłoszeń"
+  }
+}

@@ -1,0 +1,347 @@
+{
+  "app": {
+    "name": "DeRechi",
+    "titleTemplate": "{page} · DeRechi",
+    "description": "Lost and found notices for your city. Post in a minute, no account needed."
+  },
+  "nav": {
+    "home": "Home",
+    "lost": "Lost",
+    "found": "Found",
+    "reportFound": "Report a find",
+    "reportLost": "Report a loss",
+    "menu": "Menu",
+    "language": "Language",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "tour": "Show me around",
+    "footerNotices": "Notices",
+    "footerDocuments": "Documents"
+  },
+  "home": {
+    "heroTitle": "Lost it? Someone may have found it",
+    "heroText": "A board of lost and found notices. Describe what you lost, or look through what has been handed in. Free, and without an account.",
+    "rewardNote": "A finder is entitled to a reward for returning an item: article 339 of the Civil Code of Ukraine.",
+    "scrollCue": "How it works",
+    "searchTitle": "Check whether it has already been found",
+    "searchWhat": "What",
+    "searchWhatPlaceholder": "Wallet, keys, backpack…",
+    "searchHintDesktop": "Press <kbd>Enter</kbd> to search",
+    "searchHintTouch": "Tap <kbd>Search</kbd> on the keyboard to search",
+    "searchExamples": [
+      "Wallet with a card",
+      "Keys on a keyring",
+      "Black backpack",
+      "Passport",
+      "Wireless earbuds"
+    ],
+    "searchQuick": "Often searched:",
+    "recentFound": "Recently found",
+    "seeAllFound": "See all found items",
+    "recentLost": "Recently lost",
+    "seeAllLost": "See all lost items",
+    "recentFoundError": "The latest found notices could not be loaded.",
+    "recentLostError": "The latest lost notices could not be loaded.",
+    "foundTitle": "Found something that isn't yours?",
+    "foundText": "Return it to its owner and let them thank you. Posting takes a minute, and your number stays partly hidden on the notice.",
+    "foundPoint1": "Posting is free",
+    "foundPoint2": "A finder may claim a reward",
+    "foundPoint3": "Contacts are shown only in part",
+    "lostTitle": "Lost something of your own?",
+    "lostText": "Describe the item, mark the place and the date, and whoever picked something up there will see it.",
+    "lostPoint1": "A minute to post",
+    "lostPoint2": "No account needed",
+    "lostPoint3": "You can name a reward",
+    "benefitsTitle": "Why DeRechi",
+    "benefit1Title": "Free",
+    "benefit1Text": "Posting a notice and searching the board cost nothing.",
+    "benefit2Title": "No account",
+    "benefit2Text": "No sign-up, no password: just a way to reach you.",
+    "benefit3Title": "Contacts hidden",
+    "benefit3Text": "Phone and email are shown in part, to keep spam away from you.",
+    "benefit4Title": "Five languages",
+    "benefit4Text": "Ukrainian, English, Polish, German and French.",
+    "benefit5Title": "Moderated",
+    "benefit5Text": "Notices go live at once. A moderator steps in only when needed, to fix or remove what does not belong here.",
+    "benefit6Title": "No ads",
+    "benefit6Text": "No banners anywhere, only notices written by people.",
+    "faqTitle": "Questions that come up",
+    "faqQ1": "How do I contact the person who found it?",
+    "faqA1": "Contacts on a notice are shown in part, to keep spam away. Requesting the full contacts straight from a notice is coming soon. Meanwhile, post a notice of the other kind: the person who has your thing may be looking through the list too.",
+    "faqQ2": "How can I be sure I'm returning it to the real owner?",
+    "faqA2": "Don't show every detail in your notice. Ask the owner to describe what the photo doesn't show: what's in the wallet, which keyring is on the keys, what's on the phone's lock screen. Meet somewhere busy.",
+    "faqQ3": "I found someone's documents. What should I do?",
+    "faqA3": "Post a notice, but don't photograph pages with personal data or write the document number: the type of document and, if needed, the owner's name are enough. If the owner doesn't come forward, you can hand the documents to the police.",
+    "faqQ4": "Can I keep what I found, or ask for a reward?",
+    "faqA4": "The Civil Code of Ukraine requires you to tell the owner, or the police or local council if the owner is unknown (art. 337). If the owner isn't found within six months of that report, the thing becomes yours (art. 338). And when the owner gets it back, you are entitled to ask for a reward of up to 20% of its value (art. 339).",
+    "faqQ5": "How do I find my thing in the list faster?",
+    "faqA5": "Pick the category and the dates when you lost it: dates narrow the list the most. On the found side, turn on “Near me” to see things found within 10 km of you. Search in plain words: it looks through titles and descriptions.",
+    "ctaReturnedLabel": "{count, plural, one {thing returned to its owner this week} other {things returned to their owners this week}}",
+    "ctaTodayLabel": "{count, plural, one {find posted today} other {finds posted today}}",
+    "sample": {
+      "keys": {
+        "title": "Keys on a red keyring",
+        "place": "Shevchenko Park, Kyiv"
+      },
+      "student": {
+        "title": "Student ID card",
+        "place": "Railway station, Lviv"
+      },
+      "wallet": {
+        "title": "Brown leather wallet",
+        "place": "Tram 1, Lviv"
+      },
+      "backpack": {
+        "title": "Blue backpack",
+        "place": "Zoloti Vorota metro, Kyiv"
+      },
+      "earbuds": {
+        "title": "Earbuds in a white case",
+        "place": "Café on Podil, Kyiv"
+      },
+      "cat": {
+        "title": "Ginger cat named Bublyk",
+        "place": "Sykhiv, Lviv"
+      },
+      "returned": "Returned to the owner",
+      "new": "Just posted"
+    },
+    "benefitsKit": {
+      "statusPublished": "Published",
+      "statusModerated": "Moderator on watch"
+    }
+  },
+  "list": {
+    "lostTitle": "Lost items",
+    "foundTitle": "Found items",
+    "lostDescription": "Notices from people who lost something. If you found one of these, say so, the owner is waiting.",
+    "foundDescription": "Things people picked up and want to return. Look for yours, then get in touch.",
+    "search": "Search",
+    "searchHint": "Matches the title of a notice",
+    "category": "Category",
+    "allCategories": "All categories",
+    "apply": "Apply",
+    "applyHint": "Changed something? Press Enter or the filter button to apply it.",
+    "filters": "Filters",
+    "showResults": "Show notices",
+    "reset": "Reset filters",
+    "sort": "Sort",
+    "showingSome": "{shown, plural, one {# notice} few {# notices} many {# notices} other {# notices}}",
+    "showMore": "Show more",
+    "loading": "Loading…",
+    "empty": "Nothing matches these filters yet",
+    "emptyHint": "Try a wider date range, or drop the place filter.",
+    "emptyAction": "Reset filters",
+    "emptyFound": "Nothing has been handed in yet",
+    "emptyFoundHint": "Lost something? Post a notice so the finder can recognise your thing.",
+    "emptyLost": "Nobody has reported a loss yet",
+    "emptyLostHint": "Found something? Post it, so the owner can find you.",
+    "dateRange": "Dates",
+    "anyDate": "Any date",
+    "nearby": "Near me",
+    "nearbyLocating": "Finding you…",
+    "nearbyDenied": "Without your location we can't show what was found near you, and that is the quickest way to find your thing. You can allow it in the site settings: the icon to the left of the address in your browser.",
+    "nearbyUnavailable": "We couldn't tell where you are right now. Try again in a little while.",
+    "nearbyDismiss": "Close"
+  },
+  "sort": {
+    "DATE_DESC": "Newest first",
+    "DATE_ASC": "Oldest first",
+    "TITLE_ASC": "Title A–Z",
+    "TITLE_DESC": "Title Z–A"
+  },
+  "item": {
+    "lost": "Lost",
+    "found": "Found",
+    "reward": "Reward {amount}",
+    "lostOn": "Lost on",
+    "foundOn": "Found on",
+    "place": "Place",
+    "category": "Category",
+    "description": "Description",
+    "noDescription": "The author left no description.",
+    "openInMaps": "Open in Google Maps",
+    "contactTitle": "Contact the owner",
+    "contactFinderTitle": "Contact the finder",
+    "phone": "Phone",
+    "email": "Email",
+    "maskedNote": "Contacts are partly hidden to keep people safe from spam. Full contacts will be available on request.",
+    "unlockSoon": "Get full contacts: coming soon",
+    "didYouFind": "Did you find this item?",
+    "didYouFindText": "Post a found notice, and the owner will see it on the board.",
+    "isItYours": "Is this yours?",
+    "isItYoursText": "Post a lost notice so whoever found it can recognise you.",
+    "photoOf": "Photo of {title}",
+    "openPhoto": "Open the photo full screen",
+    "closePhoto": "Close",
+    "noPhoto": "No photo",
+    "metaTitle": "{kind}: {title} – {place}, {date}",
+    "metaSummary": "{category} · {place} · {date}"
+  },
+  "category": {
+    "DOCUMENTS": "Documents",
+    "KEYS": "Keys",
+    "ELECTRONICS": "Electronics",
+    "WALLET": "Wallets",
+    "ANIMALS": "Animals",
+    "JEWELRY": "Jewellery",
+    "CLOTHING": "Clothing",
+    "BAGS": "Bags",
+    "OTHER": "Other"
+  },
+  "error": {
+    "notFoundTitle": "This page does not exist",
+    "notFoundText": "The notice may have been archived after it was resolved.",
+    "notFoundJoke": "Even pages get lost sometimes. Maybe someone has already found this one.",
+    "notFoundHint": "Run the cursor over the numbers and watch them burn.",
+    "browseFound": "Browse found items",
+    "genericTitle": "Something went wrong",
+    "genericText": "The request did not go through. Try again in a moment.",
+    "retry": "Try again",
+    "home": "Go to the home page"
+  },
+  "upload": {
+    "label": "Drop an image here, or choose a file",
+    "hint": "JPEG, PNG, WebP or GIF, up to {size} MB.",
+    "choose": "Choose file",
+    "uploading": "Uploading…",
+    "uploaded": "Photo uploaded",
+    "remove": "Remove photo",
+    "preview": "Selected photo",
+    "unsupportedType": "That file type is not supported.",
+    "tooLarge": "That file is too large.",
+    "failed": "The upload did not go through. Try again."
+  },
+  "form": {
+    "pageTitleLost": "Report a lost item",
+    "pageTitleFound": "Report a found item",
+    "pageDescription": "No account needed. The more detail you give, the easier the item is to recognise.",
+    "steps": {
+      "details": "The item",
+      "whereWhen": "Photo, date & place",
+      "contacts": "Reward & contacts"
+    },
+    "stepOf": "Step {current} of {total}",
+    "next": "Next",
+    "back": "Back",
+    "draftRestored": "Your draft is back: what you had typed was kept.",
+    "titleLost": "What did you lose?",
+    "titleFound": "What did you find?",
+    "category": "Category",
+    "categoryPlaceholder": "Pick a category",
+    "dateLost": "Date lost",
+    "dateFound": "Date found",
+    "reward": "Reward, ₴",
+    "description": "Description",
+    "descriptionHintLost": "Describe everything that would identify it: marks, scratches, contents",
+    "descriptionHintFound": "Describe the general look, and keep one detail back to check the owner",
+    "photo": "Photo",
+    "photoRequired": "Photo (required)",
+    "photoPrivacy": "A document photo must not show personal data: tax number, home address, signature. Paint them over before uploading.",
+    "place": "Place",
+    "placePlaceholder": "Start typing an address",
+    "placeHintLost": "Pick the last place you are sure about: that is where people will look for it.",
+    "placeHintFound": "Pin the place where you picked it up.",
+    "placeLocate": "Use my location",
+    "placeLocating": "Finding your address…",
+    "placeLocateDenied": "Location access is blocked. Type the address, or allow access in the site settings.",
+    "placeLocateFailed": "We couldn't find the address automatically, please type it in.",
+    "placeSearching": "Searching…",
+    "placeNoResults": "No notice uses this place yet, so we'll pin it where you are now.",
+    "placeAddHere": "Add “{name}” here, where I am",
+    "placeAddHereHint": "If none of the places above fits.",
+    "placeAddDenied": "Adding a new place needs your location: allow it in the site settings, or pick a place from the list.",
+    "placeAddFailed": "We couldn't tell where you are. Try again, or pick a place from the list.",
+    "placeManual": "Google suggestions are off, so we search the places already used in notices.",
+    "placeUnavailable": "Google suggestions didn't load, so we search the places already used in notices.",
+    "phone": "Phone",
+    "email": "Email",
+    "messengers": "Messengers on this number",
+    "messengersHint": "We pass these on so the finder can reach you the way you prefer.",
+    "publish": "Publish notice",
+    "publishing": "Publishing…",
+    "cancel": "Cancel",
+    "consent": "By publishing you agree to the <terms>terms of use</terms> and the <privacy>privacy policy</privacy>, including that your partly hidden contacts are shown on the notice.",
+    "previewTitle": "Live preview",
+    "previewEmpty": "Your title goes here",
+    "previewNoPlace": "No place picked yet",
+    "tipsTitle": "Tips",
+    "lostTip1": "Name the object plainly: “Black wallet”, not “Lost my wallet, please help!!!”.",
+    "lostTip2": "Pin the last place you are sure about.",
+    "lostTip3": "Describe everything that would identify it: scratches, stickers, contents.",
+    "foundTip1": "Name the object plainly: “Black wallet”, not “Found a wallet, whose is it???”.",
+    "foundTip2": "Pin the place where you picked it up.",
+    "foundTip3": "Keep one detail out of the description, to check whoever answers.",
+    "social": {
+      "TELEGRAM": "Telegram",
+      "VIBER": "Viber",
+      "WHATSAPP": "WhatsApp"
+    },
+    "error": {
+      "required": "This field is required.",
+      "tooLong": "This is too long.",
+      "invalid": "That value is not valid.",
+      "future": "The date cannot be in the future.",
+      "tooOld": "Notices are only accepted for the last 30 days.",
+      "rewardMax": "The reward can be at most 99 999 UAH.",
+      "photoRequired": "A found item needs a photo.",
+      "placeRequired": "Pick a place.",
+      "outOfRange": "Those coordinates are out of range.",
+      "phoneFormat": "Use the international format, for example +380671234567.",
+      "emailFormat": "That email address does not look right.",
+      "validation": "Some fields still need fixing.",
+      "captcha": "The anti-spam check did not pass. Try again.",
+      "failed": "The notice could not be published. Try again in a moment."
+    },
+    "pickDate": "Pick a date"
+  },
+  "tour": {
+    "progress": "Step {current} of {total}",
+    "next": "Next",
+    "back": "Back",
+    "done": "Got it",
+    "home": {
+      "report": {
+        "title": "Start from the side you are on",
+        "text": "Lost something, or picked something up? Both take a minute and neither needs an account."
+      },
+      "search": {
+        "title": "Look before you post",
+        "text": "Search by what you lost and roughly when. Whatever you set lands in the address bar, so the search can be bookmarked or sent to someone."
+      },
+      "recent": {
+        "title": "The latest finds",
+        "text": "Things people picked up in the last few days. Open one to see the place, the date and how to reach the finder."
+      },
+      "language": {
+        "title": "Five languages",
+        "text": "Ukrainian, English, Polish, German and French. Your choice is remembered and carries over to the admin panel."
+      }
+    },
+    "report": {
+      "details": {
+        "title": "Describe the thing plainly",
+        "text": "A short, ordinary name works best: scratches, wear and what was inside belong in the description."
+      },
+      "photo": {
+        "title": "A photo does most of the work",
+        "text": "Drop the file here and it goes straight to our storage. A found item cannot be posted without one."
+      },
+      "place": {
+        "title": "The last place you are sure about",
+        "text": "Pick it from the suggestions so the coordinates come along with the name."
+      },
+      "contacts": {
+        "title": "Who sees your contacts",
+        "text": "Your contacts are shown only in part; the full ones will soon be available on request from the notice."
+      }
+    }
+  },
+  "game": {
+    "catch": "Catch Znaida",
+    "caught": "You caught Znaida! {count} of {total}",
+    "prizeTitle": "You caught Znaida five times!",
+    "prizeText": "He gives up: you are officially his best friend. Nobody spots a lost thing faster than you.",
+    "prizeHome": "Back to the board"
+  }
+}

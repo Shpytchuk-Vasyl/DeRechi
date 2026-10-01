@@ -1,0 +1,461 @@
+@import "../components/pouf/pouf.css";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* ------------------------------------------------------------------ */
+/* Tokens: shadcn's names on the pouf palette                          */
+/* ------------------------------------------------------------------ */
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-body);
+  --font-heading: var(--font-body);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+
+  --color-lost: var(--lost);
+  --color-lost-foreground: var(--lost-foreground);
+  --color-lost-soft: var(--lost-soft);
+  --color-found: var(--found);
+  --color-found-foreground: var(--found-foreground);
+  --color-found-soft: var(--found-soft);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --default-transition-duration: 0.5s;
+  /* Nunito from next/font, so the Cyrillic subset comes along. */
+  --font-pouf: var(--font-body);
+
+  --background: var(--color-bg);
+  --foreground: var(--color-ink);
+  --card: var(--color-surface);
+  --card-foreground: var(--color-ink);
+  --popover: var(--color-surface);
+  --popover-foreground: var(--color-ink);
+
+  --primary: var(--color-purple);
+  --primary-foreground: var(--on-accent);
+  --secondary: #e6dcff;
+  --secondary-foreground: var(--color-ink);
+  /* Not `--color-muted`: in pouf that is muted INK, and aliasing it to a surface once turned
+     every piece of secondary copy near-white. */
+  --muted-foreground: #71609b;
+  --accent: #e6dcff;
+  --accent-foreground: var(--color-ink);
+  --destructive: #8f3358;
+  --border: #ded2ff;
+  --input: #d6c8ff;
+  --ring: var(--color-purple);
+  --radius: 20px;
+
+  --lost: var(--color-pink);
+  --lost-foreground: #8f3358;
+  --lost-soft: #ffe2ee;
+  --found: var(--color-mint);
+  --found-foreground: #1f5b45;
+  --found-soft: #d9f8ea;
+}
+
+.dark {
+  --secondary: #2c2839;
+  --secondary-foreground: var(--color-ink);
+  --muted-foreground: #b8afcb;
+  --accent: #2c2839;
+  --accent-foreground: var(--color-ink);
+  --destructive: #ffa8c6;
+  --border: #ffffff1f;
+  --input: #ffffff2b;
+
+  --lost-foreground: #ffc9dd;
+  --lost-soft: #3a2233;
+  --found-foreground: #a8f0d0;
+  --found-soft: #17302c;
+}
+
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  .pouf-button-shortcut {
+    @apply relative items-center justify-center gap-2 font-pouf font-black leading-none border-none cursor-pointer touch-manipulation [transition:box-shadow_120ms_ease,transform_120ms_ease] enabled:active:transform-[translateY(2px)] enabled:active:cushion-control-active disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  /* pouf restores the inline defaults preflight removes; ours need block media and centred icons. */
+  img,
+  svg,
+  video,
+  canvas,
+  audio,
+  iframe,
+  embed,
+  object {
+    display: block;
+    vertical-align: middle;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-size: 16px;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Clay tints: the card recipe in a kind's colour                      */
+/* ------------------------------------------------------------------ */
+
+@layer components {
+  .clay-tint {
+    background: var(--clay-bg);
+    box-shadow:
+      inset 0 calc(-1 * var(--lip)) 0 color-mix(in srgb, var(--clay-hue) 60%, transparent),
+      inset 0 6px 0 rgba(255, 255, 255, 0.75),
+      0 20px 40px color-mix(in srgb, var(--clay-ink) 24%, transparent);
+  }
+
+  .clay-found {
+    --clay-bg: var(--found-soft);
+    --clay-hue: var(--found);
+    --clay-ink: var(--found-foreground);
+  }
+
+  .clay-lost {
+    --clay-bg: var(--lost-soft);
+    --clay-hue: var(--lost);
+    --clay-ink: var(--lost-foreground);
+  }
+
+  .dark .clay-tint {
+    box-shadow:
+      inset 0 calc(-1 * var(--lip)) 0 color-mix(in srgb, var(--clay-hue) 25%, transparent),
+      inset 0 6px 0 rgba(255, 255, 255, 0.06),
+      0 20px 40px rgba(0, 0, 0, 0.38);
+  }
+
+  /* The date picker's trigger is a plain button wearing the field cushion. */
+  [data-slot="date-trigger"] {
+    box-shadow: var(--pouf-field);
+    border-color: transparent;
+  }
+
+  [data-slot="date-trigger"]:focus-visible {
+    box-shadow: var(--pouf-field-focus);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Tour: driver.js paints its own popover                              */
+/* ------------------------------------------------------------------ */
+
+.driver-popover.derechi-tour {
+  background: var(--card);
+  color: var(--foreground);
+  border-radius: var(--radius-xl);
+  padding: 20px 22px;
+  max-width: 420px;
+  box-shadow: var(--pouf-card);
+  border: 0;
+}
+
+.driver-popover.derechi-tour .driver-popover-title {
+  font-family: var(--font-heading), system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.driver-popover.derechi-tour .driver-popover-description {
+  margin-top: 6px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--muted-foreground);
+}
+
+.driver-popover.derechi-tour .driver-popover-progress-text {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.driver-popover.derechi-tour .driver-popover-navigation-btns button {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: var(--radius-md);
+  text-shadow: none;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border: 0;
+  box-shadow: var(--pouf-control);
+}
+
+.driver-popover.derechi-tour .driver-popover-prev-btn {
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.driver-popover.derechi-tour .driver-popover-close-btn {
+  color: var(--muted-foreground);
+}
+
+.driver-popover.derechi-tour .driver-popover-arrow {
+  border-color: var(--card);
+}
+
+/* ------------------------------------------------------------------ */
+/* Google Places suggestions: rendered by Google into the body         */
+/* ------------------------------------------------------------------ */
+
+.pac-container {
+  /* The list lands outside Radix's dialog, where the body is pointer-events: none. */
+  pointer-events: auto;
+  z-index: 100;
+  margin-top: 4px;
+  padding: 4px;
+  background: var(--card);
+  border: 0;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--pouf-card);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+.pac-container::after {
+  margin-right: 8px;
+  opacity: 0.6;
+}
+
+.pac-item {
+  padding: 8px 10px;
+  border: 0;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+
+.pac-item:hover,
+.pac-item-selected {
+  background: var(--muted);
+}
+
+.pac-item-query {
+  font-size: 15px;
+  color: var(--foreground);
+}
+
+.pac-matched {
+  font-weight: 700;
+}
+
+.pac-icon {
+  display: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* Landing motion                                                      */
+/* ------------------------------------------------------------------ */
+
+/* Auto tabs: the countdown bar, remounted on each switch. */
+@keyframes auto-tabs-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.auto-tabs-progress {
+  animation: auto-tabs-progress linear forwards;
+}
+
+/* Hero pieces. `translate`, not `transform`, so the Tailwind tilt survives. */
+@keyframes hero-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -10px;
+  }
+}
+
+/* In a layer, so per-piece duration and delay utilities win over it. */
+@layer components {
+  .hero-float {
+    animation: hero-float 6s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-float {
+      animation: none;
+    }
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Scrollbars: a lavender pill on a clear track                        */
+/* ------------------------------------------------------------------ */
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  /* The transparent border is the inset. */
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: var(--purple) padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--purple), var(--ink) 25%) padding-box;
+}
+
+/* Firefox only; behind @supports, or Chromium 121+ would take these and drop the pseudo-elements. */
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--purple) transparent;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Знайда, the mascot                                                  */
+/* ------------------------------------------------------------------ */
+
+/* Gaze: `--look` is -1..1; the face shifts, the pupils a little further. */
+.znaida-face {
+  translate: calc(var(--look, 0) * 7px) 0;
+  transition: translate 400ms ease-out;
+}
+
+.znaida-pupils {
+  translate: calc(var(--look, 0) * 4px) 0;
+  transition: translate 400ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .znaida-face,
+  .znaida-pupils {
+    transition: none;
+  }
+}
+
+/* Peeking out: turned ±90° the paws grip a side edge; each side slides along its own axis. */
+.znaida-roam {
+  transition: translate 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.znaida-roam-top {
+  translate: 0 104%;
+}
+.znaida-roam-top.znaida-roam-out {
+  translate: 0 4%;
+}
+.znaida-roam-right {
+  rotate: 90deg;
+  translate: -104% 0;
+}
+.znaida-roam-right.znaida-roam-out {
+  translate: -4% 0;
+}
+.znaida-roam-left {
+  rotate: -90deg;
+  translate: 104% 0;
+}
+.znaida-roam-left.znaida-roam-out {
+  translate: 4% 0;
+}
+
+/* Alive: the tongue bobs and the ears flick. */
+@keyframes znaida-tongue {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(1.35);
+  }
+}
+.znaida-alive .znaida-tongue {
+  transform-origin: 0 0;
+  transform-box: fill-box;
+  animation: znaida-tongue 1s ease-in-out infinite;
+}
+
+/* Ears follow the gaze from their root. The swing is `rotate` and the flick `transform`, so they compose. */
+.znaida-ear {
+  transform-box: fill-box;
+  rotate: calc(var(--look, 0) * -8deg);
+  transition: rotate 400ms ease-out;
+}
+.znaida-ear-left {
+  transform-origin: 100% 0;
+}
+.znaida-ear-right {
+  transform-origin: 0 0;
+}
+
+@keyframes znaida-ear {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  30% {
+    transform: rotate(-3deg);
+  }
+  60% {
+    transform: rotate(2deg);
+  }
+}
+.znaida-alive .znaida-ear {
+  animation: znaida-ear 1.6s ease-in-out infinite;
+}
+.znaida-alive .znaida-ear-right {
+  animation-direction: reverse;
+  animation-delay: -0.5s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .znaida-ear {
+    transition: none;
+  }
+}

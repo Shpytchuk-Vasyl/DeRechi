@@ -1,0 +1,15 @@
+# NOT IN Client-API YET: the contract the landing's closing banner is written against.
+# Until Client-API serves `stats`, the query fails and the banner falls back to its static
+# wording (see src/lib/stats.ts). Once it does, move this into Client-API's schema.graphqls
+# and delete this file, or codegen will see the field declared twice.
+extend type Query {
+  "Figures for the landing page. Cheap to compute; the web client caches them for 5 minutes."
+  stats: Stats!
+}
+
+type Stats {
+  "Found items handed back to their owners over the last 7 days, today included."
+  returnedThisWeek: Int!
+  "Found-item notices published since midnight, Europe/Kyiv."
+  foundToday: Int!
+}

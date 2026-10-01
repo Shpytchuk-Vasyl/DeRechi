@@ -1,0 +1,347 @@
+{
+  "app": {
+    "name": "DeRechi",
+    "titleTemplate": "{page} · DeRechi",
+    "description": "Fundsachen und Verlustmeldungen für deine Stadt. In einer Minute aufgegeben, ohne Konto."
+  },
+  "nav": {
+    "home": "Startseite",
+    "lost": "Verloren",
+    "found": "Gefunden",
+    "reportFound": "Fund melden",
+    "reportLost": "Verlust melden",
+    "menu": "Menü",
+    "language": "Sprache",
+    "terms": "Nutzungsbedingungen",
+    "privacy": "Datenschutz",
+    "tour": "Kurz zeigen",
+    "footerNotices": "Anzeigen",
+    "footerDocuments": "Dokumente"
+  },
+  "home": {
+    "heroTitle": "Verloren? Vielleicht hat es schon jemand gefunden",
+    "heroText": "Ein Brett für verlorene und gefundene Sachen. Beschreibe deinen Verlust oder sieh durch, was abgegeben wurde: kostenlos und ohne Konto.",
+    "rewardNote": "Wer etwas zurückgibt, hat Anspruch auf Finderlohn: Artikel 339 des ukrainischen Zivilgesetzbuchs.",
+    "scrollCue": "So funktioniert es",
+    "searchTitle": "Sieh nach, ob es schon gefunden wurde",
+    "searchWhat": "Was",
+    "searchWhatPlaceholder": "Geldbörse, Schlüssel, Rucksack…",
+    "searchHintDesktop": "Drück <kbd>Enter</kbd>, um die Suche zu starten",
+    "searchHintTouch": "Tipp auf der Tastatur auf <kbd>Suchen</kbd>, um die Suche zu starten",
+    "searchExamples": [
+      "Portemonnaie mit Karte",
+      "Schlüssel mit Anhänger",
+      "Schwarzer Rucksack",
+      "Reisepass",
+      "Kabellose Kopfhörer"
+    ],
+    "searchQuick": "Häufig gesucht:",
+    "recentFound": "Zuletzt gefunden",
+    "seeAllFound": "Alle Fundsachen ansehen",
+    "recentLost": "Zuletzt verloren",
+    "seeAllLost": "Alle Verlustmeldungen",
+    "recentFoundError": "Die neuesten Fundmeldungen konnten nicht geladen werden.",
+    "recentLostError": "Die neuesten Verlustmeldungen konnten nicht geladen werden.",
+    "foundTitle": "Etwas gefunden, das dir nicht gehört?",
+    "foundText": "Gib es zurück und lass dich dafür bedanken. Die Meldung dauert eine Minute, und deine Nummer bleibt auf ihr teilweise verdeckt.",
+    "foundPoint1": "Meldung kostenlos",
+    "foundPoint2": "Anspruch auf Finderlohn",
+    "foundPoint3": "Kontakte nur teilweise sichtbar",
+    "lostTitle": "Etwas Eigenes verloren?",
+    "lostText": "Beschreibe die Sache, setze Ort und Datum, und wer dort etwas aufgehoben hat, sieht es.",
+    "lostPoint1": "Eine Minute zum Melden",
+    "lostPoint2": "Ohne Konto",
+    "lostPoint3": "Finderlohn kann dabeistehen",
+    "benefitsTitle": "Warum DeRechi",
+    "benefit1Title": "Kostenlos",
+    "benefit1Text": "Eine Meldung aufzugeben und das Brett zu durchsuchen kostet nichts.",
+    "benefit2Title": "Ohne Konto",
+    "benefit2Text": "Keine Anmeldung, kein Passwort: nur ein Weg, dich zu erreichen.",
+    "benefit3Title": "Kontakte verdeckt",
+    "benefit3Text": "Telefon und E-Mail stehen nur teilweise da, damit dich kein Spam erreicht.",
+    "benefit4Title": "Fünf Sprachen",
+    "benefit4Text": "Ukrainisch, Englisch, Polnisch, Deutsch und Französisch.",
+    "benefit5Title": "Moderiert",
+    "benefit5Text": "Eine Anzeige erscheint sofort. Ein Moderator greift nur bei Bedarf ein und korrigiert oder entfernt, was hier nicht hingehört.",
+    "benefit6Title": "Keine Werbung",
+    "benefit6Text": "Keine Banner, nur Meldungen von Menschen.",
+    "faqTitle": "Häufige Fragen",
+    "faqQ1": "Wie erreiche ich die Person, die es gefunden hat?",
+    "faqA1": "Die Kontaktdaten in einer Anzeige sind zum Schutz vor Spam nur teilweise sichtbar. Die vollständigen Kontaktdaten direkt aus einer Anzeige anzufragen, kommt bald. Erstellen Sie bis dahin eine Anzeige der anderen Art: Wer Ihre Sache hat, sieht sich vielleicht auch die Liste an.",
+    "faqQ2": "Wie stelle ich sicher, dass ich es dem echten Eigentümer gebe?",
+    "faqA2": "Zeigen Sie in der Anzeige nicht alle Merkmale. Bitten Sie den Eigentümer, zu beschreiben, was auf dem Foto nicht zu sehen ist: was im Portemonnaie steckt, welcher Anhänger am Schlüssel hängt, was auf dem Sperrbildschirm des Handys ist. Treffen Sie sich an einem belebten Ort.",
+    "faqQ3": "Ich habe Dokumente gefunden. Was soll ich tun?",
+    "faqA3": "Geben Sie eine Anzeige auf, fotografieren Sie aber keine Seiten mit persönlichen Daten und nennen Sie nicht die Dokumentnummer: Die Art des Dokuments und bei Bedarf der Name des Eigentümers genügen. Meldet sich niemand, können Sie die Dokumente bei der Polizei abgeben.",
+    "faqQ4": "Darf ich den Fund behalten oder einen Finderlohn verlangen?",
+    "faqA4": "Das ukrainische Zivilgesetzbuch verpflichtet Sie, den Eigentümer zu benachrichtigen – oder, wenn er unbekannt ist, die Polizei oder die Gemeindeverwaltung (Art. 337). Wird der Eigentümer innerhalb von sechs Monaten nach dieser Meldung nicht gefunden, geht die Sache in Ihr Eigentum über (Art. 338). Bekommt der Eigentümer sie zurück, dürfen Sie einen Finderlohn von bis zu 20 % ihres Werts verlangen (Art. 339).",
+    "faqQ5": "Wie finde ich meine Sache in der Liste schneller?",
+    "faqA5": "Wählen Sie die Kategorie und die Tage, an denen Sie sie verloren haben – die Daten grenzen die Liste am stärksten ein. Schalten Sie bei den Fundsachen „In meiner Nähe“ ein, um Dinge zu sehen, die im Umkreis von 10 km gefunden wurden. Suchen Sie mit einfachen Worten – die Suche durchsucht Titel und Beschreibungen.",
+    "ctaReturnedLabel": "{count, plural, one {Sache diese Woche zurückgegeben} other {Sachen diese Woche zurückgegeben}}",
+    "ctaTodayLabel": "{count, plural, one {Fund heute eingestellt} other {Funde heute eingestellt}}",
+    "sample": {
+      "keys": {
+        "title": "Schlüssel mit rotem Anhänger",
+        "place": "Schewtschenko-Park, Kyjiw"
+      },
+      "student": {
+        "title": "Studentenausweis",
+        "place": "Bahnhof, Lwiw"
+      },
+      "wallet": {
+        "title": "Braunes Lederportemonnaie",
+        "place": "Straßenbahn 1, Lwiw"
+      },
+      "backpack": {
+        "title": "Blauer Rucksack",
+        "place": "U-Bahn Soloti Worota, Kyjiw"
+      },
+      "earbuds": {
+        "title": "Kopfhörer im weißen Case",
+        "place": "Café in Podil, Kyjiw"
+      },
+      "cat": {
+        "title": "Roter Kater Bublyk",
+        "place": "Sychiw, Lwiw"
+      },
+      "returned": "An den Besitzer zurückgegeben",
+      "new": "Gerade eingestellt"
+    },
+    "benefitsKit": {
+      "statusPublished": "Veröffentlicht",
+      "statusModerated": "Unter Aufsicht"
+    }
+  },
+  "list": {
+    "lostTitle": "Verlorene Sachen",
+    "foundTitle": "Gefundene Sachen",
+    "lostDescription": "Meldungen von Menschen, die etwas verloren haben. Wenn du eine davon gefunden hast, melde dich, es wird darauf gewartet.",
+    "foundDescription": "Sachen, die jemand aufgehoben hat und zurückgeben möchte. Such deine heraus und nimm Kontakt auf.",
+    "search": "Suche",
+    "searchHint": "Sucht im Titel der Meldung",
+    "category": "Kategorie",
+    "allCategories": "Alle Kategorien",
+    "apply": "Anwenden",
+    "applyHint": "Etwas geändert? Mit Enter oder dem Filter-Button anwenden.",
+    "filters": "Filter",
+    "showResults": "Meldungen anzeigen",
+    "reset": "Filter zurücksetzen",
+    "sort": "Sortierung",
+    "showingSome": "{shown, plural, one {# Meldung} other {# Meldungen}}",
+    "showMore": "Mehr anzeigen",
+    "loading": "Wird geladen…",
+    "empty": "Zu diesen Filtern gibt es noch nichts",
+    "emptyHint": "Versuche einen größeren Zeitraum oder lass den Ortsfilter weg.",
+    "emptyAction": "Filter zurücksetzen",
+    "emptyFound": "Bisher wurde noch nichts abgegeben",
+    "emptyFoundHint": "Etwas verloren? Erstellen Sie eine Anzeige, damit der Finder Ihre Sache wiedererkennt.",
+    "emptyLost": "Bisher hat noch niemand einen Verlust gemeldet",
+    "emptyLostHint": "Etwas gefunden? Erstellen Sie eine Anzeige, damit der Eigentümer Sie findet.",
+    "dateRange": "Zeitraum",
+    "anyDate": "Beliebiges Datum",
+    "nearby": "In meiner Nähe",
+    "nearbyLocating": "Standort wird ermittelt…",
+    "nearbyDenied": "Ohne Ihren Standort können wir nicht zeigen, was in Ihrer Nähe gefunden wurde – und so finden Sie Ihre Sache am schnellsten. Sie können ihn in den Website-Einstellungen freigeben: das Symbol links neben der Adresse im Browser.",
+    "nearbyUnavailable": "Ihr Standort ließ sich gerade nicht ermitteln. Versuchen Sie es gleich noch einmal.",
+    "nearbyDismiss": "Schließen"
+  },
+  "sort": {
+    "DATE_DESC": "Neueste zuerst",
+    "DATE_ASC": "Älteste zuerst",
+    "TITLE_ASC": "Titel A–Z",
+    "TITLE_DESC": "Titel Z–A"
+  },
+  "item": {
+    "lost": "Verloren",
+    "found": "Gefunden",
+    "reward": "Finderlohn {amount}",
+    "lostOn": "Verloren am",
+    "foundOn": "Gefunden am",
+    "place": "Ort",
+    "category": "Kategorie",
+    "description": "Beschreibung",
+    "noDescription": "Es wurde keine Beschreibung hinterlassen.",
+    "openInMaps": "In Google Maps öffnen",
+    "contactTitle": "Besitzer kontaktieren",
+    "contactFinderTitle": "Finder kontaktieren",
+    "phone": "Telefon",
+    "email": "E-Mail",
+    "maskedNote": "Kontakte sind teilweise verdeckt, um vor Spam zu schützen. Die vollständigen Daten gibt es später auf Anfrage.",
+    "unlockSoon": "Vollständige Kontakte: bald",
+    "didYouFind": "Hast du diese Sache gefunden?",
+    "didYouFindText": "Gib eine Fundmeldung auf, und die Besitzerin oder der Besitzer sieht sie auf dem Brett.",
+    "isItYours": "Gehört das dir?",
+    "isItYoursText": "Gib eine Verlustmeldung auf, damit dich der Finder wiedererkennen kann.",
+    "photoOf": "Foto: {title}",
+    "openPhoto": "Foto im Vollbild öffnen",
+    "closePhoto": "Schließen",
+    "noPhoto": "Kein Foto",
+    "metaTitle": "{kind}: {title} – {place}, {date}",
+    "metaSummary": "{category} · {place} · {date}"
+  },
+  "category": {
+    "DOCUMENTS": "Dokumente",
+    "KEYS": "Schlüssel",
+    "ELECTRONICS": "Elektronik",
+    "WALLET": "Geldbörsen",
+    "ANIMALS": "Tiere",
+    "JEWELRY": "Schmuck",
+    "CLOTHING": "Kleidung",
+    "BAGS": "Taschen",
+    "OTHER": "Sonstiges"
+  },
+  "error": {
+    "notFoundTitle": "Diese Seite gibt es nicht",
+    "notFoundText": "Die Meldung ist vielleicht archiviert worden, nachdem die Sache zurück war.",
+    "notFoundJoke": "Auch Seiten gehen mal verloren. Vielleicht hat diese schon jemand gefunden.",
+    "notFoundHint": "Fahr mit dem Cursor über die Ziffern und sieh zu, wie sie verbrennen.",
+    "browseFound": "Fundsachen ansehen",
+    "genericTitle": "Etwas ist schiefgelaufen",
+    "genericText": "Die Anfrage kam nicht durch. Versuch es gleich noch einmal.",
+    "retry": "Erneut versuchen",
+    "home": "Zur Startseite"
+  },
+  "upload": {
+    "label": "Bild hierher ziehen oder Datei wählen",
+    "hint": "JPEG, PNG, WebP oder GIF, bis {size} MB.",
+    "choose": "Datei wählen",
+    "uploading": "Wird hochgeladen…",
+    "uploaded": "Foto hochgeladen",
+    "remove": "Foto entfernen",
+    "preview": "Ausgewähltes Foto",
+    "unsupportedType": "Dieser Dateityp wird nicht unterstützt.",
+    "tooLarge": "Die Datei ist zu groß.",
+    "failed": "Der Upload ist fehlgeschlagen. Bitte noch einmal versuchen."
+  },
+  "form": {
+    "pageTitleLost": "Verlust melden",
+    "pageTitleFound": "Fund melden",
+    "pageDescription": "Ohne Konto. Je mehr Details, desto leichter ist die Sache wiederzuerkennen.",
+    "steps": {
+      "details": "Die Sache",
+      "whereWhen": "Foto, Datum & Ort",
+      "contacts": "Finderlohn & Kontakt"
+    },
+    "stepOf": "Schritt {current} von {total}",
+    "next": "Weiter",
+    "back": "Zurück",
+    "draftRestored": "Dein Entwurf ist wieder da: was du eingegeben hattest, blieb erhalten.",
+    "titleLost": "Was hast du verloren?",
+    "titleFound": "Was hast du gefunden?",
+    "category": "Kategorie",
+    "categoryPlaceholder": "Kategorie wählen",
+    "dateLost": "Verloren am",
+    "dateFound": "Gefunden am",
+    "reward": "Finderlohn, ₴",
+    "description": "Beschreibung",
+    "descriptionHintLost": "Beschreibe alles, woran man die Sache erkennt: Kratzer, Abnutzung, Inhalt",
+    "descriptionHintFound": "Beschreibe die groben Merkmale und behalte ein Detail zurück, um den Eigentümer zu prüfen",
+    "photo": "Foto",
+    "photoRequired": "Foto (erforderlich)",
+    "photoPrivacy": "Auf dem Foto eines Dokuments dürfen keine persönlichen Daten zu sehen sein: Steuernummer, Wohnadresse, Unterschrift. Übermale sie vor dem Hochladen.",
+    "place": "Ort",
+    "placePlaceholder": "Adresse eintippen",
+    "placeHintLost": "Setze den letzten Ort, bei dem du sicher bist: dort wird danach gesucht.",
+    "placeHintFound": "Setze den Ort, an dem du die Sache gefunden hast.",
+    "placeLocate": "Meinen Standort verwenden",
+    "placeLocating": "Adresse wird ermittelt…",
+    "placeLocateDenied": "Der Standortzugriff ist blockiert. Gib die Adresse ein oder erlaube den Zugriff in den Website-Einstellungen.",
+    "placeLocateFailed": "Die Adresse ließ sich nicht automatisch ermitteln – bitte gib sie selbst ein.",
+    "placeSearching": "Suche läuft…",
+    "placeNoResults": "Diesen Ort gibt es noch in keiner Anzeige, also setzen wir ihn dorthin, wo du gerade bist.",
+    "placeAddHere": "„{name}“ hier hinzufügen, wo ich bin",
+    "placeAddHereHint": "Falls keiner der Orte oben passt.",
+    "placeAddDenied": "Für einen neuen Ort brauchen wir deinen Standort: erlaube ihn in den Website-Einstellungen oder wähle einen Ort aus der Liste.",
+    "placeAddFailed": "Dein Standort ließ sich nicht ermitteln. Versuch es noch einmal oder wähle einen Ort aus der Liste.",
+    "placeManual": "Die Google-Vorschläge sind aus, deshalb suchen wir unter den Orten, die schon in Anzeigen stehen.",
+    "placeUnavailable": "Die Google-Vorschläge ließen sich nicht laden, deshalb suchen wir unter den Orten, die schon in Anzeigen stehen.",
+    "phone": "Telefon",
+    "email": "E-Mail",
+    "messengers": "Messenger unter dieser Nummer",
+    "messengersHint": "Wir geben sie weiter, damit man dich so erreicht, wie es dir passt.",
+    "publish": "Meldung veröffentlichen",
+    "publishing": "Wird veröffentlicht…",
+    "cancel": "Abbrechen",
+    "consent": "Mit dem Veröffentlichen stimmst du den <terms>Nutzungsbedingungen</terms> und der <privacy>Datenschutzerklärung</privacy> zu, auch dass deine teilweise verdeckten Kontakte auf der Meldung stehen.",
+    "previewTitle": "Vorschau",
+    "previewEmpty": "Hier steht dein Titel",
+    "previewNoPlace": "Noch kein Ort gewählt",
+    "tipsTitle": "Tipps",
+    "lostTip1": "Nenne die Sache schlicht: „Schwarze Geldbörse“, nicht „Geldbörse verloren, bitte helft!!!“.",
+    "lostTip2": "Setze den letzten Ort, bei dem du sicher bist.",
+    "lostTip3": "Beschreibe alles, woran man die Sache erkennt: Kratzer, Aufkleber, Inhalt.",
+    "foundTip1": "Nenne die Sache schlicht: „Schwarze Geldbörse“, nicht „Geldbörse gefunden, wem gehört sie???“.",
+    "foundTip2": "Setze den Ort, an dem du die Sache gefunden hast.",
+    "foundTip3": "Lass ein Detail aus der Beschreibung weg, um Rückmeldungen zu prüfen.",
+    "social": {
+      "TELEGRAM": "Telegram",
+      "VIBER": "Viber",
+      "WHATSAPP": "WhatsApp"
+    },
+    "error": {
+      "required": "Dieses Feld wird gebraucht.",
+      "tooLong": "Zu lang.",
+      "invalid": "Dieser Wert passt nicht.",
+      "future": "Das Datum kann nicht in der Zukunft liegen.",
+      "tooOld": "Meldungen werden nur für die letzten 30 Tage angenommen.",
+      "rewardMax": "Der Finderlohn darf höchstens 99 999 UAH betragen.",
+      "photoRequired": "Ein Fund braucht ein Foto.",
+      "placeRequired": "Wähle einen Ort.",
+      "outOfRange": "Diese Koordinaten liegen außerhalb des Bereichs.",
+      "phoneFormat": "Internationales Format, zum Beispiel +380671234567.",
+      "emailFormat": "Diese E-Mail-Adresse sieht nicht richtig aus.",
+      "validation": "Ein paar Felder müssen noch korrigiert werden.",
+      "captcha": "Die Spam-Prüfung ist nicht durchgegangen. Versuch es noch einmal.",
+      "failed": "Die Meldung konnte nicht veröffentlicht werden. Versuch es gleich noch einmal."
+    },
+    "pickDate": "Datum wählen"
+  },
+  "tour": {
+    "progress": "Schritt {current} von {total}",
+    "next": "Weiter",
+    "back": "Zurück",
+    "done": "Verstanden",
+    "home": {
+      "report": {
+        "title": "Fang auf deiner Seite an",
+        "text": "Etwas verloren oder etwas aufgehoben? Beides dauert eine Minute und braucht kein Konto."
+      },
+      "search": {
+        "title": "Erst schauen, dann melden",
+        "text": "Suche nach dem Namen der Sache und ungefähr dem Zeitraum. Was du einstellst, steht in der Adresse, so lässt sich die Suche merken oder weitergeben."
+      },
+      "recent": {
+        "title": "Die neuesten Fundsachen",
+        "text": "Was in den letzten Tagen aufgehoben wurde. Öffne eine Meldung für Ort, Datum und den Weg zum Finder."
+      },
+      "language": {
+        "title": "Fünf Sprachen",
+        "text": "Ukrainisch, Englisch, Polnisch, Deutsch und Französisch. Die Wahl wird gemerkt und gilt auch im Admin-Bereich."
+      }
+    },
+    "report": {
+      "details": {
+        "title": "Benenne die Sache schlicht",
+        "text": "Ein kurzer, gewöhnlicher Name wirkt am besten: Kratzer, Abnutzung und Inhalt gehören in die Beschreibung."
+      },
+      "photo": {
+        "title": "Das Foto macht die meiste Arbeit",
+        "text": "Zieh die Datei hierher, sie geht direkt in unseren Speicher. Ein Fund lässt sich ohne Foto nicht melden."
+      },
+      "place": {
+        "title": "Der letzte Ort, bei dem du sicher bist",
+        "text": "Wähle ihn aus den Vorschlägen, dann kommen die Koordinaten mit dem Namen mit."
+      },
+      "contacts": {
+        "title": "Wer deine Kontakte sieht",
+        "text": "Deine Kontakte stehen nur teilweise da; die vollständigen lassen sich bald direkt aus der Anzeige anfragen."
+      }
+    }
+  },
+  "game": {
+    "catch": "Znaida fangen",
+    "caught": "Du hast Znaida gefangen! {count} von {total}",
+    "prizeTitle": "Du hast Znaida fünfmal gefangen!",
+    "prizeText": "Er gibt auf: Du bist offiziell sein bester Freund. Niemand entdeckt Verlorenes schneller als du.",
+    "prizeHome": "Zurück zu den Meldungen"
+  }
+}

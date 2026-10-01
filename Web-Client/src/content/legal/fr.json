@@ -1,0 +1,193 @@
+{
+  "updated": "Mise à jour",
+  "terms": {
+    "title": "Conditions d’utilisation",
+    "summary": "Les règles de fonctionnement de DeRechi, un tableau d’annonces gratuit pour les objets perdus et trouvés. En publiant une annonce, vous les acceptez.",
+    "sections": [
+      {
+        "heading": "1. Qu’est-ce que DeRechi",
+        "body": [
+          "DeRechi aide les personnes qui ont perdu quelque chose et celles qui ont trouvé quelque chose à se retrouver. Le service est gratuit, ne nécessite pas d’inscription et n’affiche pas de publicité. L’opérateur du site est {operator}.",
+          "Nous ne conservons pas d’objets, ne servons pas d’intermédiaire pour leur remise et ne prenons aucune commission. Le propriétaire et la personne qui a trouvé l’objet conviennent eux-mêmes de sa restitution."
+        ]
+      },
+      {
+        "heading": "2. Publication des annonces",
+        "body": [
+          "Tout le monde peut créer une annonce. Il faut pour cela indiquer le nom de l’objet, la catégorie, la date, le lieu ainsi que votre téléphone et votre adresse e-mail ; pour une annonce d’objet trouvé, une photo est également requise. Si vous avez moins de 14 ans, demandez à vos parents de publier l’annonce à votre place.",
+          "En publiant une annonce, vous confirmez que :",
+          [
+            "vous décrivez une perte ou une trouvaille réelle, et non que vous faites la promotion de biens ou de services, testez la demande ou vendez ce que vous avez trouvé ;",
+            "vous indiquez vos propres coordonnées et non celles d’autrui ;",
+            "vous détenez les droits sur le texte et les photos que vous publiez ;",
+            "vous publiez chaque objet dans une seule annonce, sans doublons."
+          ],
+          "Sont interdits dans les annonces :",
+          [
+            "les données personnelles d’autrui, notamment les numéros et les pages de documents contenant des données personnelles ;",
+            "les photos de cartes professionnelles et de documents d’organes de l’État, de militaires ou de membres des forces de l’ordre ;",
+            "les liens vers des sites tiers ;",
+            "les appels à la violence, la propagande de guerre ou d’extrémisme ;",
+            "les insultes, la discrimination, les contenus indécents ou érotiques ;",
+            "le spam, les escroqueries et les systèmes pyramidaux, ainsi que tout autre contenu illégal ou trompeur."
+          ],
+          "La date de la perte ou de la trouvaille ne doit pas remonter à plus de 30 jours."
+        ]
+      },
+      {
+        "heading": "3. Utilisation du site",
+        "body": [
+          "Sans notre accord écrit, il est interdit de collecter les annonces de manière automatisée (au moyen de robots ou d’outils de scraping), de perturber le fonctionnement du site ou d’utiliser les coordonnées figurant dans les annonces à d’autres fins que la restitution de l’objet, par exemple à des fins publicitaires."
+        ]
+      },
+      {
+        "heading": "4. Coordonnées",
+        "body": [
+          "Sur l’annonce, votre téléphone et votre adresse e-mail ne sont visibles que partiellement, afin de vous protéger du spam.",
+          "C’est tout ce que les autres voient pour l’instant. Une fonction permettant de demander les coordonnées complètes de l’auteur d’une annonce via le site est prévue ; lorsqu’elle sera disponible, cette section décrira son fonctionnement."
+        ]
+      },
+      {
+        "heading": "5. Droits sur le contenu",
+        "body": [
+          "Le texte et les photos de l’annonce restent les vôtres. En les publiant, vous nous autorisez à les afficher gratuitement sur le site tant que l’annonce est publiée.",
+          "Le nom DeRechi, le design et le code du site appartiennent à l’opérateur."
+        ]
+      },
+      {
+        "heading": "6. Objet trouvé et récompense",
+        "body": [
+          "Le Code civil ukrainien oblige la personne qui a trouvé un objet à en informer le propriétaire ou, si celui-ci est inconnu, la police ou l’organe d’autonomie locale (art. 337). La personne qui a trouvé l’objet a le droit d’exiger du propriétaire une récompense allant jusqu’à 20 % de la valeur de l’objet (art. 339).",
+          "Le montant de la récompense indiqué dans l’annonce est une proposition de son auteur. DeRechi n’en garantit pas le versement et ne participe à aucun règlement."
+        ]
+      },
+      {
+        "heading": "7. Sécurité",
+        "body": [
+          "Avant de remettre un objet, demandez au propriétaire de décrire des signes distinctifs qui ne figurent pas sur la photo. Choisissez des lieux fréquentés pour vous rencontrer.",
+          "Ne payez jamais à l’avance une personne qui affirme avoir trouvé votre objet, et ne communiquez à personne les données de votre carte bancaire ni les codes reçus par SMS. DeRechi est gratuit et ne demande jamais de paiement ni de telles données : quiconque vous les demande est un escroc. En cas d’escroquerie, adressez-vous à la police et prévenez-nous à {email}.",
+          "DeRechi ne vérifie pas l’identité des utilisateurs et n’est pas responsable de leurs actes lors de la rencontre."
+        ]
+      },
+      {
+        "heading": "8. Modification et suppression des annonces",
+        "body": [
+          "Il n’est pas encore possible de modifier ou de retirer une annonce soi-même. Si l’objet a été restitué ou si les informations de l’annonce doivent être corrigées, écrivez à {email}.",
+          "Nous pouvons, sans préavis, retirer une annonce qui enfreint ces conditions ou la loi, ou en supprimer les données personnelles. Pour signaler une infraction dans l’annonce de quelqu’un d’autre, écrivez également à {email}."
+        ]
+      },
+      {
+        "heading": "9. Responsabilité",
+        "body": [
+          "Le service est fourni « en l’état ». Nous ne garantissons pas que l’objet sera retrouvé et ne sommes pas responsables de l’exactitude des annonces : leur contenu relève de la responsabilité de leurs auteurs.",
+          "Nous ne sommes pas responsables des interruptions du site, des pannes techniques ou des pertes de données dues à des circonstances indépendantes de notre volonté."
+        ]
+      },
+      {
+        "heading": "10. Litiges",
+        "body": [
+          "Ces conditions sont régies par le droit ukrainien. Nous proposons d’abord de régler tout différend par échange de courriers à {email} ; à défaut d’accord, le litige est porté devant les tribunaux conformément à la législation ukrainienne."
+        ]
+      },
+      {
+        "heading": "11. Modification des conditions",
+        "body": [
+          "Nous pouvons mettre à jour ces conditions. La date de la dernière version est indiquée en haut de la page. En continuant d’utiliser le site après une modification, vous acceptez la nouvelle version.",
+          "Envoyez vos questions concernant les conditions à {email}."
+        ]
+      }
+    ]
+  },
+  "privacy": {
+    "title": "Politique de confidentialité",
+    "summary": "Les données que DeRechi collecte, dans quel but, qui peut les voir et comment les gérer. Cette politique est conforme à la loi ukrainienne « Sur la protection des données personnelles ».",
+    "sections": [
+      {
+        "heading": "1. Qui traite les données",
+        "body": [
+          "Le responsable des données personnelles est {operator}. Pour toute question concernant vos données, écrivez à {email}."
+        ]
+      },
+      {
+        "heading": "2. Les données que nous collectons",
+        "body": [
+          "Lorsque vous publiez une annonce :",
+          [
+            "la description de l’objet : son nom, sa description, sa catégorie, la date, la photo et la récompense, si vous en avez indiqué une ;",
+            "le lieu : le nom et les coordonnées du point que vous avez choisi ou déterminé par géolocalisation ;",
+            "les coordonnées : le numéro de téléphone, l’adresse e-mail et les messageries que vous avez cochées."
+          ],
+          "Nous n’avons ni comptes ni mots de passe, nous ne conservons donc aucune autre donnée vous concernant.",
+          "N’ajoutez pas à l’annonce d’informations sur la santé, la religion, des données biométriques ou d’autres données sensibles, ni sur vous-même ni sur d’autres personnes.",
+          "Lors de la visite du site, le serveur, comme tout serveur web, peut enregistrer des données techniques de la requête (adresse IP, type de navigateur et heure de la requête) afin de se protéger contre les abus."
+        ]
+      },
+      {
+        "heading": "3. Ce que les autres peuvent voir",
+        "body": [
+          "La description de l’objet, le lieu avec ses coordonnées et la photo sont publiés ouvertement. Le téléphone et l’adresse e-mail figurant sur l’annonce ne sont affichés que partiellement (par exemple, +38067*****67), et les messageries ne sont pas affichées du tout."
+        ]
+      },
+      {
+        "heading": "4. Pourquoi nous utilisons les données",
+        "body": [
+          [
+            "pour montrer l’annonce à d’autres personnes et permettre de la trouver par la recherche ;",
+            "pour protéger le site contre le spam et les abus."
+          ],
+          "La base du traitement est votre consentement, que vous donnez en publiant une annonce."
+        ]
+      },
+      {
+        "heading": "5. Géolocalisation",
+        "body": [
+          "Sur la page des objets trouvés et dans le formulaire d’annonce, le site peut vous demander l’accès à votre géolocalisation. Vous pouvez refuser : tout fonctionnera aussi sans elle.",
+          "Pour la recherche à proximité, les coordonnées sont arrondies à environ 100 m et transmises dans l’adresse de la page uniquement pour cette recherche ; nous ne les conservons pas. Dans le formulaire d’annonce, les coordonnées deviennent le lieu de l’annonce et sont publiées avec celle-ci."
+        ]
+      },
+      {
+        "heading": "6. Services tiers",
+        "body": [
+          [
+            "Google Maps Platform : suggestions d’adresses et détermination de l’adresse à partir des coordonnées dans le formulaire d’annonce ; le texte que vous saisissez dans le champ du lieu et les coordonnées sont transmis à Google ;",
+            "Vercel BotID : vérification que le formulaire est envoyé par un humain et non par un robot ;"
+          ],
+          "Ces services traitent les données selon leurs propres politiques de confidentialité, y compris en dehors de l’Ukraine. Nous ne vendons pas vos données et ne les transmettons pas à des annonceurs."
+        ]
+      },
+      {
+        "heading": "7. Cookies et stockage du navigateur",
+        "body": [
+          "Nous n’utilisons que le strict nécessaire :",
+          ["le cookie DERECHI_LOCALE : il mémorise la langue choisie pendant un an ;"],
+          "Il n’y a sur le site aucun cookie d’analyse ni de publicité."
+        ]
+      },
+      {
+        "heading": "8. Durée de conservation des données",
+        "body": [
+          "Une annonce est conservée jusqu’à ce qu’elle soit retirée de la publication. Elle est ensuite déplacée dans les archives et n’est plus affichée sur le site."
+        ]
+      },
+      {
+        "heading": "9. Vos droits",
+        "body": [
+          "Conformément à l’article 8 de la loi ukrainienne « Sur la protection des données personnelles », vous avez le droit :",
+          [
+            "de savoir quelles données vous concernant nous traitons et d’y accéder ;",
+            "d’exiger la rectification des données inexactes ou leur suppression ;",
+            "de retirer votre consentement au traitement ;",
+            "de déposer une plainte auprès du Commissaire aux droits de l’homme de la Verkhovna Rada d’Ukraine."
+          ],
+          "Pour exercer ces droits, écrivez à {email}."
+        ]
+      },
+      {
+        "heading": "10. Modification de la politique",
+        "body": [
+          "Nous pouvons mettre à jour cette politique. La date de la dernière version est indiquée en haut de la page."
+        ]
+      }
+    ]
+  }
+}

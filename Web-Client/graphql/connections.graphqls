@@ -1,0 +1,40 @@
+# Spring for GraphQL registers the Relay connection types at runtime from the
+# `LostItemConnection` / `FoundItemConnection` / `PlaceConnection` names used in the schema, so they do not
+# appear in Client-API's own .graphqls file. Codegen reads files, not a running server,
+# so the generated shapes are spelled out here.
+type PageInfo {
+  hasPreviousPage: Boolean!
+  hasNextPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type LostItemEdge {
+  node: LostItem!
+  cursor: String!
+}
+
+type LostItemConnection {
+  edges: [LostItemEdge!]!
+  pageInfo: PageInfo!
+}
+
+type FoundItemEdge {
+  node: FoundItem!
+  cursor: String!
+}
+
+type FoundItemConnection {
+  edges: [FoundItemEdge!]!
+  pageInfo: PageInfo!
+}
+
+type PlaceEdge {
+  node: Place!
+  cursor: String!
+}
+
+type PlaceConnection {
+  edges: [PlaceEdge!]!
+  pageInfo: PageInfo!
+}

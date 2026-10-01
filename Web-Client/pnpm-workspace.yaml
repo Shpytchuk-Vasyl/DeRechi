@@ -1,0 +1,9 @@
+allowBuilds:
+  sharp: false
+  unrs-resolver: false
+  "@parcel/watcher": false
+  "@swc/core": false
+
+# pnpm shortens virtual-store folder names past 60 characters on Windows, and then links to the
+# unshortened name, so packages with long names such as @radix-ui/react-separator never resolve.
+virtualStoreDirMaxLength: 120

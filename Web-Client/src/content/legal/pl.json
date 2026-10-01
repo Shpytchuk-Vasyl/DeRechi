@@ -1,0 +1,193 @@
+{
+  "updated": "Zaktualizowano",
+  "terms": {
+    "title": "Regulamin",
+    "summary": "Zasady, na jakich działa DeRechi: bezpłatna tablica ogłoszeń o zgubionych i znalezionych rzeczach. Publikując ogłoszenie, akceptujesz je.",
+    "sections": [
+      {
+        "heading": "1. Czym jest DeRechi",
+        "body": [
+          "DeRechi pomaga ludziom, którzy coś zgubili, i tym, którzy coś znaleźli, odnaleźć się nawzajem. Serwis jest bezpłatny, nie wymaga rejestracji i nie wyświetla reklam. Operatorem strony jest {operator}.",
+          "Nie przechowujemy rzeczy, nie pośredniczymy w ich przekazaniu i nie pobieramy prowizji. O zwrocie umawiają się bezpośrednio właściciel i znalazca."
+        ]
+      },
+      {
+        "heading": "2. Publikowanie ogłoszeń",
+        "body": [
+          "Ogłoszenie może dodać każdy. Potrzebne są do tego nazwa rzeczy, kategoria, data, miejsce oraz Twój telefon i e-mail; w ogłoszeniu o znalezieniu także zdjęcie. Jeśli masz mniej niż 14 lat, poproś rodziców, żeby opublikowali ogłoszenie za Ciebie.",
+          "Publikując ogłoszenie, potwierdzasz, że:",
+          [
+            "opisujesz prawdziwą zgubę lub znalezisko, a nie reklamujesz towarów ani usług, nie badasz popytu i nie sprzedajesz znalezionych rzeczy;",
+            "podajesz własne dane kontaktowe, a nie cudze;",
+            "masz prawo do tekstu i zdjęć, które publikujesz;",
+            "publikujesz każdą rzecz w jednym ogłoszeniu, bez duplikatów."
+          ],
+          "W ogłoszeniach zabronione są:",
+          [
+            "cudze dane osobowe, w tym numery i strony dokumentów z danymi osobowymi;",
+            "zdjęcia legitymacji służbowych i dokumentów organów państwowych, wojska lub służb porządkowych;",
+            "linki do zewnętrznych stron;",
+            "nawoływanie do przemocy, propaganda wojny lub ekstremizmu;",
+            "obelgi, dyskryminacja, treści nieprzyzwoite lub erotyczne;",
+            "spam, oszustwa i piramidy finansowe, a także wszelkie inne treści niezgodne z prawem lub wprowadzające w błąd."
+          ],
+          "Zgubienie lub znalezienie musiało nastąpić nie wcześniej niż 30 dni temu."
+        ]
+      },
+      {
+        "heading": "3. Korzystanie ze strony",
+        "body": [
+          "Bez naszej pisemnej zgody nie wolno automatycznie zbierać ogłoszeń (za pomocą botów lub parserów), ingerować w działanie strony ani wykorzystywać danych kontaktowych z ogłoszeń do celów innych niż zwrot rzeczy, na przykład do reklamy."
+        ]
+      },
+      {
+        "heading": "4. Dane kontaktowe",
+        "body": [
+          "W ogłoszeniu Twój telefon i e-mail są widoczne tylko częściowo, żeby chronić Cię przed spamem.",
+          "Na razie to wszystko, co widzą inni. Możliwość poproszenia o pełne dane kontaktowe autora ogłoszenia przez stronę jest planowana; gdy się pojawi, ten punkt opisze, jak to działa."
+        ]
+      },
+      {
+        "heading": "5. Prawa do treści",
+        "body": [
+          "Tekst i zdjęcia ogłoszenia pozostają Twoje. Publikując je, pozwalasz nam nieodpłatnie pokazywać je na stronie, dopóki ogłoszenie jest opublikowane.",
+          "Nazwa DeRechi, projekt graficzny i kod strony należą do operatora."
+        ]
+      },
+      {
+        "heading": "6. Znalezisko i nagroda",
+        "body": [
+          "Kodeks cywilny Ukrainy zobowiązuje znalazcę do powiadomienia właściciela, a jeśli jest on nieznany, policji lub organu samorządu lokalnego (art. 337). Znalazca ma prawo żądać od właściciela nagrody w wysokości do 20% wartości rzeczy (art. 339).",
+          "Wysokość nagrody podana w ogłoszeniu to propozycja autora. DeRechi nie gwarantuje jej wypłaty i nie uczestniczy w rozliczeniach."
+        ]
+      },
+      {
+        "heading": "7. Bezpieczeństwo",
+        "body": [
+          "Zanim oddasz rzecz, poproś właściciela o opisanie cech, których nie widać na zdjęciu. Na spotkanie wybieraj miejsca, w których jest dużo ludzi.",
+          "Nigdy nie płać z góry komuś, kto twierdzi, że znalazł Twoją rzecz, i nikomu nie podawaj danych karty ani kodów z SMS-ów. DeRechi jest bezpłatny i nigdy nie prosi ani o zapłatę, ani o takie dane: kto o nie prosi, jest oszustem. W razie oszustwa zgłoś się na policję i daj nam znać na {email}.",
+          "DeRechi nie weryfikuje tożsamości użytkowników i nie odpowiada za ich działania podczas spotkania."
+        ]
+      },
+      {
+        "heading": "8. Zmiana i usuwanie ogłoszeń",
+        "body": [
+          "Na razie nie możesz samodzielnie zmienić ani zdjąć ogłoszenia. Jeśli rzecz została zwrócona albo dane w ogłoszeniu wymagają poprawienia, napisz na {email}.",
+          "Możemy bez uprzedzenia zdjąć ogłoszenie, które narusza ten regulamin lub prawo, albo usunąć z niego dane osobowe. O naruszeniach w cudzym ogłoszeniu także pisz na {email}."
+        ]
+      },
+      {
+        "heading": "9. Odpowiedzialność",
+        "body": [
+          "Serwis jest udostępniany „tak, jak jest”. Nie gwarantujemy, że rzecz się odnajdzie, i nie odpowiadamy za prawdziwość ogłoszeń: za ich treść odpowiadają autorzy.",
+          "Nie odpowiadamy za przerwy w działaniu strony, awarie techniczne ani utratę danych spowodowane okolicznościami, na które nie mamy wpływu."
+        ]
+      },
+      {
+        "heading": "10. Spory",
+        "body": [
+          "Do niniejszego regulaminu stosuje się prawo Ukrainy. Sporne kwestie proponujemy najpierw rozwiązać drogą korespondencji na {email}; jeśli nie uda się dojść do porozumienia, przed sądem zgodnie z prawem Ukrainy."
+        ]
+      },
+      {
+        "heading": "11. Zmiany regulaminu",
+        "body": [
+          "Możemy aktualizować ten regulamin. Data ostatniej wersji jest podana na górze strony. Korzystając ze strony po zmianach, akceptujesz nową wersję.",
+          "Pytania dotyczące regulaminu wysyłaj na {email}."
+        ]
+      }
+    ]
+  },
+  "privacy": {
+    "title": "Polityka prywatności",
+    "summary": "Jakie dane zbiera DeRechi, w jakim celu, kto je widzi i jak możesz nimi zarządzać. Polityka jest zgodna z ustawą Ukrainy „O ochronie danych osobowych”.",
+    "sections": [
+      {
+        "heading": "1. Kto przetwarza dane",
+        "body": [
+          "Administratorem danych osobowych jest {operator}. We wszystkich sprawach dotyczących Twoich danych pisz na {email}."
+        ]
+      },
+      {
+        "heading": "2. Jakie dane zbieramy",
+        "body": [
+          "Gdy publikujesz ogłoszenie:",
+          [
+            "opis rzeczy: nazwę, opis, kategorię, datę, zdjęcie oraz nagrodę, jeśli ją podałeś;",
+            "miejsce: nazwę i współrzędne punktu, który wybrałeś lub który został ustalony na podstawie geolokalizacji;",
+            "dane kontaktowe: numer telefonu, adres e-mail oraz zaznaczone przez Ciebie komunikatory."
+          ],
+          "Nie mamy kont ani haseł, więc nie przechowujemy o Tobie żadnych innych danych.",
+          "Nie umieszczaj w ogłoszeniu informacji o zdrowiu, wyznaniu, danych biometrycznych ani innych danych wrażliwych, ani o sobie, ani o innych.",
+          "Podczas odwiedzin strony serwer, jak każdy serwer WWW, może rejestrować dane techniczne żądania: adres IP, typ przeglądarki i czas wejścia, aby chronić serwis przed nadużyciami."
+        ]
+      },
+      {
+        "heading": "3. Co widzą inni",
+        "body": [
+          "Opis rzeczy, miejsce ze współrzędnymi i zdjęcie są publikowane jawnie. Telefon i e-mail są widoczne w ogłoszeniu tylko częściowo (np. +38067*****67), a komunikatory nie są pokazywane wcale."
+        ]
+      },
+      {
+        "heading": "4. Do czego wykorzystujemy dane",
+        "body": [
+          [
+            "aby pokazać ogłoszenie innym osobom i umożliwić znalezienie go w wyszukiwarce;",
+            "aby chronić stronę przed spamem i nadużyciami."
+          ],
+          "Podstawą przetwarzania jest Twoja zgoda, której udzielasz, publikując ogłoszenie."
+        ]
+      },
+      {
+        "heading": "5. Geolokalizacja",
+        "body": [
+          "Na stronie znalezionych rzeczy i w formularzu ogłoszenia strona może poprosić o dostęp do Twojej geolokalizacji. Możesz odmówić: wszystko będzie działać także bez niej.",
+          "Przy wyszukiwaniu w pobliżu współrzędne są zaokrąglane do około 100 m i przekazywane w adresie strony wyłącznie na potrzeby tego wyszukiwania; nie przechowujemy ich. W formularzu ogłoszenia współrzędne stają się miejscem ogłoszenia i są publikowane razem z nim."
+        ]
+      },
+      {
+        "heading": "6. Usługi zewnętrzne",
+        "body": [
+          [
+            "Google Maps Platform: podpowiedzi adresów i ustalanie adresu na podstawie współrzędnych w formularzu ogłoszenia; tekst, który wpisujesz w pole miejsca, oraz współrzędne są przekazywane Google;",
+            "Vercel BotID: sprawdzenie, czy formularz wysyła człowiek, a nie bot;"
+          ],
+          "Usługi te przetwarzają dane zgodnie z własnymi politykami prywatności, w tym również poza granicami Ukrainy. Nie sprzedajemy Twoich danych ani nie przekazujemy ich reklamodawcom."
+        ]
+      },
+      {
+        "heading": "7. Pliki cookie i pamięć przeglądarki",
+        "body": [
+          "Używamy tylko tego, co niezbędne:",
+          ["cookie DERECHI_LOCALE: zapamiętuje wybrany język na rok;"],
+          "Na stronie nie ma analitycznych ani reklamowych plików cookie."
+        ]
+      },
+      {
+        "heading": "8. Jak długo przechowujemy dane",
+        "body": [
+          "Ogłoszenie jest przechowywane, dopóki nie zostanie zdjęte z publikacji. Następnie trafia do archiwum i nie jest już wyświetlane na stronie."
+        ]
+      },
+      {
+        "heading": "9. Twoje prawa",
+        "body": [
+          "Zgodnie z art. 8 ustawy Ukrainy „O ochronie danych osobowych” masz prawo:",
+          [
+            "wiedzieć, jakie Twoje dane przetwarzamy, i uzyskać do nich dostęp;",
+            "żądać poprawienia nieprawidłowych danych lub ich usunięcia;",
+            "wycofać zgodę na przetwarzanie;",
+            "złożyć skargę do Rzecznika Praw Człowieka Rady Najwyższej Ukrainy."
+          ],
+          "Aby skorzystać z tych praw, napisz na {email}."
+        ]
+      },
+      {
+        "heading": "10. Zmiany polityki",
+        "body": [
+          "Możemy aktualizować tę politykę. Data ostatniej wersji jest podana na górze strony."
+        ]
+      }
+    ]
+  }
+}
