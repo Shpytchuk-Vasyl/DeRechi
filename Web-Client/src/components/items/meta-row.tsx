@@ -13,7 +13,10 @@ type Props = {
 export function MetaRow({ icon, children, faint = false, truncate = false }: Props) {
   return (
     <Row gap={1} align="center" wrap={false}>
-      <span className={cn("shrink-0 text-muted [&>svg]:size-3.5", faint && "opacity-70")} aria-hidden>
+      <span
+        className={cn("shrink-0 text-muted [&>svg]:size-3.5", faint && "opacity-70")}
+        aria-hidden
+      >
         {icon}
       </span>
       <Text size="sm" muted truncate={truncate} className={cn(faint && "opacity-70")}>

@@ -10,8 +10,9 @@ import { Skeleton } from "@/components/pouf/skeleton"
 import { Heading } from "@/components/pouf/text"
 import { Link } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
+import type { Money } from "@/lib/country"
 import { formatNoticeDate, fromIsoDate, todayIso } from "@/lib/dates"
-import { formatHryvnia } from "@/lib/money"
+import { formatMoney } from "@/lib/money"
 import { Stack } from "../pouf/layout"
 
 const RELATIVE_DAYS = 7
@@ -49,7 +50,7 @@ type NoticeCardProps = {
   title: string
   place: string
   date?: string
-  compensation?: number | null
+  compensation?: Money | null
   media: ReactNode
 }
 
@@ -74,13 +75,13 @@ export function NoticeCard({ title, place, date, compensation, media }: NoticeCa
       <div className="relative aspect-4/3 overflow-hidden bg-bg">
         {media}
 
-        {compensation ? (
+        {compensation && compensation.amount > 0 ? (
           <Badge
             tone="yellow"
             className="absolute top-2 right-2 text-pretty text-end sm:top-3 sm:right-3"
           >
             {t("item.reward", {
-              amount: formatHryvnia(format, compensation),
+              amount: formatMoney(format, compensation),
             })}
           </Badge>
         ) : null}

@@ -8,6 +8,7 @@ import {
   LostItemsQuery,
 } from "@/graphql/documents"
 import type { ItemFilterInput, ItemSort } from "@/graphql/generated/graphql"
+import type { Money } from "@/lib/country"
 
 export type ItemKind = "lost" | "found"
 
@@ -21,10 +22,16 @@ export type ItemSummary = {
   title: string
   description?: string | null
   date: string
-  compensation?: number | null
+  compensation?: Money | null
   image?: string | null
   category: Category
-  place: { id: string; name: string; lat?: number | null; lon?: number | null }
+  place: {
+    id: string
+    name: string
+    lat?: number | null
+    lon?: number | null
+    countryCode: string
+  }
 }
 
 export type ItemDetail = ItemSummary & {

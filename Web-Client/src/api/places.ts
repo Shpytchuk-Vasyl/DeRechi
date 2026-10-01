@@ -7,6 +7,7 @@ export type KnownPlace = {
   name: string
   lat: number
   lon: number
+  countryCode: string
 }
 
 export const MAX_PLACE_QUERY = 100
@@ -24,7 +25,15 @@ export async function searchKnownPlaces(name: string): Promise<KnownPlace[]> {
 
   return places.edges.flatMap(({ node }) =>
     node.lat != null && node.lon != null
-      ? [{ id: node.id, name: node.name, lat: node.lat, lon: node.lon }]
+      ? [
+          {
+            id: node.id,
+            name: node.name,
+            lat: node.lat,
+            lon: node.lon,
+            countryCode: node.countryCode,
+          },
+        ]
       : [],
   )
 }

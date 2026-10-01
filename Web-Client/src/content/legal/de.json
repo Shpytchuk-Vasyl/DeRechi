@@ -57,7 +57,7 @@
       {
         "heading": "6. Fund und Finderlohn",
         "body": [
-          "Das Zivilgesetzbuch der Ukraine verpflichtet den Finder, den Eigentümer über den Fund zu informieren und, falls dieser unbekannt ist, die Polizei oder die örtliche Selbstverwaltungsbehörde (Art. 337). Der Finder ist berechtigt, vom Eigentümer einen Finderlohn von bis zu 20 % des Wertes des Gegenstands zu verlangen (Art. 339).",
+          "{findersLaw}",
           "Die in der Anzeige angegebene Höhe des Finderlohns ist ein Angebot des Verfassers. DeRechi garantiert weder dessen Zahlung noch ist es an der Abrechnung beteiligt."
         ]
       },
@@ -85,9 +85,7 @@
       },
       {
         "heading": "10. Streitigkeiten",
-        "body": [
-          "Auf diese Bedingungen ist ukrainisches Recht anwendbar. Streitfragen schlagen wir vor, zunächst im Schriftverkehr unter {email} zu klären; gelingt keine Einigung, entscheidet ein Gericht nach ukrainischem Recht."
-        ]
+        "body": ["{governingLaw}"]
       },
       {
         "heading": "11. Änderungen der Bedingungen",
@@ -100,7 +98,7 @@
   },
   "privacy": {
     "title": "Datenschutzerklärung",
-    "summary": "Welche Daten DeRechi erhebt, wozu, wer sie sehen kann und wie Sie sie verwalten. Die Erklärung entspricht dem ukrainischen Gesetz „Über den Schutz personenbezogener Daten“.",
+    "summary": "Welche Daten DeRechi erhebt, wozu, wer sie sehen kann und wie Sie sie verwalten. {dataLaw}",
     "sections": [
       {
         "heading": "1. Wer die Daten verarbeitet",
@@ -152,7 +150,7 @@
             "Google Maps Platform – Adressvorschläge und Ermittlung der Adresse anhand von Koordinaten im Anzeigenformular; der Text, den Sie in das Ortsfeld eingeben, und die Koordinaten werden an Google übermittelt;",
             "Vercel BotID – Prüfung, dass das Formular von einem Menschen und nicht von einem Bot gesendet wird;"
           ],
-          "Diese Dienste verarbeiten Daten nach ihren eigenen Datenschutzrichtlinien, auch außerhalb der Ukraine. Wir verkaufen Ihre Daten nicht und geben sie nicht an Werbetreibende weiter."
+          "Diese Dienste verarbeiten Daten nach ihren eigenen Datenschutzrichtlinien, auch in anderen Ländern. Wir verkaufen Ihre Daten nicht und geben sie nicht an Werbetreibende weiter."
         ]
       },
       {
@@ -172,12 +170,12 @@
       {
         "heading": "9. Ihre Rechte",
         "body": [
-          "Gemäß Artikel 8 des ukrainischen Gesetzes „Über den Schutz personenbezogener Daten“ haben Sie das Recht:",
+          "{rightsBasis}",
           [
             "zu erfahren, welche Ihrer Daten wir verarbeiten, und Zugang zu ihnen zu erhalten;",
             "die Berichtigung unrichtiger Daten oder deren Löschung zu verlangen;",
             "Ihre Einwilligung in die Verarbeitung zu widerrufen;",
-            "sich beim Menschenrechtsbeauftragten der Werchowna Rada der Ukraine zu beschweren."
+            "{complaintRight}"
           ],
           "Um diese Rechte auszuüben, schreiben Sie an {email}."
         ]

@@ -57,7 +57,7 @@
       {
         "heading": "6. Finds and rewards",
         "body": [
-          "The Civil Code of Ukraine requires a finder to tell the owner, or the police or local council if the owner is unknown (art. 337). The finder is entitled to ask the owner for a reward of up to 20% of the item's value (art. 339).",
+          "{findersLaw}",
           "A reward stated in a notice is the author's offer. DeRechi doesn't guarantee it is paid and takes no part in any payment."
         ]
       },
@@ -85,9 +85,7 @@
       },
       {
         "heading": "10. Disputes",
-        "body": [
-          "These terms are governed by the law of Ukraine. We first offer to settle any dispute by writing to {email}; if that fails, it goes to court under Ukrainian law."
-        ]
+        "body": ["{governingLaw}"]
       },
       {
         "heading": "11. Changes to these terms",
@@ -100,7 +98,7 @@
   },
   "privacy": {
     "title": "Privacy policy",
-    "summary": "What data DeRechi collects, why, who can see it and how you control it. This policy follows the Law of Ukraine “On Personal Data Protection”.",
+    "summary": "What data DeRechi collects, why, who can see it and how you control it. {dataLaw}",
     "sections": [
       {
         "heading": "1. Who processes the data",
@@ -152,7 +150,7 @@
             "Google Maps Platform: address suggestions and looking up an address from coordinates in the notice form; what you type into the place field, and the coordinates, are sent to Google;",
             "Vercel BotID: checks that the form is sent by a person, not a bot;"
           ],
-          "These services process data under their own privacy policies, including outside Ukraine. We don't sell your data or pass it to advertisers."
+          "These services process data under their own privacy policies, including in other countries. We don't sell your data or pass it to advertisers."
         ]
       },
       {
@@ -172,12 +170,12 @@
       {
         "heading": "9. Your rights",
         "body": [
-          "Under Article 8 of the Law of Ukraine “On Personal Data Protection” you have the right to:",
+          "{rightsBasis}",
           [
             "know what data of yours we process and get access to it;",
             "ask for inaccurate data to be corrected or deleted;",
             "withdraw your consent to processing;",
-            "complain to the Ukrainian Parliament Commissioner for Human Rights."
+            "{complaintRight}"
           ],
           "To use these rights, write to {email}."
         ]

@@ -57,7 +57,7 @@
       {
         "heading": "6. Znalezisko i nagroda",
         "body": [
-          "Kodeks cywilny Ukrainy zobowiązuje znalazcę do powiadomienia właściciela, a jeśli jest on nieznany, policji lub organu samorządu lokalnego (art. 337). Znalazca ma prawo żądać od właściciela nagrody w wysokości do 20% wartości rzeczy (art. 339).",
+          "{findersLaw}",
           "Wysokość nagrody podana w ogłoszeniu to propozycja autora. DeRechi nie gwarantuje jej wypłaty i nie uczestniczy w rozliczeniach."
         ]
       },
@@ -85,9 +85,7 @@
       },
       {
         "heading": "10. Spory",
-        "body": [
-          "Do niniejszego regulaminu stosuje się prawo Ukrainy. Sporne kwestie proponujemy najpierw rozwiązać drogą korespondencji na {email}; jeśli nie uda się dojść do porozumienia, przed sądem zgodnie z prawem Ukrainy."
-        ]
+        "body": ["{governingLaw}"]
       },
       {
         "heading": "11. Zmiany regulaminu",
@@ -100,7 +98,7 @@
   },
   "privacy": {
     "title": "Polityka prywatności",
-    "summary": "Jakie dane zbiera DeRechi, w jakim celu, kto je widzi i jak możesz nimi zarządzać. Polityka jest zgodna z ustawą Ukrainy „O ochronie danych osobowych”.",
+    "summary": "Jakie dane zbiera DeRechi, w jakim celu, kto je widzi i jak możesz nimi zarządzać. {dataLaw}",
     "sections": [
       {
         "heading": "1. Kto przetwarza dane",
@@ -152,7 +150,7 @@
             "Google Maps Platform: podpowiedzi adresów i ustalanie adresu na podstawie współrzędnych w formularzu ogłoszenia; tekst, który wpisujesz w pole miejsca, oraz współrzędne są przekazywane Google;",
             "Vercel BotID: sprawdzenie, czy formularz wysyła człowiek, a nie bot;"
           ],
-          "Usługi te przetwarzają dane zgodnie z własnymi politykami prywatności, w tym również poza granicami Ukrainy. Nie sprzedajemy Twoich danych ani nie przekazujemy ich reklamodawcom."
+          "Usługi te przetwarzają dane zgodnie z własnymi politykami prywatności, w tym również w innych krajach. Nie sprzedajemy Twoich danych ani nie przekazujemy ich reklamodawcom."
         ]
       },
       {
@@ -172,12 +170,12 @@
       {
         "heading": "9. Twoje prawa",
         "body": [
-          "Zgodnie z art. 8 ustawy Ukrainy „O ochronie danych osobowych” masz prawo:",
+          "{rightsBasis}",
           [
             "wiedzieć, jakie Twoje dane przetwarzamy, i uzyskać do nich dostęp;",
             "żądać poprawienia nieprawidłowych danych lub ich usunięcia;",
             "wycofać zgodę na przetwarzanie;",
-            "złożyć skargę do Rzecznika Praw Człowieka Rady Najwyższej Ukrainy."
+            "{complaintRight}"
           ],
           "Aby skorzystać z tych praw, napisz na {email}."
         ]

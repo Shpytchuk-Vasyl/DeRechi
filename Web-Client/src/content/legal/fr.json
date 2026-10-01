@@ -57,7 +57,7 @@
       {
         "heading": "6. Objet trouvé et récompense",
         "body": [
-          "Le Code civil ukrainien oblige la personne qui a trouvé un objet à en informer le propriétaire ou, si celui-ci est inconnu, la police ou l’organe d’autonomie locale (art. 337). La personne qui a trouvé l’objet a le droit d’exiger du propriétaire une récompense allant jusqu’à 20 % de la valeur de l’objet (art. 339).",
+          "{findersLaw}",
           "Le montant de la récompense indiqué dans l’annonce est une proposition de son auteur. DeRechi n’en garantit pas le versement et ne participe à aucun règlement."
         ]
       },
@@ -85,9 +85,7 @@
       },
       {
         "heading": "10. Litiges",
-        "body": [
-          "Ces conditions sont régies par le droit ukrainien. Nous proposons d’abord de régler tout différend par échange de courriers à {email} ; à défaut d’accord, le litige est porté devant les tribunaux conformément à la législation ukrainienne."
-        ]
+        "body": ["{governingLaw}"]
       },
       {
         "heading": "11. Modification des conditions",
@@ -100,7 +98,7 @@
   },
   "privacy": {
     "title": "Politique de confidentialité",
-    "summary": "Les données que DeRechi collecte, dans quel but, qui peut les voir et comment les gérer. Cette politique est conforme à la loi ukrainienne « Sur la protection des données personnelles ».",
+    "summary": "Les données que DeRechi collecte, dans quel but, qui peut les voir et comment les gérer. {dataLaw}",
     "sections": [
       {
         "heading": "1. Qui traite les données",
@@ -152,7 +150,7 @@
             "Google Maps Platform : suggestions d’adresses et détermination de l’adresse à partir des coordonnées dans le formulaire d’annonce ; le texte que vous saisissez dans le champ du lieu et les coordonnées sont transmis à Google ;",
             "Vercel BotID : vérification que le formulaire est envoyé par un humain et non par un robot ;"
           ],
-          "Ces services traitent les données selon leurs propres politiques de confidentialité, y compris en dehors de l’Ukraine. Nous ne vendons pas vos données et ne les transmettons pas à des annonceurs."
+          "Ces services traitent les données selon leurs propres politiques de confidentialité, y compris dans d’autres pays. Nous ne vendons pas vos données et ne les transmettons pas à des annonceurs."
         ]
       },
       {
@@ -172,12 +170,12 @@
       {
         "heading": "9. Vos droits",
         "body": [
-          "Conformément à l’article 8 de la loi ukrainienne « Sur la protection des données personnelles », vous avez le droit :",
+          "{rightsBasis}",
           [
             "de savoir quelles données vous concernant nous traitons et d’y accéder ;",
             "d’exiger la rectification des données inexactes ou leur suppression ;",
             "de retirer votre consentement au traitement ;",
-            "de déposer une plainte auprès du Commissaire aux droits de l’homme de la Verkhovna Rada d’Ukraine."
+            "{complaintRight}"
           ],
           "Pour exercer ces droits, écrivez à {email}."
         ]

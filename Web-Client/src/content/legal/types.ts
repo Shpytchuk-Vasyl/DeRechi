@@ -1,3 +1,5 @@
+import type { Locale } from "@/i18n/routing"
+
 export type LegalBlock = string | string[]
 
 export type LegalSection = {
@@ -17,9 +19,21 @@ export type LegalTexts = {
   privacy: LegalDoc
 }
 
+export type JurisdictionTexts = {
+  findersLaw: string
+  governingLaw: string
+  dataLaw: string
+  rightsBasis: string
+  complaintRight: string
+}
+
+export type Jurisdiction = {
+  code: string
+  updated: string
+  texts: Record<Locale, JurisdictionTexts>
+}
+
 export const LEGAL_CONTACT = {
   operator: "[OPERATOR NAME]",
   email: "[CONTACT EMAIL]",
 }
-
-export const LEGAL_UPDATED = "2026-09-25"
