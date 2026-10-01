@@ -15,4 +15,6 @@ public interface ClaimRepository<C extends Claim> extends JpaRepository<C, Long>
     List<C> findByArchivedItemIdInOrderByCreatedAtDescIdDesc(Collection<Long> historyIds);
 
     List<C> findByItemId(Long itemId);
+
+    List<C> findByArchivedItemId(Long historyId);
 }

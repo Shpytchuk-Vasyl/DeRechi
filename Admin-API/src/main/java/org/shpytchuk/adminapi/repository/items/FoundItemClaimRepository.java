@@ -21,4 +21,8 @@ public interface FoundItemClaimRepository extends ClaimRepository<FoundItemClaim
     @Override
     @EntityGraph(attributePaths = "contactInfo")
     List<FoundItemClaim> findByItemId(Long itemId);
+
+    @Override
+    @EntityGraph(attributePaths = "contactInfo")
+    List<FoundItemClaim> findByArchivedItemId(Long historyId);
 }

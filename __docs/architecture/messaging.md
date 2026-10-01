@@ -108,7 +108,10 @@ hands NotifyHub `<event key>:<CHANNEL>`, NotifyHub keeps a one-hour window
 ## Local development
 
 `docker compose up -d rabbitmq` is enough; the definitions file is mounted read-only into
-the container. Services connect to `localhost:5672` from `application.yaml`, and the
+the container. The import is additive and happens on an empty volume only: a new queue or
+binding needs `docker compose down -v rabbitmq && docker compose up -d rabbitmq`, and a binding
+that was *narrowed* (the items DLQ went from `#` to `item.*.created`) keeps its old pattern on
+an existing volume until the volume is recreated. Services connect to `localhost:5672` from `application.yaml`, and the
 container override sets `SPRING_RABBITMQ_HOST=rabbitmq`. There is no RabbitMQ in the test
 suite: the aspect and the sender are tested with a mocked template, see
 [../conventions/testing.md](../conventions/testing.md).

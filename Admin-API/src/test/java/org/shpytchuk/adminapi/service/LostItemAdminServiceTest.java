@@ -159,8 +159,11 @@ class LostItemAdminServiceTest {
         LostItemClaim moved = claim(null, "+380671111111", CREATED.plusSeconds(60), CREATED, null);
         moved.setArchivedItem(history);
         when(claimRepository.findByArchivedItemIdInOrderByCreatedAtDescIdDesc(List.of(500L))).thenReturn(List.of(moved));
+        when(claimRepository.findByArchivedItemId(500L)).thenReturn(List.of(moved));
+        LostItemHistoryRepository historyRepository = mock(LostItemHistoryRepository.class);
+        when(historyRepository.findWithDetailsById(500L)).thenReturn(Optional.of(history));
         LostItemHistoryAdminService archive = new LostItemHistoryAdminService(
-                mock(LostItemHistoryRepository.class), mock(ThingCategoryRepository.class),
+                historyRepository, mock(ThingCategoryRepository.class),
                 mock(PlaceRepository.class), contactInfoRepository,
                 new CountriesProperties(List.of("UA"), "UA"), claimRepository);
 
@@ -170,6 +173,13 @@ class LostItemAdminServiceTest {
                 .containsExactly(tuple("+380671111111", ClaimStatus.CONFIRMED));
         assertThatThrownBy(() -> archive.archive(500L, "admin@derechi.local"))
                 .isInstanceOf(UnsupportedOperationException.class);
+
+        archive.delete(500L);
+
+        InOrder order = inOrder(claimRepository, contactInfoRepository, historyRepository);
+        order.verify(claimRepository).deleteAll(List.of(moved));
+        order.verify(contactInfoRepository).deleteAll(List.of(moved.getContactInfo()));
+        order.verify(historyRepository).delete(history);
     }
 
     private static LostItem item(Long id) {

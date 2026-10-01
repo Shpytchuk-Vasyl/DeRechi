@@ -40,7 +40,7 @@ public class LostItemHistoryAdminService extends AdminItemService<LostItemHistor
 
     @Override
     protected void deleteClaims(Long id) {
-        // no-op
+        itemClaims.deleteOf(id);
     }
 
     @Override

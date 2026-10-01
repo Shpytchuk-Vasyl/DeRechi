@@ -9,7 +9,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ErrorNote } from "@/components/pouf/feedback"
 import { LinkButton } from "@/components/pouf/link-button"
 import { Blob } from "@/components/pouf/media"
-import { Heading, Text } from "@/components/pouf/text"
 import { paths } from "@/i18n/paths"
 
 type State = "idle" | "done" | "invalid" | "failed"
@@ -74,17 +73,13 @@ function Shell({
   children: React.ReactNode
 }) {
   return (
-      <Card className="items-center text-center mx-auto max-w-xl">
-        <CardHeader >
+    <Card className="items-center text-center mx-auto max-w-xl">
+      <CardHeader>
         <Blob icon={icon} tone={tone} size="md" />
-        <CardTitle>
-          {title}
-        </CardTitle>
-        <CardDescription>
-          {text}
-        </CardDescription>
-        </CardHeader>
-        <CardContent className="mt-2 flex flex-col items-center gap-4">{children}</CardContent>
-      </Card>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{text}</CardDescription>
+      </CardHeader>
+      <CardContent className="mt-2 flex flex-col items-center gap-4">{children}</CardContent>
+    </Card>
   )
 }

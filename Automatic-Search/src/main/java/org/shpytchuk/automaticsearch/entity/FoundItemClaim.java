@@ -18,4 +18,10 @@ public class FoundItemClaim extends Claim {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private FoundItemHistory archivedItem;
+
+    @Override
+    public void moveToArchive(Thing history) {
+        this.archivedItem = (FoundItemHistory) history;
+        this.item = null;
+    }
 }

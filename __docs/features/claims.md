@@ -150,7 +150,7 @@ the claims **and their contact infos** (`deleteClaims`, next to `deleteMatches`)
 ## Storage
 
 `lost_item_claim` and `found_item_claim` (migration `006-item-claims`), one row per response:
-`lost_item_id` **or** `lost_item_history_id` (a `CHECK` makes it exactly one), the claimant's
+`item_id` **or** `archived_item_id` (a `CHECK` makes it exactly one), the claimant's
 `contact_info_id`, `token`, `created_at`, `author_reminded_at`, `claimant_reminded_at`,
 `confirmed_at`. While the notice is published the claim points at it; archiving re-points it at
 the history copy, so the claim and the claimant's contacts survive and the archive pages can show

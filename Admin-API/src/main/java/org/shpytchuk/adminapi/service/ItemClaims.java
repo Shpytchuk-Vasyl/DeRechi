@@ -19,28 +19,33 @@ final class ItemClaims<C extends Claim> {
     private final ClaimRepository<C> repository;
     private final ContactInfoRepository contactInfoRepository;
     private final Function<Collection<Long>, List<C>> byIds;
+    private final Function<Long, List<C>> byId;
     private final Function<C, Long> itemIdOf;
 
     private ItemClaims(ClaimRepository<C> repository,
                        ContactInfoRepository contactInfoRepository,
                        Function<Collection<Long>, List<C>> byIds,
+                       Function<Long, List<C>> byId,
                        Function<C, Long> itemIdOf) {
         this.repository = repository;
         this.contactInfoRepository = contactInfoRepository;
         this.byIds = byIds;
+        this.byId = byId;
         this.itemIdOf = itemIdOf;
     }
 
     static <C extends Claim> ItemClaims<C> ofLive(ClaimRepository<C> repository,
                                                       ContactInfoRepository contactInfoRepository) {
         return new ItemClaims<>(repository, contactInfoRepository,
-                repository::findByItemIdInOrderByCreatedAtDescIdDesc, claim -> claim.getItem().getId());
+                repository::findByItemIdInOrderByCreatedAtDescIdDesc, repository::findByItemId,
+                claim -> claim.getItem().getId());
     }
 
     static <C extends Claim> ItemClaims<C> ofArchived(ClaimRepository<C> repository,
                                                           ContactInfoRepository contactInfoRepository) {
         return new ItemClaims<>(repository, contactInfoRepository,
-                repository::findByArchivedItemIdInOrderByCreatedAtDescIdDesc, claim -> claim.getArchivedItem().getId());
+                repository::findByArchivedItemIdInOrderByCreatedAtDescIdDesc, repository::findByArchivedItemId,
+                claim -> claim.getArchivedItem().getId());
     }
 
     Map<Long, List<ClaimView>> byItem(Collection<Long> itemIds) {
@@ -57,7 +62,7 @@ final class ItemClaims<C extends Claim> {
     }
 
     void deleteOf(Long itemId) {
-        List<C> claims = repository.findByItemId(itemId);
+        List<C> claims = byId.apply(itemId);
         if (claims.isEmpty()) {
             return;
         }

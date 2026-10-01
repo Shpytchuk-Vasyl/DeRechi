@@ -15,6 +15,9 @@ import org.shpytchuk.automaticsearch.repository.LostItemHistoryRepository;
 import org.shpytchuk.automaticsearch.repository.LostItemRepository;
 import org.shpytchuk.automaticsearch.repository.SimilarItemRepository;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +32,8 @@ import static org.mockito.Mockito.when;
 
 class ItemArchiverTest {
 
+    private static final Instant NOW = Instant.parse("2026-10-01T12:00:00Z");
+
     private LostItemRepository lostItems;
     private LostItemHistoryRepository lostHistory;
     private LostItemClaimRepository lostClaims;
@@ -42,7 +47,9 @@ class ItemArchiverTest {
         lostClaims = mock(LostItemClaimRepository.class);
         similarItems = mock(SimilarItemRepository.class);
         archiver = new ItemArchiver(lostItems, mock(FoundItemRepository.class), lostHistory,
-                mock(FoundItemHistoryRepository.class), lostClaims, mock(FoundItemClaimRepository.class), similarItems);
+                mock(FoundItemHistoryRepository.class), similarItems,
+                new ClaimRepositories(lostClaims, mock(FoundItemClaimRepository.class)),
+                Clock.fixed(NOW, ZoneOffset.UTC));
     }
 
     @Test
@@ -70,7 +77,7 @@ class ItemArchiverTest {
         assertThat(saved.getValue().getTitle()).isEqualTo("Чорний рюкзак");
         assertThat(saved.getValue().getCurrency()).isEqualTo("UAH");
         assertThat(saved.getValue().getInfo()).isSameAs(item.getInfo());
-        assertThat(saved.getValue().getArchivedAt()).isNotNull();
+        assertThat(saved.getValue().getArchivedAt()).isEqualTo(NOW);
         assertThat(claim.getItem()).as("the live link is cleared").isNull();
         assertThat(claim.getArchivedItem()).as("the claim follows the item into the archive").isSameAs(saved.getValue());
         assertThat(claim.getContactInfo()).as("the claimant's contacts stay").isNotNull();

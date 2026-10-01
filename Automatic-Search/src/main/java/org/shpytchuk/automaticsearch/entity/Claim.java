@@ -50,4 +50,6 @@ public abstract class Claim {
     public boolean isLive() {
         return getItem() != null;
     }
+
+    public abstract void moveToArchive(Thing history);
 }

@@ -38,10 +38,9 @@ public class FoundItemHistoryAdminService extends AdminItemService<FoundItemHist
         // no-op
     }
 
-    /** Archived claims are kept for the retention period; the follow-up job deletes them when it ends. */
     @Override
     protected void deleteClaims(Long id) {
-        // no-op
+        itemClaims.deleteOf(id);
     }
 
     @Override
