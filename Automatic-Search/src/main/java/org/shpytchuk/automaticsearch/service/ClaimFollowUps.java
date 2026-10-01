@@ -59,7 +59,7 @@ public class ClaimFollowUps {
                                                  Consumer<Claim> send,
                                                  BiConsumer<Claim, Instant> stamp) {
         Optional<C> found = claims.findWithDetailsById(claimId)
-                .filter(claim -> claim.getConfirmedAt() == null && due.test(claim));
+                .filter(claim -> claim.isLive() && claim.getConfirmedAt() == null && due.test(claim));
         if (found.isEmpty()) {
             return false;
         }

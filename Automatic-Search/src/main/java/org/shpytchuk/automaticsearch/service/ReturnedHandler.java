@@ -1,6 +1,7 @@
 package org.shpytchuk.automaticsearch.service;
 
 import lombok.AllArgsConstructor;
+import org.shpytchuk.automaticsearch.entity.Claim;
 import org.shpytchuk.automaticsearch.event.ClaimEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ public class ReturnedHandler implements ClaimHandler {
     @Override
     public void handle(ClaimEvent event) {
         Optional<Long> itemId = repositories.of(kind).findWithDetailsById(event.getId())
+                .filter(Claim::isLive)
                 .map(claim -> claim.getItem().getId());
         if (itemId.isEmpty()) {
             log.info("{} claim {} is gone or already archived, the notice is closed", kind, event.getId());

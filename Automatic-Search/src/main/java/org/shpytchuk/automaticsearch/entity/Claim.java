@@ -46,4 +46,8 @@ public abstract class Claim {
     public abstract Thing getItem();
 
     public abstract Thing getArchivedItem();
+
+    public boolean isLive() {
+        return getItem() != null;
+    }
 }
