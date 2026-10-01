@@ -10,9 +10,9 @@ import { Skeleton } from "@/components/pouf/skeleton"
 import { Heading } from "@/components/pouf/text"
 import { Link } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
-import type { Money } from "@/lib/country"
-import { formatNoticeDate, fromIsoDate, todayIso } from "@/lib/dates"
-import { formatMoney } from "@/lib/money"
+import type { Money } from "@/lib/intl/country"
+import { formatNoticeDate, fromIsoDate, todayIso } from "@/lib/intl/dates"
+import { formatMoney } from "@/lib/intl/money"
 import { Stack } from "../pouf/layout"
 
 const RELATIVE_DAYS = 7

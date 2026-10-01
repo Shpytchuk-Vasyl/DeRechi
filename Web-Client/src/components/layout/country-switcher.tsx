@@ -6,7 +6,7 @@ import { useCountry } from "@/components/country/country-provider"
 import { Button } from "@/components/pouf/Button"
 import { DropdownMenu } from "@/components/pouf/menu"
 import { usePathname, useRouter } from "@/i18n/navigation"
-import { countryName } from "@/lib/country"
+import { countryName } from "@/lib/intl/country"
 
 export function CountrySwitcher() {
   const { code: active, countries, setCountry } = useCountry()

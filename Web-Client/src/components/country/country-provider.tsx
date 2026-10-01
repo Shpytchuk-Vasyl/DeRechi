@@ -7,7 +7,7 @@ import {
   type Country,
   pickCountry,
   readCountryCookie,
-} from "@/lib/country"
+} from "@/lib/intl/country"
 
 type CountryContext = {
   code: string

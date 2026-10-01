@@ -1,7 +1,7 @@
 import "server-only"
 import { graphqlRequest } from "@/graphql/client"
 import { CountriesQuery } from "@/graphql/documents"
-import type { Country } from "@/lib/country"
+import type { Country } from "@/lib/intl/country"
 
 const COUNTRIES_REVALIDATE = 604800
 

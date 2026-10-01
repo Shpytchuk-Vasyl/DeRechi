@@ -1,6 +1,6 @@
 import type { Category } from "@/api/items"
 import type { ItemFilterInput, ItemSort } from "@/graphql/generated/graphql"
-import { ISO_DATE_PATTERN } from "@/lib/dates"
+import { ISO_DATE_PATTERN } from "@/lib/intl/dates"
 
 export const SORTS: ItemSort[] = ["DATE_DESC", "DATE_ASC", "TITLE_ASC", "TITLE_DESC"]
 

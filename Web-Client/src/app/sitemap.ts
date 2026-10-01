@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next"
 import { fetchItems, type ItemKind } from "@/api/items"
 import { paths } from "@/i18n/paths"
 import { routing } from "@/i18n/routing"
-import { toIsoDate } from "@/lib/dates"
+import { toIsoDate } from "@/lib/intl/dates"
 import { absoluteUrl, isStale, SITEMAP_KINDS as KINDS, sitemapIds } from "@/lib/seo"
 
 export const revalidate = 36000

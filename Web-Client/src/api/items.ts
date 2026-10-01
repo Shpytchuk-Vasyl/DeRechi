@@ -8,7 +8,7 @@ import {
   LostItemsQuery,
 } from "@/graphql/documents"
 import type { ItemFilterInput, ItemSort } from "@/graphql/generated/graphql"
-import type { Money } from "@/lib/country"
+import type { Money } from "@/lib/intl/country"
 
 export type ItemKind = "lost" | "found"
 

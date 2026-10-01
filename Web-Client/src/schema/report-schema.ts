@@ -1,6 +1,6 @@
 import { z } from "zod"
 import type { ItemKind } from "@/api/items"
-import { ISO_DATE_PATTERN, todayIso } from "@/lib/dates"
+import { ISO_DATE_PATTERN, todayIso } from "@/lib/intl/dates"
 
 export const MAX_TITLE = 100
 export const MAX_DESCRIPTION = 250

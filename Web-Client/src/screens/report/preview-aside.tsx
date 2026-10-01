@@ -3,10 +3,12 @@
 import { useTranslations } from "next-intl"
 import { useFormContext, useWatch } from "react-hook-form"
 import type { Category, ItemKind } from "@/api/items"
+import { useCountry } from "@/components/country/country-provider"
 import { CategoryArt } from "@/components/items/category-art"
 import { NoticeCard } from "@/components/items/item-card"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/pouf/card"
 import { Heading } from "@/components/pouf/text"
+import { currencyOf } from "@/lib/intl/country"
 import type { ReportDraft } from "@/schema/report-schema"
 
 type Props = {
@@ -18,13 +20,21 @@ type Props = {
 export default function PreviewAside({ kind, categories, photoUrl }: Props) {
   const t = useTranslations("form")
   const ti = useTranslations("item")
+  const viewer = useCountry()
   const { control } = useFormContext<ReportDraft>()
 
-  const [title, categoryId, place, date, compensation] = useWatch({
+  const [title, categoryId, place, date, compensation, currency] = useWatch({
     control,
-    name: ["title", "categoryId", "place", "date", "compensation"],
+    name: ["title", "categoryId", "place", "date", "compensation", "currency"],
   })
   const categoryKey = categories.find((category) => category.id === categoryId)?.key
+  const money =
+    compensation == null
+      ? null
+      : {
+          amount: compensation,
+          currency: currency ?? currencyOf(viewer.countries, place?.countryCode) ?? viewer.currency,
+        }
 
   return (
     <aside className="flex flex-col gap-6">
@@ -34,7 +44,7 @@ export default function PreviewAside({ kind, categories, photoUrl }: Props) {
           title={title || t("previewEmpty")}
           place={place?.name ?? t("previewNoPlace")}
           date={date}
-          compensation={compensation}
+          compensation={money}
           media={
             photoUrl ? (
               // biome-ignore lint/performance/noImgElement: see above

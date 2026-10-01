@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { fetchCountries } from "@/api/countries"
 import type { Locale } from "@/i18n/routing"
-import { currentCountry } from "@/lib/country.server"
+import { currentCountry } from "@/lib/intl/country.server"
 import LegalTemplate, { generateMetadataFromTemplate } from "@/screens/legal/template"
 
 type Props = {

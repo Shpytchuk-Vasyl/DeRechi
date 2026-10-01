@@ -11,8 +11,8 @@ import {
 } from "@/content/legal"
 import { paths } from "@/i18n/paths"
 import type { Locale } from "@/i18n/routing"
-import { countryName } from "@/lib/country"
-import { fromIsoDate } from "@/lib/dates"
+import { countryName } from "@/lib/intl/country"
+import { fromIsoDate } from "@/lib/intl/dates"
 
 export function generateMetadataFromTemplate(
   locale: Locale,

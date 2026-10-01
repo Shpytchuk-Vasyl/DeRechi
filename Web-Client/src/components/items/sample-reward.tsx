@@ -2,7 +2,7 @@
 
 import { useFormatter, useTranslations } from "next-intl"
 import { useCountry } from "@/components/country/country-provider"
-import { formatMoney } from "@/lib/money"
+import { formatMoney } from "@/lib/intl/money"
 
 export function SampleReward({ amount }: { amount: number }) {
   const { currency } = useCountry()

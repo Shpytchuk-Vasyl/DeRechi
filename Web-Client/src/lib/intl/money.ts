@@ -1,4 +1,4 @@
-import type { Money } from "@/lib/country"
+import type { Money } from "@/lib/intl/country"
 
 type NumberFormatter = {
   number(value: number, options?: Intl.NumberFormatOptions): string

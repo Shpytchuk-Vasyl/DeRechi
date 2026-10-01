@@ -1,6 +1,6 @@
 import "server-only"
 import { cookies, headers } from "next/headers"
-import { COUNTRY_COOKIE, type Country, GEO_COUNTRY_HEADER, pickCountry } from "@/lib/country"
+import { COUNTRY_COOKIE, type Country, GEO_COUNTRY_HEADER, pickCountry } from "@/lib/intl/country"
 
 export async function currentCountry(
   countries: Country[],

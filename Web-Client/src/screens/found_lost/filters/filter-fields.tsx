@@ -6,7 +6,7 @@ import { DateRangePicker } from "@/components/form/date-picker"
 import { Select } from "@/components/pouf/controls"
 import { Field, Input } from "@/components/pouf/Input"
 import type { ItemSort } from "@/graphql/generated/graphql"
-import { todayIso } from "@/lib/dates"
+import { todayIso } from "@/lib/intl/dates"
 import { SORTS } from "@/lib/item-search"
 import { ANY_CATEGORY, type FilterDraft } from "./use-filter-draft"
 

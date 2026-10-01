@@ -11,7 +11,7 @@ import { inputClasses } from "@/components/pouf/Input"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import type { Locale as AppLocale } from "@/i18n/routing"
-import { fromIsoDate, toIsoDate } from "@/lib/dates"
+import { fromIsoDate, toIsoDate } from "@/lib/intl/dates"
 
 const CALENDAR_LOCALES = { en: enUS, uk, pl, de, fr }
 

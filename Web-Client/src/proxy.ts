@@ -6,7 +6,7 @@ import {
   COUNTRY_COOKIE_MAX_AGE,
   GEO_COUNTRY_HEADER,
   normaliseCountryCode,
-} from "@/lib/country"
+} from "@/lib/intl/country"
 
 const intl = createIntlMiddleware(routing)
 
