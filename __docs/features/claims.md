@@ -99,7 +99,7 @@ The worker gained a second queue, `automatic-search.claims`, bound with `item.*.
   `ARCHIVE_REQUESTED` event (`item.<kind>.archive`, queue `automatic-search.archive`,
   `ArchiveListener`) and this class runs it, as it does for a confirmed return and for the job.
   It copies the item into `*_item_history` with `archived_at`, deletes its `similar_item` rows,
-  re-points its claims at the history copy (`lost_item_id` → `null`, `lost_item_history_id` →
+  re-points its claims at the history copy (`item_id` → `null`, `archived_item_id` →
   the new id) and deletes the item. The claimants' contacts stay for the retention period. To do
   this the module carries `LostItemHistory`/`FoundItemHistory` and `Thing` has `compensation`
   and `currency` like the other copies.
