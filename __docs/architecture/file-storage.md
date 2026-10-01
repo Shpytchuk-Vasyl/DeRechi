@@ -47,7 +47,7 @@ spring.cloud.aws:
 `ImageStorage` (`Admin-API/src/main/java/org/shpytchuk/adminapi/service/`) wraps
 `S3Operations`: `store(MultipartFile)` checks the type and size, generates the key and
 uploads with the content type as metadata; `delete(key)` removes an object; `urlOf(key)`
-builds the public URL from `derechi.storage.public-url` and the bucket.
+appends the key to `derechi.storage.public-url`, which already points at the bucket.
 
 `UploadController` exposes `POST /admin/uploads` (multipart, returns the key as plain text)
 and `DELETE /admin/uploads` (body is the key). The item form's drop zone (`static/js/image-upload.js`) uploads as soon as a file is
@@ -91,7 +91,7 @@ Each consumer builds the public URL from its own setting:
 
 | Who | Setting | Default |
 |---|---|---|
-| `Admin-API` | `derechi.storage.public-url` / `MINIO_PUBLIC_URL` | `http://localhost:9000` locally, `http://localhost:8080/files` in Compose |
+| `Admin-API` | `derechi.storage.public-url` / `MINIO_PUBLIC_URL` | `http://localhost:9000/derechi-files` locally, `http://localhost:8080/files` in Compose |
 | `Web-Client` | `NEXT_PUBLIC_FILES_URL` | the gateway's `/files` |
 | `Getaway` | `MINIO_URI`, `MINIO_BUCKET` | `http://localhost:9000`, `derechi-files` |
 

@@ -98,7 +98,7 @@ derechi:
     fallback: UA
   storage:
     bucket: derechi-files
-    public-url: ${MINIO_PUBLIC_URL:http://localhost:9000}
+    public-url: ${MINIO_PUBLIC_URL:http://localhost:9000/${derechi.storage.bucket}}
     max-size: 5MB
   notifications:
     exchange: derechi.notifications

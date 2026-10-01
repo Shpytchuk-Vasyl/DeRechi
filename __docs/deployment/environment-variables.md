@@ -49,7 +49,7 @@ Supported countries are not an environment variable; they are `derechi.countries
 | `KEYCLOAK_PUBLIC_URI` | `http://localhost:8180` | `${KEYCLOAK_PUBLIC_URI:-http://localhost:8180}` from the host environment | authorization endpoint the **browser** is redirected to |
 | `MINIO_ENDPOINT` | `http://localhost:9000` | `http://minio:9000` | S3 endpoint used to upload images |
 | `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` | `derechi` / `derechi123` | not set (defaults) | S3 credentials |
-| `MINIO_PUBLIC_URL` | `http://localhost:9000` | `${MINIO_PUBLIC_URL:-http://localhost:8080/files}` from the host environment | base of image URLs rendered in the admin UI; in full mode they go through the Gateway's `/files` route |
+| `MINIO_PUBLIC_URL` | `http://localhost:9000/derechi-files` | `${MINIO_PUBLIC_URL:-http://localhost:8080/files}` from the host environment | base of image URLs rendered in the admin UI; in full mode they go through the Gateway's `/files` route |
 | `GOOGLE_MAPS_API_KEY` | a committed dev key (known issue, see [configuration](../conventions/configuration.md#rule-7-no-secrets-in-the-repository)) | not set | Google Places widget in the item form |
 
 `KEYCLOAK_PUBLIC_URI` and `MINIO_PUBLIC_URL` are read from the **host** shell when compose starts, so to expose the stack on another machine run for example:

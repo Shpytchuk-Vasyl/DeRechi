@@ -16,9 +16,9 @@ See [File storage](../architecture/file-storage.md) for the infrastructure side.
 4. The key is returned as plain text and placed in the form's hidden `image` field. Removing the file in the dropzone calls `DELETE /admin/uploads` with the key in the body, which deletes the object.
 5. Rejections raise `RejectedUploadException` with a message key (`upload.unsupportedType`, `upload.tooLarge`); the controller answers 400 with the localized text, which FilePond shows under the file.
 
-Configuration (`derechi.storage.*` bound to `StorageProperties`): `bucket`, `public-url` (`MINIO_PUBLIC_URL`, default `http://localhost:9000`), `max-size`. The S3 client itself is configured under `spring.cloud.aws.*` with path-style access and the MinIO credentials.
+Configuration (`derechi.storage.*` bound to `StorageProperties`): `bucket`, `public-url` (`MINIO_PUBLIC_URL`, default `http://localhost:9000/derechi-files`; it must already point at the bucket), `max-size`. The S3 client itself is configured under `spring.cloud.aws.*` with path-style access and the MinIO credentials.
 
-Rendering: `StorageProperties.urlOf(key)` returns `<public-url>/<bucket>/<key>`, or the key unchanged when it is already an absolute URL. The templates get it as `${uploads.urlOf(item.image)}`.
+Rendering: `StorageProperties.urlOf(key)` returns `<public-url>/<key>` (the bucket is never added: MinIO gets it from `public-url`, the Gateway `/files` route adds it in its rewrite), or the key unchanged when it is already an absolute URL. The templates get it as `${uploads.urlOf(item.image)}`.
 
 ## From the web client
 

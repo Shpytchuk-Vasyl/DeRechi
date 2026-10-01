@@ -22,7 +22,7 @@ When a value must differ between dev and containers and is not a plain Spring pr
 ```yaml
 derechi:
   storage:
-    public-url: ${MINIO_PUBLIC_URL:http://localhost:9000}
+    public-url: ${MINIO_PUBLIC_URL:http://localhost:9000/${derechi.storage.bucket}}
 notify:
   channels:
     email:
