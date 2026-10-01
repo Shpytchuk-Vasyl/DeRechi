@@ -18,6 +18,8 @@ public record StorageProperties(String bucket, String publicUrl, DataSize maxSiz
         if (key.startsWith("http://") || key.startsWith("https://")) {
             return key;
         }
-        return "%s/%s/%s".formatted(publicUrl, bucket, key);
+        // publicUrl already points at the bucket: MinIO's /<bucket> directly, or the Gateway's /files,
+        // which rewrites to /<bucket> itself
+        return "%s/%s".formatted(publicUrl, key.replaceAll("^/+", ""));
     }
 }
