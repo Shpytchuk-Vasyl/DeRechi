@@ -42,6 +42,9 @@ public class ItemForm {
     @PositiveOrZero
     private Integer compensation;
 
+    @Size(min = 3, max = 3)
+    private String currency;
+
     @NotNull
     private Long categoryId;
 
@@ -52,6 +55,10 @@ public class ItemForm {
     @NotBlank
     @Size(max = 100)
     private String placeName;
+
+    @NotBlank
+    @Size(min = 2, max = 2)
+    private String countryCode;
 
     @NotNull
     private Double lat;
@@ -69,4 +76,8 @@ public class ItemForm {
     private String email;
 
     private List<SocialMediaEnum> socialMedias = new ArrayList<>();
+
+    public void setCurrency(String currency) {
+        this.currency = currency == null || currency.isBlank() ? null : currency;
+    }
 }

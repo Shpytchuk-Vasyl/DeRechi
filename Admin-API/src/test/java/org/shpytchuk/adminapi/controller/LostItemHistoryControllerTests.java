@@ -1,8 +1,10 @@
 package org.shpytchuk.adminapi.controller;
 
 import org.junit.jupiter.api.Test;
+import org.shpytchuk.adminapi.config.CountriesConfig;
 import org.shpytchuk.adminapi.config.GlobalExceptionHandler;
 import org.shpytchuk.adminapi.config.MapsConfig;
+import org.shpytchuk.adminapi.form.ItemFormValidator;
 import org.shpytchuk.adminapi.service.ImageStorage;
 import org.shpytchuk.adminapi.view.Formats;
 import org.shpytchuk.adminapi.view.Plurals;
@@ -44,8 +46,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         properties = {"derechi.admin.client-id=derechi-admin", "derechi.admin.page-size=20",
                 "derechi.notifications.exchange=derechi.notifications",
                 "derechi.notifications.routing-key=notification.match.found",
-                "derechi.maps.api-key="})
-@Import({SecurityConfig.class, MapsConfig.class, GlobalModelAdvice.class, GlobalExceptionHandler.class, ItemModel.class,
+                "derechi.maps.api-key=",
+                "derechi.countries.supported=UA,PL,DE,FR", "derechi.countries.fallback=UA"})
+@Import({SecurityConfig.class, MapsConfig.class, CountriesConfig.class, GlobalModelAdvice.class,
+        GlobalExceptionHandler.class, ItemModel.class, ItemFormValidator.class,
         Formats.class, Plurals.class, SocialMediaIcons.class,
         LostItemHistoryControllerTests.TestClients.class})
 class LostItemHistoryControllerTests {

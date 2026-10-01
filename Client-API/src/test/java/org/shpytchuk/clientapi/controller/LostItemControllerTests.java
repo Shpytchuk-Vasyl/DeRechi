@@ -24,9 +24,10 @@ class LostItemControllerTests extends AbstractGraphQlTests {
     private static final String CREATE = """
             mutation Create($input: ItemInput!) {
               createLostItem(input: $input) {
-                id title description date compensation image
+                id title description date image
+                compensation { amount currency }
                 category { id key }
-                place { id name lat lon }
+                place { id name lat lon countryCode }
                 contact { id phone email }
               }
             }
@@ -46,10 +47,12 @@ class LostItemControllerTests extends AbstractGraphQlTests {
                 .path("createLostItem.title").entity(String.class).isEqualTo("Ключі")
                 .path("createLostItem.date").entity(String.class)
                 .isEqualTo(LocalDate.now().toString())
-                .path("createLostItem.compensation").entity(Integer.class).isEqualTo(500)
+                .path("createLostItem.compensation.amount").entity(Integer.class).isEqualTo(500)
+                .path("createLostItem.compensation.currency").entity(String.class).isEqualTo("UAH")
                 .path("createLostItem.category.key").entity(String.class).isEqualTo("DOCUMENTS")
                 .path("createLostItem.place.lat").entity(Double.class).isEqualTo(49.8419)
                 .path("createLostItem.place.lon").entity(Double.class).isEqualTo(24.0315)
+                .path("createLostItem.place.countryCode").entity(String.class).isEqualTo("UA")
                 .path("createLostItem.contact.phone").entity(String.class)
                 .isEqualTo("+38067*****67")
                 .path("createLostItem.contact.email").entity(String.class)
@@ -66,7 +69,8 @@ class LostItemControllerTests extends AbstractGraphQlTests {
         LostItem stored = lostItemRepository.findWithDetailsById(id).orElseThrow();
         assertThat(stored.getTitle()).isEqualTo("Ключі");
         assertThat(stored.getInfo().getSocialMedias()).containsExactly(SocialMediaEnum.TELEGRAM);
-        assertThat(placeRepository.findById("ChIJrynok")).isPresent();
+        assertThat(stored.getCurrency()).isEqualTo("UAH");
+        assertThat(placeRepository.findById("ChIJrynok")).map(place -> place.getCountryCode()).hasValue("UA");
     }
 
     @Test
@@ -269,9 +273,76 @@ class LostItemControllerTests extends AbstractGraphQlTests {
     @Test
     void rejectsNegativeCompensation() {
         Map<String, Object> input = input("Ключі", documents.getId());
-        input.put("compensation", -1);
+        input.put("compensation", Map.of("amount", -1));
 
         expectBadRequest(input, "compensation");
+    }
+
+    @Test
+    void defaultsTheCurrencyToTheOneOfThePlaceCountry() {
+        Map<String, Object> input = input("Klucze", documents.getId());
+        input.put("place", place("ChIJkrakow", "Rynek Glowny", 50.0617, 19.9373, "PL"));
+
+        tester.document(CREATE)
+                .variable("input", input)
+                .execute()
+                .path("createLostItem.compensation.amount").entity(Integer.class).isEqualTo(500)
+                .path("createLostItem.compensation.currency").entity(String.class).isEqualTo("PLN")
+                .path("createLostItem.place.countryCode").entity(String.class).isEqualTo("PL");
+    }
+
+    @Test
+    void acceptsAnExplicitSupportedCurrencyAndUppercasesTheCodes() {
+        Map<String, Object> input = input("Ключі", documents.getId());
+        input.put("compensation", Map.of("amount", 20, "currency", "eur"));
+        input.put("place", place("ChIJrynok", "Площа Ринок", 49.8419, 24.0315, "ua"));
+
+        tester.document(CREATE)
+                .variable("input", input)
+                .execute()
+                .path("createLostItem.compensation.currency").entity(String.class).isEqualTo("EUR")
+                .path("createLostItem.place.countryCode").entity(String.class).isEqualTo("UA");
+    }
+
+    @Test
+    void keepsTheCurrencyWhenThereIsNoCompensation() {
+        Map<String, Object> input = input("Ключі", documents.getId());
+        input.remove("compensation");
+
+        Long id = tester.document(CREATE)
+                .variable("input", input)
+                .execute()
+                .path("createLostItem.compensation").valueIsNull()
+                .path("createLostItem.id").entity(Long.class).get();
+
+        assertThat(lostItemRepository.findById(id).orElseThrow().getCurrency()).isEqualTo("UAH");
+    }
+
+    @Test
+    void rejectsAnUnsupportedCountry() {
+        Map<String, Object> input = input("Ключі", documents.getId());
+        input.put("place", place("ChIJsydney", "Sydney", -33.8688, 151.2093, "AU"));
+
+        expectBadRequest(input, "Unsupported country: AU");
+        assertThat(lostItemRepository.findAll()).isEmpty();
+        assertThat(placeRepository.findById("ChIJsydney")).isEmpty();
+    }
+
+    @Test
+    void rejectsAnUnsupportedCurrency() {
+        Map<String, Object> input = input("Ключі", documents.getId());
+        input.put("compensation", Map.of("amount", 500, "currency", "USD"));
+
+        expectBadRequest(input, "Unsupported currency: USD");
+        assertThat(lostItemRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    void rejectsACountryCodeThatIsNotTwoLetters() {
+        Map<String, Object> input = input("Ключі", documents.getId());
+        input.put("place", place("ChIJrynok", "Площа Ринок", 49.8419, 24.0315, "UKR"));
+
+        expectBadRequest(input, "countryCode");
     }
 
     @Test

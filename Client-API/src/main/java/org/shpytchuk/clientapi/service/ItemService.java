@@ -1,9 +1,11 @@
 package org.shpytchuk.clientapi.service;
 
 import lombok.AllArgsConstructor;
+import org.shpytchuk.clientapi.config.CountriesProperties;
 import org.shpytchuk.clientapi.dto.ItemDto;
 import org.shpytchuk.clientapi.input.ItemFilterInput;
 import org.shpytchuk.clientapi.input.ItemInput;
+import org.shpytchuk.clientapi.input.MoneyInput;
 import org.shpytchuk.clientapi.input.PlaceInput;
 import org.shpytchuk.clientapi.dto.ItemSort;
 import org.shpytchuk.clientapi.entity.ContactInfo;
@@ -24,6 +26,7 @@ import org.springframework.graphql.data.query.ScrollSubrange;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -34,6 +37,7 @@ public abstract class ItemService<T extends Thing> {
     private final ThingCategoryRepository categoryRepository;
     private final PlaceRepository placeRepository;
     private final ContactInfoRepository contactInfoRepository;
+    private final CountriesProperties countries;
     private final Supplier<T> factory;
     private final boolean imageRequired;
     private final String entityName;
@@ -82,12 +86,14 @@ public abstract class ItemService<T extends Thing> {
         }
 
         ThingCategory category = categoryRepository.findById(input.categoryId()).orElseThrow(() -> new NotFoundException("Category", input.categoryId()));
-        Place place = placeRepository.save(toPlace(input.place()));
+        Place place = toPlace(input.place());
+        String currency = currencyFor(input.compensation(), place.getCountryCode());
+        placeRepository.save(place);
 
-        buildItemFromInput(input, item, info, category, place);
+        buildItemFromInput(input, item, info, category, place, currency);
     }
 
-    private static <T extends Thing> void buildItemFromInput(ItemInput input, T item, ContactInfo info, ThingCategory category, Place place) {
+    private static <T extends Thing> void buildItemFromInput(ItemInput input, T item, ContactInfo info, ThingCategory category, Place place, String currency) {
         info.setPhone(input.contact().phone());
         info.setEmail(input.contact().email());
         info.setSocialMedias(toArray(input.contact().socialMedias()));
@@ -95,19 +101,39 @@ public abstract class ItemService<T extends Thing> {
         item.setTitle(input.title());
         item.setDescription(input.description());
         item.setDate(input.date());
-        item.setCompensation(input.compensation());
+        item.setCompensation(input.compensation() == null ? null : input.compensation().amount());
+        item.setCurrency(currency);
         item.setImage(input.image());
         item.setCategory(category);
         item.setPlace(place);
         item.setInfo(info);
     }
 
-    private static Place toPlace(PlaceInput input) {
+    private Place toPlace(PlaceInput input) {
+        String countryCode = upper(input.countryCode());
+        if (!countries.supports(countryCode)) {
+            throw new IllegalArgumentException("Unsupported country: " + countryCode);
+        }
         Place place = new Place();
         place.setGooglePlaceId(input.id());
         place.setName(input.name());
         place.setCoordinate(GeoPoints.point(input.lat(), input.lon()));
+        place.setCountryCode(countryCode);
         return place;
+    }
+
+    private String currencyFor(MoneyInput compensation, String countryCode) {
+        String currency = compensation == null || compensation.currency() == null
+                ? countries.currencyOf(countryCode)
+                : upper(compensation.currency());
+        if (!countries.currencies().contains(currency)) {
+            throw new IllegalArgumentException("Unsupported currency: " + currency);
+        }
+        return currency;
+    }
+
+    private static String upper(String code) {
+        return code.strip().toUpperCase(Locale.ROOT);
     }
 
     private static SocialMediaEnum[] toArray(List<SocialMediaEnum> socialMedias) {

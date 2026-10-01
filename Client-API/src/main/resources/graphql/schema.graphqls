@@ -25,6 +25,24 @@ type Place {
     name: String!
     lat: Float
     lon: Float
+    "ISO 3166-1 alpha-2"
+    countryCode: String!
+}
+
+"Supported country"
+type Country {
+    "ISO 3166-1 alpha-2, uppercase"
+    code: String!
+    "ISO 4217 currency used for rewards in this country"
+    currency: String!
+}
+
+"Reward in a concrete currency; never converted"
+type Money {
+    "whole units, 0 or more"
+    amount: Int!
+    "ISO 4217"
+    currency: String!
 }
 
 type ContactInfo {
@@ -40,7 +58,7 @@ type LostItem {
     description: String
     date: Date!
     "Reward for return"
-    compensation: Int
+    compensation: Money
     image: String
     category: Category!
     place: Place!
@@ -53,7 +71,7 @@ type FoundItem {
     title: String!
     description: String
     date: Date!
-    compensation: Int
+    compensation: Money
     image: String!
     category: Category!
     place: Place!
@@ -93,13 +111,22 @@ input PlaceInput {
     lat: Float!
     "longitude, -180..180"
     lon: Float!
+    "ISO 3166-1 alpha-2, must be a supported country"
+    countryCode: String!
+}
+
+input MoneyInput {
+    "whole units, 0 or more"
+    amount: Int!
+    "ISO 4217; defaults to the currency of the place's country"
+    currency: String
 }
 
 input ItemInput {
     title: String!
     description: String
     date: Date!
-    compensation: Int
+    compensation: MoneyInput
     image: String
     categoryId: ID!
     place: PlaceInput!
@@ -114,6 +141,8 @@ type Query {
     foundItems(filter: ItemFilterInput, sort: ItemSort = DATE_DESC, first: Int, after: String): FoundItemConnection!
 
     categories: [Category!]!
+
+    countries: [Country!]!
 
     "Places sorted by name; `name` is a case-insensitive substring"
     places(name: String, first: Int, after: String): PlaceConnection!

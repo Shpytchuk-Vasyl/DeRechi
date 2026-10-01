@@ -2,8 +2,11 @@ package org.shpytchuk.adminapi.controller;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.shpytchuk.adminapi.config.CountriesConfig;
 import org.shpytchuk.adminapi.config.GlobalExceptionHandler;
 import org.shpytchuk.adminapi.config.MapsConfig;
+import org.shpytchuk.adminapi.form.ItemForm;
+import org.shpytchuk.adminapi.form.ItemFormValidator;
 import org.shpytchuk.adminapi.service.ImageStorage;
 import org.shpytchuk.adminapi.view.Formats;
 import org.shpytchuk.adminapi.view.Plurals;
@@ -46,6 +49,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -56,8 +60,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         properties = {"derechi.admin.client-id=derechi-admin", "derechi.admin.page-size=20",
                 "derechi.notifications.exchange=derechi.notifications",
                 "derechi.notifications.routing-key=notification.match.found",
-                "derechi.maps.api-key="})
-@Import({SecurityConfig.class, MapsConfig.class, GlobalModelAdvice.class, GlobalExceptionHandler.class, ItemModel.class,
+                "derechi.maps.api-key=",
+                "derechi.countries.supported=UA,PL,DE,FR", "derechi.countries.fallback=UA"})
+@Import({SecurityConfig.class, MapsConfig.class, CountriesConfig.class, GlobalModelAdvice.class,
+        GlobalExceptionHandler.class, ItemModel.class, ItemFormValidator.class,
         Formats.class, Plurals.class, SocialMediaIcons.class,
         LostItemControllerTests.TestClients.class})
 class LostItemControllerTests {
@@ -156,15 +162,28 @@ class LostItemControllerTests {
     }
 
     private static ItemView itemView() {
-        return new ItemView(7L, "Rukzak", "Opys", LocalDate.of(2026, 1, 2), 500,
-                "https://example.test/photo.jpg", "BAG", "Park", 49.8, 24.0,
+        return new ItemView(7L, "Rukzak", "Opys", LocalDate.of(2026, 1, 2), 500, "PLN",
+                "https://example.test/photo.jpg", "BAG", "Park", "PL", 49.8, 24.0,
                 "+380671234567", "a@b.test", List.of());
     }
 
     private static ItemView itemViewWithoutImage() {
-        return new ItemView(7L, "Rukzak", null, LocalDate.of(2026, 1, 2), null,
-                null, "BAG", "Park", 49.8, 24.0,
+        return new ItemView(7L, "Rukzak", null, LocalDate.of(2026, 1, 2), null, "UAH",
+                null, "BAG", "Park", "UA", 49.8, 24.0,
                 "+380671234567", "a@b.test", List.of());
+    }
+
+    @Test
+    void showsTheRewardInTheItemCurrencyAndTheCountryOfThePlace() throws Exception {
+        when(service.page(any(), any())).thenReturn(new PageImpl<>(List.of(itemView())));
+
+        mockMvc.perform(get("/admin/lost-items").with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.VIEW))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(allOf(
+                        containsString("Польща"),
+                        containsString("500"),
+                        anyOf(containsString("zł"), containsString("PLN")),
+                        not(containsString("₴")))));
     }
 
     @Test
@@ -214,6 +233,67 @@ class LostItemControllerTests {
                         not(containsString("maps.googleapis.com")),
                         containsString("id=\"place-manual\""),
                         containsString("open"))));
+    }
+
+    @Test
+    void offersSupportedCountriesWithTheFallbackPreselectedAndCurrenciesByCountry() throws Exception {
+        mockMvc.perform(get("/admin/lost-items/new")
+                        .with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.CREATE))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(allOf(
+                        containsString("id=\"countryCode\""),
+                        containsString("value=\"UA\" selected=\"selected\""),
+                        containsString("Польща"),
+                        containsString("id=\"currency\""),
+                        containsString("За країною"),
+                        containsString("value=\"PLN\""),
+                        containsString("value=\"EUR\""),
+                        not(containsString("value=\"USD\"")))));
+    }
+
+    @Test
+    void rejectsAnUnsupportedCountryOrCurrencyAsAFieldError() throws Exception {
+        mockMvc.perform(validCreate()
+                        .param("countryCode", "US")
+                        .param("currency", "USD"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("items/form"))
+                .andExpect(content().string(allOf(
+                        containsString("Ця країна не підтримується"),
+                        containsString("Ця валюта не підтримується"))));
+
+        verify(service, never()).create(any());
+    }
+
+    @Test
+    void passesTheCountryAndAnEmptyCurrencyToTheService() throws Exception {
+        when(service.create(any())).thenReturn(lostItem());
+        when(service.scopeKey()).thenReturn("LOST_ITEM");
+
+        mockMvc.perform(validCreate()
+                        .param("countryCode", "PL")
+                        .param("currency", ""))
+                .andExpect(status().is3xxRedirection());
+
+        ArgumentCaptor<ItemForm> form = ArgumentCaptor.forClass(ItemForm.class);
+        verify(service).create(form.capture());
+        assertThat(form.getValue().getCountryCode()).isEqualTo("PL");
+        assertThat(form.getValue().getCurrency()).as("«за країною» приходить порожнім і стає null").isNull();
+    }
+
+    private static org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder validCreate() {
+        return post("/admin/lost-items")
+                .with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.CREATE)))
+                .with(csrf())
+                .param("title", "Рюкзак")
+                .param("date", "2026-01-02")
+                .param("categoryId", "1")
+                .param("placeId", "ChIJtest")
+                .param("placeName", "Park")
+                .param("lat", "52.2")
+                .param("lon", "21.0")
+                .param("phone", "+48501234567")
+                .param("email", "a@b.test");
     }
 
     @Test

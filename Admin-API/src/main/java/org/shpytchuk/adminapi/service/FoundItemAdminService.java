@@ -1,5 +1,6 @@
 package org.shpytchuk.adminapi.service;
 
+import org.shpytchuk.adminapi.config.property.CountriesProperties;
 import org.shpytchuk.adminapi.entity.items.FoundItem;
 import org.shpytchuk.adminapi.entity.items.FoundItemHistory;
 import org.shpytchuk.adminapi.mapper.ItemMapper;
@@ -23,9 +24,10 @@ public class FoundItemAdminService extends AdminItemService<FoundItem> {
                                  ThingCategoryRepository categoryRepository,
                                  PlaceRepository placeRepository,
                                  ContactInfoRepository contactInfoRepository,
+                                 CountriesProperties countries,
                                  SimilarItemRepository similarItemRepository,
                                 FoundItemHistoryRepository historyRepository) {
-        super(repository, categoryRepository, placeRepository, contactInfoRepository,
+        super(repository, categoryRepository, placeRepository, contactInfoRepository, countries,
                 FoundItem::new, "FOUND_ITEM");
         this.similarItemRepository = similarItemRepository;
         this.historyRepository = historyRepository;

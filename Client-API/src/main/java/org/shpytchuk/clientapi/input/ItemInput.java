@@ -10,7 +10,7 @@ public record ItemInput(
         @NotBlank @Size(max = 100) String title,
         @Size(max = 250) String description,
         @NotNull @PastOrPresent @WithinDays(30) LocalDate date,
-        @PositiveOrZero Integer compensation,
+        @Valid MoneyInput compensation,
         @Size(max = 200) String image,
         @NotNull Long categoryId,
         @NotNull @Valid PlaceInput place,

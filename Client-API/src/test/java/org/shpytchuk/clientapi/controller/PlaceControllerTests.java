@@ -16,7 +16,7 @@ class PlaceControllerTests extends AbstractGraphQlTests {
     private static final String SEARCH = """
             query Places($name: String, $first: Int, $after: String) {
               places(name: $name, first: $first, after: $after) {
-                edges { node { id name lat lon } }
+                edges { node { id name lat lon countryCode } }
                 pageInfo { endCursor hasNextPage }
               }
             }
@@ -48,7 +48,8 @@ class PlaceControllerTests extends AbstractGraphQlTests {
                 .execute()
                 .path("places.edges[0].node.id").entity(String.class).isEqualTo("ChIJrynok")
                 .path("places.edges[0].node.lat").entity(Double.class).isEqualTo(49.8419)
-                .path("places.edges[0].node.lon").entity(Double.class).isEqualTo(24.0315);
+                .path("places.edges[0].node.lon").entity(Double.class).isEqualTo(24.0315)
+                .path("places.edges[0].node.countryCode").entity(String.class).isEqualTo("UA");
     }
 
     @Test

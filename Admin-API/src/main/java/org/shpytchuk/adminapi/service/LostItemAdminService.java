@@ -1,5 +1,6 @@
 package org.shpytchuk.adminapi.service;
 
+import org.shpytchuk.adminapi.config.property.CountriesProperties;
 import org.shpytchuk.adminapi.entity.items.LostItem;
 import org.shpytchuk.adminapi.entity.items.LostItemHistory;
 import org.shpytchuk.adminapi.mapper.ItemMapper;
@@ -23,9 +24,10 @@ public class LostItemAdminService extends AdminItemService<LostItem> {
                                 ThingCategoryRepository categoryRepository,
                                 PlaceRepository placeRepository,
                                 ContactInfoRepository contactInfoRepository,
+                                CountriesProperties countries,
                                 SimilarItemRepository similarItemRepository,
                                 LostItemHistoryRepository historyRepository) {
-        super(repository, categoryRepository, placeRepository, contactInfoRepository,
+        super(repository, categoryRepository, placeRepository, contactInfoRepository, countries,
                 LostItem::new, "LOST_ITEM");
         this.similarItemRepository = similarItemRepository;
         this.historyRepository = historyRepository;

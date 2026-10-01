@@ -3,6 +3,7 @@ package org.shpytchuk.clientapi.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.shpytchuk.clientapi.config.CountriesProperties;
 import org.shpytchuk.clientapi.dto.ItemDto;
 import org.shpytchuk.clientapi.dto.ItemSort;
 import org.shpytchuk.clientapi.entity.ContactInfo.SocialMediaEnum;
@@ -16,6 +17,7 @@ import org.shpytchuk.clientapi.support.AbstractPostgresTests;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.ScrollPosition;
@@ -33,6 +35,7 @@ import static org.shpytchuk.clientapi.support.Fixtures.*;
 @DataJpaTest(properties = "spring.jpa.hibernate.ddl-auto=validate")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import({LostItemService.class, FoundItemService.class, ReferenceService.class})
+@EnableConfigurationProperties(CountriesProperties.class)
 class ItemServiceTests extends AbstractPostgresTests {
 
     private static final LocalDate SEPTEMBER_1 = LocalDate.of(2026, 9, 1);
@@ -84,9 +87,11 @@ class ItemServiceTests extends AbstractPostgresTests {
             assertThat(stored.getTitle()).isEqualTo("Ключі");
             assertThat(stored.getDate()).isEqualTo(SEPTEMBER_1);
             assertThat(stored.getCompensation()).isEqualTo(500);
+            assertThat(stored.getCurrency()).isEqualTo("UAH");
             assertThat(stored.getImage()).isEqualTo("keys.png");
             assertThat(stored.getCategory().getKey()).isEqualTo("DOCUMENTS");
             assertThat(stored.getPlace().getGooglePlaceId()).isEqualTo("ChIJplaceId");
+            assertThat(stored.getPlace().getCountryCode()).isEqualTo("UA");
             assertThat(stored.getInfo().getPhone()).isEqualTo("+380671234567");
         }
 
@@ -124,6 +129,63 @@ class ItemServiceTests extends AbstractPostgresTests {
 
             assertThat(lostItemRepository.findWithDetailsById(dto.id()).orElseThrow().getImage())
                     .isNull();
+        }
+    }
+
+    @Nested
+    class Money {
+
+        @Test
+        void derivesTheCurrencyFromThePlaceCountryWhenNoneIsGiven() {
+            ItemDto dto = lostService.create(input(new MoneyInput(200, null), "PL"));
+
+            assertThat(dto.compensation().amount()).isEqualTo(200);
+            assertThat(dto.compensation().currency()).isEqualTo("PLN");
+            assertThat(dto.place().countryCode()).isEqualTo("PL");
+        }
+
+        @Test
+        void acceptsAnExplicitSupportedCurrency() {
+            ItemDto dto = lostService.create(input(new MoneyInput(200, "PLN"), "UA"));
+
+            assertThat(dto.compensation().currency()).isEqualTo("PLN");
+        }
+
+        @Test
+        void uppercasesCountryAndCurrencyCodes() {
+            ItemDto dto = lostService.create(input(new MoneyInput(200, "eur"), "de"));
+            entityManager.flush();
+            entityManager.clear();
+
+            LostItem stored = lostItemRepository.findWithDetailsById(dto.id()).orElseThrow();
+            assertThat(stored.getCurrency()).isEqualTo("EUR");
+            assertThat(stored.getPlace().getCountryCode()).isEqualTo("DE");
+        }
+
+        @Test
+        void storesTheCountryCurrencyEvenWithoutCompensation() {
+            ItemDto dto = lostService.create(input(null, "FR"));
+            entityManager.flush();
+            entityManager.clear();
+
+            assertThat(dto.compensation()).isNull();
+            assertThat(lostItemRepository.findById(dto.id()).orElseThrow().getCurrency()).isEqualTo("EUR");
+        }
+
+        @Test
+        void rejectsAnUnsupportedCountry() {
+            assertThatExceptionOfType(IllegalArgumentException.class)
+                    .isThrownBy(() -> lostService.create(input(new MoneyInput(200, null), "AU")))
+                    .withMessage("Unsupported country: AU");
+            assertThat(placeRepository.findById("ChIJplaceId")).isEmpty();
+        }
+
+        @Test
+        void rejectsAnUnsupportedCurrency() {
+            assertThatExceptionOfType(IllegalArgumentException.class)
+                    .isThrownBy(() -> lostService.create(input(new MoneyInput(200, "USD"), "UA")))
+                    .withMessage("Unsupported currency: USD");
+            assertThat(lostItemRepository.findAll()).isEmpty();
         }
     }
 
@@ -203,15 +265,23 @@ class ItemServiceTests extends AbstractPostgresTests {
         return ScrollSubrange.create(position, count, true);
     }
 
+    private ItemInput input(MoneyInput compensation, String countryCode) {
+        return input("keys.png", documents.getId(), compensation, countryCode);
+    }
+
     private static ItemInput input(String image, Long categoryId) {
+        return input(image, categoryId, new MoneyInput(500, null), "UA");
+    }
+
+    private static ItemInput input(String image, Long categoryId, MoneyInput compensation, String countryCode) {
         return new ItemInput(
                 "Ключі",
                 "Звʼязка з брелоком",
                 SEPTEMBER_1,
-                500,
+                compensation,
                 image,
                 categoryId,
-                new PlaceInput("ChIJplaceId", "Площа Ринок", 49.8419, 24.0315),
+                new PlaceInput("ChIJplaceId", "Площа Ринок", 49.8419, 24.0315, countryCode),
                 new ContactInfoInput("+380671234567", "finder@example.com",
                         List.of(SocialMediaEnum.TELEGRAM)));
     }

@@ -7,7 +7,7 @@ public record ItemDto(
         String title,
         String description,
         LocalDate date,
-        Integer compensation,
+        MoneyDto compensation,
         String image,
         CategoryDto category,
         PlaceDto place,

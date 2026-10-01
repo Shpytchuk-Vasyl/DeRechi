@@ -1,5 +1,6 @@
 package org.shpytchuk.adminapi.service;
 
+import org.shpytchuk.adminapi.config.property.CountriesProperties;
 import org.shpytchuk.adminapi.entity.items.FoundItemHistory;
 import org.shpytchuk.adminapi.repository.ContactInfoRepository;
 import org.shpytchuk.adminapi.repository.items.FoundItemHistoryRepository;
@@ -15,8 +16,9 @@ public class FoundItemHistoryAdminService extends AdminItemService<FoundItemHist
     public FoundItemHistoryAdminService(FoundItemHistoryRepository repository,
                                        ThingCategoryRepository categoryRepository,
                                        PlaceRepository placeRepository,
-                                       ContactInfoRepository contactInfoRepository) {
-        super(repository, categoryRepository, placeRepository, contactInfoRepository,
+                                       ContactInfoRepository contactInfoRepository,
+                                       CountriesProperties countries) {
+        super(repository, categoryRepository, placeRepository, contactInfoRepository, countries,
                 FoundItemHistoryAdminService::archived, "FOUND_ITEM_HISTORY");
     }
 

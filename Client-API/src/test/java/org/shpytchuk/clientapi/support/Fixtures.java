@@ -24,10 +24,15 @@ public final class Fixtures {
     }
 
     public static Place place(String googlePlaceId, String name, double lat, double lon) {
+        return place(googlePlaceId, name, lat, lon, "UA");
+    }
+
+    public static Place place(String googlePlaceId, String name, double lat, double lon, String countryCode) {
         Place place = new Place();
         place.setGooglePlaceId(googlePlaceId);
         place.setName(name);
         place.setCoordinate(point(lat, lon));
+        place.setCountryCode(countryCode);
         return place;
     }
 
@@ -43,6 +48,7 @@ public final class Fixtures {
                                     ThingCategory category, Place place, ContactInfo info) {
         item.setTitle(title);
         item.setDate(date);
+        item.setCurrency("UAH");
         item.setCategory(category);
         item.setPlace(place);
         item.setInfo(info);

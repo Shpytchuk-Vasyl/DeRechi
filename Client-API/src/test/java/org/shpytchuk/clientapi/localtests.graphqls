@@ -10,12 +10,13 @@ query  {
     #            email
     #            phone
     #        }
-    #        compensation
+    #        compensation { amount currency }
     #        date
     #        description
     #        image
     #        place {
     #            name
+    #            countryCode
     #            lat
     #            lon
     #            id
@@ -36,12 +37,13 @@ query  {
                     email
                     phone
                 }
-                compensation
+                compensation { amount currency }
                 date
                 description
                 image
                 place {
                     name
+                    countryCode
                     lat
                     lon
                     id
@@ -61,7 +63,7 @@ query  {
 #        title: "test"
 #        description: "test description"
 #        date: "2026-09-12"
-#        compensation: 500
+#        compensation: { amount: 500 }
 #        image: "test"
 #        categoryId: 1
 #        place: {
@@ -69,6 +71,7 @@ query  {
 #            name: "Площа Ринок"
 #            lat: 49.8419
 #            lon: 24.0315
+#            countryCode: "UA"
 #        }
 #        contact: {
 #            phone: "+380671234567"
@@ -80,7 +83,7 @@ query  {
 #        title
 #        description
 #        date
-#        compensation
+#        compensation { amount currency }
 #        image
 #        category {
 #            id
@@ -107,7 +110,7 @@ query  {
 #    createFoundItem(
 #        input: {
 #            categoryId: 2
-#            compensation: 0
+#            compensation: { amount: 0, currency: "UAH" }
 #            contact: {
 #                email: "find@derechi.com"
 #                phone: "+38011111111"
@@ -117,7 +120,7 @@ query  {
 #            description: "Знайшов ключі стрийському парку біля лавочки"
 #            title: "Ключі стрийський парк"
 #            image: "https://sigma.ua/resize_img/nabor-klyuchey-rozhkovo-nakidnykh-treshchotochnykh-8sht-8-10-12-13-14-15-17-19mm-crv-satine-sigma-60_detail_1.jpeg"
-#            place: {id: "Стрийськийпарк", lon: 49.8179, lat: 24.00651, name: "Парк"}
+#            place: {id: "Стрийськийпарк", lon: 49.8179, lat: 24.00651, name: "Парк", countryCode: "UA"}
 #        }
 #    ) {
 #        id

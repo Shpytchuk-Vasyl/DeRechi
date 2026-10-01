@@ -1,6 +1,7 @@
 package org.shpytchuk.clientapi.controller;
 
 import org.shpytchuk.clientapi.dto.CategoryDto;
+import org.shpytchuk.clientapi.dto.CountryDto;
 import org.shpytchuk.clientapi.service.ReferenceService;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,11 @@ public class ReferenceController {
     @QueryMapping
     public List<CategoryDto> categories() {
         return service.categories();
+    }
+
+    @QueryMapping
+    public List<CountryDto> countries() {
+        return service.countries();
     }
 
 }

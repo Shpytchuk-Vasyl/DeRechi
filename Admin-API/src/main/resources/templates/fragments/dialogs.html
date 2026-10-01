@@ -33,7 +33,7 @@
                         <span class="tag is-info is-light is-rounded" th:text="#{category.__${item.categoryKey}__}">OTHER</span>
                         <span class="tag is-success is-light is-rounded"
                               th:if="${item.compensation != null and item.compensation > 0}"
-                              th:text="#{form.compensationHint(${fmt.money(item.compensation)})}">
+                              th:text="#{form.compensationHint(${fmt.money(item.compensation, item.currency)})}">
                             Reward</span>
                     </div>
                 </div>
@@ -60,6 +60,8 @@
                                 <p class="is-size-7 is-uppercase has-text-weight-semibold has-text-grey" th:text="#{field.place}">Place</p>
                                 <p>
                                     <span th:text="${item.placeName}">Парк</span>
+                                    <span class="has-text-grey" th:if="${item.countryCode != null}"
+                                          th:text="', ' + ${fmt.country(item.countryCode)}">, Ukraine</span>
                                     <a class="is-size-7 ml-1" target="_blank" rel="noopener"
                                        th:if="${item.lat != null and item.lon != null}"
                                        th:href="'https://www.google.com/maps/search/?api=1&query=' + ${item.lat} + ',' + ${item.lon}">

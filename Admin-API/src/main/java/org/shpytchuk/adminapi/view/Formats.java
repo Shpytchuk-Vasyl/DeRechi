@@ -16,8 +16,6 @@ import java.util.Locale;
 @Component("fmt")
 public class Formats {
 
-    private static final Currency CURRENCY = Currency.getInstance("UAH");
-
     private final PhoneNumberUtil phoneNumbers = PhoneNumberUtil.getInstance();
 
     public String date(LocalDate date) {
@@ -29,14 +27,23 @@ public class Formats {
                 .format(date);
     }
 
-    public String money(Number amount) {
+    public String money(Number amount, String currency) {
         if (amount == null) {
             return "";
         }
         NumberFormat format = NumberFormat.getCurrencyInstance(locale());
-        format.setCurrency(CURRENCY);
+        if (currency != null && !currency.isBlank()) {
+            format.setCurrency(Currency.getInstance(currency.trim().toUpperCase(Locale.ROOT)));
+        }
         format.setMaximumFractionDigits(0);
         return format.format(amount);
+    }
+
+    public String country(String code) {
+        if (code == null || code.isBlank()) {
+            return "";
+        }
+        return Locale.of("", code.trim().toUpperCase(Locale.ROOT)).getDisplayCountry(locale());
     }
 
     public String phone(String phone) {

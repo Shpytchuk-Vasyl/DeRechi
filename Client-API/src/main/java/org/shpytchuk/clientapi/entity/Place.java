@@ -25,4 +25,7 @@ public class Place {
     @JdbcTypeCode(SqlTypes.GEOGRAPHY)
     @Column(columnDefinition = "geography(Point, 4326)", nullable = false)
     private Point coordinate;
+
+    @Column(nullable = false, length = 2)
+    private String countryCode;
 }

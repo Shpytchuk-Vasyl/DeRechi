@@ -4,6 +4,7 @@ import org.shpytchuk.adminapi.config.cache.CachedPage;
 import org.shpytchuk.adminapi.entity.Thing;
 import org.shpytchuk.adminapi.form.ItemFilter;
 import org.shpytchuk.adminapi.form.ItemForm;
+import org.shpytchuk.adminapi.form.ItemFormValidator;
 import org.shpytchuk.adminapi.security.Scope;
 import org.shpytchuk.adminapi.service.AdminItemService;
 import org.shpytchuk.adminapi.view.ItemView;
@@ -15,9 +16,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.time.LocalDate;
 
 @CachedPage
 public abstract class ItemController<T extends Thing> {
@@ -27,6 +28,7 @@ public abstract class ItemController<T extends Thing> {
 
     private final AdminItemService<T> service;
     private final ItemModel itemModel;
+    private final ItemFormValidator formValidator;
     private final MessageSource messages;
     private final Scope scope;
     private final String basePath;
@@ -34,16 +36,23 @@ public abstract class ItemController<T extends Thing> {
 
     protected ItemController(AdminItemService<T> service,
                              ItemModel itemModel,
+                             ItemFormValidator formValidator,
                              MessageSource messages,
                              Scope scope,
                              String basePath,
                              String titleKey) {
         this.service = service;
         this.itemModel = itemModel;
+        this.formValidator = formValidator;
         this.messages = messages;
         this.scope = scope;
         this.basePath = basePath;
         this.titleKey = titleKey;
+    }
+
+    @InitBinder("form")
+    void bindForm(WebDataBinder binder) {
+        binder.addValidators(formValidator);
     }
 
     protected String list(Pageable pageable, ItemFilter filter, Model model) {
@@ -63,9 +72,7 @@ public abstract class ItemController<T extends Thing> {
         describe(model);
         itemModel.forForm(model, true);
 
-        ItemForm form = new ItemForm();
-        form.setDate(LocalDate.now());
-        model.addAttribute("form", form);
+        model.addAttribute("form", itemModel.blankForm());
         return FORM_VIEW;
     }
 

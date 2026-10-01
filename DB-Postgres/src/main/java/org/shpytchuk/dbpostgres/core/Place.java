@@ -29,5 +29,8 @@ public class Place {
     @Column(columnDefinition = "geography(Point, 4326)", nullable = false)
     private Point coordinate;
 
-
+    @NotBlank
+    @Size(min = 2, max = 2)
+    @Column(nullable = false, length = 2)
+    private String countryCode;
 }

@@ -8,10 +8,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.shpytchuk.clientapi.dto.CategoryDto;
 import org.shpytchuk.clientapi.dto.ContactInfoDto;
 import org.shpytchuk.clientapi.dto.ItemDto;
+import org.shpytchuk.clientapi.dto.MoneyDto;
 import org.shpytchuk.clientapi.dto.PlaceDto;
 import org.shpytchuk.clientapi.event.ItemCreatedEvent;
 import org.shpytchuk.clientapi.input.ContactInfoInput;
 import org.shpytchuk.clientapi.input.ItemInput;
+import org.shpytchuk.clientapi.input.MoneyInput;
 import org.shpytchuk.clientapi.input.PlaceInput;
 import org.shpytchuk.clientapi.service.FoundItemService;
 import org.shpytchuk.clientapi.service.LostItemService;
@@ -34,14 +36,14 @@ class ItemEventAspectTest {
     private static final String EXCHANGE = "derechi.items";
 
     private static final ItemInput INPUT = new ItemInput(
-            "Ключі", null, LocalDate.of(2026, 9, 1), 500, "keys.png", 2L,
-            new PlaceInput("ChIJplaceId", "Площа Ринок", 49.8419, 24.0315),
+            "Ключі", null, LocalDate.of(2026, 9, 1), new MoneyInput(500, null), "keys.png", 2L,
+            new PlaceInput("ChIJplaceId", "Площа Ринок", 49.8419, 24.0315, "UA"),
             new ContactInfoInput("+380671234567", "finder@example.com", List.of()));
 
     private static final ItemDto CREATED = new ItemDto(
-            1L, "Ключі", null, LocalDate.of(2026, 9, 1), 500, "keys.png",
+            1L, "Ключі", null, LocalDate.of(2026, 9, 1), new MoneyDto(500, "UAH"), "keys.png",
             new CategoryDto(2L, "keys"),
-            new PlaceDto("ChIJplaceId", "Площа Ринок", 49.8419, 24.0315),
+            new PlaceDto("ChIJplaceId", "Площа Ринок", 49.8419, 24.0315, "UA"),
             new ContactInfoDto(4L, "+380671234567", "finder@example.com"));
 
     @Mock

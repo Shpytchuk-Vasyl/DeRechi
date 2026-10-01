@@ -28,9 +28,11 @@ public final class ItemMapper {
                 item.getDescription(),
                 item.getDate(),
                 item.getCompensation(),
+                item.getCurrency(),
                 item.getImage(),
                 item.getCategory().getKey(),
                 place.getName(),
+                place.getCountryCode(),
                 coordinate == null ? null : coordinate.getY(),
                 coordinate == null ? null : coordinate.getX(),
                 info.getPhone(),
@@ -53,6 +55,7 @@ public final class ItemMapper {
         to.setImage(from.getImage());
         to.setDate(from.getDate());
         to.setCompensation(from.getCompensation());
+        to.setCurrency(from.getCurrency());
         to.setInfo(from.getInfo());
         to.setPlace(from.getPlace());
         to.setCategory(from.getCategory());
@@ -70,9 +73,11 @@ public final class ItemMapper {
         form.setImage(item.getImage());
         form.setDate(item.getDate());
         form.setCompensation(item.getCompensation());
+        form.setCurrency(item.getCurrency());
         form.setCategoryId(item.getCategory().getId());
         form.setPlaceId(place.getGooglePlaceId());
         form.setPlaceName(place.getName());
+        form.setCountryCode(place.getCountryCode());
         form.setLat(coordinate == null ? null : coordinate.getY());
         form.setLon(coordinate == null ? null : coordinate.getX());
         form.setPhone(info.getPhone());

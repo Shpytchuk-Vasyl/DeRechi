@@ -61,7 +61,11 @@
                         </td>
 
                         <td class="is-vcentered py-3" th:text="${fmt.date(item.date)}">2026-01-01</td>
-                        <td class="is-vcentered py-3" th:text="${item.placeName}">Місце</td>
+                        <td class="is-vcentered py-3">
+                            <span th:text="${item.placeName}">Місце</span>
+                            <span class="is-size-7 has-text-grey" th:if="${item.countryCode != null}"
+                                  th:text="${fmt.country(item.countryCode)}">Ukraine</span>
+                        </td>
 
                         <td class="is-vcentered py-3 has-text-right">
                             <div class="dropdown row-actions-menu">

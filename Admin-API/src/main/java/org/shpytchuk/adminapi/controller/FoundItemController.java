@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.shpytchuk.adminapi.entity.items.FoundItem;
 import org.shpytchuk.adminapi.form.ItemFilter;
 import org.shpytchuk.adminapi.form.ItemForm;
+import org.shpytchuk.adminapi.form.ItemFormValidator;
 import org.shpytchuk.adminapi.security.Action;
 import org.shpytchuk.adminapi.security.RequirePermission;
 import org.shpytchuk.adminapi.security.Scope;
@@ -27,8 +28,9 @@ public class FoundItemController extends ItemController<FoundItem> {
     static final String BASE_PATH = "/admin/found-items";
     private static final String TITLE_KEY = "page.found_item";
 
-    public FoundItemController(FoundItemAdminService service, ItemModel itemModel, MessageSource messages) {
-        super(service, itemModel, messages, Scope.FOUND_ITEM, BASE_PATH, TITLE_KEY);
+    public FoundItemController(FoundItemAdminService service, ItemModel itemModel,
+                               ItemFormValidator formValidator, MessageSource messages) {
+        super(service, itemModel, formValidator, messages, Scope.FOUND_ITEM, BASE_PATH, TITLE_KEY);
     }
 
     @Override

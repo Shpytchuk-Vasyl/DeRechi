@@ -4,6 +4,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.shpytchuk.adminapi.config.property.CountriesProperties;
 import org.shpytchuk.adminapi.entity.ContactInfo;
 import org.shpytchuk.adminapi.entity.ContactInfo.SocialMediaEnum;
 import org.shpytchuk.adminapi.entity.Place;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Supplier;
 
 public abstract class AdminItemService<T extends Thing> {
@@ -30,6 +32,7 @@ public abstract class AdminItemService<T extends Thing> {
     private final ThingCategoryRepository categoryRepository;
     private final PlaceRepository placeRepository;
     private final ContactInfoRepository contactInfoRepository;
+    private final CountriesProperties countries;
     private final Supplier<T> factory;
     private final String scopeKey;
 
@@ -37,12 +40,14 @@ public abstract class AdminItemService<T extends Thing> {
                                ThingCategoryRepository categoryRepository,
                                PlaceRepository placeRepository,
                                ContactInfoRepository contactInfoRepository,
+                               CountriesProperties countries,
                                Supplier<T> factory,
                                String scopeKey) {
         this.repository = repository;
         this.categoryRepository = categoryRepository;
         this.placeRepository = placeRepository;
         this.contactInfoRepository = contactInfoRepository;
+        this.countries = countries;
         this.factory = factory;
         this.scopeKey = scopeKey;
     }
@@ -104,7 +109,8 @@ public abstract class AdminItemService<T extends Thing> {
     private void apply(ItemForm form, T item, ContactInfo info) {
         ThingCategory category = categoryRepository.findById(form.getCategoryId())
                 .orElseThrow(() -> new NotFoundException("entity.category", form.getCategoryId()));
-        Place place = placeRepository.save(toPlace(form));
+        String countryCode = countryCode(form);
+        Place place = placeRepository.save(toPlace(form, countryCode));
 
         info.setPhone(form.getPhone());
         info.setEmail(form.getEmail());
@@ -115,15 +121,35 @@ public abstract class AdminItemService<T extends Thing> {
         item.setImage(blankToNull(form.getImage()));
         item.setDate(form.getDate());
         item.setCompensation(form.getCompensation());
+        item.setCurrency(currency(form, countryCode));
         item.setCategory(category);
         item.setPlace(place);
         item.setInfo(info);
     }
 
-    private static Place toPlace(ItemForm form) {
+    private String countryCode(ItemForm form) {
+        String code = upper(form.getCountryCode());
+        if (!countries.supports(code)) {
+            throw new IllegalArgumentException("Непідтримувана країна: " + code);
+        }
+        return code;
+    }
+
+    private String currency(ItemForm form, String countryCode) {
+        String currency = form.getCurrency() == null
+                ? countries.currencyOf(countryCode)
+                : upper(form.getCurrency());
+        if (!countries.currencies().contains(currency)) {
+            throw new IllegalArgumentException("Непідтримувана валюта: " + currency);
+        }
+        return currency;
+    }
+
+    private static Place toPlace(ItemForm form, String countryCode) {
         Place place = new Place();
         place.setGooglePlaceId(form.getPlaceId());
         place.setName(form.getPlaceName());
+        place.setCountryCode(countryCode);
         Point coordinate = GEOMETRY_FACTORY.createPoint(new Coordinate(form.getLon(), form.getLat()));
         place.setCoordinate(coordinate);
         return place;
@@ -137,5 +163,9 @@ public abstract class AdminItemService<T extends Thing> {
 
     private static String blankToNull(String value) {
         return value == null || value.isBlank() ? null : value;
+    }
+
+    private static String upper(String value) {
+        return value == null ? "" : value.trim().toUpperCase(Locale.ROOT);
     }
 }

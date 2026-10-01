@@ -1,6 +1,7 @@
 package org.shpytchuk.adminapi.controller;
 
 import org.junit.jupiter.api.Test;
+import org.shpytchuk.adminapi.config.CountriesConfig;
 import org.shpytchuk.adminapi.config.GlobalExceptionHandler;
 import org.shpytchuk.adminapi.config.MapsConfig;
 import org.shpytchuk.adminapi.service.ImageStorage;
@@ -51,8 +52,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         properties = {"derechi.admin.client-id=derechi-admin", "derechi.admin.page-size=20",
                 "derechi.notifications.exchange=derechi.notifications",
                 "derechi.notifications.routing-key=notification.match.found",
-                "derechi.maps.api-key="})
-@Import({SecurityConfig.class, MapsConfig.class, GlobalModelAdvice.class, GlobalExceptionHandler.class, ItemModel.class,
+                "derechi.maps.api-key=",
+                "derechi.countries.supported=UA,PL,DE,FR", "derechi.countries.fallback=UA"})
+@Import({SecurityConfig.class, MapsConfig.class, CountriesConfig.class, GlobalModelAdvice.class,
+        GlobalExceptionHandler.class, ItemModel.class,
         Formats.class, Plurals.class, SocialMediaIcons.class,
         MatchControllerTests.TestClients.class})
 class MatchControllerTests {
@@ -126,8 +129,8 @@ class MatchControllerTests {
     }
 
     private static ItemView item(Long id, String title) {
-        return new ItemView(id, title, "Opys", LocalDate.of(2026, 1, 2), 500,
-                "https://example.test/photo.jpg", "BAG", "Park", 49.8, 24.0,
+        return new ItemView(id, title, "Opys", LocalDate.of(2026, 1, 2), 500, "UAH",
+                "https://example.test/photo.jpg", "BAG", "Park", "UA", 49.8, 24.0,
                 "+380671234567", "a@b.test", List.of());
     }
 

@@ -107,13 +107,26 @@
                                         class="fa-solid fa-coins"></i></span>
                                 <span th:text="#{field.compensation}">Reward</span>
                             </label>
-                            <div class="control">
-                                <input class="input" type="number" id="compensation" th:field="*{compensation}"
-                                       th:errorclass="is-danger" min="0" step="1" inputmode="numeric"
-                                       autocomplete="off" placeholder="0">
+                            <div class="field has-addons mb-0">
+                                <div class="control is-expanded">
+                                    <input class="input" type="number" id="compensation" th:field="*{compensation}"
+                                           th:errorclass="is-danger" min="0" step="1" inputmode="numeric"
+                                           autocomplete="off" placeholder="0">
+                                </div>
+                                <div class="control">
+                                    <div class="select" th:classappend="${#fields.hasErrors('currency')} ? 'is-danger'">
+                                        <select id="currency" th:field="*{currency}" th:aria-label="#{field.currency}">
+                                            <option value="" th:text="#{form.currency.byCountry}">By country</option>
+                                            <option th:each="code : ${currencies}" th:value="${code}"
+                                                    th:text="${code}">UAH</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                             <p class="help is-danger" th:if="${#fields.hasErrors('compensation')}"
                                th:errors="*{compensation}">error</p>
+                            <p class="help is-danger" th:if="${#fields.hasErrors('currency')}"
+                               th:errors="*{currency}">error</p>
                         </div>
                     </div>
                     <div class="column">
@@ -146,13 +159,13 @@
                     <span th:text="#{field.place}">Place</span>
                 </h2>
 
-                <!-- Поле навмисно без `name`: воно лише керує віджетом, а на сервер
-                     їдуть placeId/placeName/lat/lon, які той заповнює. -->
                 <div class="field" th:if="${maps.enabled}">
                     <label class="label" for="place-search" th:text="#{form.place.search}">Find a place</label>
                     <div class="control has-icons-left">
                         <input class="input" type="text" id="place-search" autocomplete="off"
-                               th:data-region="${maps.region}" th:placeholder="#{placeholder.placeSearch}">
+                               th:data-region="${maps.region}"
+                               th:data-countries="${#strings.toLowerCase(#strings.listJoin(countries, ','))}"
+                               th:placeholder="#{placeholder.placeSearch}">
                         <span class="icon is-small is-left has-text-grey" aria-hidden="true">
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </span>
@@ -178,9 +191,24 @@
                        th:errors="*{placeName}">error</p>
                 </div>
 
-                <!-- Технічні поля: їх заповнює віджет, але без ключа (чи коли Google мовчить)
-                     місце має лишатися доступним вручну. `required` тут навмисно немає —
-                     браузер не вміє фокусувати порожнє поле всередині згорнутого <details>. -->
+                <div class="field">
+                    <label class="label" for="countryCode">
+                        <span class="icon has-text-grey mr-1" aria-hidden="true"><i class="fa-solid fa-flag"></i></span>
+                        <span th:text="#{field.country}">Country</span>
+                    </label>
+                    <div class="control">
+                        <div class="select is-fullwidth"
+                             th:classappend="${#fields.hasErrors('countryCode')} ? 'is-danger'">
+                            <select id="countryCode" th:field="*{countryCode}" required>
+                                <option th:each="code : ${countries}" th:value="${code}"
+                                        th:text="${fmt.country(code)}">Ukraine</option>
+                            </select>
+                        </div>
+                    </div>
+                    <p class="help is-danger" th:if="${#fields.hasErrors('countryCode')}"
+                       th:errors="*{countryCode}">error</p>
+                </div>
+
                 <details class="place-manual" id="place-manual"
                          th:open="${!maps.enabled or #fields.hasErrors('placeId') or #fields.hasErrors('lat') or #fields.hasErrors('lon')}">
                     <summary class="is-size-7 has-text-grey" th:text="#{form.place.manual}">Enter manually</summary>

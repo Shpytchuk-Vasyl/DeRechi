@@ -5,6 +5,16 @@ import org.junit.jupiter.api.Test;
 class ReferenceControllerTests extends AbstractGraphQlTests {
 
     @Test
+    void returnsTheConfiguredCountriesWithTheirCurrencies() {
+        tester.document("{ countries { code currency } }")
+                .execute()
+                .path("countries[*].code").entityList(String.class)
+                .containsExactly("UA", "PL", "DE", "FR")
+                .path("countries[*].currency").entityList(String.class)
+                .containsExactly("UAH", "PLN", "EUR", "EUR");
+    }
+
+    @Test
     void returnsTheCategoriesSeededByTheMigrations() {
         tester.document("{ categories { id key } }")
                 .execute()

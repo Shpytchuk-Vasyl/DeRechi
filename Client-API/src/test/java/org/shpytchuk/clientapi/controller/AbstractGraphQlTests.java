@@ -55,7 +55,7 @@ abstract class AbstractGraphQlTests extends AbstractPostgresTests {
         input.put("title", title);
         input.put("description", "Звʼязка з брелоком");
         input.put("date", LocalDate.now().toString());
-        input.put("compensation", 500);
+        input.put("compensation", Map.of("amount", 500));
         input.put("image", "keys.png");
         input.put("categoryId", String.valueOf(categoryId));
         input.put("place", place("ChIJrynok", "Площа Ринок", 49.8419, 24.0315));
@@ -64,7 +64,11 @@ abstract class AbstractGraphQlTests extends AbstractPostgresTests {
     }
 
     protected static Map<String, Object> place(String id, String name, double lat, double lon) {
-        return Map.of("id", id, "name", name, "lat", lat, "lon", lon);
+        return place(id, name, lat, lon, "UA");
+    }
+
+    protected static Map<String, Object> place(String id, String name, double lat, double lon, String countryCode) {
+        return Map.of("id", id, "name", name, "lat", lat, "lon", lon, "countryCode", countryCode);
     }
 
     protected static Map<String, Object> contact(String phone) {

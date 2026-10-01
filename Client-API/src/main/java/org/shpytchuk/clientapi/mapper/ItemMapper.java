@@ -4,6 +4,7 @@ import org.locationtech.jts.geom.Point;
 import org.shpytchuk.clientapi.dto.CategoryDto;
 import org.shpytchuk.clientapi.dto.ContactInfoDto;
 import org.shpytchuk.clientapi.dto.ItemDto;
+import org.shpytchuk.clientapi.dto.MoneyDto;
 import org.shpytchuk.clientapi.dto.PlaceDto;
 import org.shpytchuk.clientapi.entity.ContactInfo;
 import org.shpytchuk.clientapi.entity.Place;
@@ -22,7 +23,7 @@ public final class ItemMapper {
                 item.getTitle(),
                 item.getDescription(),
                 item.getDate(),
-                item.getCompensation(),
+                toMoney(item),
                 item.getImage(),
                 toDto(item.getCategory()),
                 toDto(item.getPlace()),
@@ -40,8 +41,13 @@ public final class ItemMapper {
                 place.getGooglePlaceId(),
                 place.getName(),
                 coordinate == null ? null : coordinate.getY(),
-                coordinate == null ? null : coordinate.getX()
+                coordinate == null ? null : coordinate.getX(),
+                place.getCountryCode()
         );
+    }
+
+    private static MoneyDto toMoney(Thing item) {
+        return item.getCompensation() == null ? null : new MoneyDto(item.getCompensation(), item.getCurrency());
     }
 
     public static ContactInfoDto toDto(ContactInfo info) {

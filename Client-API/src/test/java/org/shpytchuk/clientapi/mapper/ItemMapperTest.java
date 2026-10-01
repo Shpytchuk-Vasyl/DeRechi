@@ -26,11 +26,13 @@ class ItemMapperTest {
         assertThat(dto.title()).isEqualTo("Ключі");
         assertThat(dto.description()).isEqualTo("Звʼязка з брелоком");
         assertThat(dto.date()).isEqualTo(LocalDate.of(2026, 9, 1));
-        assertThat(dto.compensation()).isEqualTo(500);
+        assertThat(dto.compensation().amount()).isEqualTo(500);
+        assertThat(dto.compensation().currency()).isEqualTo("UAH");
         assertThat(dto.image()).isEqualTo("keys.png");
         assertThat(dto.category().key()).isEqualTo("keys");
         assertThat(dto.place().id()).isEqualTo("ChIJplaceId");
         assertThat(dto.place().name()).isEqualTo("Площа Ринок");
+        assertThat(dto.place().countryCode()).isEqualTo("UA");
         assertThat(dto.contact().id()).isEqualTo(4L);
     }
 
@@ -48,6 +50,16 @@ class ItemMapperTest {
 
         assertThat(dto.place().lat()).isEqualTo(49.8419);
         assertThat(dto.place().lon()).isEqualTo(24.0315);
+    }
+
+    @Test
+    void leavesCompensationNullWhenThereIsNoReward() {
+        LostItem item = item(point(49.8419, 24.0315));
+        item.setCompensation(null);
+
+        ItemDto dto = ItemMapper.toDto(item);
+
+        assertThat(dto.compensation()).isNull();
     }
 
     @Test
@@ -71,6 +83,7 @@ class ItemMapperTest {
         place.setGooglePlaceId("ChIJplaceId");
         place.setName("Площа Ринок");
         place.setCoordinate(coordinate);
+        place.setCountryCode("UA");
 
         ContactInfo info = new ContactInfo();
         info.setId(4L);
@@ -83,6 +96,7 @@ class ItemMapperTest {
         item.setDescription("Звʼязка з брелоком");
         item.setDate(LocalDate.of(2026, 9, 1));
         item.setCompensation(500);
+        item.setCurrency("UAH");
         item.setImage("keys.png");
         item.setCategory(category);
         item.setPlace(place);

@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.shpytchuk.adminapi.entity.items.FoundItemHistory;
 import org.shpytchuk.adminapi.form.ItemFilter;
 import org.shpytchuk.adminapi.form.ItemForm;
+import org.shpytchuk.adminapi.form.ItemFormValidator;
 import org.shpytchuk.adminapi.security.Action;
 import org.shpytchuk.adminapi.security.RequirePermission;
 import org.shpytchuk.adminapi.security.Scope;
@@ -27,8 +28,9 @@ public class FoundItemHistoryController extends ItemController<FoundItemHistory>
     static final String BASE_PATH = "/admin/found-items-history";
     private static final String TITLE_KEY = "page.found_item_history";
 
-    public FoundItemHistoryController(FoundItemHistoryAdminService service, ItemModel itemModel, MessageSource messages) {
-        super(service, itemModel, messages, Scope.FOUND_ITEM_HISTORY, BASE_PATH, TITLE_KEY);
+    public FoundItemHistoryController(FoundItemHistoryAdminService service, ItemModel itemModel,
+                               ItemFormValidator formValidator, MessageSource messages) {
+        super(service, itemModel, formValidator, messages, Scope.FOUND_ITEM_HISTORY, BASE_PATH, TITLE_KEY);
     }
 
     @Override

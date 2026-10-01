@@ -1,5 +1,6 @@
 package org.shpytchuk.clientapi.service;
 
+import org.shpytchuk.clientapi.config.CountriesProperties;
 import org.shpytchuk.clientapi.entity.FoundItem;
 import org.shpytchuk.clientapi.repository.ContactInfoRepository;
 import org.shpytchuk.clientapi.repository.FoundItemRepository;
@@ -13,8 +14,9 @@ public class FoundItemService extends ItemService<FoundItem> {
     public FoundItemService(FoundItemRepository repository,
                             ThingCategoryRepository categoryRepository,
                             PlaceRepository placeRepository,
-                            ContactInfoRepository contactInfoRepository) {
-        super(repository, categoryRepository, placeRepository, contactInfoRepository,
+                            ContactInfoRepository contactInfoRepository,
+                            CountriesProperties countries) {
+        super(repository, categoryRepository, placeRepository, contactInfoRepository, countries,
                 FoundItem::new, true, "Знайдену річ");
     }
 }

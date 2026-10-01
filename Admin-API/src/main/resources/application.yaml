@@ -93,6 +93,9 @@ derechi:
   maps:
     api-key: ${GOOGLE_MAPS_API_KEY:AIzaSyAEEnJ1r3fU7C33iy1slMkdA9mTOLnzzOk}
     region: UA
+  countries:
+    supported: [UA, PL, DE, FR]
+    fallback: UA
   storage:
     bucket: derechi-files
     public-url: ${MINIO_PUBLIC_URL:http://localhost:9000}

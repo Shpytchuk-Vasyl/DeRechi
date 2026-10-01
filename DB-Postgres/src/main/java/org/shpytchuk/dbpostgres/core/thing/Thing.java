@@ -3,6 +3,7 @@ package org.shpytchuk.dbpostgres.core.thing;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import org.shpytchuk.dbpostgres.core.ContactInfo;
 import org.shpytchuk.dbpostgres.core.Place;
@@ -33,8 +34,14 @@ public class Thing {
     @Column(nullable = false)
     private LocalDate date;
 
+    @PositiveOrZero
     @Column()
     private Integer compensation;
+
+    @NotBlank
+    @Size(min = 3, max = 3)
+    @Column(nullable = false, length = 3)
+    private String currency;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(nullable = false)

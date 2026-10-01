@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.shpytchuk.adminapi.entity.items.LostItem;
 import org.shpytchuk.adminapi.form.ItemFilter;
 import org.shpytchuk.adminapi.form.ItemForm;
+import org.shpytchuk.adminapi.form.ItemFormValidator;
 import org.shpytchuk.adminapi.security.Action;
 import org.shpytchuk.adminapi.security.RequirePermission;
 import org.shpytchuk.adminapi.security.Scope;
@@ -23,8 +24,9 @@ public class LostItemController extends ItemController<LostItem> {
     static final String BASE_PATH = "/admin/lost-items";
     private static final String TITLE_KEY = "page.lost_item";
 
-    public LostItemController(LostItemAdminService service, ItemModel itemModel, MessageSource messages) {
-        super(service, itemModel, messages, Scope.LOST_ITEM, BASE_PATH, TITLE_KEY);
+    public LostItemController(LostItemAdminService service, ItemModel itemModel,
+                               ItemFormValidator formValidator, MessageSource messages) {
+        super(service, itemModel, formValidator, messages, Scope.LOST_ITEM, BASE_PATH, TITLE_KEY);
     }
 
     @Override

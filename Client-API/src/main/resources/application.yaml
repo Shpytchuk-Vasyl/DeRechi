@@ -48,3 +48,9 @@ eureka:
       defaultZone: http://localhost:8761/eureka
   instance:
     prefer-ip-address: true
+
+derechi:
+  countries:
+    # ISO 3166-1 alpha-2;
+    supported: [UA, PL, DE, FR]
+    fallback: UA
