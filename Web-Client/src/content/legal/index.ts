@@ -26,6 +26,12 @@ export function jurisdiction(countryCode: string): Jurisdiction {
   return JURISDICTIONS[0]
 }
 
+export const DEFAULT_LEGAL_COUNTRY = JURISDICTIONS[0].code
+
+export function findersLawByCountry(locale: Locale): Record<string, string> {
+  return Object.fromEntries(JURISDICTIONS.map((law) => [law.code, law.texts[locale].findersLaw]))
+}
+
 export function legalTexts(
   locale: Locale,
   countryCode: string,

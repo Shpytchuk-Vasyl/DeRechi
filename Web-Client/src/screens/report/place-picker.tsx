@@ -14,8 +14,8 @@ import type { ItemKind } from "@/api/items"
 import { searchPlaces } from "@/app/actions/places"
 import { useCountry } from "@/components/country/country-provider"
 import { Field, inputClasses } from "@/components/pouf/Input"
-import { normaliseCountryCode } from "@/lib/intl/country"
 import { clientEnv } from "@/lib/env/client"
+import { normaliseCountryCode } from "@/lib/intl/country"
 import { MAX_PLACE_NAME } from "@/schema/report-schema"
 
 export type PickedPlace = {

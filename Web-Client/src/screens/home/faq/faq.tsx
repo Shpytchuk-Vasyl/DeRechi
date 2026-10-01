@@ -1,23 +1,34 @@
-import { getTranslations } from "next-intl/server"
+import { getLocale, getTranslations } from "next-intl/server"
 import { Stack } from "@/components/pouf/layout"
 import { Heading } from "@/components/pouf/text"
+import { DEFAULT_LEGAL_COUNTRY, findersLawByCountry } from "@/content/legal"
+import type { Locale } from "@/i18n/routing"
 import FaqAccordion from "./faq-accordion"
-import { FAQ_COUNT } from "./faq-count"
+import { FAQ_COUNT, FINDERS_LAW_QUESTION } from "./faq-count"
 
 export default async function HomeFaq() {
   const t = await getTranslations("home")
+  const locale = (await getLocale()) as Locale
+  const findersLaw = findersLawByCountry(locale)
 
-  const questions = Array.from({ length: FAQ_COUNT }, (_, index) => ({
-    "@type": "Question",
-    name: t(`faqQ${index + 1}`),
-    acceptedAnswer: { "@type": "Answer", text: t(`faqA${index + 1}`) },
-  }))
+  const defaultLaw = findersLaw[DEFAULT_LEGAL_COUNTRY]
+  const questions = Array.from({ length: FAQ_COUNT }, (_, index) => {
+    const n = index + 1
+    return {
+      "@type": "Question",
+      name: t(`faqQ${n}`),
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: n === FINDERS_LAW_QUESTION ? defaultLaw : t(`faqA${n}`),
+      },
+    }
+  })
 
   return (
     <>
       <Stack gap={3}>
         <Heading level={2}>{t("faqTitle")}</Heading>
-        <FaqAccordion />
+        <FaqAccordion findersLaw={findersLaw} />
       </Stack>
 
       <script

@@ -40,9 +40,7 @@ export async function SiteHeader() {
         <span className="max-md:hidden">
           <ReportButton />
         </span>
-        <div>
-          <LocaleSwitcher />
-        </div>
+        <LocaleSwitcher />
       </Row>
     </header>
   )

@@ -52,7 +52,17 @@ No. The columns already accept any two- and three-letter codes.
 
 ## Web-Client impact
 
-The web client reads `countries` at build and run time, so the new country shows up in its pickers automatically. Ask the web team to check that their country labels and any flag or currency formatting cover the new code, and that their Google Maps restriction (if any) stays within five countries.
+The web client reads `countries` at run time (cached an hour), so the new country shows up in
+its currency select and Places restriction automatically; country names
+come from `Intl.DisplayNames`, so no message key is needed there either.
+
+One thing it does need: the legal pages are assembled per jurisdiction. Add
+`Web-Client/src/content/legal/jurisdictions/<CC>.json` with the five country-dependent
+sentences (`findersLaw`, `governingLaw`, `dataLaw`, `rightsBasis`, `complaintRight`) in all
+five locales and the document's `updated` date, and register it in
+`Web-Client/src/content/legal/index.ts`. Without it `/terms`, `/privacy` and the FAQ answer
+about rewards fall back to the first jurisdiction (UA) and the server log warns. The Places
+restriction is capped at five countries on the web side too.
 
 ## Checklist
 
@@ -61,4 +71,4 @@ The web client reads `countries` at build and run time, so the new country shows
 - [ ] Both services start cleanly
 - [ ] At most five countries, or the Places widget adjusted
 - [ ] Created a notice in the new country from the admin form and via GraphQL; reward shows in the right currency
-- [ ] Web-Client team informed
+- [ ] Web-Client: jurisdiction JSON added and registered

@@ -14,8 +14,8 @@ import {
 } from "lucide-react"
 import { getTranslations } from "next-intl/server"
 import type { AutoTab } from "@/components/auto-tabs"
-import { SampleAmount } from "@/components/items/sample-reward"
 import { Badge } from "@/components/pouf/media"
+import { SampleAmount } from "@/screens/home/sample-reward"
 
 export type Benefit = AutoTab
 

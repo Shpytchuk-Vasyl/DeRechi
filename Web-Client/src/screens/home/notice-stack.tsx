@@ -4,11 +4,11 @@ import { getFormatter, getTranslations } from "next-intl/server"
 import type { ItemKind } from "@/api/items"
 import { CategoryArt } from "@/components/items/category-art"
 import { MetaRow } from "@/components/items/meta-row"
-import { SampleReward } from "@/components/items/sample-reward"
 import { Card } from "@/components/pouf/card"
 import { Stack } from "@/components/pouf/layout"
 import { Badge } from "@/components/pouf/media"
 import { Heading } from "@/components/pouf/text"
+import { SampleReward } from "@/screens/home/sample-reward"
 
 type Sample = {
   id: "keys" | "student" | "wallet" | "backpack" | "earbuds" | "cat"

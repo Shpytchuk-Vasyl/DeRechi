@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
-import { getFormatter, getTranslations } from "next-intl/server"
-import { CountrySwitcher } from "@/components/layout/country-switcher"
+import { getFormatter } from "next-intl/server"
 import { Heading, Text } from "@/components/pouf/text"
 import {
   type JurisdictionTexts,
@@ -11,7 +10,6 @@ import {
 } from "@/content/legal"
 import { paths } from "@/i18n/paths"
 import type { Locale } from "@/i18n/routing"
-import { countryName } from "@/lib/intl/country"
 import { fromIsoDate } from "@/lib/intl/dates"
 
 export function generateMetadataFromTemplate(
@@ -70,8 +68,7 @@ export default async function LegalTemplate({
   countryCode: string
 }) {
   const format = await getFormatter()
-  const t = await getTranslations("nav")
-  const { updated, updatedOn, country, slots, doc: docOf } = legalTexts(locale, countryCode)
+  const { updated, updatedOn, slots, doc: docOf } = legalTexts(locale, countryCode)
   const doc = docOf(kind)
   const date = fromIsoDate(updatedOn)
 
@@ -80,17 +77,6 @@ export default async function LegalTemplate({
       <article className="cushion-card rounded-card bg-surface px-5 pt-[calc(var(--s6)-var(--lip)/2)] pb-[calc(var(--s6)+var(--lip)/2)] sm:px-7 [&>section]:pt-7">
         <header>
           <Heading level={1}>{doc.title}</Heading>
-          {/* <div className="mb-2.5 flex flex-wrap items-center gap-x-4 gap-y-1">
-            <Text size="sm" muted>
-              {t("legalCountry", { country: countryName(locale, country) })}
-            </Text>
-            <CountrySwitcher />
-            {date ? (
-              <Text size="sm" muted>
-                {updated}: {format.dateTime(date, { dateStyle: "long" })}
-              </Text>
-            ) : null}
-          </div> */}
           {date ? (
             <Text size="sm" muted className="mb-2.5 block">
               {updated}: {format.dateTime(date, { dateStyle: "long" })}
