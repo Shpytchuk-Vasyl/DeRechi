@@ -28,7 +28,7 @@ x-rabbitmq: &rabbitmq
 x-jvm: &jvm
 #  only for local development
   JAVA_OPTS: >-
-    -Xms64m -Xmx128m
+    -Xms64m -Xmx256m
     -XX:MaxMetaspaceSize=128m
     -XX:ReservedCodeCacheSize=34m
     -XX:MaxDirectMemorySize=34m
