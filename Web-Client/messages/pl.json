@@ -67,7 +67,7 @@
     "benefit6Text": "Żadnych banerów, tylko ogłoszenia ludzi.",
     "faqTitle": "Częste pytania",
     "faqQ1": "Jak skontaktować się z osobą, która znalazła rzecz?",
-    "faqA1": "Kontakty w ogłoszeniu są pokazane częściowo, żeby chronić Cię przed spamem. Prośba o pełne kontakty prosto z ogłoszenia pojawi się wkrótce. Tymczasem dodaj ogłoszenie przeciwnego typu: osoba, która ma Twoją rzecz, też może przeglądać listę.",
+    "faqA1": "Kontakty w ogłoszeniu są pokazane częściowo, żeby chronić Cię przed spamem. Kliknij w ogłoszeniu „To moje, wyślij moje dane”: przekażemy Twój telefon i e-mail osobie, która znalazła rzecz, mailem i SMS-em, a ona się z Tobą skontaktuje. W ogłoszeniu o zgubie działa to tak samo w drugą stronę.",
     "faqQ2": "Jak upewnić się, że oddaję rzecz prawdziwemu właścicielowi?",
     "faqA2": "Nie pokazuj w ogłoszeniu wszystkich cech. Poproś właściciela, by opisał to, czego nie widać na zdjęciu: co jest w portfelu, jaki brelok wisi przy kluczach, co jest na ekranie blokady telefonu. Umówcie się w ruchliwym miejscu.",
     "faqQ3": "Znalezione dokumenty. Co z nimi zrobić?",
@@ -164,18 +164,46 @@
     "contactFinderTitle": "Skontaktuj się ze znalazcą",
     "phone": "Telefon",
     "email": "E-mail",
-    "maskedNote": "Kontakty są częściowo ukryte, żeby chronić ludzi przed spamem. Pełne dane będą dostępne na życzenie.",
-    "unlockSoon": "Pełne kontakty: wkrótce",
+    "maskedNote": "Kontakty są częściowo ukryte, żeby chronić ludzi przed spamem. Aby skontaktować się z autorem ogłoszenia, wyślij swoje dane poniżej.",
     "didYouFind": "Masz tę rzecz?",
-    "didYouFindText": "Dodaj ogłoszenie o znalezieniu, a właściciel zobaczy je na tablicy.",
+    "didYouFindText": "Wyślij swoje dane kontaktowe, a przekażemy je właścicielowi e-mailem i SMS-em. Nie pokazujemy ich publicznie.",
     "isItYours": "To Twoja rzecz?",
-    "isItYoursText": "Dodaj ogłoszenie o zgubieniu, żeby znalazca mógł Cię rozpoznać.",
+    "isItYoursText": "Wyślij swoje dane kontaktowe, a przekażemy je znalazcy e-mailem i SMS-em. Nie pokazujemy ich publicznie.",
     "photoOf": "Zdjęcie: {title}",
     "openPhoto": "Otwórz zdjęcie na pełnym ekranie",
     "closePhoto": "Zamknij",
     "noPhoto": "Bez zdjęcia",
     "metaTitle": "{kind}: {title} – {place}, {date}",
     "metaSummary": "{category} · {place} · {date}"
+  },
+  "claim": {
+    "sendMine": "To moje, wyślij moje dane",
+    "sendFound": "Mam tę rzecz, wyślij moje dane",
+    "submit": "Wyślij moje dane",
+    "submitting": "Wysyłanie…",
+    "cancel": "Anuluj",
+    "consent": "Wysyłając, akceptujesz <terms>warunki korzystania</terms> i <privacy>politykę prywatności</privacy> oraz potwierdzasz, że to Twoje własne dane kontaktowe.",
+    "doneTitle": "Dane wysłane",
+    "doneFinder": "Przekazaliśmy Twoje dane znalazcy. Ta osoba się z Tobą skontaktuje.",
+    "doneOwner": "Przekazaliśmy Twoje dane właścicielowi. Ta osoba się z Tobą skontaktuje.",
+    "repeated": "To ogłoszenie ma już Twoją odpowiedź: autor ma Twoje dane.",
+    "orPost": "Albo dodaj własne ogłoszenie:",
+    "confirm": {
+      "title": "Czy rzecz wróciła do właściciela?",
+      "text": "Potwierdzenie zamyka ogłoszenie dla wszystkich: zniknie z tablicy, a dane kontaktowe wysłane w odpowiedzi na nie zostaną usunięte.",
+      "button": "Tak, zamknij ogłoszenie",
+      "doneTitle": "Dziękujemy, ogłoszenie jest zamknięte",
+      "doneText": "Nie jest już widoczne na tablicy. Cieszymy się, że rzecz wróciła.",
+      "invalidTitle": "Ten link jest już nieważny",
+      "invalidText": "Ogłoszenie mogło już zostać zamknięte. Nic więcej nie trzeba robić.",
+      "home": "Wróć na stronę główną"
+    },
+    "error": {
+      "notFound": "To ogłoszenie jest już zamknięte.",
+      "failed": "Nie udało się. Spróbuj za chwilę.",
+      "captcha": "Weryfikacja antyspamowa nie powiodła się. Spróbuj ponownie.",
+      "validation": "Niektóre pola wymagają poprawy."
+    }
   },
   "category": {
     "DOCUMENTS": "Dokumenty",
@@ -333,7 +361,7 @@
       },
       "contacts": {
         "title": "Kto widzi Twoje kontakty",
-        "text": "Twoje kontakty pokazujemy tylko częściowo; o pełne będzie można wkrótce poprosić z ogłoszenia."
+        "text": "Twoje kontakty pokazujemy tylko częściowo. Kto rozpozna rzecz, wyśle Ci swoje przez ogłoszenie, a Ty dostaniesz je mailem i SMS-em."
       }
     }
   },

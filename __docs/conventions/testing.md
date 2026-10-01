@@ -7,8 +7,9 @@ Tests are JUnit 5 with AssertJ and Spring Boot's test starters. Database-backed 
 **Unit tests** (`*Test`): no Spring context, plain constructors, fast. For anything that is pure logic.
 
 - `Client-API`: `ContactMaskerTest`, `ItemSortTest`, `ItemMapperTest`, `ItemCreatedEventTest`, `EventTypeScannerTest`, `WithinDaysLocalDateValidatorTest`, `CountriesPropertiesTest`
-- `Admin-API`: `FormatsTest`, `NotifyChannelTest`, `ItemFilterTest`, `PermissionsTest`, `MessagesTest`, `CountriesPropertiesTest`, `MatchNotificationServiceTest`
+- `Admin-API`: `FormatsTest`, `NotifyChannelTest`, `ItemFilterTest`, `PermissionsTest`, `MessagesTest`, `CountriesPropertiesTest`, `MatchNotificationServiceTest`, `LostItemAdminServiceTest`
 - `Notification`: `NotificationSenderTest` (uses NotifyHub's `TestNotifyHub` to capture what would be sent)
+- `Automatic-Search`: `PhoneLocalesTest`, `ClaimNotifierTest`, `ClaimFollowUpJobTest`, `ClaimListenerTest`, `MessagesTest`
 
 **Slice tests** (`*Tests`): one layer with a Spring context.
 
@@ -16,7 +17,7 @@ Tests are JUnit 5 with AssertJ and Spring Boot's test starters. Database-backed 
 - `Client-API` repositories: `AbstractRepositoryTests` on top of a real database (`ThingRepositoryTests`, `PlaceRepositoryTests`, `ContactInfoRepositoryTests`).
 - `Client-API` GraphQL: `AbstractGraphQlTests` starts the full context with `@AutoConfigureGraphQlTester`, mocks `RabbitTemplate`, and seeds categories before each test (`LostItemControllerTests`, `FoundItemControllerTests`, `PlaceControllerTests`, `ReferenceControllerTests`; `ReferenceControllerSliceTests` runs the lighter GraphQL slice). `ItemEventAspectTest` and `ItemServiceTests` sit on the same base.
 
-**Context tests** (`*ApplicationTests`): every module has one that starts the context and nothing else. They catch broken wiring (a missing bean, a bad property) and are the only tests in `Discovery`, `Getaway`, `Automatic-Search` and `DB-Postgres`.
+**Context tests** (`*ApplicationTests`): every module has one that starts the context and nothing else. They catch broken wiring (a missing bean, a bad property) and are the only tests in `Discovery`, `Getaway` and `DB-Postgres`.
 
 **Infrastructure tests** (`*IT`): need something running outside the JVM that Testcontainers does not provide. `ImageStorageIT` talks to the MinIO from `docker compose` and is guarded by `@EnabledIf("minioIsUp")`, so it is skipped when the container is not there.
 

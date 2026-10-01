@@ -44,7 +44,7 @@
         "heading": "4. Kontaktdaten",
         "body": [
           "In der Anzeige sind Ihre Telefonnummer und E-Mail-Adresse nur teilweise sichtbar, um Sie vor Spam zu schützen.",
-          "Mehr sehen andere vorerst nicht. Eine Möglichkeit, die vollständigen Kontaktdaten des Verfassers über die Website anzufragen, ist geplant; sobald sie verfügbar ist, beschreibt dieser Abschnitt, wie sie funktioniert."
+          "Wer den Gegenstand wiedererkennt, kann dem Verfasser der Anzeige über die Website die eigenen Kontaktdaten senden. Wir leiten sie per E-Mail und SMS weiter und zeigen sie nie öffentlich. Mit dem Senden bestätigen Sie, dass es Ihre eigenen Kontaktdaten sind und dass Sie den Verfasser nur wegen dieses Gegenstands kontaktieren."
         ]
       },
       {
@@ -72,7 +72,7 @@
       {
         "heading": "8. Änderung und Löschung von Anzeigen",
         "body": [
-          "Anzeigen selbst zu ändern oder zu entfernen ist derzeit nicht möglich. Wenn der Gegenstand zurückgegeben wurde oder Angaben in der Anzeige korrigiert werden müssen, schreiben Sie an {email}.",
+          "Anzeigen selbst zu ändern ist derzeit nicht möglich. Ist der Gegenstand zurück, schließen Sie die Anzeige über den Link in der Nachricht, die wir nach einer Antwort darauf senden, oder schreiben Sie an {email}. Wenn Angaben in der Anzeige korrigiert werden müssen, schreiben Sie ebenfalls an {email}.",
           "Wir können eine Anzeige, die gegen diese Bedingungen oder gegen das Gesetz verstößt, ohne Vorankündigung entfernen oder persönliche Daten daraus löschen. Verstöße in fremden Anzeigen melden Sie ebenfalls an {email}."
         ]
       },
@@ -115,6 +115,10 @@
             "Ort: Name und Koordinaten des Punktes, den Sie ausgewählt oder per Geolokalisierung bestimmt haben;",
             "Kontaktdaten: Telefonnummer, E-Mail-Adresse und die Messenger, die Sie markiert haben."
           ],
+          "Wenn Sie auf eine fremde Anzeige antworten:",
+          [
+            "Kontaktdaten: Telefonnummer, E-Mail-Adresse und Messenger, die Sie dem Verfasser der Anzeige senden."
+          ],
           "Wir haben keine Konten und Passwörter, daher speichern wir keine weiteren Daten über Sie.",
           "Fügen Sie Ihrer Anzeige keine Angaben zu Gesundheit, Religion, biometrischen Merkmalen oder andere sensible Daten hinzu – weder über sich selbst noch über andere.",
           "Beim Besuch der Website kann der Server – wie jeder Webserver – technische Daten der Anfrage erfassen, nämlich IP-Adresse, Browsertyp und Zeitpunkt des Zugriffs, um Missbrauch abzuwehren."
@@ -123,7 +127,8 @@
       {
         "heading": "3. Was andere sehen",
         "body": [
-          "Die Beschreibung des Gegenstands, der Ort mit Koordinaten und das Foto werden öffentlich angezeigt. Telefonnummer und E-Mail-Adresse werden in der Anzeige nur teilweise dargestellt (zum Beispiel +38067*****67), Messenger werden überhaupt nicht angezeigt."
+          "Die Beschreibung des Gegenstands, der Ort mit Koordinaten und das Foto werden öffentlich angezeigt. Telefonnummer und E-Mail-Adresse werden in der Anzeige nur teilweise dargestellt (zum Beispiel +38067*****67), Messenger werden überhaupt nicht angezeigt.",
+          "Kontaktdaten, die Sie als Antwort auf eine Anzeige senden, sieht nur der Verfasser dieser Anzeige, und zwar in der Nachricht, die wir ihm schicken; veröffentlicht werden sie nirgends."
         ]
       },
       {
@@ -131,9 +136,11 @@
         "body": [
           [
             "um die Anzeige anderen Menschen zu zeigen und sie über die Suche auffindbar zu machen;",
+            "um Ihre Kontaktdaten an den Verfasser der Anzeige weiterzugeben, auf die Sie geantwortet haben;",
+            "um beide Seiten daran zu erinnern, die Anzeige zu schließen, sobald der Gegenstand zurück ist;",
             "um die Website vor Spam und Missbrauch zu schützen."
           ],
-          "Rechtsgrundlage der Verarbeitung ist Ihre Einwilligung, die Sie mit der Veröffentlichung einer Anzeige erteilen."
+          "Rechtsgrundlage der Verarbeitung ist Ihre Einwilligung, die Sie mit der Veröffentlichung einer Anzeige oder mit einer Antwort darauf erteilen."
         ]
       },
       {
@@ -157,14 +164,19 @@
         "heading": "7. Cookies und Browserspeicher",
         "body": [
           "Wir verwenden nur, was unbedingt erforderlich ist:",
-          ["das Cookie DERECHI_LOCALE – speichert die gewählte Sprache für ein Jahr;"],
+          [
+            "das Cookie DERECHI_LOCALE – speichert die gewählte Sprache für ein Jahr;",
+            "das Cookie DERECHI_COUNTRY – speichert Ihr Land für ein Jahr, damit Währung und Rechtstexte passen;",
+            "die Cookies DERECHI_CLAIM_* – speichern für eine Stunde, dass Sie auf eine Anzeige geantwortet haben."
+          ],
           "Analyse- oder Werbe-Cookies gibt es auf der Website nicht."
         ]
       },
       {
         "heading": "8. Wie lange Daten gespeichert werden",
         "body": [
-          "Eine Anzeige wird gespeichert, bis sie von der Veröffentlichung genommen wird. Danach wird sie ins Archiv verschoben und auf der Website nicht mehr angezeigt."
+          "Eine Anzeige wird gespeichert, bis sie von der Veröffentlichung genommen wird. Danach wird sie ins Archiv verschoben und auf der Website nicht mehr angezeigt.",
+          "Kontaktdaten, die als Antwort auf eine Anzeige gesendet wurden, werden gespeichert, bis diese Anzeige geschlossen wird, höchstens jedoch ein Jahr. Eine Anzeige mit Antworten wird geschlossen, sobald eine Seite die Rückgabe bestätigt, oder etwa eine Woche nach der letzten Antwort."
         ]
       },
       {

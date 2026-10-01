@@ -67,7 +67,7 @@
     "benefit6Text": "Aucune bannière, seulement des annonces écrites par des gens.",
     "faqTitle": "Questions fréquentes",
     "faqQ1": "Comment contacter la personne qui l'a trouvé ?",
-    "faqA1": "Les coordonnées d'une annonce sont en partie masquées pour vous protéger du spam. Demander les coordonnées complètes directement depuis une annonce arrive bientôt. En attendant, publiez une annonce de l'autre type : la personne qui a votre objet consulte peut-être aussi la liste.",
+    "faqA1": "Les coordonnées d'une annonce sont en partie masquées pour vous protéger du spam. Appuyez sur « C'est à moi, envoyer mes coordonnées » dans l'annonce : nous transmettons votre téléphone et votre e-mail à la personne qui l'a trouvé, par e-mail et SMS, et elle vous recontacte. Sur une annonce de perte, cela fonctionne de la même façon dans l'autre sens.",
     "faqQ2": "Comment être sûr de rendre l'objet à son vrai propriétaire ?",
     "faqA2": "Ne montrez pas tous les signes distinctifs dans l'annonce. Demandez au propriétaire de décrire ce que la photo ne montre pas : ce qu'il y a dans le portefeuille, quel porte-clés est accroché aux clés, ce qu'affiche l'écran de verrouillage du téléphone. Donnez-vous rendez-vous dans un lieu fréquenté.",
     "faqQ3": "J'ai trouvé des papiers d'identité. Que faire ?",
@@ -164,18 +164,46 @@
     "contactFinderTitle": "Contacter la personne qui a trouvé",
     "phone": "Téléphone",
     "email": "E-mail",
-    "maskedNote": "Les contacts sont partiellement masqués pour éviter le spam. Les coordonnées complètes seront disponibles sur demande.",
-    "unlockSoon": "Coordonnées complètes : bientôt",
+    "maskedNote": "Les contacts sont partiellement masqués pour éviter le spam. Pour joindre la personne qui a publié l'annonce, envoyez-lui vos coordonnées ci-dessous.",
     "didYouFind": "Vous avez trouvé cet objet ?",
-    "didYouFindText": "Publiez une annonce d'objet trouvé : le propriétaire la verra sur le tableau.",
+    "didYouFindText": "Envoyez vos coordonnées : nous les transmettons à la personne qui l'a perdu, par e-mail et SMS. Elles ne sont jamais affichées publiquement.",
     "isItYours": "C'est le vôtre ?",
-    "isItYoursText": "Publiez une annonce de perte pour que la personne qui l'a trouvé vous reconnaisse.",
+    "isItYoursText": "Envoyez vos coordonnées : nous les transmettons à la personne qui l'a trouvé, par e-mail et SMS. Elles ne sont jamais affichées publiquement.",
     "photoOf": "Photo : {title}",
     "openPhoto": "Ouvrir la photo en plein écran",
     "closePhoto": "Fermer",
     "noPhoto": "Sans photo",
     "metaTitle": "{kind} : {title} – {place}, {date}",
     "metaSummary": "{category} · {place} · {date}"
+  },
+  "claim": {
+    "sendMine": "C'est à moi, envoyer mes coordonnées",
+    "sendFound": "Je l'ai trouvé, envoyer mes coordonnées",
+    "submit": "Envoyer mes coordonnées",
+    "submitting": "Envoi…",
+    "cancel": "Annuler",
+    "consent": "En envoyant, vous acceptez les <terms>conditions d’utilisation</terms> et la <privacy>politique de confidentialité</privacy>, et confirmez que ces coordonnées sont bien les vôtres.",
+    "doneTitle": "Coordonnées envoyées",
+    "doneFinder": "Nous avons transmis vos coordonnées à la personne qui l'a trouvé. Elle vous contactera.",
+    "doneOwner": "Nous avons transmis vos coordonnées à la personne qui l'a perdu. Elle vous contactera.",
+    "repeated": "Vous avez déjà répondu à cette annonce : son auteur a vos coordonnées.",
+    "orPost": "Ou publiez votre propre annonce :",
+    "confirm": {
+      "title": "L'objet est-il revenu à son propriétaire ?",
+      "text": "Confirmer ferme l'annonce pour tout le monde : elle disparaît du tableau et les coordonnées envoyées en réponse sont supprimées.",
+      "button": "Oui, fermer l'annonce",
+      "doneTitle": "Merci, l'annonce est fermée",
+      "doneText": "Elle n'apparaît plus sur le tableau. Nous sommes ravis que l'objet ait retrouvé son chemin.",
+      "invalidTitle": "Ce lien n'est plus valide",
+      "invalidText": "L'annonce est peut-être déjà fermée. Vous n'avez rien d'autre à faire.",
+      "home": "Aller à l'accueil"
+    },
+    "error": {
+      "notFound": "Cette annonce est déjà fermée.",
+      "failed": "Ça n'a pas fonctionné. Réessayez dans un instant.",
+      "captcha": "La vérification anti-spam n'est pas passée. Réessayez.",
+      "validation": "Certains champs sont encore à corriger."
+    }
   },
   "category": {
     "DOCUMENTS": "Documents",
@@ -333,7 +361,7 @@
       },
       "contacts": {
         "title": "Qui voit vos coordonnées",
-        "text": "Vos coordonnées ne s'affichent qu'en partie ; les coordonnées complètes pourront bientôt être demandées depuis l'annonce."
+        "text": "Vos coordonnées ne s'affichent qu'en partie. La personne qui reconnaît l'objet vous envoie les siennes depuis l'annonce, et vous les recevez par e-mail et SMS."
       }
     }
   },

@@ -6,6 +6,7 @@ What the system does today, feature by feature. Each page covers the user-facing
 - [Search and filtering](search-and-filtering.md): text search, category and date filters, geo radius, sorting, place lookup.
 - [Automatic matching](automatic-matching.md): how a new notice is matched against the opposite kind in the background.
 - [Match notifications](match-notifications.md): the admin "Matches" page and the path from the Notify button to an email.
+- [Claims](claims.md): "it's mine" / "I found it" on a notice, contacts passed to the author, reminders and automatic archiving.
 - [Admin panel](admin-panel.md): pages, forms, archive versus delete, caching and error pages.
 - [Permissions](permissions.md): the Scope × Action model, Keycloak roles and how a request is checked.
 - [Localization](localization.md): five UI languages, the locale cookie, plurals and formats.

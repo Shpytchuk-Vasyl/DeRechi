@@ -44,7 +44,7 @@
         "heading": "4. Coordonnées",
         "body": [
           "Sur l’annonce, votre téléphone et votre adresse e-mail ne sont visibles que partiellement, afin de vous protéger du spam.",
-          "C’est tout ce que les autres voient pour l’instant. Une fonction permettant de demander les coordonnées complètes de l’auteur d’une annonce via le site est prévue ; lorsqu’elle sera disponible, cette section décrira son fonctionnement."
+          "Toute personne qui reconnaît l’objet peut envoyer ses propres coordonnées à l’auteur de l’annonce via le site. Nous les transmettons par e-mail et SMS et ne les affichons jamais publiquement. En envoyant vos coordonnées, vous confirmez qu’elles sont les vôtres et que vous ne contactez l’auteur qu’au sujet de cet objet."
         ]
       },
       {
@@ -72,7 +72,7 @@
       {
         "heading": "8. Modification et suppression des annonces",
         "body": [
-          "Il n’est pas encore possible de modifier ou de retirer une annonce soi-même. Si l’objet a été restitué ou si les informations de l’annonce doivent être corrigées, écrivez à {email}.",
+          "Il n’est pas encore possible de modifier une annonce soi-même. Une fois l’objet restitué, fermez l’annonce avec le lien du message que nous envoyons après une réponse, ou écrivez à {email}. Si les informations de l’annonce doivent être corrigées, écrivez également à {email}.",
           "Nous pouvons, sans préavis, retirer une annonce qui enfreint ces conditions ou la loi, ou en supprimer les données personnelles. Pour signaler une infraction dans l’annonce de quelqu’un d’autre, écrivez également à {email}."
         ]
       },
@@ -115,6 +115,10 @@
             "le lieu : le nom et les coordonnées du point que vous avez choisi ou déterminé par géolocalisation ;",
             "les coordonnées : le numéro de téléphone, l’adresse e-mail et les messageries que vous avez cochées."
           ],
+          "Lorsque vous répondez à l’annonce de quelqu’un d’autre :",
+          [
+            "vos coordonnées : le numéro de téléphone, l’adresse e-mail et les messageries que vous envoyez à l’auteur de l’annonce."
+          ],
           "Nous n’avons ni comptes ni mots de passe, nous ne conservons donc aucune autre donnée vous concernant.",
           "N’ajoutez pas à l’annonce d’informations sur la santé, la religion, des données biométriques ou d’autres données sensibles, ni sur vous-même ni sur d’autres personnes.",
           "Lors de la visite du site, le serveur, comme tout serveur web, peut enregistrer des données techniques de la requête (adresse IP, type de navigateur et heure de la requête) afin de se protéger contre les abus."
@@ -123,7 +127,8 @@
       {
         "heading": "3. Ce que les autres peuvent voir",
         "body": [
-          "La description de l’objet, le lieu avec ses coordonnées et la photo sont publiés ouvertement. Le téléphone et l’adresse e-mail figurant sur l’annonce ne sont affichés que partiellement (par exemple, +38067*****67), et les messageries ne sont pas affichées du tout."
+          "La description de l’objet, le lieu avec ses coordonnées et la photo sont publiés ouvertement. Le téléphone et l’adresse e-mail figurant sur l’annonce ne sont affichés que partiellement (par exemple, +38067*****67), et les messageries ne sont pas affichées du tout.",
+          "Les coordonnées envoyées en réponse à une annonce ne sont montrées qu’à l’auteur de cette annonce, dans le message que nous lui envoyons ; elles ne sont jamais publiées."
         ]
       },
       {
@@ -131,9 +136,11 @@
         "body": [
           [
             "pour montrer l’annonce à d’autres personnes et permettre de la trouver par la recherche ;",
+            "pour transmettre vos coordonnées à l’auteur de l’annonce à laquelle vous avez répondu ;",
+            "pour rappeler aux deux parties de fermer l’annonce une fois l’objet restitué ;",
             "pour protéger le site contre le spam et les abus."
           ],
-          "La base du traitement est votre consentement, que vous donnez en publiant une annonce."
+          "La base du traitement est votre consentement, que vous donnez en publiant une annonce ou en y répondant."
         ]
       },
       {
@@ -157,14 +164,19 @@
         "heading": "7. Cookies et stockage du navigateur",
         "body": [
           "Nous n’utilisons que le strict nécessaire :",
-          ["le cookie DERECHI_LOCALE : il mémorise la langue choisie pendant un an ;"],
+          [
+            "le cookie DERECHI_LOCALE : il mémorise la langue choisie pendant un an ;",
+            "le cookie DERECHI_COUNTRY : il mémorise votre pays pendant un an, pour afficher la bonne devise et les bons textes juridiques ;",
+            "les cookies DERECHI_CLAIM_* : ils mémorisent pendant une heure que vous avez répondu à une annonce."
+          ],
           "Il n’y a sur le site aucun cookie d’analyse ni de publicité."
         ]
       },
       {
         "heading": "8. Durée de conservation des données",
         "body": [
-          "Une annonce est conservée jusqu’à ce qu’elle soit retirée de la publication. Elle est ensuite déplacée dans les archives et n’est plus affichée sur le site."
+          "Une annonce est conservée jusqu’à ce qu’elle soit retirée de la publication. Elle est ensuite déplacée dans les archives et n’est plus affichée sur le site.",
+          "Les coordonnées envoyées en réponse à une annonce sont conservées jusqu’à la fermeture de cette annonce, et un an au maximum. Une annonce ayant reçu des réponses est fermée lorsque l’une des parties confirme la restitution de l’objet, ou environ une semaine après la dernière réponse."
         ]
       },
       {

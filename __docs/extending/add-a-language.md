@@ -52,7 +52,7 @@ The web team adds `cs` to `locales` in `Web-Client/src/i18n/routing.ts`, creates
 ## Checklist
 
 - [ ] `LocaleConfig.SUPPORTED` has the new `Locale`
-- [ ] `messages_<xx>.properties` exists with every key and placeholder
+- [ ] `messages_<xx>.properties` exists with every key and placeholder, in `Admin-API` **and** in `Automatic-Search` (claim messages, see [claims](../features/claims.md); its `MessagesTest` checks parity too)
 - [ ] `Plurals.THREE_FORM_LANGUAGES` or `Plurals.category` updated if the language needs it
 - [ ] `MessagesTest` green
 - [ ] Manual pass through list, form, error page, notification text

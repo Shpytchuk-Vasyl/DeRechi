@@ -65,7 +65,7 @@ docker compose -f docker-compose.yml -f docker-compose.services.yml up -d
 |---|---|---|---|
 | `SPRING_DATASOURCE_*`, `SPRING_RABBITMQ_*` | as for Client-API | as for Client-API | |
 
-The queue name `automatic-search.items` is `derechi.items.queue` in the YAML, not an environment variable.
+The queue names `automatic-search.items` and `automatic-search.claims` are `derechi.items.queue` and `derechi.claims.queue` in the YAML, not environment variables. `DERECHI_SITE_URL` (default `http://localhost:3000`) is the public address of the web client, used for the links in claim messages.
 
 ## Notification
 

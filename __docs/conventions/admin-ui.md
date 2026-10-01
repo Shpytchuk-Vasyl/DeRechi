@@ -20,6 +20,7 @@ Rules:
 
 - Every page starts with `~{fragments/layout :: head(...)}` and `~{fragments/layout :: navbar}`. Bulma, Font Awesome, flag-icons, FilePond and htmx are loaded from CDNs in `head`; do not add a second copy of any of them to a page.
 - Repeated markup is a fragment with explicit parameters, not a copy. A `<dialog>` for an item is rendered through `dialogs :: dialogs(prefix, item, editBase, scope)` and its `id` is `prefix-id`, so the same item can be shown in different contexts without duplicate ids.
+- `dialogs :: dialogs(...)` renders the "Responses" block only when the model carries a `claims` map that has the item's id; the live item lists put every id of the page in it, the archives and the matches page pass nothing and get no block.
 - A fragment that htmx swaps in must be **self-contained**: anything that belongs to the swapped markup (dialogs, hidden forms) lives inside the fragment. That is why the found-item dialogs for match candidates sit in `candidates :: cell` and not at the bottom of `matches.html`; after a swap the document would otherwise contain two dialogs with the same id.
 - Visible text is always `#{key}`; see [i18n](i18n.md).
 

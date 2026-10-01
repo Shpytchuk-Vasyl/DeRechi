@@ -51,6 +51,7 @@ Column types below are what the migrations create. Hibernate validates against t
 | `lost_item` | a lost notice | `title VARCHAR(100)`, `description VARCHAR(250)`, `image VARCHAR(200)` (object key in MinIO), `date`, `compensation INTEGER` (whole units, nullable), `currency VARCHAR(3) NOT NULL` (ISO 4217), FKs to category, contact info and place |
 | `found_item` | a found notice | same shape as `lost_item`; the application requires `image` for found items, the schema does not |
 | `lost_item_history`, `found_item_history` | archived notices | same columns plus `archived_at TIMESTAMPTZ NOT NULL`; rows are copied here by `Admin-API` when an administrator archives a notice, and the original row is deleted |
+| `lost_item_claim`, `found_item_claim` | responses to a notice ("it's mine" / "I found it") | `lost_item_id` / `found_item_id`, `contact_info_id` (the claimant's contacts), `token VARCHAR(36)` unique (reminder links), `created_at`, `author_reminded_at`, `claimant_reminded_at`, `confirmed_at`. Deleted with the notice, together with their contact infos; see [../features/claims.md](../features/claims.md) |
 | `similar_item` | candidate matches produced by `Automatic-Search` | PK `(found_item_id, lost_item_id)`, `match_order DOUBLE PRECISION` (full-text rank, higher is better), `notified_at TIMESTAMPTZ`, `notified_by VARCHAR(100)` (admin username) |
 
 Two type choices are deliberate:

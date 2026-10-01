@@ -54,3 +54,5 @@ derechi:
     # ISO 3166-1 alpha-2;
     supported: [UA, PL, DE, FR]
     fallback: UA
+  claims:
+    exchange: derechi.items

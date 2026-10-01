@@ -4,6 +4,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.i18n.LocaleContextHolder;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,6 +58,21 @@ class FormatsTest {
 
         assertThat(digits(formats.money(1500, "EUR"))).isEqualTo("1500");
         assertThat(formats.money(null, "EUR")).isEmpty();
+    }
+
+    @Test
+    void formatsAnInstantAsDateAndTimeInTheServerZone() {
+        LocaleContextHolder.setLocale(Locale.of("uk", "UA"));
+        Instant instant = Instant.parse("2026-03-15T09:05:00Z");
+        ZonedDateTime local = instant.atZone(ZoneId.systemDefault());
+
+        String text = formats.dateTime(instant);
+
+        assertThat(text)
+                .contains(String.valueOf(local.getYear()))
+                .contains("%02d:%02d".formatted(local.getHour(), local.getMinute()))
+                .doesNotContain("T", "Z", "2026-03-15");
+        assertThat(formats.dateTime(null)).isEmpty();
     }
 
     private static String digits(String text) {

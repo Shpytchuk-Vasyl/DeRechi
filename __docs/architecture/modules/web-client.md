@@ -36,6 +36,9 @@ in `Web-Client/README.md`; the gateway side is in [../file-storage.md](../file-s
   in every URL (`/uk/lost`). Copy lives in `Web-Client/messages/*.json`, and `pnpm test`
   fails on a key or argument present in one bundle and not the others, like `MessagesTest`
   does for the admin panel.
+- **Claims**: the notice page posts `claimLostItem` / `claimFoundItem` from a server action and
+  `/{locale}/claims/{token}` is the page behind the reminder links (`confirmReturn`); the
+  backend's `DERECHI_SITE_URL` must point at this client for those links to work.
 - **New country or currency**: the client reads `countries { code currency }` from the
   API; nothing is hard-coded on its side.
 - **Gateway CORS or routes**: `WEB_ORIGIN_PATTERNS` must include the origin the browser

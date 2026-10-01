@@ -6,6 +6,12 @@ spring:
     virtual:
       enabled: true
 
+  messages:
+    basename: messages
+    encoding: UTF-8
+    fallback-to-system-locale: false
+    always-use-message-format: true
+
   datasource:
     url: jdbc:postgresql://localhost:5432/derechi
     username: derechi
@@ -31,6 +37,15 @@ spring:
 derechi:
   items:
     queue: automatic-search.items
+  claims:
+    queue: automatic-search.claims
+    exchange: derechi.notifications
+    site-url: ${DERECHI_SITE_URL:http://localhost:3000}
+    check-every: PT10M
+    author-reminder-after: P1D
+    claimant-reminder-after: P1D
+    archive-after: P7D
+    retention: P365D
 
 server:
   port: 8085

@@ -13,10 +13,11 @@ its connection. Changing the topology means editing that file and recreating the
 
 | Exchange (topic) | Queue | Binding key | Dead-letter exchange | DLQ |
 |---|---|---|---|---|
-| `derechi.items` | `automatic-search.items` | `item.*.created` | `derechi.items.dlx` | `automatic-search.items.dlq` (bound with `#`) |
+| `derechi.items` | `automatic-search.items` | `item.*.created` | `derechi.items.dlx` | `automatic-search.items.dlq` (bound with `item.*.created`) |
+| `derechi.items` | `automatic-search.claims` | `item.*.claimed`, `item.*.returned` | `derechi.items.dlx` | `automatic-search.claims.dlq` (bound with the same two patterns) |
 | `derechi.notifications` | `notification.events` | `notification.#` | `derechi.notifications.dlx` | `notification.events.dlq` (bound with `#`) |
 
-All four queues are quorum queues (`x-queue-type: quorum`), durable, on the default vhost.
+All six queues are quorum queues (`x-queue-type: quorum`), durable, on the default vhost.
 The user is `derechi` / `derechi` with full permissions; the management UI is on 15672 and
 Prometheus metrics on 15692.
 
@@ -26,15 +27,22 @@ Prometheus metrics on 15692.
 |---|---|---|---|---|
 | `ItemCreatedEvent` | `ITEM_CREATED` | `Client-API`, `ItemEventAspect` after `ItemService.create(...)` returns | `derechi.items`, `item.lost.created` or `item.found.created` | `Automatic-Search`, `ItemCreatedListener` |
 | `NotificationRequestedEvent` | `NOTIFICATION` | `Admin-API`, `MatchNotificationService.notifyOwner(...)` | `derechi.notifications`, `notification.match.found` (from `derechi.notifications.routing-key`) | `Notification`, `NotificationRequestedListener` |
+| `ClaimEvent` | `CLAIM` | `Client-API`, `ClaimEventPublisher` after the claim transaction commits | `derechi.items`, `item.lost.claimed`, `item.found.claimed`, `item.lost.returned`, `item.found.returned` | `Automatic-Search`, `ClaimListener` |
+| `NotificationRequestedEvent` | `NOTIFICATION` | `Automatic-Search`, `ClaimNotifier` | `derechi.notifications`, `notification.claim.created`, `notification.claim.reminder` | `Notification`, `NotificationRequestedListener` |
 
 `ItemCreatedEvent` carries only what matching needs: `id`, `date`, `category` (id), `lat`,
 `lon`, `title`. The routing key says whether it was a lost or a found notice; the payload
 does not.
 
-`NotificationRequestedEvent` carries `subject`, `message` (already localized by
-`Admin-API`), `phone`, `email`, `socialMedias` and a `deduplicationKey`. Contacts the chosen
+`NotificationRequestedEvent` carries `subject`, `message` (already localized by the
+producer), `phone`, `email`, `socialMedias` and a `deduplicationKey`. Contacts the chosen
 channel does not need are sent as `null`; see
 [../features/match-notifications.md](../features/match-notifications.md).
+
+`ClaimEvent` carries only the claim `id`; the routing key says the kind and the verb, and
+`Automatic-Search` reads the rest from the shared database. That is why it is published after
+the commit, from a `@TransactionalEventListener(AFTER_COMMIT)`, not from an aspect: see
+[../features/claims.md](../features/claims.md).
 
 The producer side of `Admin-API` is a plain `RabbitTemplate.convertAndSend(exchange, key,
 event)`. In `Client-API` the publish is an AspectJ `@AfterReturning` advice on every
@@ -83,15 +91,15 @@ A failing message is retried in-process three times, then rejected without reque
 queue's dead-letter exchange moves it to the matching `.dlq`. Nothing consumes the DLQs; they
 are there to be inspected in the management UI.
 
-Two things skip the retry on purpose by throwing `AmqpRejectAndDontRequeueException`:
+Three things skip the retry on purpose by throwing `AmqpRejectAndDontRequeueException`:
 
-- `ItemCreatedListener` when no handler is registered for the received routing key;
+- `ItemCreatedListener` and `ClaimListener` when no handler is registered for the received routing key;
 - `NotificationRequestedListener` when the sender throws, since a retry at the NotifyHub
   level has already happened (`notify.retry.max-attempts: 3`).
 
-Idempotency on the notification side comes from `deduplicationKey`: NotifyHub keeps a
-one-hour window (`notify.deduplication.ttl`) and drops a repeat, which `NotificationSender`
-treats as success. On the search side the insert into `similar_item` is keyed by
+Idempotency on the notification side comes from `deduplicationKey`: `NotificationSender`
+hands NotifyHub `<event key>:<CHANNEL>`, NotifyHub keeps a one-hour window
+(`notify.deduplication.ttl`) and drops a repeat, which the sender treats as success. On the search side the insert into `similar_item` is keyed by
 `(found_item_id, lost_item_id)`, so reprocessing the same event does not create duplicates.
 
 ## Local development

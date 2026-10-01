@@ -135,6 +135,29 @@ export type CreateFoundItemMutationVariables = Exact<{
 
 export type CreateFoundItemMutation = { createFoundItem: { id: string } };
 
+export type ClaimLostItemMutationVariables = Exact<{
+  id: string | number;
+  contact: ContactInfoInput;
+}>;
+
+
+export type ClaimLostItemMutation = { claimLostItem: { id: string, repeated: boolean } };
+
+export type ClaimFoundItemMutationVariables = Exact<{
+  id: string | number;
+  contact: ContactInfoInput;
+}>;
+
+
+export type ClaimFoundItemMutation = { claimFoundItem: { id: string, repeated: boolean } };
+
+export type ConfirmReturnMutationVariables = Exact<{
+  token: string;
+}>;
+
+
+export type ConfirmReturnMutation = { confirmReturn: boolean };
+
 export type PlacesQueryVariables = Exact<{
   name?: string | null | undefined;
   first?: number | null | undefined;
@@ -332,6 +355,27 @@ export const CreateFoundItemDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<CreateFoundItemMutation, CreateFoundItemMutationVariables>;
+export const ClaimLostItemDocument = new TypedDocumentString(`
+    mutation ClaimLostItem($id: ID!, $contact: ContactInfoInput!) {
+  claimLostItem(id: $id, contact: $contact) {
+    id
+    repeated
+  }
+}
+    `) as unknown as TypedDocumentString<ClaimLostItemMutation, ClaimLostItemMutationVariables>;
+export const ClaimFoundItemDocument = new TypedDocumentString(`
+    mutation ClaimFoundItem($id: ID!, $contact: ContactInfoInput!) {
+  claimFoundItem(id: $id, contact: $contact) {
+    id
+    repeated
+  }
+}
+    `) as unknown as TypedDocumentString<ClaimFoundItemMutation, ClaimFoundItemMutationVariables>;
+export const ConfirmReturnDocument = new TypedDocumentString(`
+    mutation ConfirmReturn($token: String!) {
+  confirmReturn(token: $token)
+}
+    `) as unknown as TypedDocumentString<ConfirmReturnMutation, ConfirmReturnMutationVariables>;
 export const PlacesDocument = new TypedDocumentString(`
     query Places($name: String, $first: Int) {
   places(name: $name, first: $first) {

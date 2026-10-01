@@ -150,6 +150,7 @@ services:
     environment:
       <<: [*jvm, *eureka, *postgres, *rabbitmq]
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/derechi
+      DERECHI_SITE_URL: http://localhost:3000
     depends_on:
       discovery:
         condition: service_started

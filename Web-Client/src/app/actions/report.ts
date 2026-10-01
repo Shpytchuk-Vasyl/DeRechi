@@ -1,10 +1,10 @@
 "use server"
 
-import { checkBotId } from "botid/server"
 import { revalidateTag } from "next/cache"
 import type { ItemKind } from "@/api/items"
 import { graphqlRequest } from "@/graphql/client"
 import { CreateFoundItemMutation, CreateLostItemMutation } from "@/graphql/documents"
+import { passesBotCheck } from "@/lib/bot-check"
 import { reportSchema, toItemInput } from "@/schema/report-schema"
 
 export type ReportResult =
@@ -37,19 +37,5 @@ export async function createNotice(kind: ItemKind, values: unknown): Promise<Rep
   } catch (e) {
     console.log(e)
     return { ok: false, reason: "failed" }
-  }
-}
-
-async function passesBotCheck(): Promise<boolean> {
-  try {
-    const verification = await checkBotId(
-      process.env.VERCEL
-        ? undefined
-        : { developmentOptions: { isDevelopment: true, bypass: "HUMAN" } },
-    )
-    return !verification.isBot
-  } catch (error) {
-    console.error("BotID check failed", error)
-    return false
   }
 }

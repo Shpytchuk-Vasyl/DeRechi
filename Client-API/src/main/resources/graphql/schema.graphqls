@@ -51,6 +51,13 @@ type ContactInfo {
     email: String!
 }
 
+"Receipt for contacts handed to the author of a notice"
+type Claim {
+    id: ID!
+    "true when this phone or email had already responded to the notice; nothing was sent again"
+    repeated: Boolean!
+}
+
 "Lost Item Notice."
 type LostItem {
     id: ID!
@@ -156,4 +163,11 @@ type Mutation {
     createFoundItem(input: ItemInput!): FoundItem!
 #    updateFoundItem(id: ID!, input: ItemInput!): FoundItem!
 #    deleteFoundItem(id: ID!): Boolean!
+
+    "I found this item: hand my contacts to the owner. They get them by email and SMS; nothing is shown publicly."
+    claimLostItem(id: ID!, contact: ContactInfoInput!): Claim!
+    "This item is mine: hand my contacts to the finder. They get them by email and SMS; nothing is shown publicly."
+    claimFoundItem(id: ID!, contact: ContactInfoInput!): Claim!
+    "From the link in a reminder: the item is back with its owner, so the notice can be closed. Unknown token: NOT_FOUND."
+    confirmReturn(token: String!): Boolean!
 }

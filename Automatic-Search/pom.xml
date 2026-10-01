@@ -55,6 +55,10 @@
             <groupId>com.optimaize.languagedetector</groupId>
             <artifactId>language-detector</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.googlecode.libphonenumber</groupId>
+            <artifactId>libphonenumber</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>

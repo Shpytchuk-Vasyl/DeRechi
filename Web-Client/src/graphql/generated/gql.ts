@@ -24,6 +24,9 @@ type Documents = {
     "\n  query Stats {\n    stats {\n      returnedThisWeek\n      foundToday\n    }\n  }\n": typeof types.StatsDocument,
     "\n  mutation CreateLostItem($input: ItemInput!) {\n    createLostItem(input: $input) {\n      id\n    }\n  }\n": typeof types.CreateLostItemDocument,
     "\n  mutation CreateFoundItem($input: ItemInput!) {\n    createFoundItem(input: $input) {\n      id\n    }\n  }\n": typeof types.CreateFoundItemDocument,
+    "\n  mutation ClaimLostItem($id: ID!, $contact: ContactInfoInput!) {\n    claimLostItem(id: $id, contact: $contact) {\n      id\n      repeated\n    }\n  }\n": typeof types.ClaimLostItemDocument,
+    "\n  mutation ClaimFoundItem($id: ID!, $contact: ContactInfoInput!) {\n    claimFoundItem(id: $id, contact: $contact) {\n      id\n      repeated\n    }\n  }\n": typeof types.ClaimFoundItemDocument,
+    "\n  mutation ConfirmReturn($token: String!) {\n    confirmReturn(token: $token)\n  }\n": typeof types.ConfirmReturnDocument,
     "\n  query Places($name: String, $first: Int) {\n    places(name: $name, first: $first) {\n      edges {\n        node {\n          id\n          name\n          lat\n          lon\n          countryCode\n        }\n      }\n    }\n  }\n": typeof types.PlacesDocument,
 };
 const documents: Documents = {
@@ -36,6 +39,9 @@ const documents: Documents = {
     "\n  query Stats {\n    stats {\n      returnedThisWeek\n      foundToday\n    }\n  }\n": types.StatsDocument,
     "\n  mutation CreateLostItem($input: ItemInput!) {\n    createLostItem(input: $input) {\n      id\n    }\n  }\n": types.CreateLostItemDocument,
     "\n  mutation CreateFoundItem($input: ItemInput!) {\n    createFoundItem(input: $input) {\n      id\n    }\n  }\n": types.CreateFoundItemDocument,
+    "\n  mutation ClaimLostItem($id: ID!, $contact: ContactInfoInput!) {\n    claimLostItem(id: $id, contact: $contact) {\n      id\n      repeated\n    }\n  }\n": types.ClaimLostItemDocument,
+    "\n  mutation ClaimFoundItem($id: ID!, $contact: ContactInfoInput!) {\n    claimFoundItem(id: $id, contact: $contact) {\n      id\n      repeated\n    }\n  }\n": types.ClaimFoundItemDocument,
+    "\n  mutation ConfirmReturn($token: String!) {\n    confirmReturn(token: $token)\n  }\n": types.ConfirmReturnDocument,
     "\n  query Places($name: String, $first: Int) {\n    places(name: $name, first: $first) {\n      edges {\n        node {\n          id\n          name\n          lat\n          lon\n          countryCode\n        }\n      }\n    }\n  }\n": types.PlacesDocument,
 };
 
@@ -75,6 +81,18 @@ export function graphql(source: "\n  mutation CreateLostItem($input: ItemInput!)
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation CreateFoundItem($input: ItemInput!) {\n    createFoundItem(input: $input) {\n      id\n    }\n  }\n"): typeof import('./graphql').CreateFoundItemDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation ClaimLostItem($id: ID!, $contact: ContactInfoInput!) {\n    claimLostItem(id: $id, contact: $contact) {\n      id\n      repeated\n    }\n  }\n"): typeof import('./graphql').ClaimLostItemDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation ClaimFoundItem($id: ID!, $contact: ContactInfoInput!) {\n    claimFoundItem(id: $id, contact: $contact) {\n      id\n      repeated\n    }\n  }\n"): typeof import('./graphql').ClaimFoundItemDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation ConfirmReturn($token: String!) {\n    confirmReturn(token: $token)\n  }\n"): typeof import('./graphql').ConfirmReturnDocument;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

@@ -122,6 +122,13 @@ current locale), keeps only the contacts the chosen `NotifyChannel` needs, publi
 re-rendering the row. The htmx choreography around it is in
 [../../features/match-notifications.md](../../features/match-notifications.md).
 
+## Claims
+
+The lost and found lists show how many people responded to a notice and the item dialog lists
+them (phone, email, when, status). `AdminItemService.deleteClaims` runs next to `deleteMatches`
+on archive and delete, removing the claims and their contact infos. See
+[../../features/claims.md](../../features/claims.md).
+
 ## Uploads and maps
 
 `ImageStorage` + `UploadController` are described in [../file-storage.md](../file-storage.md).

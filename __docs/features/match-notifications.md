@@ -36,7 +36,8 @@ The queue `notification.events` is bound to `derechi.notifications` with `notifi
 
 - sends via `Channel.EMAIL` when `email` is present;
 - sends via `Channel.SMS` when `phone` is present;
-- swallows `DuplicateNotificationException` (NotifyHub dedup, key `<recipient>:<channel>`, TTL 1 h).
+- skips a channel that is not configured under `notify.channels.*` (today: SMS), with a warning;
+- treats a NotifyHub duplicate (key `<event.deduplicationKey>:<CHANNEL>`, TTL 1 h) as sent.
 
 Any other exception is logged and rethrown as `AmqpRejectAndDontRequeueException`; Spring AMQP retries 3 times and then the message lands in `notification.events.dlq`.
 
@@ -45,7 +46,7 @@ Channels are enabled by configuration presence under `notify.channels.*`. Today 
 ## Known gaps
 
 - **The consumer ignores the channel choice.** The event has no channel flag, so when an admin picks Telegram the consumer still sees a phone and attempts SMS. Choosing EMAIL works as expected because the phone is `null` in that case.
-- **SMS is not actually wired.** `Notification` has only the `notify-email` channel on the classpath, and NotifyHub's SMS channel also needs Twilio and `notify.channels.sms.account-sid`. A send with a phone therefore fails on the SMS step, which after retries dead-letters the message even though the email part may have gone out (dedup prevents a duplicate email on retry).
+- **SMS is not actually wired.** `Notification` has only the `notify-email` channel on the classpath, and NotifyHub's SMS channel also needs Twilio and `notify.channels.sms.account-sid`. The sender skips the unconfigured channel, so the owner gets the email and no SMS until a provider is added.
 - Messenger fan-out is commented out in `NotificationSender`. Telegram needs a chat id that `ContactInfo` does not store; Viber is mapped to SMS in `NotificationRequestedEvent.SocialMediaEnum` as a placeholder.
 - The body is rendered in the admin's locale, not the owner's; the owner's language is unknown.
 - One dedup key per pair means "Notify again" is a no-op within the TTL.

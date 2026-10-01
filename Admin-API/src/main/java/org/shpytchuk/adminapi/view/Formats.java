@@ -7,7 +7,9 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.text.NumberFormat;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Currency;
@@ -25,6 +27,16 @@ public class Formats {
         return DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
                 .withLocale(locale())
                 .format(date);
+    }
+
+    public String dateTime(Instant instant) {
+        if (instant == null) {
+            return "";
+        }
+        return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
+                .withLocale(locale())
+                .withZone(ZoneId.systemDefault())
+                .format(instant);
     }
 
     public String money(Number amount, String currency) {

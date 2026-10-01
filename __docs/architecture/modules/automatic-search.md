@@ -7,9 +7,10 @@ has no HTTP API; the only endpoints are actuator's.
 | | |
 |---|---|
 | Port | 8085 (actuator only) |
-| Consumes | queue `automatic-search.items`, bound to `derechi.items` with `item.*.created` |
+| Consumes | queue `automatic-search.items`, bound to `derechi.items` with `item.*.created`; queue `automatic-search.claims`, bound with `item.*.claimed` and `item.*.returned` |
+| Produces | `NotificationRequestedEvent` on `derechi.notifications` (`notification.claim.*`) |
 | Needs | PostgreSQL, RabbitMQ, Discovery |
-| Stack | Spring AMQP, Spring Data JPA, Hibernate Spatial + JTS, optimaize `language-detector`, Lombok |
+| Stack | Spring AMQP, Spring Data JPA, Hibernate Spatial + JTS, optimaize `language-detector`, libphonenumber, Lombok |
 
 ## Flow
 
@@ -70,11 +71,19 @@ falls through to `simple`. Adding a language is described in
 query)` used by `rankAll`, and the same `dwithin` that `Client-API` has. It is wired through
 `META-INF/services/org.hibernate.boot.model.FunctionContributor`.
 
+## Claims
+
+The second queue and the scheduled `ClaimFollowUpJob` implement the response flow described in
+[../../features/claims.md](../../features/claims.md): notify the author in the language of
+their phone number, remind both sides, archive the notice on confirmation or a week after the
+last response. `ItemArchiver` is the counterpart of the admin "Archive" action and is the
+reason this module now writes to the item, history, claim and contact tables. Texts live in
+this module's own five `messages*.properties`.
+
 ## Entities
 
 The `entity` package is a copy of the shared schema with one addition: `Thing` has a
-`@Transient Double orderMatch` that carries the rank from the query to the insert. Nothing
-here writes to the item tables; `similar_item` is the only table this service modifies.
+`@Transient Double orderMatch` that carries the rank from the query to the insert.
 
 ## Config
 
@@ -82,6 +91,15 @@ here writes to the item tables; `similar_item` is the only table this service mo
 derechi:
   items:
     queue: automatic-search.items
+  claims:
+    queue: automatic-search.claims
+    exchange: derechi.notifications
+    site-url: ${DERECHI_SITE_URL:http://localhost:3000}
+    check-every: PT10M
+    author-reminder-after: P1D
+    claimant-reminder-after: P1D
+    archive-after: P7D
+    retention: P365D
 spring:
   rabbitmq:
     listener:
@@ -98,7 +116,10 @@ The `RabbitConfig` and `event` package are the same copy-per-module pattern desc
 
 ## Tests
 
-Only `AutomaticSearchApplicationTests` (context load). The ranking query and the language
+`AutomaticSearchApplicationTests` (context load) plus unit tests for the claims flow:
+`PhoneLocalesTest`, `ClaimNotifierTest` (mocked `RabbitTemplate`, real bundles),
+`ClaimListenerTest` (dispatch), `ClaimFollowUpJobTest` (publish-then-stamp order, newest-claim
+rule, retention) and `MessagesTest` (bundle parity). The ranking query and the language
 resolver have no automated tests yet; `insert into similar_item` by hand (see the root
 `README.md`) is how the match page is exercised locally without going through the queue.
 

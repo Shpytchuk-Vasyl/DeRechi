@@ -61,16 +61,19 @@ Two NotifyHub details that shaped the code:
 AMQP's own retry would only triple the attempts; the message goes to
 `notification.events.dlq`.
 
-`NotificationSender` today:
+`NotificationSender`:
 
 1. if `event.email()` is not null, send via `Channel.EMAIL` to the email;
 2. if `event.phone()` is not null, send via `Channel.SMS` to the phone;
-3. a `DuplicateNotificationException` is swallowed: the same `recipient:channel` key within
-   the dedup TTL means the owner already got this one.
+3. a channel that is not registered in NotifyHub (`getRegisteredChannels()`, lower-case
+   hyphenated names such as `sms`, `google-chat`) is skipped with a warning, so an event with a
+   phone does not dead-letter while SMS has no provider;
+4. a NotifyHub duplicate is treated as sent.
 
-Each send carries `deduplicationKey = "<recipient>:<CHANNEL>"`. Note that the event's own
-`deduplicationKey` (`match:<lostId>:<foundId>` from `Admin-API`) is not used here; the
-recipient-based key is what NotifyHub sees.
+Each send carries `deduplicationKey = "<event.deduplicationKey>:<CHANNEL>"`
+(`match:<lostId>:<foundId>` from `Admin-API`, `claim:<kind>:<id>` from `Automatic-Search`), one
+per channel so a dropped SMS cannot also drop the email. An event without a key falls back to
+`<recipient>:<CHANNEL>`, which only stops exact replays.
 
 The `socialMedias` array in the event is **ignored**. `NotificationRequestedEvent.SocialMediaEnum`
 maps `TELEGRAM` to `Channel.TELEGRAM`, `WHATSAPP` to `Channel.WHATSAPP` and `VIBER` to
@@ -85,8 +88,8 @@ Until that is solved, choosing a messenger in the admin panel results in an SMS,
 ## Event contract
 
 `NotificationRequestedEvent` is a record `(subject, message, phone, email, socialMedias,
-deduplicationKey)` with `@EventType("NOTIFICATION")`. The producer's copy in `Admin-API`
-has the same shape; the type id is what ties them together, see
+deduplicationKey)` with `@EventType("NOTIFICATION")`. The producers' copies in `Admin-API`
+and `Automatic-Search` have the same shape; the type id is what ties them together, see
 [../messaging.md](../messaging.md). Subject and body arrive already localized, so this
 module has no message bundles.
 

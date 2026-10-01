@@ -67,7 +67,7 @@
     "benefit6Text": "Keine Banner, nur Meldungen von Menschen.",
     "faqTitle": "Häufige Fragen",
     "faqQ1": "Wie erreiche ich die Person, die es gefunden hat?",
-    "faqA1": "Die Kontaktdaten in einer Anzeige sind zum Schutz vor Spam nur teilweise sichtbar. Die vollständigen Kontaktdaten direkt aus einer Anzeige anzufragen, kommt bald. Erstellen Sie bis dahin eine Anzeige der anderen Art: Wer Ihre Sache hat, sieht sich vielleicht auch die Liste an.",
+    "faqA1": "Die Kontaktdaten in einer Anzeige sind zum Schutz vor Spam nur teilweise sichtbar. Tippen Sie in der Anzeige auf „Gehört mir, Kontaktdaten senden“: Wir geben Ihre Telefonnummer und E-Mail per E-Mail und SMS an die Person weiter, die es gefunden hat, und sie meldet sich bei Ihnen. Bei einer Verlustanzeige funktioniert es genauso in die andere Richtung.",
     "faqQ2": "Wie stelle ich sicher, dass ich es dem echten Eigentümer gebe?",
     "faqA2": "Zeigen Sie in der Anzeige nicht alle Merkmale. Bitten Sie den Eigentümer, zu beschreiben, was auf dem Foto nicht zu sehen ist: was im Portemonnaie steckt, welcher Anhänger am Schlüssel hängt, was auf dem Sperrbildschirm des Handys ist. Treffen Sie sich an einem belebten Ort.",
     "faqQ3": "Ich habe Dokumente gefunden. Was soll ich tun?",
@@ -164,18 +164,46 @@
     "contactFinderTitle": "Finder kontaktieren",
     "phone": "Telefon",
     "email": "E-Mail",
-    "maskedNote": "Kontakte sind teilweise verdeckt, um vor Spam zu schützen. Die vollständigen Daten gibt es später auf Anfrage.",
-    "unlockSoon": "Vollständige Kontakte: bald",
+    "maskedNote": "Kontakte sind teilweise verdeckt, um vor Spam zu schützen. Um die Person hinter der Meldung zu erreichen, schick ihr unten deine Kontaktdaten.",
     "didYouFind": "Hast du diese Sache gefunden?",
-    "didYouFindText": "Gib eine Fundmeldung auf, und die Besitzerin oder der Besitzer sieht sie auf dem Brett.",
+    "didYouFindText": "Schick deine Kontaktdaten, und wir leiten sie per E-Mail und SMS an die Person weiter, der die Sache gehört. Öffentlich zeigen wir sie nirgends.",
     "isItYours": "Gehört das dir?",
-    "isItYoursText": "Gib eine Verlustmeldung auf, damit dich der Finder wiedererkennen kann.",
+    "isItYoursText": "Schick deine Kontaktdaten, und wir leiten sie per E-Mail und SMS an die Person weiter, die die Sache gefunden hat. Öffentlich zeigen wir sie nirgends.",
     "photoOf": "Foto: {title}",
     "openPhoto": "Foto im Vollbild öffnen",
     "closePhoto": "Schließen",
     "noPhoto": "Kein Foto",
     "metaTitle": "{kind}: {title} – {place}, {date}",
     "metaSummary": "{category} · {place} · {date}"
+  },
+  "claim": {
+    "sendMine": "Gehört mir, Kontaktdaten senden",
+    "sendFound": "Hab ich gefunden, Kontaktdaten senden",
+    "submit": "Kontaktdaten senden",
+    "submitting": "Wird gesendet…",
+    "cancel": "Abbrechen",
+    "consent": "Mit dem Senden stimmst du den <terms>Nutzungsbedingungen</terms> und der <privacy>Datenschutzerklärung</privacy> zu und bestätigst, dass es deine eigenen Kontaktdaten sind.",
+    "doneTitle": "Kontaktdaten gesendet",
+    "doneFinder": "Wir haben deine Kontaktdaten an die Person weitergegeben, die die Sache gefunden hat. Sie meldet sich bei dir.",
+    "doneOwner": "Wir haben deine Kontaktdaten an die Person weitergegeben, der die Sache gehört. Sie meldet sich bei dir.",
+    "repeated": "Du hast auf diese Meldung schon geantwortet; deine Kontaktdaten sind bereits angekommen.",
+    "orPost": "Oder gib selbst eine Meldung auf:",
+    "confirm": {
+      "title": "Ist die Sache wieder da, wo sie hingehört?",
+      "text": "Wenn du bestätigst, wird die Meldung für alle geschlossen: Sie verschwindet vom Brett, und die Kontaktdaten aus den Antworten darauf werden gelöscht.",
+      "button": "Ja, Meldung schließen",
+      "doneTitle": "Danke, die Meldung ist geschlossen",
+      "doneText": "Sie steht nicht mehr auf dem Brett. Schön, dass die Sache zurück ist.",
+      "invalidTitle": "Dieser Link gilt nicht mehr",
+      "invalidText": "Die Meldung ist vielleicht schon geschlossen. Du musst nichts weiter tun.",
+      "home": "Zur Startseite"
+    },
+    "error": {
+      "notFound": "Diese Meldung ist schon geschlossen.",
+      "failed": "Das hat nicht geklappt. Versuch es gleich noch einmal.",
+      "captcha": "Die Spam-Prüfung ist nicht durchgegangen. Versuch es noch einmal.",
+      "validation": "Ein paar Felder müssen noch korrigiert werden."
+    }
   },
   "category": {
     "DOCUMENTS": "Dokumente",
@@ -333,7 +361,7 @@
       },
       "contacts": {
         "title": "Wer deine Kontakte sieht",
-        "text": "Deine Kontakte stehen nur teilweise da; die vollständigen lassen sich bald direkt aus der Anzeige anfragen."
+        "text": "Deine Kontakte stehen nur teilweise da. Wer die Sache erkennt, schickt dir seine über die Anzeige, und du bekommst sie per E-Mail und SMS."
       }
     }
   },

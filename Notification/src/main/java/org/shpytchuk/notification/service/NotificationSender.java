@@ -8,9 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.Locale;
 
 @Service
 public class NotificationSender {
@@ -24,49 +22,39 @@ public class NotificationSender {
     }
 
     public void send(NotificationRequestedEvent event) {
-        try {
-            if (event.email() != null) {
-                sendVia(Channel.EMAIL, event);
-            }
-
-            if (event.phone() != null) {
-                sendVia(Channel.SMS, event);
-            }
-
-        } catch (DuplicateNotificationException e) {
+        if (event.email() != null) {
+            sendVia(Channel.EMAIL, event);
         }
-        return;
+        if (event.phone() != null) {
+            sendVia(Channel.SMS, event);
+        }
     }
 
-    private void sendVia(Channel target,
-                         NotificationRequestedEvent event) {
+    private void sendVia(Channel target, NotificationRequestedEvent event) {
+        if (!isConfigured(target)) {
+            log.warn("Канал {} не налаштований, пропускаємо {}", target, event.subject());
+            return;
+        }
+
         log.debug("Надсилаємо {} через {}", event.subject(), target);
-
-        notify.to(event.getRecipient(target))
-                .via(target)
-                .subject(event.subject())
-                .content(event.message())
-                .deduplicationKey(deduplicationKey(event, target))
-                .send();
+        try {
+            notify.to(event.getRecipient(target))
+                    .via(target)
+                    .subject(event.subject())
+                    .content(event.message())
+                    .deduplicationKey(deduplicationKey(event, target))
+                    .send();
+        } catch (DuplicateNotificationException duplicate) {
+            log.info("Повтор {} через {}, не надсилаємо вдруге", event.deduplicationKey(), target);
+        }
     }
 
-//    private List<Channel> targets(NotificationRequestedEvent event) {
-//        Set<String> registered = notify.getRegisteredChannels();
-//
-//        return Arrays.stream(event.socialMedias())
-//                .map(m -> m.toChanel())
-//                .filter(channel -> {
-//                    if (!registered.contains(channel.name())) {
-//                        log.warn("Канал {} не налаштований — пропускаємо", channel);
-//                        return false;
-//                    }
-//                    return true;
-//                })
-//                .toList();
-//    }
-
+    private boolean isConfigured(Channel channel) {
+        return notify.getRegisteredChannels().contains(channel.name().toLowerCase(Locale.ROOT).replace('_', '-'));
+    }
 
     private static String deduplicationKey(NotificationRequestedEvent event, Channel target) {
-        return "%s:%s".formatted(event.getRecipient(target), target.name());
+        String key = event.deduplicationKey() == null ? event.getRecipient(target) : event.deduplicationKey();
+        return "%s:%s".formatted(key, target.name());
     }
 }

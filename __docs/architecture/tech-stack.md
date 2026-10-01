@@ -66,7 +66,7 @@ WebFlux-based.
 | Spring Security OAuth2 client | `Admin-API` | OIDC login against Keycloak |
 | Thymeleaf, Bulma (CDN), htmx (CDN), Font Awesome | `Admin-API` | server-rendered admin UI with partial updates |
 | Caffeine | `Admin-API` | the `categories` cache |
-| libphonenumber | `Admin-API` | phone formatting in `Formats` |
+| libphonenumber | `Admin-API`, `Automatic-Search` | phone formatting in `Formats`; the recipient's language for claim messages (`PhoneLocales`) |
 | optimaize `language-detector` 0.6 | `Automatic-Search` | picks the PostgreSQL text search configuration from the title |
 | NotifyHub 1.1.0 (`notify-spring-boot-starter`, `notify-email`, `notify-telegram` managed) | `Notification` | one API over email / SMS / messengers |
 | Lombok | `Admin-API`, `Client-API`, `Automatic-Search` | entities and forms only; see [../conventions/java-code-style.md](../conventions/java-code-style.md) |

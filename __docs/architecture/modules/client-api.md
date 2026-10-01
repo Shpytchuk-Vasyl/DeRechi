@@ -22,7 +22,8 @@ web-client change too, see [web-client.md](web-client.md).
 |---|---|---|
 | `lostItem(id)`, `foundItem(id)` | `LostItemController`, `FoundItemController` | `null` when missing |
 | `lostItems(filter, sort, first, after)`, `foundItems(...)` | same | cursor pagination, see below |
-| `createLostItem(input)`, `createFoundItem(input)` | same | the only mutations; `update*` and `delete*` exist in the code and schema as comments, not yet exposed |
+| `createLostItem(input)`, `createFoundItem(input)` | same | `update*` and `delete*` exist in the code and schema as comments, not yet exposed |
+| `claimLostItem(id, contact)`, `claimFoundItem(id, contact)`, `confirmReturn(token)` | `ClaimController` | responses to a notice and the "item is back" link, see [../../features/claims.md](../../features/claims.md) |
 | `categories` | `ReferenceController` | all `thing_category` rows |
 | `countries` | `ReferenceController` | supported countries with their currency, from `CountriesProperties` |
 | `places(name, first, after)` | `PlaceController` | case-insensitive substring on `name`, sorted by name |
@@ -76,6 +77,10 @@ reused across notices) and the item in one transaction.
 `ItemEventAspect` is an `@AfterReturning` advice on `ItemService+.create(..)` that publishes
 an `ItemCreatedEvent` to `derechi.items` with `item.lost.created` or `item.found.created`.
 See [../messaging.md](../messaging.md) for why it is an aspect.
+
+`ClaimService` (per kind) and `ReturnService` record responses to a notice and publish a
+`ClaimEvent` through `ClaimEventPublisher`, a `@TransactionalEventListener(AFTER_COMMIT)`,
+with `item.<kind>.claimed` / `item.<kind>.returned`; the exchange is `derechi.claims.exchange`.
 
 ## Config
 

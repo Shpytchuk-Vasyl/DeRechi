@@ -40,6 +40,7 @@
         <notify-hub.version>1.1.0</notify-hub.version>
         <graphql-extended-scalars.version>24.0</graphql-extended-scalars.version>
         <language-detector.version>0.6</language-detector.version>
+        <libphonenumber.version>9.0.18</libphonenumber.version>
 
         <liquibase.version>5.0.4</liquibase.version>
         <liquibase-hibernate.version>5.0.4</liquibase-hibernate.version>
@@ -81,6 +82,12 @@
                 <groupId>com.optimaize.languagedetector</groupId>
                 <artifactId>language-detector</artifactId>
                 <version>${language-detector.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.googlecode.libphonenumber</groupId>
+                <artifactId>libphonenumber</artifactId>
+                <version>${libphonenumber.version}</version>
             </dependency>
 
             <dependency>

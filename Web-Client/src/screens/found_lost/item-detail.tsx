@@ -4,8 +4,6 @@ import { notFound } from "next/navigation"
 import { getFormatter, getLocale, getTranslations } from "next-intl/server"
 import { fetchItem, type ItemDetail, type ItemKind } from "@/api/items"
 import { ItemPhoto } from "@/components/items/item-photo"
-import { Button } from "@/components/pouf/Button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/pouf/card"
 import { Stack } from "@/components/pouf/layout"
 import { Badge } from "@/components/pouf/media"
 import { Skeleton, Skeletons } from "@/components/pouf/skeleton"
@@ -18,6 +16,7 @@ import { formatNoticeDate, fromIsoDate } from "@/lib/intl/dates"
 import { formatMoney } from "@/lib/intl/money"
 import { mapsUrl } from "@/lib/maps"
 import { absoluteUrl, isStale, pageAlternates, snippet } from "@/lib/seo"
+import ClaimCard from "@/screens/found_lost/claim-card"
 import PhotoViewer from "@/screens/found_lost/photo-viewer"
 
 type Props = {
@@ -34,12 +33,10 @@ export default async function ItemDetailPage({ kind, id, compact = false }: Prop
 
   const t = await getTranslations("item")
   const tc = await getTranslations("category")
-  const th = await getTranslations("home")
   const tn = await getTranslations("nav")
   const format = await getFormatter()
   const locale = await getLocale()
   const maps = mapsUrl(item.place.lat, item.place.lon)
-  const otherKind: ItemKind = kind === "lost" ? "found" : "lost"
 
   return (
     <>
@@ -138,43 +135,12 @@ export default async function ItemDetailPage({ kind, id, compact = false }: Prop
             {item.description || t("noDescription")}
           </Text>
 
-          <Card className="mt-7">
-            <CardHeader>
-              <CardTitle className="text-lg">
-                {kind === "lost" ? t("contactTitle") : t("contactFinderTitle")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <dl className="grid grid-cols-[90px_1fr] gap-x-3.5 gap-y-2.5">
-                <dt className="text-muted-foreground">{t("phone")}</dt>
-                <dd className="font-semibold">{item.contact.phone}</dd>
-                <dt className="text-muted-foreground">{t("email")}</dt>
-                <dd className="font-semibold">{item.contact.email}</dd>
-              </dl>
-              <p className="mt-3.5 text-muted-foreground text-sm leading-relaxed">
-                {t("maskedNote")}
-              </p>
-              <Button type="button" className="mt-3.5" disabled>
-                {t("unlockSoon")}
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="mt-4" tint={otherKind}>
-            <CardHeader>
-              <CardTitle className="text-lg">
-                {kind === "lost" ? t("didYouFind") : t("isItYours")}
-              </CardTitle>
-              <CardDescription>
-                {kind === "lost" ? t("didYouFindText") : t("isItYoursText")}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link href={paths.report(otherKind)}>
-                {kind === "lost" ? th("reportFound") : th("reportLost")}
-              </Link>
-            </CardContent>
-          </Card>
+          <ClaimCard
+            kind={kind}
+            id={item.id}
+            countryCode={item.place.countryCode}
+            contact={{ phone: item.contact.phone, email: item.contact.email }}
+          />
         </div>
       </div>
 

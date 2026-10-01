@@ -36,7 +36,9 @@ What the client gets back is `ItemDto` built by `ItemMapper`. Contact details ar
 finder@example.com -> f*****r@example.com
 ```
 
-Full contacts are only visible in the admin panel and in the notification sent to the owner.
+Full contacts are only visible in the admin panel and in the notifications sent to the author.
+A viewer who recognises the item does not get them either: they send their own contacts through
+`claimLostItem` / `claimFoundItem`, see [Claims](claims.md).
 
 ## Errors
 

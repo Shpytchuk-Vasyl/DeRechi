@@ -67,7 +67,7 @@
     "benefit6Text": "No banners anywhere, only notices written by people.",
     "faqTitle": "Questions that come up",
     "faqQ1": "How do I contact the person who found it?",
-    "faqA1": "Contacts on a notice are shown in part, to keep spam away. Requesting the full contacts straight from a notice is coming soon. Meanwhile, post a notice of the other kind: the person who has your thing may be looking through the list too.",
+    "faqA1": "Contacts on a notice are shown in part, to keep spam away. Press “It's mine, send my contacts” on the notice: we pass your phone and email to the finder by email and SMS, and they get back to you. The same works the other way round on a lost notice.",
     "faqQ2": "How can I be sure I'm returning it to the real owner?",
     "faqA2": "Don't show every detail in your notice. Ask the owner to describe what the photo doesn't show: what's in the wallet, which keyring is on the keys, what's on the phone's lock screen. Meet somewhere busy.",
     "faqQ3": "I found someone's documents. What should I do?",
@@ -164,18 +164,46 @@
     "contactFinderTitle": "Contact the finder",
     "phone": "Phone",
     "email": "Email",
-    "maskedNote": "Contacts are partly hidden to keep people safe from spam. Full contacts will be available on request.",
-    "unlockSoon": "Get full contacts: coming soon",
+    "maskedNote": "Contacts are partly hidden to keep people safe from spam. To reach the author, send them yours below.",
     "didYouFind": "Did you find this item?",
-    "didYouFindText": "Post a found notice, and the owner will see it on the board.",
+    "didYouFindText": "Send your contacts and we'll pass them to the owner by email and SMS. They are never shown on the site.",
     "isItYours": "Is this yours?",
-    "isItYoursText": "Post a lost notice so whoever found it can recognise you.",
+    "isItYoursText": "Send your contacts and we'll pass them to the finder by email and SMS. They are never shown on the site.",
     "photoOf": "Photo of {title}",
     "openPhoto": "Open the photo full screen",
     "closePhoto": "Close",
     "noPhoto": "No photo",
     "metaTitle": "{kind}: {title} – {place}, {date}",
     "metaSummary": "{category} · {place} · {date}"
+  },
+  "claim": {
+    "sendMine": "It's mine, send my contacts",
+    "sendFound": "I found it, send my contacts",
+    "submit": "Send my contacts",
+    "submitting": "Sending…",
+    "cancel": "Cancel",
+    "consent": "By sending you agree to the <terms>terms of use</terms> and the <privacy>privacy policy</privacy>, and confirm that these contacts are your own.",
+    "doneTitle": "Contacts sent",
+    "doneFinder": "We passed your contacts to the finder. They'll get in touch.",
+    "doneOwner": "We passed your contacts to the owner. They'll get in touch.",
+    "repeated": "You already responded to this notice; the author has your contacts.",
+    "orPost": "Or post your own notice:",
+    "confirm": {
+      "title": "Is the item back with its owner?",
+      "text": "Confirming closes the notice for everyone: it leaves the board, and the contacts sent in response to it are deleted.",
+      "button": "Yes, close the notice",
+      "doneTitle": "Thanks, the notice is closed",
+      "doneText": "It no longer shows on the board. We're glad the item made it back.",
+      "invalidTitle": "This link is no longer valid",
+      "invalidText": "The notice may already be closed. There is nothing else to do.",
+      "home": "Go to the home page"
+    },
+    "error": {
+      "notFound": "This notice is already closed.",
+      "failed": "That did not go through. Try again in a moment.",
+      "captcha": "The anti-spam check did not pass. Try again.",
+      "validation": "Some fields still need fixing."
+    }
   },
   "category": {
     "DOCUMENTS": "Documents",
@@ -333,7 +361,7 @@
       },
       "contacts": {
         "title": "Who sees your contacts",
-        "text": "Your contacts are shown only in part; the full ones will soon be available on request from the notice."
+        "text": "Your contacts are shown only in part. Whoever recognises the item sends you theirs through the notice, and you get them by email and SMS."
       }
     }
   },

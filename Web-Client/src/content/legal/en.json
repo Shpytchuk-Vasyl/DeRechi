@@ -44,7 +44,7 @@
         "heading": "4. Contacts",
         "body": [
           "Your phone and email are only partly visible on a notice, to keep you safe from spam.",
-          "That is all other people see for now. A way to request a notice author's full contacts through the site is planned; when it arrives, this section will say how it works."
+          "Anyone who recognises the item can send the notice's author their own contacts through the site. We pass them on by email and SMS and never show them publicly. By sending your contacts you confirm that they are your own and that you contact the author about this item only."
         ]
       },
       {
@@ -72,7 +72,7 @@
       {
         "heading": "8. Changing and removing notices",
         "body": [
-          "You can't edit or remove a notice yourself yet. If the item has been returned or the notice needs correcting, write to {email}.",
+          "You can't edit a notice yourself yet. Once the item is back, close the notice with the link in the message we send after someone responds to it, or write to {email}. To correct a notice, also write to {email}.",
           "We may remove a notice that breaks these terms or the law, or strip personal data from it, without warning. To report a breach in someone else's notice, also write to {email}."
         ]
       },
@@ -115,6 +115,10 @@
             "the place: the name and coordinates of the point you picked or found by location;",
             "your contacts: phone number, email address and the messengers you ticked."
           ],
+          "When you respond to someone else's notice:",
+          [
+            "your contacts: the phone number, email address and messengers you send to the notice's author."
+          ],
           "We have no accounts or passwords, so we keep no other data about you.",
           "Don't put information about health, religion, biometrics or other sensitive data in a notice, about yourself or anyone else.",
           "When you visit the site, the server, like any web server, may record technical details of the request, such as the IP address, browser type and time, to protect against abuse."
@@ -123,7 +127,8 @@
       {
         "heading": "3. What others can see",
         "body": [
-          "The item's description, the place with its coordinates and the photo are public. The phone and email on a notice are only partly shown (for example, +38067*****67); messengers aren't shown at all."
+          "The item's description, the place with its coordinates and the photo are public. The phone and email on a notice are only partly shown (for example, +38067*****67); messengers aren't shown at all.",
+          "Contacts you send in response to a notice are shown only to that notice's author, in the message we send them, and are never published."
         ]
       },
       {
@@ -131,9 +136,11 @@
         "body": [
           [
             "to show your notice to other people and let them find it by search;",
+            "to pass your contacts to the author of the notice you responded to;",
+            "to remind both sides to close the notice once the item is back;",
             "to protect the site from spam and abuse."
           ],
-          "The legal basis is your consent, which you give by posting a notice."
+          "The legal basis is your consent, which you give by posting a notice or by responding to one."
         ]
       },
       {
@@ -157,14 +164,19 @@
         "heading": "7. Cookies and browser storage",
         "body": [
           "We use only what is necessary:",
-          ["the DERECHI_LOCALE cookie: remembers your language for a year;"],
+          [
+            "the DERECHI_LOCALE cookie: remembers your language for a year;",
+            "the DERECHI_COUNTRY cookie: remembers your country for a year, to show the right currency and legal texts;",
+            "DERECHI_CLAIM_* cookies: remember for an hour that you have responded to a notice."
+          ],
           "There are no analytics or advertising cookies on the site."
         ]
       },
       {
         "heading": "8. How long we keep data",
         "body": [
-          "A notice is kept until it is taken down. After that it moves to an archive and is no longer shown on the site."
+          "A notice is kept until it is taken down. After that it moves to an archive and is no longer shown on the site.",
+          "Contacts sent in response to a notice are kept until that notice is closed, and for one year at most. A notice with responses is closed when either side confirms that the item is back, or about a week after the last response."
         ]
       },
       {

@@ -42,7 +42,7 @@ The photo is uploaded as soon as it is dropped (`POST /admin/uploads`) and the r
 
 ### Archive versus delete
 
-Both remove the row from `lost_item` or `found_item` and delete its `similar_item` pairs. Archive first copies the notice into `lost_item_history` or `found_item_history` with `archived_at = now()`. The archive pages list those tables with the same filters but no form. Delete is final.
+Both remove the row from `lost_item` or `found_item`, delete its `similar_item` pairs and its claims with their contact infos (see [Claims](claims.md)). Archive first copies the notice into `lost_item_history` or `found_item_history` with `archived_at = now()`. The archive pages list those tables with the same filters but no form. Delete is final.
 
 ## Permissions in templates
 

@@ -28,7 +28,7 @@ export const ERROR_KEYS: ReadonlySet<string> = new Set([
 
 export const SOCIAL_MEDIA = ["TELEGRAM", "VIBER", "WHATSAPP"] as const
 
-const PHONE = /^\+[1-9]\d{7,14}$/
+export const PHONE_PATTERN = /^\+[1-9]\d{7,14}$/
 
 const placeSchema = z.object({
   id: z.string("placeRequired").min(1, "placeRequired").max(255, "tooLong"),
@@ -61,7 +61,7 @@ export function reportSchema(kind: ItemKind) {
     categoryId: z.string("required").min(1, "required"),
     place: placeSchema,
     contact: z.object({
-      phone: z.string("phoneFormat").trim().regex(PHONE, "phoneFormat"),
+      phone: z.string("phoneFormat").trim().regex(PHONE_PATTERN, "phoneFormat"),
       email: z.email("emailFormat").max(MAX_EMAIL, "tooLong"),
       socialMedias: z.array(z.enum(SOCIAL_MEDIA)).optional(),
     }),

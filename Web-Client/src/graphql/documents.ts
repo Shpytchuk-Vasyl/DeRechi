@@ -179,6 +179,30 @@ export const CreateFoundItemMutation = graphql(`
   }
 `)
 
+export const ClaimLostItemMutation = graphql(`
+  mutation ClaimLostItem($id: ID!, $contact: ContactInfoInput!) {
+    claimLostItem(id: $id, contact: $contact) {
+      id
+      repeated
+    }
+  }
+`)
+
+export const ClaimFoundItemMutation = graphql(`
+  mutation ClaimFoundItem($id: ID!, $contact: ContactInfoInput!) {
+    claimFoundItem(id: $id, contact: $contact) {
+      id
+      repeated
+    }
+  }
+`)
+
+export const ConfirmReturnMutation = graphql(`
+  mutation ConfirmReturn($token: String!) {
+    confirmReturn(token: $token)
+  }
+`)
+
 export const PlacesQuery = graphql(`
   query Places($name: String, $first: Int) {
     places(name: $name, first: $first) {

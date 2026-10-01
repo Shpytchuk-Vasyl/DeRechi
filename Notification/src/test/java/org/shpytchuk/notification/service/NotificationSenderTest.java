@@ -1,5 +1,7 @@
 package org.shpytchuk.notification.service;
 
+import io.notifyhub.core.Channel;
+import io.notifyhub.core.NotifyHub;
 import io.notifyhub.core.testing.SentNotification;
 import io.notifyhub.core.testing.TestNotifyHub;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +25,7 @@ class NotificationSenderTest {
 
     @Test
     void sendsToEmailAndPhone() {
-        sender.send(event(new SocialMediaEnum[0]));
+        sender.send(event("+380501234567", "user@derechi.local", "match:1:2"));
 
         assertThat(hub.sent())
                 .extracting(SentNotification::channel, SentNotification::recipient, SentNotification::subject)
@@ -34,20 +36,59 @@ class NotificationSenderTest {
 
     @Test
     void passesMessageAsContent() {
-        sender.send(event(new SocialMediaEnum[0]));
+        sender.send(event("+380501234567", "user@derechi.local", "match:1:2"));
 
         assertThat(hub.sent("email")).singleElement()
                 .extracting(SentNotification::content)
                 .isEqualTo("Схоже, ми знайшли вашу річ");
     }
 
-    private static NotificationRequestedEvent event(SocialMediaEnum[] socialMedias) {
+    @Test
+    void skipsContactsTheEventDoesNotCarry() {
+        sender.send(event(null, "user@derechi.local", "match:1:2"));
+
+        assertThat(hub.sent()).extracting(SentNotification::channel).containsExactly("email");
+    }
+
+    @Test
+    void skipsChannelsThatAreNotConfigured() {
+        NotifyHub emailOnly = NotifyHub.builder().channel(hub.hub().getChannel("email").orElseThrow()).build();
+        NotificationSender sender = new NotificationSender(emailOnly);
+
+        sender.send(event("+380501234567", "user@derechi.local", "match:1:2"));
+
+        assertThat(hub.sent()).extracting(SentNotification::channel).containsExactly("email");
+    }
+
+    @Test
+    void sendsTwoDifferentMessagesToTheSameRecipient() {
+        sender.send(event("+380501234567", "user@derechi.local", "claim:lost:1"));
+        sender.send(event("+380501234567", "user@derechi.local", "claim:lost:2"));
+
+        assertThat(hub.sent("email")).hasSize(2);
+    }
+
+    @Test
+    void dropsAReplayOfTheSameMessage() {
+        NotifyHub deduplicating = NotifyHub.builder()
+                .channel(hub.hub().getChannel("email").orElseThrow())
+                .deduplicationStore(new io.notifyhub.core.dedup.InMemoryDeduplicationStore())
+                .build();
+        NotificationSender sender = new NotificationSender(deduplicating);
+
+        sender.send(event(null, "user@derechi.local", "claim:lost:1"));
+        sender.send(event(null, "user@derechi.local", "claim:lost:1"));
+
+        assertThat(hub.sent("email")).hasSize(1);
+    }
+
+    private static NotificationRequestedEvent event(String phone, String email, String deduplicationKey) {
         return new NotificationRequestedEvent(
                 "Знахідка",
                 "Схоже, ми знайшли вашу річ",
-                "+380501234567",
-                "user@derechi.local",
-                socialMedias,
-                null);
+                phone,
+                email,
+                new SocialMediaEnum[0],
+                deduplicationKey);
     }
 }

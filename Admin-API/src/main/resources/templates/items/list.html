@@ -56,6 +56,12 @@
 
                         <td class="is-vcentered py-3">
                             <th:block th:replace="~{fragments/dialogs :: trigger('item', ${item})}"></th:block>
+                            <th:block th:with="itemClaims=${claims?.get(item.id)}">
+                                <span class="tag is-info is-light is-rounded ml-1"
+                                      th:if="${itemClaims != null and !itemClaims.empty}"
+                                      th:title="#{field.claims}"
+                                      th:text="${plural.format('claim.count', itemClaims.size())}">1 response</span>
+                            </th:block>
                             <p class="is-size-7 has-text-grey" th:if="${item.description}"
                                th:text="${item.description}">опис</p>
                         </td>

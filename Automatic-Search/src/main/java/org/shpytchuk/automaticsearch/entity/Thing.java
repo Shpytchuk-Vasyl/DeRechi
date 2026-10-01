@@ -29,6 +29,12 @@ public abstract class Thing {
     @Column(nullable = false)
     private LocalDate date;
 
+    @Column
+    private Integer compensation;
+
+    @Column(nullable = false, length = 3)
+    private String currency;
+
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Place place;

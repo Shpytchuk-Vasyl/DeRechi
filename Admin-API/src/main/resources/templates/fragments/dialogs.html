@@ -93,6 +93,29 @@
                 </div>
 
                 <p class="has-text-grey mt-4" th:if="${item.description}" th:text="${item.description}">опис</p>
+
+                <div class="mt-4" th:if="${claims != null and claims.containsKey(item.id)}"
+                     th:with="itemClaims=${claims.get(item.id)}">
+                    <p class="is-size-7 is-uppercase has-text-weight-semibold has-text-grey mb-1"
+                       th:text="#{field.claims}">Responses</p>
+                    <p class="has-text-grey" th:if="${itemClaims.empty}" th:text="#{claim.empty}">No responses yet</p>
+                    <ul th:unless="${itemClaims.empty}">
+                        <li class="is-flex is-flex-wrap-wrap is-align-items-center py-1" th:each="claim : ${itemClaims}">
+                            <span class="numeric mr-1" th:text="${fmt.phone(claim.phone)}">+380</span>
+                            <span class="icon is-small messenger" th:each="messenger : ${claim.socialMedias}"
+                                  th:classappend="'messenger-' + ${#strings.toLowerCase(messenger)}"
+                                  role="img" th:title="#{social.__${messenger}__}"
+                                  th:aria-label="#{social.__${messenger}__}">
+                                <i th:class="${social.icon(messenger)}"></i>
+                            </span>
+                            <span class="ml-2 mr-3" th:text="${claim.email}">mail</span>
+                            <span class="is-size-7 has-text-grey numeric mr-2" th:text="${fmt.dateTime(claim.createdAt)}">2026-01-01 12:00</span>
+                            <span class="tag is-light is-rounded"
+                                  th:classappend="${claim.status.name() == 'CONFIRMED'} ? 'is-success' : (${claim.status.name() == 'REMINDED'} ? 'is-warning' : '')"
+                                  th:text="#{__${claim.status.key()}__}">New</span>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
             <footer class="card-footer">
