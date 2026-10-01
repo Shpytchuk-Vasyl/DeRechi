@@ -12,19 +12,18 @@ import {
   User,
   UserRoundX,
 } from "lucide-react"
-import { getFormatter, getTranslations } from "next-intl/server"
+import { getTranslations } from "next-intl/server"
 import type { AutoTab } from "@/components/auto-tabs"
+import { SampleAmount } from "@/components/items/sample-reward"
 import { Badge } from "@/components/pouf/media"
-import { formatHryvnia } from "@/lib/money"
 
 export type Benefit = AutoTab
 
 export async function getBenefits(): Promise<Benefit[]> {
   const t = await getTranslations("home")
-  const format = await getFormatter()
 
   const claims: Pick<Benefit, "icon" | "tone" | "panel">[] = [
-    { icon: <Coins />, tone: "yellow", panel: <FreePanel amount={formatHryvnia(format, 0)} /> },
+    { icon: <Coins />, tone: "yellow", panel: <FreePanel /> },
     { icon: <UserRoundX />, tone: "blue", panel: <NoAccountPanel /> },
     { icon: <EyeOff />, tone: "pink", panel: <HiddenContactsPanel /> },
     { icon: <Globe />, tone: "mint", panel: <LanguagesPanel /> },
@@ -52,8 +51,12 @@ export async function getBenefits(): Promise<Benefit[]> {
   })
 }
 
-function FreePanel({ amount }: { amount: string }) {
-  return <span className="font-black text-6xl tracking-tight">{amount}</span>
+function FreePanel() {
+  return (
+    <span className="font-black text-6xl tracking-tight">
+      <SampleAmount amount={0} />
+    </span>
+  )
 }
 
 function NoAccountPanel() {

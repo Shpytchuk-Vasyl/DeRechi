@@ -10,7 +10,10 @@ export const LostItemsQuery = graphql(`
           title
           description
           date
-          compensation
+          compensation {
+            amount
+            currency
+          }
           image
           category {
             id
@@ -21,6 +24,7 @@ export const LostItemsQuery = graphql(`
             name
             lat
             lon
+            countryCode
           }
         }
       }
@@ -42,7 +46,10 @@ export const FoundItemsQuery = graphql(`
           title
           description
           date
-          compensation
+          compensation {
+            amount
+            currency
+          }
           image
           category {
             id
@@ -53,6 +60,7 @@ export const FoundItemsQuery = graphql(`
             name
             lat
             lon
+            countryCode
           }
         }
       }
@@ -71,7 +79,10 @@ export const LostItemQuery = graphql(`
       title
       description
       date
-      compensation
+      compensation {
+        amount
+        currency
+      }
       image
       category {
         id
@@ -82,6 +93,7 @@ export const LostItemQuery = graphql(`
         name
         lat
         lon
+        countryCode
       }
       contact {
         id
@@ -99,7 +111,10 @@ export const FoundItemQuery = graphql(`
       title
       description
       date
-      compensation
+      compensation {
+        amount
+        currency
+      }
       image
       category {
         id
@@ -110,6 +125,7 @@ export const FoundItemQuery = graphql(`
         name
         lat
         lon
+        countryCode
       }
       contact {
         id
@@ -125,6 +141,15 @@ export const CategoriesQuery = graphql(`
     categories {
       id
       key
+    }
+  }
+`)
+
+export const CountriesQuery = graphql(`
+  query Countries {
+    countries {
+      code
+      currency
     }
   }
 `)
@@ -163,6 +188,7 @@ export const PlacesQuery = graphql(`
           name
           lat
           lon
+          countryCode
         }
       }
     }

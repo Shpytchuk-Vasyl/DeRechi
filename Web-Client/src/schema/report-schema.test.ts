@@ -8,7 +8,13 @@ const valid = {
   compensation: 500,
   image: "items/2026/09/abc.jpg",
   categoryId: "4",
-  place: { id: "ChIJ123", name: "Kyiv, Khreshchatyk 22", lat: 50.45, lon: 30.52 },
+  place: {
+    id: "ChIJ123",
+    name: "Kyiv, Khreshchatyk 22",
+    lat: 50.45,
+    lon: 30.52,
+    countryCode: "UA",
+  },
   contact: { phone: "+380671234567", email: "olena@example.com", socialMedias: ["TELEGRAM"] },
 }
 
@@ -51,6 +57,20 @@ describe("reportSchema", () => {
     )
   })
 
+  it("rejects a place without a country", () => {
+    const { countryCode, ...placeWithoutCountry } = valid.place
+    expect(countryCode).toBe("UA")
+    expect(errorFor("lost", { ...valid, place: placeWithoutCountry })).toBe("placeRequired")
+    expect(errorFor("lost", { ...valid, place: { ...valid.place, countryCode: "POL" } })).toBe(
+      "placeRequired",
+    )
+  })
+
+  it("takes an optional ISO 4217 currency for the reward", () => {
+    expect(reportSchema("lost").safeParse({ ...valid, currency: "PLN" }).success).toBe(true)
+    expect(errorFor("lost", { ...valid, currency: "zł" })).toBe("invalid")
+  })
+
   it("rejects a place without coordinates", () => {
     const { lat, ...placeWithoutLat } = valid.place
     expect(lat).toBeTypeOf("number")
@@ -87,7 +107,18 @@ describe("toItemInput", () => {
       name: "Kyiv, Khreshchatyk 22",
       lat: 50.45,
       lon: 30.52,
+      countryCode: "UA",
     })
+  })
+
+  it("sends the reward as MoneyInput and leaves the currency to the place's country", () => {
+    expect(toItemInput(reportSchema("lost").parse(valid)).compensation).toEqual({
+      amount: 500,
+      currency: null,
+    })
+    expect(
+      toItemInput(reportSchema("lost").parse({ ...valid, currency: "PLN" })).compensation,
+    ).toEqual({ amount: 500, currency: "PLN" })
   })
 
   it("keeps the chosen messengers", () => {

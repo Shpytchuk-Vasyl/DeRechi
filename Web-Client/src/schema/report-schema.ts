@@ -35,6 +35,7 @@ const placeSchema = z.object({
   name: z.string("placeRequired").min(1, "placeRequired").max(MAX_PLACE_NAME, "tooLong"),
   lat: z.number("placeRequired").min(-90, "outOfRange").max(90, "outOfRange"),
   lon: z.number("placeRequired").min(-180, "outOfRange").max(180, "outOfRange"),
+  countryCode: z.string("placeRequired").length(2, "placeRequired"),
 })
 
 export function reportSchema(kind: ItemKind) {
@@ -52,6 +53,7 @@ export function reportSchema(kind: ItemKind) {
       .min(0, "invalid")
       .max(MAX_COMPENSATION, "rewardMax")
       .optional(),
+    currency: z.string().length(3, "invalid").optional(),
     image:
       kind === "found"
         ? z.string("photoRequired").min(1, "photoRequired").max(MAX_IMAGE_KEY, "tooLong")
@@ -79,7 +81,10 @@ export function toItemInput(values: ReportValues) {
     title: values.title,
     description: values.description || null,
     date: values.date,
-    compensation: values.compensation ?? null,
+    compensation:
+      values.compensation == null
+        ? null
+        : { amount: values.compensation, currency: values.currency ?? null },
     image: values.image || null,
     categoryId: values.categoryId,
     place: values.place,

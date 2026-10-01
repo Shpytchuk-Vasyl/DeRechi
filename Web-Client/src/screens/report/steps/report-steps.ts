@@ -8,7 +8,7 @@ export const STEPS: { label: StepLabel; fields: FieldPath<ReportDraft>[] }[] = [
   { label: "whereWhen", fields: ["date", "place"] },
   {
     label: "contacts",
-    fields: ["compensation", "contact.phone", "contact.email", "contact.socialMedias"],
+    fields: ["compensation", "currency", "contact.phone", "contact.email", "contact.socialMedias"],
   },
 ]
 

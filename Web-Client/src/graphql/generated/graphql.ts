@@ -21,7 +21,7 @@ export type ItemFilterInput = {
 
 export type ItemInput = {
   categoryId: string | number;
-  compensation?: number | null | undefined;
+  compensation?: MoneyInput | null | undefined;
   contact: ContactInfoInput;
   date: string;
   description?: string | null | undefined;
@@ -36,6 +36,13 @@ export type ItemSort =
   | 'TITLE_ASC'
   | 'TITLE_DESC';
 
+export type MoneyInput = {
+  /** whole units, 0 or more */
+  amount: number;
+  /** ISO 4217; defaults to the currency of the place's country */
+  currency?: string | null | undefined;
+};
+
 /** Only items within the radius of this point */
 export type NearInput = {
   /** latitude, -90..90 */
@@ -47,6 +54,8 @@ export type NearInput = {
 };
 
 export type PlaceInput = {
+  /** ISO 3166-1 alpha-2, must be a supported country */
+  countryCode: string;
   /** ID Google Places */
   id: string | number;
   /** latitude, -90..90 */
@@ -71,7 +80,7 @@ export type LostItemsQueryVariables = Exact<{
 }>;
 
 
-export type LostItemsQuery = { lostItems: { edges: Array<{ cursor: string, node: { id: string, title: string, description: string | null, date: string, compensation: number | null, image: string | null, category: { id: string, key: string }, place: { id: string, name: string, lat: number | null, lon: number | null } } }>, pageInfo: { hasNextPage: boolean, endCursor: string | null } } };
+export type LostItemsQuery = { lostItems: { edges: Array<{ cursor: string, node: { id: string, title: string, description: string | null, date: string, image: string | null, compensation: { amount: number, currency: string } | null, category: { id: string, key: string }, place: { id: string, name: string, lat: number | null, lon: number | null, countryCode: string } } }>, pageInfo: { hasNextPage: boolean, endCursor: string | null } } };
 
 export type FoundItemsQueryVariables = Exact<{
   filter?: ItemFilterInput | null | undefined;
@@ -81,26 +90,31 @@ export type FoundItemsQueryVariables = Exact<{
 }>;
 
 
-export type FoundItemsQuery = { foundItems: { edges: Array<{ cursor: string, node: { id: string, title: string, description: string | null, date: string, compensation: number | null, image: string, category: { id: string, key: string }, place: { id: string, name: string, lat: number | null, lon: number | null } } }>, pageInfo: { hasNextPage: boolean, endCursor: string | null } } };
+export type FoundItemsQuery = { foundItems: { edges: Array<{ cursor: string, node: { id: string, title: string, description: string | null, date: string, image: string, compensation: { amount: number, currency: string } | null, category: { id: string, key: string }, place: { id: string, name: string, lat: number | null, lon: number | null, countryCode: string } } }>, pageInfo: { hasNextPage: boolean, endCursor: string | null } } };
 
 export type LostItemQueryVariables = Exact<{
   id: string | number;
 }>;
 
 
-export type LostItemQuery = { lostItem: { id: string, title: string, description: string | null, date: string, compensation: number | null, image: string | null, category: { id: string, key: string }, place: { id: string, name: string, lat: number | null, lon: number | null }, contact: { id: string, phone: string, email: string } } | null };
+export type LostItemQuery = { lostItem: { id: string, title: string, description: string | null, date: string, image: string | null, compensation: { amount: number, currency: string } | null, category: { id: string, key: string }, place: { id: string, name: string, lat: number | null, lon: number | null, countryCode: string }, contact: { id: string, phone: string, email: string } } | null };
 
 export type FoundItemQueryVariables = Exact<{
   id: string | number;
 }>;
 
 
-export type FoundItemQuery = { foundItem: { id: string, title: string, description: string | null, date: string, compensation: number | null, image: string, category: { id: string, key: string }, place: { id: string, name: string, lat: number | null, lon: number | null }, contact: { id: string, phone: string, email: string } } | null };
+export type FoundItemQuery = { foundItem: { id: string, title: string, description: string | null, date: string, image: string, compensation: { amount: number, currency: string } | null, category: { id: string, key: string }, place: { id: string, name: string, lat: number | null, lon: number | null, countryCode: string }, contact: { id: string, phone: string, email: string } } | null };
 
 export type CategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type CategoriesQuery = { categories: Array<{ id: string, key: string }> };
+
+export type CountriesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CountriesQuery = { countries: Array<{ code: string, currency: string }> };
 
 export type StatsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -127,7 +141,7 @@ export type PlacesQueryVariables = Exact<{
 }>;
 
 
-export type PlacesQuery = { places: { edges: Array<{ node: { id: string, name: string, lat: number | null, lon: number | null } }> } };
+export type PlacesQuery = { places: { edges: Array<{ node: { id: string, name: string, lat: number | null, lon: number | null, countryCode: string } }> } };
 
 export class TypedDocumentString<TResult, TVariables>
   extends String
@@ -158,7 +172,10 @@ export const LostItemsDocument = new TypedDocumentString(`
         title
         description
         date
-        compensation
+        compensation {
+          amount
+          currency
+        }
         image
         category {
           id
@@ -169,6 +186,7 @@ export const LostItemsDocument = new TypedDocumentString(`
           name
           lat
           lon
+          countryCode
         }
       }
     }
@@ -189,7 +207,10 @@ export const FoundItemsDocument = new TypedDocumentString(`
         title
         description
         date
-        compensation
+        compensation {
+          amount
+          currency
+        }
         image
         category {
           id
@@ -200,6 +221,7 @@ export const FoundItemsDocument = new TypedDocumentString(`
           name
           lat
           lon
+          countryCode
         }
       }
     }
@@ -217,7 +239,10 @@ export const LostItemDocument = new TypedDocumentString(`
     title
     description
     date
-    compensation
+    compensation {
+      amount
+      currency
+    }
     image
     category {
       id
@@ -228,6 +253,7 @@ export const LostItemDocument = new TypedDocumentString(`
       name
       lat
       lon
+      countryCode
     }
     contact {
       id
@@ -244,7 +270,10 @@ export const FoundItemDocument = new TypedDocumentString(`
     title
     description
     date
-    compensation
+    compensation {
+      amount
+      currency
+    }
     image
     category {
       id
@@ -255,6 +284,7 @@ export const FoundItemDocument = new TypedDocumentString(`
       name
       lat
       lon
+      countryCode
     }
     contact {
       id
@@ -272,6 +302,14 @@ export const CategoriesDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<CategoriesQuery, CategoriesQueryVariables>;
+export const CountriesDocument = new TypedDocumentString(`
+    query Countries {
+  countries {
+    code
+    currency
+  }
+}
+    `) as unknown as TypedDocumentString<CountriesQuery, CountriesQueryVariables>;
 export const StatsDocument = new TypedDocumentString(`
     query Stats {
   stats {
@@ -303,6 +341,7 @@ export const PlacesDocument = new TypedDocumentString(`
         name
         lat
         lon
+        countryCode
       }
     }
   }

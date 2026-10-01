@@ -12,7 +12,9 @@ import { useTranslations } from "next-intl"
 import { useEffect, useId, useRef, useState } from "react"
 import type { ItemKind } from "@/api/items"
 import { searchPlaces } from "@/app/actions/places"
+import { useCountry } from "@/components/country/country-provider"
 import { Field, inputClasses } from "@/components/pouf/Input"
+import { normaliseCountryCode } from "@/lib/country"
 import { clientEnv } from "@/lib/env/client"
 import { MAX_PLACE_NAME } from "@/schema/report-schema"
 
@@ -21,6 +23,7 @@ export type PickedPlace = {
   name: string
   lat: number
   lon: number
+  countryCode: string
 }
 
 type Props = {
@@ -28,7 +31,6 @@ type Props = {
   value: PickedPlace | null
   onChange: (place: PickedPlace | null) => void
   error?: string
-  region?: string
 }
 
 type LocateProblem = "denied" | "failed"
@@ -36,7 +38,15 @@ type LocateProblem = "denied" | "failed"
 const WITH_PIN = "pl-12"
 const PIN = "pointer-events-none absolute top-1/2 left-4 size-4.5 -translate-y-1/2 text-muted"
 
-const PLACE_FIELDS = ["place_id", "name", "formatted_address", "geometry"]
+const PLACE_FIELDS = ["place_id", "name", "formatted_address", "geometry", "address_components"]
+
+// Google lets the suggestions be restricted to at most five countries.
+const MAX_RESTRICTED_COUNTRIES = 5
+
+function countryOf(components: google.maps.GeocoderAddressComponent[] | undefined): string | null {
+  const country = components?.find((component) => component.types.includes("country"))
+  return normaliseCountryCode(country?.short_name)
+}
 
 declare global {
   interface Window {
@@ -82,10 +92,10 @@ function Autocomplete({
   value,
   onChange,
   error,
-  region = "UA",
   places,
 }: Props & { places: google.maps.PlacesLibrary | null }) {
   const t = useTranslations("form")
+  const viewer = useCountry()
   const input = useRef<HTMLInputElement>(null)
   const geocoding = useMapsLibrary("geocoding")
   const [locating, setLocating] = useState(false)
@@ -93,6 +103,12 @@ function Autocomplete({
 
   const latest = useRef(onChange)
   latest.current = onChange
+  const fallbackCountry = useRef(viewer.code)
+  fallbackCountry.current = viewer.code
+  const restricted = viewer.countries
+    .slice(0, MAX_RESTRICTED_COUNTRIES)
+    .map((country) => country.code.toLowerCase())
+    .join(",")
 
   useEffect(() => {
     if (!places || !input.current) {
@@ -101,7 +117,7 @@ function Autocomplete({
 
     const widget = new places.Autocomplete(input.current, {
       fields: PLACE_FIELDS,
-      componentRestrictions: { country: region.toLowerCase() },
+      componentRestrictions: { country: restricted.split(",") },
     })
 
     const listener = widget.addListener("place_changed", () => {
@@ -116,11 +132,12 @@ function Autocomplete({
         name: (place.name || place.formatted_address || "").slice(0, MAX_PLACE_NAME),
         lat: location.lat(),
         lon: location.lng(),
+        countryCode: countryOf(place.address_components) ?? fallbackCountry.current,
       })
     })
 
     return () => listener.remove()
-  }, [places, region])
+  }, [places, restricted])
 
   function locate() {
     if (!geocoding || !("geolocation" in navigator)) {
@@ -141,7 +158,13 @@ function Autocomplete({
 
           const name = best.formatted_address.slice(0, MAX_PLACE_NAME)
           if (input.current) input.current.value = name
-          latest.current({ id: best.place_id, name, lat: coords.latitude, lon: coords.longitude })
+          latest.current({
+            id: best.place_id,
+            name,
+            lat: coords.latitude,
+            lon: coords.longitude,
+            countryCode: countryOf(best.address_components) ?? fallbackCountry.current,
+          })
         } catch {
           setProblem("failed")
         } finally {
@@ -218,6 +241,7 @@ function KnownPlaceSearch({
   reason,
 }: Props & { reason: "noKey" | "unavailable" }) {
   const t = useTranslations("form")
+  const viewer = useCountry()
   const listId = useId()
   const [query, setQuery] = useState(value?.name ?? "")
   const [results, setResults] = useState<PickedPlace[]>([])
@@ -279,7 +303,14 @@ function KnownPlaceSearch({
         setLocating(false)
         const lat = coords.latitude
         const lon = coords.longitude
-        pick({ id: `manual:${lat.toFixed(5)},${lon.toFixed(5)}`, name, lat, lon })
+        // A place typed by hand has no address components: it is in the viewer's country.
+        pick({
+          id: `manual:${lat.toFixed(5)},${lon.toFixed(5)}`,
+          name,
+          lat,
+          lon,
+          countryCode: viewer.code,
+        })
       },
       (failure) => {
         setLocating(false)

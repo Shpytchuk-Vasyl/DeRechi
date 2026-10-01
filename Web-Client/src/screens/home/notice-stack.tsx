@@ -4,11 +4,11 @@ import { getFormatter, getTranslations } from "next-intl/server"
 import type { ItemKind } from "@/api/items"
 import { CategoryArt } from "@/components/items/category-art"
 import { MetaRow } from "@/components/items/meta-row"
+import { SampleReward } from "@/components/items/sample-reward"
 import { Card } from "@/components/pouf/card"
 import { Stack } from "@/components/pouf/layout"
 import { Badge } from "@/components/pouf/media"
 import { Heading } from "@/components/pouf/text"
-import { formatHryvnia } from "@/lib/money"
 
 type Sample = {
   id: "keys" | "student" | "wallet" | "backpack" | "earbuds" | "cat"
@@ -43,10 +43,6 @@ export default async function NoticeStack({ kind }: { kind: ItemKind }) {
   const format = await getFormatter()
   const now = Date.now()
 
-  const reward = t("item.reward", {
-    amount: formatHryvnia(format, REWARD[kind]),
-  })
-
   return (
     <div className="relative mx-auto h-80 w-full max-w-md" aria-hidden>
       {SAMPLES[kind].map((sample, index) => (
@@ -79,7 +75,9 @@ export default async function NoticeStack({ kind }: { kind: ItemKind }) {
           "group-hover:translate-y-1",
         )}
       >
-        <Badge tone="yellow">{reward}</Badge>
+        <Badge tone="yellow">
+          <SampleReward amount={REWARD[kind]} />
+        </Badge>
       </span>
     </div>
   )

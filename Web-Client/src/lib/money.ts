@@ -1,7 +1,13 @@
+import type { Money } from "@/lib/country"
+
 type NumberFormatter = {
   number(value: number, options?: Intl.NumberFormatOptions): string
 }
 
-export function formatHryvnia(format: NumberFormatter, amount: number): string {
-  return format.number(amount, { style: "currency", currency: "UAH", maximumFractionDigits: 0 })
+export function formatMoney(format: NumberFormatter, money: Money): string {
+  return format.number(money.amount, {
+    style: "currency",
+    currency: money.currency,
+    maximumFractionDigits: 0,
+  })
 }

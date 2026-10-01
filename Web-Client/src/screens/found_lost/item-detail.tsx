@@ -12,10 +12,11 @@ import { Skeleton, Skeletons } from "@/components/pouf/skeleton"
 import { Heading, Text } from "@/components/pouf/text"
 import { Link } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
+import { countryName } from "@/lib/country"
 import { formatNoticeDate, fromIsoDate } from "@/lib/dates"
 import { absoluteFileUrl } from "@/lib/env/client"
 import { mapsUrl } from "@/lib/maps"
-import { formatHryvnia } from "@/lib/money"
+import { formatMoney } from "@/lib/money"
 import { absoluteUrl, isStale, pageAlternates, snippet } from "@/lib/seo"
 import PhotoViewer from "@/screens/found_lost/photo-viewer"
 
@@ -91,10 +92,10 @@ export default async function ItemDetailPage({ kind, id, compact = false }: Prop
 
           <div className="mt-3.5 flex flex-wrap gap-2.5">
             <Badge>{tc(item.category.key)}</Badge>
-            {item.compensation ? (
+            {item.compensation && item.compensation.amount > 0 ? (
               <Badge tone="yellow">
                 {t("reward", {
-                  amount: formatHryvnia(format, item.compensation),
+                  amount: formatMoney(format, item.compensation),
                 })}
               </Badge>
             ) : null}
@@ -109,7 +110,12 @@ export default async function ItemDetailPage({ kind, id, compact = false }: Prop
             </dd>
             <dt className="text-muted-foreground">{t("place")}</dt>
             <dd className="flex items-center gap-2 font-medium">
-              {item.place.name}
+              <span>
+                {item.place.name}
+                <span className="text-muted-foreground">
+                  , {countryName(locale, item.place.countryCode)}
+                </span>
+              </span>
               {maps ? (
                 <a
                   href={maps}
@@ -207,6 +213,7 @@ function itemJsonLd(item: ItemDetail) {
     contentLocation: {
       "@type": "Place",
       name: item.place.name,
+      address: { "@type": "PostalAddress", addressCountry: item.place.countryCode },
       geo:
         item.place.lat != null && item.place.lon != null
           ? {
