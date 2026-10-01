@@ -22,4 +22,11 @@ public interface SimilarItemRepository extends JpaRepository<SimilarItem, Simila
                   @Param("lostItemIds") Long[] lostItemIds,
                   @Param("matchOrders") Double[] matchOrders);
 
+    @Modifying
+    @Query("delete from SimilarItem s where s.id.lostItemId = :lostItemId")
+    int deleteByLostItemId(@Param("lostItemId") Long lostItemId);
+
+    @Modifying
+    @Query("delete from SimilarItem s where s.id.foundItemId = :foundItemId")
+    int deleteByFoundItemId(@Param("foundItemId") Long foundItemId);
 }

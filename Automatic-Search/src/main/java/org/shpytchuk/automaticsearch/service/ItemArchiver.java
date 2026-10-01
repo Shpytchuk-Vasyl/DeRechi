@@ -41,7 +41,7 @@ public class ItemArchiver {
     private final SimilarItemRepository similarItemRepository;
 
     @Transactional
-    public boolean archive(ClaimKind kind, Long itemId) {
+    public boolean archive(ItemKind kind, Long itemId) {
         return switch (kind) {
             case LOST -> archive(kind, itemId, lostItemRepository, similarItemRepository::deleteByLostItemId,
                     item -> lostItemHistoryRepository.save(stamped(ItemMapper.copy(item, new LostItemHistory()))),
@@ -68,7 +68,7 @@ public class ItemArchiver {
         };
     }
 
-    private <T extends Thing, H extends Thing> boolean archive(ClaimKind kind,
+    private <T extends Thing, H extends Thing> boolean archive(ItemKind kind,
                                                                Long itemId,
                                                                JpaRepository<T, Long> items,
                                                                ToIntFunction<Long> deleteMatches,

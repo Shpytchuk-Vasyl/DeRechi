@@ -58,7 +58,7 @@ class ItemArchiverTest {
         });
         when(lostClaims.findByItemId(1L)).thenReturn(List.of(claim));
 
-        assertThat(archiver.archive(ClaimKind.LOST, 1L)).isTrue();
+        assertThat(archiver.archive(ItemKind.LOST, 1L)).isTrue();
 
         ArgumentCaptor<LostItemHistory> saved = ArgumentCaptor.forClass(LostItemHistory.class);
         InOrder order = inOrder(lostHistory, similarItems, lostClaims, lostItems);
@@ -80,7 +80,7 @@ class ItemArchiverTest {
     void doesNothingWhenTheItemIsAlreadyGone() {
         when(lostItems.findById(1L)).thenReturn(Optional.empty());
 
-        assertThat(archiver.archive(ClaimKind.LOST, 1L)).isFalse();
+        assertThat(archiver.archive(ItemKind.LOST, 1L)).isFalse();
 
         verify(lostHistory, never()).save(any());
         verify(similarItems, never()).deleteByLostItemId(anyLong());

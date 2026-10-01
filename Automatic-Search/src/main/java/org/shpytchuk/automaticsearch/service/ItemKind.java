@@ -1,13 +1,13 @@
 package org.shpytchuk.automaticsearch.service;
 
-public enum ClaimKind {
+public enum ItemKind {
 
     LOST("lost"),
     FOUND("found");
 
     private final String segment;
 
-    ClaimKind(String segment) {
+    ItemKind(String segment) {
         this.segment = segment;
     }
 

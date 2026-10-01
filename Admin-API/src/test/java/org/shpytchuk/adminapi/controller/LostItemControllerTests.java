@@ -25,9 +25,14 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.shpytchuk.adminapi.view.ItemView;
+import org.shpytchuk.adminapi.view.ClaimStatus;
+import org.shpytchuk.adminapi.view.ClaimView;
+import org.shpytchuk.adminapi.entity.ContactInfo.SocialMediaEnum;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
@@ -40,6 +45,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -184,6 +190,74 @@ class LostItemControllerTests {
                         containsString("500"),
                         anyOf(containsString("zł"), containsString("PLN")),
                         not(containsString("₴")))));
+    }
+
+    @Test
+    void showsTheClaimCountNextToTheTitleAndListsTheClaimsInTheDialog() throws Exception {
+        when(service.page(any(), any())).thenReturn(new PageImpl<>(List.of(itemView())));
+        when(service.claims(List.of(7L))).thenReturn(Map.of(7L, List.of(
+                new ClaimView("+48501234567", "claimant@example.test", List.of(SocialMediaEnum.TELEGRAM),
+                        Instant.parse("2026-09-01T10:00:00Z"), ClaimStatus.CONFIRMED),
+                new ClaimView("+380509876543", "second@example.test", List.of(),
+                        Instant.parse("2026-09-02T10:00:00Z"), ClaimStatus.NEW))));
+
+        mockMvc.perform(get("/admin/lost-items").with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.VIEW))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(allOf(
+                        containsString("2 відгуки"),
+                        containsString("Відгуки"),
+                        containsString("+48 501 234 567"),
+                        containsString("claimant@example.test"),
+                        containsString("second@example.test"),
+                        containsString("messenger-telegram"),
+                        containsString("2026"),
+                        containsString("is-success"),
+                        containsString("Підтверджено"),
+                        containsString("Новий"),
+                        not(containsString("Відгуків ще немає")))));
+    }
+
+    @Test
+    void saysThereAreNoClaimsYetWhenTheItemHasNone() throws Exception {
+        when(service.page(any(), any())).thenReturn(new PageImpl<>(List.of(itemView())));
+        when(service.claims(List.of(7L))).thenReturn(Map.of(7L, List.of()));
+
+        mockMvc.perform(get("/admin/lost-items").with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.VIEW))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(allOf(
+                        containsString("Відгуків ще немає"),
+                        not(containsString("відгуки")),
+                        not(containsString("tag is-info is-light is-rounded ml-1")))));
+    }
+
+    @Test
+    void rendersWithoutTheClaimsBlockWhenTheServiceHasNoClaimsMap() throws Exception {
+        when(service.page(any(), any())).thenReturn(new PageImpl<>(List.of(itemView())));
+        when(service.claims(any())).thenReturn(Map.of());
+
+        mockMvc.perform(get("/admin/lost-items").with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.VIEW))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(allOf(
+                        containsString("id=\"item-7\""),
+                        not(containsString("Відгук")),
+                        not(containsString("відгук")))));
+    }
+
+    @Test
+    void archivesOnlyWithArchivePermission() throws Exception {
+        mockMvc.perform(post("/admin/lost-items/7/archive")
+                        .with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.EDIT)))
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
+        verify(service, never()).archive(anyLong(), any());
+
+        when(service.scopeKey()).thenReturn("LOST_ITEM");
+
+        mockMvc.perform(post("/admin/lost-items/7/archive")
+                        .with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.ARCHIVE)))
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection());
+        verify(service).archive(eq(7L), any());
     }
 
     @Test

@@ -4,27 +4,37 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.shpytchuk.adminapi.config.property.ArchiveProperties;
 import org.shpytchuk.adminapi.config.property.CountriesProperties;
 import org.shpytchuk.adminapi.entity.ContactInfo;
 import org.shpytchuk.adminapi.entity.ContactInfo.SocialMediaEnum;
 import org.shpytchuk.adminapi.entity.Place;
 import org.shpytchuk.adminapi.entity.Thing;
 import org.shpytchuk.adminapi.entity.ThingCategory;
+import org.shpytchuk.adminapi.event.ArchiveRequestedEvent;
 import org.shpytchuk.adminapi.exception.NotFoundException;
 import org.shpytchuk.adminapi.form.ItemFilter;
 import org.shpytchuk.adminapi.form.ItemForm;
 import org.shpytchuk.adminapi.mapper.ItemMapper;
 import org.shpytchuk.adminapi.repository.*;
+import org.shpytchuk.adminapi.view.ClaimView;
 import org.shpytchuk.adminapi.view.ItemView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.function.Supplier;
 
 public abstract class AdminItemService<T extends Thing> {
+
+    private static final Logger log = LoggerFactory.getLogger(AdminItemService.class);
 
     private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory(new PrecisionModel(), 4326);
 
@@ -35,6 +45,9 @@ public abstract class AdminItemService<T extends Thing> {
     private final CountriesProperties countries;
     private final Supplier<T> factory;
     private final String scopeKey;
+    private final RabbitTemplate rabbitTemplate;
+    private final ArchiveProperties archive;
+    private final String archiveRoutingKey;
 
     protected AdminItemService(ThingRepository<T> repository,
                                ThingCategoryRepository categoryRepository,
@@ -42,7 +55,10 @@ public abstract class AdminItemService<T extends Thing> {
                                ContactInfoRepository contactInfoRepository,
                                CountriesProperties countries,
                                Supplier<T> factory,
-                               String scopeKey) {
+                               String scopeKey,
+                               RabbitTemplate rabbitTemplate,
+                               ArchiveProperties archive,
+                               String archiveRoutingKey) {
         this.repository = repository;
         this.categoryRepository = categoryRepository;
         this.placeRepository = placeRepository;
@@ -50,15 +66,23 @@ public abstract class AdminItemService<T extends Thing> {
         this.countries = countries;
         this.factory = factory;
         this.scopeKey = scopeKey;
+        this.rabbitTemplate = rabbitTemplate;
+        this.archive = archive;
+        this.archiveRoutingKey = archiveRoutingKey;
     }
 
     protected abstract void deleteMatches(Long id);
 
-    protected abstract void archiveItem(T item);
+    protected abstract void deleteClaims(Long id);
 
     @Transactional(readOnly = true)
     public Page<ItemView> page(Pageable pageable, ItemFilter filter) {
         return repository.findAll(ThingSpecifications.matching(filter), Pages.safe(pageable)).map(ItemMapper::toView);
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, List<ClaimView>> claims(Collection<Long> itemIds) {
+        return Map.of();
     }
 
     @Transactional(readOnly = true)
@@ -82,18 +106,21 @@ public abstract class AdminItemService<T extends Thing> {
         return repository.save(item);
     }
 
-    @Transactional
-    public void archive(Long id) {
-        T item = require(id);
-        archiveItem(item);
-        deleteMatches(id);
-        repository.delete(item);
+    @Transactional(readOnly = true)
+    public void archive(Long id, String actor) {
+        if (archiveRoutingKey == null) {
+            throw new UnsupportedOperationException("An archive cannot be archived again");
+        }
+        require(id);
+        rabbitTemplate.convertAndSend(archive.exchange(), archiveRoutingKey, new ArchiveRequestedEvent(id, actor));
+        log.info("{} asked to archive {} {}", actor, scopeKey, id);
     }
 
     @Transactional
     public void delete(Long id) {
         T item = require(id);
         deleteMatches(id);
+        deleteClaims(id);
         repository.delete(item);
     }
 

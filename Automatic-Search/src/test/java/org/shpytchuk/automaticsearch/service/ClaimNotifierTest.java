@@ -53,7 +53,7 @@ class ClaimNotifierTest {
     void passesTheClaimantContactsToTheAuthorInTheAuthorsLanguage() {
         LostItemClaim claim = lostClaim("+380671234567", SocialMediaEnum.TELEGRAM, SocialMediaEnum.WHATSAPP);
 
-        notifier.notifyAuthor(ClaimKind.LOST, claim);
+        notifier.notifyAuthor(ItemKind.LOST, claim);
 
         NotificationRequestedEvent event = published(ClaimNotifier.CREATED_ROUTING_KEY);
         assertThat(event.subject()).isEqualTo("DeRechi: вашу річ знайдено");
@@ -71,7 +71,7 @@ class ClaimNotifierTest {
     void writesInEnglishToAnAuthorWithAPhoneOutsideTheSupportedCountries() {
         FoundItemClaim claim = foundClaim("+16502530000");
 
-        notifier.notifyAuthor(ClaimKind.FOUND, claim);
+        notifier.notifyAuthor(ItemKind.FOUND, claim);
 
         NotificationRequestedEvent event = published(ClaimNotifier.CREATED_ROUTING_KEY);
         assertThat(event.subject()).isEqualTo("DeRechi: the owner of the item you found showed up");
@@ -86,7 +86,7 @@ class ClaimNotifierTest {
     void remindsTheAuthorWithTheConfirmLink() {
         LostItemClaim claim = lostClaim("+48512345678");
 
-        notifier.remindAuthor(ClaimKind.LOST, claim);
+        notifier.remindAuthor(ItemKind.LOST, claim);
 
         NotificationRequestedEvent event = published(ClaimNotifier.REMINDER_ROUTING_KEY);
         assertThat(event.subject()).isEqualTo("DeRechi: czy rzecz „Чорний рюкзак” wróciła do właściciela?");
@@ -100,7 +100,7 @@ class ClaimNotifierTest {
         LostItemClaim claim = lostClaim("+380671234567");
         claim.getContactInfo().setPhone("+33123456789");
 
-        notifier.remindClaimant(ClaimKind.LOST, claim);
+        notifier.remindClaimant(ItemKind.LOST, claim);
 
         NotificationRequestedEvent event = published(ClaimNotifier.REMINDER_ROUTING_KEY);
         assertThat(event.subject()).isEqualTo("DeRechi : l'objet « Чорний рюкзак » a-t-il été rendu ?");

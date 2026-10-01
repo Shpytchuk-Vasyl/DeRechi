@@ -40,7 +40,7 @@ public class ClaimNotifier {
     private final ClaimsProperties properties;
     private final MessageSource messages;
 
-    public void notifyAuthor(ClaimKind kind, Claim claim) {
+    public void notifyAuthor(ItemKind kind, Claim claim) {
         Thing item = claim.getItem();
         ContactInfo author = item.getInfo();
         ContactInfo claimant = claim.getContactInfo();
@@ -59,17 +59,17 @@ public class ClaimNotifier {
         log.info("Passed the contacts of {} claim {} to the author of item {}", kind, claim.getId(), item.getId());
     }
 
-    public void remindAuthor(ClaimKind kind, Claim claim) {
+    public void remindAuthor(ItemKind kind, Claim claim) {
         remind(kind, claim, claim.getItem().getInfo(), AUTHOR_REMINDER_KEY,
                 "claim:%s:%d:author-reminder".formatted(kind.segment(), claim.getId()));
     }
 
-    public void remindClaimant(ClaimKind kind, Claim claim) {
+    public void remindClaimant(ItemKind kind, Claim claim) {
         remind(kind, claim, claim.getContactInfo(), CLAIMANT_REMINDER_KEY,
                 "claim:%s:%d:claimant-reminder".formatted(kind.segment(), claim.getId()));
     }
 
-    private void remind(ClaimKind kind, Claim claim, ContactInfo recipient, String key, String deduplicationKey) {
+    private void remind(ItemKind kind, Claim claim, ContactInfo recipient, String key, String deduplicationKey) {
         Locale locale = PhoneLocales.of(recipient.getPhone());
         String title = claim.getItem().getTitle();
 
@@ -87,7 +87,7 @@ public class ClaimNotifier {
         rabbitTemplate.convertAndSend(properties.exchange(), routingKey, event);
     }
 
-    private String noticeUrl(ClaimKind kind, Thing item, Locale locale) {
+    private String noticeUrl(ItemKind kind, Thing item, Locale locale) {
         return "%s/%s/%s/%d".formatted(properties.siteUrl(), locale.getLanguage(), kind.segment(), item.getId());
     }
 

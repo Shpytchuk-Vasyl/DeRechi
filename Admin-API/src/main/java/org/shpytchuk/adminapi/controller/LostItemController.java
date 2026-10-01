@@ -11,6 +11,7 @@ import org.shpytchuk.adminapi.security.Scope;
 import org.shpytchuk.adminapi.service.LostItemAdminService;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -73,11 +74,11 @@ public class LostItemController extends ItemController<LostItem> {
         return super.update(id, form, binding, model, redirectAttributes);
     }
 
-    @Override
     @PostMapping("/{id}/archive")
     @RequirePermission(scope = Scope.LOST_ITEM, action = Action.ARCHIVE)
-    public String archive(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        return super.archive(id, redirectAttributes);
+    public String archive(@PathVariable Long id, Authentication authentication,
+                          RedirectAttributes redirectAttributes) {
+        return super.archive(id, authentication.getName(), redirectAttributes);
     }
 
     @Override

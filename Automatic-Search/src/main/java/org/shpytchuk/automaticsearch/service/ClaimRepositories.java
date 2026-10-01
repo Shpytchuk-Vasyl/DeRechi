@@ -14,7 +14,7 @@ public class ClaimRepositories {
     private final LostItemClaimRepository lostItemClaimRepository;
     private final FoundItemClaimRepository foundItemClaimRepository;
 
-    public ClaimRepository<? extends Claim> of(ClaimKind kind) {
+    public ClaimRepository<? extends Claim> of(ItemKind kind) {
         return switch (kind) {
             case LOST -> lostItemClaimRepository;
             case FOUND -> foundItemClaimRepository;

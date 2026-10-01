@@ -113,8 +113,8 @@ public abstract class ItemController<T extends Thing> {
         return redirectWithMessage(redirectAttributes, id, "updated");
     }
 
-    protected String archive(Long id, RedirectAttributes redirectAttributes) {
-        service.archive(id);
+    protected String archive(Long id, String actor, RedirectAttributes redirectAttributes) {
+        service.archive(id, actor);
         return redirectWithMessage(redirectAttributes, id, "archived");
     }
 

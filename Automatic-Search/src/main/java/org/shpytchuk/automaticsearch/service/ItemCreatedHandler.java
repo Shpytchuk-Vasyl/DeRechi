@@ -4,7 +4,13 @@ import org.shpytchuk.automaticsearch.event.ItemCreatedEvent;
 
 public interface ItemCreatedHandler {
 
-    String routingKey();
+    String VERB = "created";
+
+    ItemKind kind();
+
+    default String routingKey() {
+        return kind().routingKey(VERB);
+    }
 
     void onItemCreated(ItemCreatedEvent event);
 }

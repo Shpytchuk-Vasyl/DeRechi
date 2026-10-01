@@ -25,7 +25,7 @@ public class ClaimFollowUps {
     private final Clock clock;
 
     @Transactional
-    public boolean remindAuthor(ClaimKind kind, Long claimId) {
+    public boolean remindAuthor(ItemKind kind, Long claimId) {
         return remind(repositories.of(kind), claimId,
                 claim -> claim.getAuthorRemindedAt() == null,
                 claim -> notifier.remindAuthor(kind, claim),
@@ -33,7 +33,7 @@ public class ClaimFollowUps {
     }
 
     @Transactional
-    public boolean remindClaimant(ClaimKind kind, Long claimId) {
+    public boolean remindClaimant(ItemKind kind, Long claimId) {
         return remind(repositories.of(kind), claimId,
                 claim -> claim.getClaimantRemindedAt() == null,
                 claim -> notifier.remindClaimant(kind, claim),
@@ -41,7 +41,7 @@ public class ClaimFollowUps {
     }
 
     @Transactional
-    public boolean purge(ClaimKind kind, Long claimId) {
+    public boolean purge(ItemKind kind, Long claimId) {
         ClaimRepository<? extends Claim> claims = repositories.of(kind);
         Optional<? extends Claim> found = claims.findById(claimId);
         if (found.isEmpty()) {

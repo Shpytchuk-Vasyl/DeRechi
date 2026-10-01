@@ -30,12 +30,12 @@ public class ClaimFollowUpJob {
     @Scheduled(fixedDelayString = "${derechi.claims.check-every}")
     public void run() {
         Instant now = clock.instant();
-        for (ClaimKind kind : ClaimKind.values()) {
+        for (ItemKind kind : ItemKind.values()) {
             followUp(kind, now);
         }
     }
 
-    void followUp(ClaimKind kind, Instant now) {
+    void followUp(ItemKind kind, Instant now) {
         ClaimRepository<? extends Claim> claims = repositories.of(kind);
 
         int authorReminders = each(kind, "author reminder for claim",
@@ -83,7 +83,7 @@ public class ClaimFollowUpJob {
         return claims.stream().map(claim -> claim.getItem().getId()).distinct().toList();
     }
 
-    private static int each(ClaimKind kind, String step, List<Long> ids, Predicate<Long> action) {
+    private static int each(ItemKind kind, String step, List<Long> ids, Predicate<Long> action) {
         int done = 0;
         for (Long id : ids) {
             try {

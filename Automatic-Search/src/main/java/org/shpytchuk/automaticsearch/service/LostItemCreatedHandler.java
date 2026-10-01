@@ -19,14 +19,12 @@ public class LostItemCreatedHandler implements ItemCreatedHandler {
 
     private static final Logger log = LoggerFactory.getLogger(LostItemCreatedHandler.class);
 
-    private static final String ROUTING_KEY = "item.lost.created";
-
     private final ItemService<FoundItem> foundItemSearch;
     private final SimilarItemRepository similarItemRepository;
 
     @Override
-    public String routingKey() {
-        return ROUTING_KEY;
+    public ItemKind kind() {
+        return ItemKind.LOST;
     }
 
     @Override

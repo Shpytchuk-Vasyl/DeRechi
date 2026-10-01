@@ -12,13 +12,18 @@ public class ClaimedHandler implements ClaimHandler {
 
     private static final String VERB = "claimed";
 
-    private final ClaimKind kind;
+    private final ItemKind kind;
     private final ClaimRepositories repositories;
     private final ClaimNotifier notifier;
 
     @Override
-    public String routingKey() {
-        return kind.routingKey(VERB);
+    public ItemKind kind() {
+        return kind;
+    }
+
+    @Override
+    public String verb() {
+        return VERB;
     }
 
     @Override

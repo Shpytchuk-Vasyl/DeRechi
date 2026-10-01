@@ -60,12 +60,12 @@ class ClaimFollowUpJobTest {
         doAnswer(invocation -> {
             assertThat(claim.getAuthorRemindedAt()).as("stamped before the message went out").isNull();
             return null;
-        }).when(notifier).remindAuthor(ClaimKind.LOST, claim);
+        }).when(notifier).remindAuthor(ItemKind.LOST, claim);
 
         job.run();
 
         InOrder order = inOrder(notifier, lostClaims);
-        order.verify(notifier).remindAuthor(ClaimKind.LOST, claim);
+        order.verify(notifier).remindAuthor(ItemKind.LOST, claim);
         order.verify(lostClaims).save(claim);
         assertThat(claim.getAuthorRemindedAt()).isEqualTo(NOW);
         assertThat(claim.getClaimantRemindedAt()).isNull();
@@ -81,7 +81,7 @@ class ClaimFollowUpJobTest {
                 NOW.minus(Duration.ofDays(1)))).thenReturn(List.of(claim, next));
         when(lostClaims.findWithDetailsById(42L)).thenReturn(Optional.of(claim));
         doThrow(new AmqpConnectException(new RuntimeException("connection refused")))
-                .when(notifier).remindClaimant(ClaimKind.LOST, claim);
+                .when(notifier).remindClaimant(ItemKind.LOST, claim);
 
         assertThatCode(job::run).doesNotThrowAnyException();
 
@@ -112,7 +112,7 @@ class ClaimFollowUpJobTest {
 
         job.run();
 
-        verify(archiver).archive(ClaimKind.LOST, 5L);
+        verify(archiver).archive(ItemKind.LOST, 5L);
     }
 
     @Test
@@ -129,8 +129,8 @@ class ClaimFollowUpJobTest {
 
         job.run();
 
-        verify(archiver).archive(ClaimKind.LOST, 1L);
-        verify(archiver, never()).archive(ClaimKind.LOST, 2L);
+        verify(archiver).archive(ItemKind.LOST, 1L);
+        verify(archiver, never()).archive(ItemKind.LOST, 2L);
     }
 
     @Test

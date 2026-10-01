@@ -1,7 +1,7 @@
 package org.shpytchuk.automaticsearch.listener;
 
 import org.shpytchuk.automaticsearch.event.ArchiveRequestedEvent;
-import org.shpytchuk.automaticsearch.service.ClaimKind;
+import org.shpytchuk.automaticsearch.service.ItemKind;
 import org.shpytchuk.automaticsearch.service.ItemArchiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ public class ArchiveListener {
 
     static final String VERB = "archive";
 
-    private static final Map<String, ClaimKind> KINDS = Arrays.stream(ClaimKind.values())
+    private static final Map<String, ItemKind> KINDS = Arrays.stream(ItemKind.values())
             .collect(Collectors.toMap(kind -> kind.routingKey(VERB), Function.identity()));
 
     private final ItemArchiver archiver;
@@ -34,7 +34,7 @@ public class ArchiveListener {
     @RabbitListener(queues = "${derechi.archive.queue}")
     public void onArchiveRequested(ArchiveRequestedEvent event, Message message) {
         String routingKey = message.getMessageProperties().getReceivedRoutingKey();
-        ClaimKind kind = KINDS.get(routingKey);
+        ItemKind kind = KINDS.get(routingKey);
         if (kind == null) {
             throw new AmqpRejectAndDontRequeueException("No handler for the key " + routingKey);
         }

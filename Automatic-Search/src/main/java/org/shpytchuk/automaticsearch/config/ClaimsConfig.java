@@ -1,7 +1,7 @@
 package org.shpytchuk.automaticsearch.config;
 
 import org.shpytchuk.automaticsearch.service.ClaimHandler;
-import org.shpytchuk.automaticsearch.service.ClaimKind;
+import org.shpytchuk.automaticsearch.service.ItemKind;
 import org.shpytchuk.automaticsearch.service.ClaimNotifier;
 import org.shpytchuk.automaticsearch.service.ClaimRepositories;
 import org.shpytchuk.automaticsearch.service.ClaimedHandler;
@@ -26,21 +26,21 @@ public class ClaimsConfig {
 
     @Bean
     public ClaimHandler lostClaimedHandler(ClaimRepositories repositories, ClaimNotifier notifier) {
-        return new ClaimedHandler(ClaimKind.LOST, repositories, notifier);
+        return new ClaimedHandler(ItemKind.LOST, repositories, notifier);
     }
 
     @Bean
     public ClaimHandler foundClaimedHandler(ClaimRepositories repositories, ClaimNotifier notifier) {
-        return new ClaimedHandler(ClaimKind.FOUND, repositories, notifier);
+        return new ClaimedHandler(ItemKind.FOUND, repositories, notifier);
     }
 
     @Bean
     public ClaimHandler lostReturnedHandler(ClaimRepositories repositories, ItemArchiver archiver) {
-        return new ReturnedHandler(ClaimKind.LOST, repositories, archiver);
+        return new ReturnedHandler(ItemKind.LOST, repositories, archiver);
     }
 
     @Bean
     public ClaimHandler foundReturnedHandler(ClaimRepositories repositories, ItemArchiver archiver) {
-        return new ReturnedHandler(ClaimKind.FOUND, repositories, archiver);
+        return new ReturnedHandler(ItemKind.FOUND, repositories, archiver);
     }
 }

@@ -4,9 +4,12 @@ import org.locationtech.jts.geom.Point;
 import org.shpytchuk.adminapi.entity.ContactInfo;
 import org.shpytchuk.adminapi.entity.Place;
 import org.shpytchuk.adminapi.entity.Thing;
+import org.shpytchuk.adminapi.entity.items.Claim;
 import org.shpytchuk.adminapi.entity.items.SimilarItem;
 import org.shpytchuk.adminapi.form.ItemForm;
 import org.shpytchuk.adminapi.view.CandidateView;
+import org.shpytchuk.adminapi.view.ClaimStatus;
+import org.shpytchuk.adminapi.view.ClaimView;
 import org.shpytchuk.adminapi.view.ItemView;
 
 import java.util.Arrays;
@@ -47,6 +50,16 @@ public final class ItemMapper {
                 similar.getMatchOrder(),
                 similar.getNotifiedAt(),
                 similar.getNotifiedBy());
+    }
+
+    public static ClaimView toClaim(Claim claim) {
+        ContactInfo info = claim.getContactInfo();
+        return new ClaimView(
+                info.getPhone(),
+                info.getEmail(),
+                socialMedias(info),
+                claim.getCreatedAt(),
+                ClaimStatus.of(claim.getConfirmedAt(), claim.getAuthorRemindedAt(), claim.getClaimantRemindedAt()));
     }
 
     public static void copy(Thing from, Thing to) {

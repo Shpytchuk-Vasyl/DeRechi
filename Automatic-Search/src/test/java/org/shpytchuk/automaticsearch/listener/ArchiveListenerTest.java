@@ -2,7 +2,7 @@ package org.shpytchuk.automaticsearch.listener;
 
 import org.junit.jupiter.api.Test;
 import org.shpytchuk.automaticsearch.event.ArchiveRequestedEvent;
-import org.shpytchuk.automaticsearch.service.ClaimKind;
+import org.shpytchuk.automaticsearch.service.ItemKind;
 import org.shpytchuk.automaticsearch.service.ItemArchiver;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.core.Message;
@@ -24,7 +24,7 @@ class ArchiveListenerTest {
     void archivesTheKindNamedByTheRoutingKey() {
         listener.onArchiveRequested(event(7L), message("item.found.archive"));
 
-        verify(archiver).archive(ClaimKind.FOUND, 7L);
+        verify(archiver).archive(ItemKind.FOUND, 7L);
     }
 
     @Test
