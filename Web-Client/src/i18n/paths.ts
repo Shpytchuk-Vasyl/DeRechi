@@ -9,5 +9,4 @@ export const paths = {
   list: (kind: ItemKind) => `/${kind}` as const,
   item: (kind: ItemKind, id: string) => `/${kind}/${id}` as const,
   report: (kind: ItemKind) => `/report/${kind}` as const,
-  claim: (token: string) => `/claims/${token}` as const,
 } as const

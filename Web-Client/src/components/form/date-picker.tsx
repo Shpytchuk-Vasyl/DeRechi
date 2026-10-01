@@ -4,12 +4,12 @@ import { cn } from "cn"
 import { de, enUS, fr, pl, uk } from "date-fns/locale"
 import { CalendarIcon, X } from "lucide-react"
 import { useFormatter, useLocale, useTranslations } from "next-intl"
+import { Popover as RPopover } from "radix-ui"
 import { useState } from "react"
 import type { DateRange, Matcher } from "react-day-picker"
 import { IconButton } from "@/components/pouf/Button"
 import { inputClasses } from "@/components/pouf/Input"
 import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import type { Locale as AppLocale } from "@/i18n/routing"
 import { fromIsoDate, toIsoDate } from "@/lib/intl/dates"
 
@@ -125,16 +125,18 @@ export function DateRangePicker({
   }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <RPopover.Root open={open} onOpenChange={setOpen}>
       <div className="relative">
-        <PopoverTrigger asChild>{triggerButton}</PopoverTrigger>
+        <RPopover.Trigger asChild>{triggerButton}</RPopover.Trigger>
         {clearButton}
       </div>
 
-      <PopoverContent className="w-auto p-0" align="start">
-        {calendar(2, "p-3")}
-      </PopoverContent>
-    </Popover>
+      <RPopover.Portal>
+        <RPopover.Content className="pouf-popover" sideOffset={8} align="start">
+          {calendar(2, "p-1")}
+        </RPopover.Content>
+      </RPopover.Portal>
+    </RPopover.Root>
   )
 }
 
@@ -162,8 +164,8 @@ export function DatePicker({ value, onChange, placeholder, min, max, invalid, id
   if (after) disabled.push({ after })
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+    <RPopover.Root open={open} onOpenChange={setOpen}>
+      <RPopover.Trigger asChild>
         <button
           id={id}
           type="button"
@@ -176,23 +178,25 @@ export function DatePicker({ value, onChange, placeholder, min, max, invalid, id
             {selected ? format.dateTime(selected, { dateStyle: "long" }) : placeholder}
           </span>
         </button>
-      </PopoverTrigger>
+      </RPopover.Trigger>
 
-      <PopoverContent className="w-auto p-0" align="start">
-        <Calendar
-          mode="single"
-          defaultMonth={selected}
-          selected={selected}
-          onSelect={(date) => {
-            onChange(date ? toIsoDate(date) : undefined)
-            setOpen(false)
-          }}
-          disabled={disabled}
-          locale={CALENDAR_LOCALES[locale]}
-          className="p-3"
-        />
-      </PopoverContent>
-    </Popover>
+      <RPopover.Portal>
+        <RPopover.Content className="pouf-popover" sideOffset={8} align="start">
+          <Calendar
+            mode="single"
+            defaultMonth={selected}
+            selected={selected}
+            onSelect={(date) => {
+              onChange(date ? toIsoDate(date) : undefined)
+              setOpen(false)
+            }}
+            disabled={disabled}
+            locale={CALENDAR_LOCALES[locale]}
+            className="p-1"
+          />
+        </RPopover.Content>
+      </RPopover.Portal>
+    </RPopover.Root>
   )
 }
 
