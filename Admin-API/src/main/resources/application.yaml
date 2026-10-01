@@ -103,6 +103,8 @@ derechi:
   notifications:
     exchange: derechi.notifications
     routing-key: notification.match.found
+  archive:
+    exchange: derechi.items
 
 server:
   port: 8083

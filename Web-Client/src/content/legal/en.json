@@ -176,7 +176,7 @@
         "heading": "8. How long we keep data",
         "body": [
           "A notice is kept until it is taken down. After that it moves to an archive and is no longer shown on the site.",
-          "Contacts sent in response to a notice are kept until that notice is closed, and for one year at most. A notice with responses is closed when either side confirms that the item is back, or about a week after the last response."
+          "Contacts sent in response to a notice are kept for one year from the response, whether the notice is still published or archived; after that they are deleted. A notice with responses is closed when either side confirms that the item is back, or about a week after the last response."
         ]
       },
       {

@@ -190,7 +190,7 @@
     "orPost": "Oder gib selbst eine Meldung auf:",
     "confirm": {
       "title": "Ist die Sache wieder da, wo sie hingehört?",
-      "text": "Wenn du bestätigst, wird die Meldung für alle geschlossen: Sie verschwindet vom Brett, und die Kontaktdaten aus den Antworten darauf werden gelöscht.",
+      "text": "Wenn du bestätigst, wird die Meldung für alle geschlossen: Sie verschwindet vom Brett und wandert ins Archiv.",
       "button": "Ja, Meldung schließen",
       "doneTitle": "Danke, die Meldung ist geschlossen",
       "doneText": "Sie steht nicht mehr auf dem Brett. Schön, dass die Sache zurück ist.",

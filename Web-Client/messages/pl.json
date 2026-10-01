@@ -190,7 +190,7 @@
     "orPost": "Albo dodaj własne ogłoszenie:",
     "confirm": {
       "title": "Czy rzecz wróciła do właściciela?",
-      "text": "Potwierdzenie zamyka ogłoszenie dla wszystkich: zniknie z tablicy, a dane kontaktowe wysłane w odpowiedzi na nie zostaną usunięte.",
+      "text": "Potwierdzenie zamyka ogłoszenie dla wszystkich: zniknie z tablicy i trafi do archiwum.",
       "button": "Tak, zamknij ogłoszenie",
       "doneTitle": "Dziękujemy, ogłoszenie jest zamknięte",
       "doneText": "Nie jest już widoczne na tablicy. Cieszymy się, że rzecz wróciła.",

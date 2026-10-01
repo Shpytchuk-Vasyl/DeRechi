@@ -3,11 +3,9 @@
   "rabbitmq_version": "4.3.5",
   "product_name": "RabbitMQ",
   "product_version": "4.3.5",
-
   "vhosts": [
     { "name": "/" }
   ],
-
   "users": [
     {
       "name": "derechi",
@@ -17,7 +15,6 @@
       "limits": {}
     }
   ],
-
   "permissions": [
     {
       "user": "derechi",
@@ -27,12 +24,10 @@
       "read": ".*"
     }
   ],
-
   "topic_permissions": [],
   "parameters": [],
   "global_parameters": [],
   "policies": [],
-
   "exchanges": [
     {
       "name": "derechi.items",
@@ -71,7 +66,6 @@
       "arguments": {}
     }
   ],
-
   "queues": [
     {
       "name": "automatic-search.items",
@@ -129,9 +123,27 @@
       "arguments": {
         "x-queue-type": "quorum"
       }
+    },
+    {
+      "name": "automatic-search.archive",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "quorum",
+        "x-dead-letter-exchange": "derechi.items.dlx"
+      }
+    },
+    {
+      "name": "automatic-search.archive.dlq",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "quorum"
+      }
     }
   ],
-
   "bindings": [
     {
       "source": "derechi.items",
@@ -195,6 +207,22 @@
       "destination": "notification.events.dlq",
       "destination_type": "queue",
       "routing_key": "#",
+      "arguments": {}
+    },
+    {
+      "source": "derechi.items",
+      "vhost": "/",
+      "destination": "automatic-search.archive",
+      "destination_type": "queue",
+      "routing_key": "item.*.archive",
+      "arguments": {}
+    },
+    {
+      "source": "derechi.items.dlx",
+      "vhost": "/",
+      "destination": "automatic-search.archive.dlq",
+      "destination_type": "queue",
+      "routing_key": "item.*.archive",
       "arguments": {}
     }
   ]

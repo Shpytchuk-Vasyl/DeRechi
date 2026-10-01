@@ -15,9 +15,10 @@ its connection. Changing the topology means editing that file and recreating the
 |---|---|---|---|---|
 | `derechi.items` | `automatic-search.items` | `item.*.created` | `derechi.items.dlx` | `automatic-search.items.dlq` (bound with `item.*.created`) |
 | `derechi.items` | `automatic-search.claims` | `item.*.claimed`, `item.*.returned` | `derechi.items.dlx` | `automatic-search.claims.dlq` (bound with the same two patterns) |
+| `derechi.items` | `automatic-search.archive` | `item.*.archive` | `derechi.items.dlx` | `automatic-search.archive.dlq` (bound with `item.*.archive`) |
 | `derechi.notifications` | `notification.events` | `notification.#` | `derechi.notifications.dlx` | `notification.events.dlq` (bound with `#`) |
 
-All six queues are quorum queues (`x-queue-type: quorum`), durable, on the default vhost.
+All eight queues are quorum queues (`x-queue-type: quorum`), durable, on the default vhost.
 The user is `derechi` / `derechi` with full permissions; the management UI is on 15672 and
 Prometheus metrics on 15692.
 
@@ -28,6 +29,7 @@ Prometheus metrics on 15692.
 | `ItemCreatedEvent` | `ITEM_CREATED` | `Client-API`, `ItemEventAspect` after `ItemService.create(...)` returns | `derechi.items`, `item.lost.created` or `item.found.created` | `Automatic-Search`, `ItemCreatedListener` |
 | `NotificationRequestedEvent` | `NOTIFICATION` | `Admin-API`, `MatchNotificationService.notifyOwner(...)` | `derechi.notifications`, `notification.match.found` (from `derechi.notifications.routing-key`) | `Notification`, `NotificationRequestedListener` |
 | `ClaimEvent` | `CLAIM` | `Client-API`, `ClaimEventPublisher` after the claim transaction commits | `derechi.items`, `item.lost.claimed`, `item.found.claimed`, `item.lost.returned`, `item.found.returned` | `Automatic-Search`, `ClaimListener` |
+| `ArchiveRequestedEvent` | `ARCHIVE_REQUESTED` | `Admin-API`, `AdminItemService.archive(id, actor)` | `derechi.items`, `item.lost.archive`, `item.found.archive` (exchange from `derechi.archive.exchange`) | `Automatic-Search`, `ArchiveListener` |
 | `NotificationRequestedEvent` | `NOTIFICATION` | `Automatic-Search`, `ClaimNotifier` | `derechi.notifications`, `notification.claim.created`, `notification.claim.reminder` | `Notification`, `NotificationRequestedListener` |
 
 `ItemCreatedEvent` carries only what matching needs: `id`, `date`, `category` (id), `lat`,
@@ -39,8 +41,9 @@ producer), `phone`, `email`, `socialMedias` and a `deduplicationKey`. Contacts t
 channel does not need are sent as `null`; see
 [../features/match-notifications.md](../features/match-notifications.md).
 
-`ClaimEvent` carries only the claim `id`; the routing key says the kind and the verb, and
-`Automatic-Search` reads the rest from the shared database. That is why it is published after
+`ClaimEvent` carries only the claim `id` and `ArchiveRequestedEvent` the item `id` plus the
+admin's login for the log; the routing key says the kind and the verb, and `Automatic-Search`
+reads the rest from the shared database. That is why it is published after
 the commit, from a `@TransactionalEventListener(AFTER_COMMIT)`, not from an aspect: see
 [../features/claims.md](../features/claims.md).
 
@@ -93,7 +96,7 @@ are there to be inspected in the management UI.
 
 Three things skip the retry on purpose by throwing `AmqpRejectAndDontRequeueException`:
 
-- `ItemCreatedListener` and `ClaimListener` when no handler is registered for the received routing key;
+- `ItemCreatedListener`, `ClaimListener` and `ArchiveListener` when no handler is registered for the received routing key;
 - `NotificationRequestedListener` when the sender throws, since a retry at the NotifyHub
   level has already happened (`notify.retry.max-attempts: 3`).
 

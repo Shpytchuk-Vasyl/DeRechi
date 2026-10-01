@@ -9,7 +9,7 @@ Tests are JUnit 5 with AssertJ and Spring Boot's test starters. Database-backed 
 - `Client-API`: `ContactMaskerTest`, `ItemSortTest`, `ItemMapperTest`, `ItemCreatedEventTest`, `EventTypeScannerTest`, `WithinDaysLocalDateValidatorTest`, `CountriesPropertiesTest`
 - `Admin-API`: `FormatsTest`, `NotifyChannelTest`, `ItemFilterTest`, `PermissionsTest`, `MessagesTest`, `CountriesPropertiesTest`, `MatchNotificationServiceTest`, `LostItemAdminServiceTest`
 - `Notification`: `NotificationSenderTest` (uses NotifyHub's `TestNotifyHub` to capture what would be sent)
-- `Automatic-Search`: `PhoneLocalesTest`, `ClaimNotifierTest`, `ClaimFollowUpJobTest`, `ClaimListenerTest`, `MessagesTest`
+- `Automatic-Search`: `PhoneLocalesTest`, `ClaimNotifierTest`, `ClaimFollowUpJobTest`, `ItemArchiverTest`, `ClaimListenerTest`, `ArchiveListenerTest`, `MessagesTest`
 
 **Slice tests** (`*Tests`): one layer with a Spring context.
 

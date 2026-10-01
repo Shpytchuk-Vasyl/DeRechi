@@ -40,6 +40,7 @@ day +1   Automatic-Search job ──notification.claim.reminder──▶ author:
 day +2   Automatic-Search job ──notification.claim.reminder──▶ claimant: "did you get it back? <link>"
 link     Web-Client ──confirmReturn(token)──▶ Client-API ──item.<kind>.returned──▶ Automatic-Search archives the notice
 day +7   Automatic-Search job archives the notice if nobody confirmed (counted from the newest claim)
+admin    Admin-API ──item.<kind>.archive──▶ Automatic-Search archives the notice (same code path)
 ```
 
 ### Client-API
@@ -51,6 +52,9 @@ Three mutations in `schema.graphqls`, handled by `ClaimController`:
 | `claimLostItem(id, contact)` | the viewer found the lost item; the owner is notified |
 | `claimFoundItem(id, contact)` | the viewer owns the found item; the finder is notified |
 | `confirmReturn(token)` | from a reminder link; stamps `confirmed_at` and asks for the archive |
+
+Everything that archives goes through Automatic-Search, which is why the admin panel also only
+*asks* (see below): one archiver, one place that knows how claims follow a notice into history.
 
 `contact` is the same `ContactInfoInput` as in `ItemInput` (E.164 phone, email, optional
 messengers) with the same validation. Unknown item or token → `NOT_FOUND`.
@@ -86,15 +90,19 @@ The worker gained a second queue, `automatic-search.claims`, bound with `item.*.
   2. reminds claimants `claimant-reminder-after` (1 day) after the author reminder, stamps `claimant_reminded_at`;
   3. archives items that have a confirmed claim (fallback for a lost `returned` event);
   4. archives items whose **newest** claim is older than `archive-after` (7 days);
-  5. deletes claims older than `retention` (1 year) with their contact infos, a safety net in case
-     step 4 is disabled.
+  5. deletes claims older than `retention` (1 year), archived or not, with their contact infos:
+     this is what keeps the privacy policy's "one year at most" true.
   Each claim is handled in its own transaction, publish first and stamp second: a RabbitMQ outage
   is retried on the next run, and a stamp failure at worst repeats a message inside NotifyHub's
   one-hour dedup window.
-- `ItemArchiver` does what the admin "Archive" does: copies the item into `*_item_history` with
-  `archived_at`, deletes its `similar_item` rows, deletes its claims **and their contact infos**,
-  deletes the item. To do this the module now carries `LostItemHistory`/`FoundItemHistory` and
-  `Thing` has `compensation` and `currency` like the other copies.
+- `ItemArchiver` is the **only** code that archives a notice; the admin "Archive" button sends an
+  `ARCHIVE_REQUESTED` event (`item.<kind>.archive`, queue `automatic-search.archive`,
+  `ArchiveListener`) and this class runs it, as it does for a confirmed return and for the job.
+  It copies the item into `*_item_history` with `archived_at`, deletes its `similar_item` rows,
+  re-points its claims at the history copy (`lost_item_id` → `null`, `lost_item_history_id` →
+  the new id) and deletes the item. The claimants' contacts stay for the retention period. To do
+  this the module carries `LostItemHistory`/`FoundItemHistory` and `Thing` has `compensation`
+  and `currency` like the other copies.
 
 Config, `Automatic-Search/src/main/resources/application.yaml`:
 
@@ -127,22 +135,32 @@ Unchanged contract, two fixes that this feature needed:
 
 ### Admin-API
 
-Read-only. The lost and found lists show a tag with the number of responses next to the title,
-and the item dialog lists them: phone with messenger icons, email, when, and a status tag
-(new / reminded / confirmed). Archiving or deleting a notice deletes its claims and their contact
-infos first (`AdminItemService.deleteClaims`, next to `deleteMatches`); the archives have none.
+Read-only. The lost and found lists, and the two archives, show a tag with the number of
+responses next to the title, and the item dialog lists them: phone with messenger icons, email,
+when, and a status tag (new / reminded / confirmed). The archive pages look claims up by the
+history copy.
+
+"Archive" no longer copies anything itself: `AdminItemService.archive(id, actor)` checks the
+notice exists and publishes `ArchiveRequestedEvent` to `derechi.items` with
+`item.<kind>.archive`; Automatic-Search does the work a moment later, so the flash message says
+the notice is *being* archived and the row leaves the list on the next load. If RabbitMQ is down
+the button fails like "Notify" does. "Delete" stays synchronous and final: it deletes the matches,
+the claims **and their contact infos** (`deleteClaims`, next to `deleteMatches`), then the row.
 
 ## Storage
 
 `lost_item_claim` and `found_item_claim` (migration `006-item-claims`), one row per response:
-the item, the claimant's `contact_info_id`, `token`, `created_at`, `author_reminded_at`,
-`claimant_reminded_at`, `confirmed_at`. Plain foreign keys without cascade: whoever deletes an
-item must delete its claims first, and a forgotten clean-up fails loudly instead of leaving
-orphaned contacts.
+`lost_item_id` **or** `lost_item_history_id` (a `CHECK` makes it exactly one), the claimant's
+`contact_info_id`, `token`, `created_at`, `author_reminded_at`, `claimant_reminded_at`,
+`confirmed_at`. While the notice is published the claim points at it; archiving re-points it at
+the history copy, so the claim and the claimant's contacts survive and the archive pages can show
+who responded and whether the return was confirmed. Plain foreign keys without cascade: deleting a
+notice outright must delete its claims first, and a forgotten clean-up fails loudly instead of
+leaving orphaned contacts.
 
-The claimant's contacts therefore live exactly as long as the notice, which with claims is at
-most about a week after the last response, and never more than a year. The privacy policy on the
-web client says so.
+The claimant's contacts live for `derechi.claims.retention` (one year) from the response, live or
+archived; the follow-up job deletes the claim and its `contact_info` row after that. Deleting a
+notice from the admin panel deletes them at once. The privacy policy on the web client says so.
 
 ## Abuse
 
@@ -166,10 +184,10 @@ check details before meeting.
 ## Where to look
 
 - `Client-API/src/main/java/org/shpytchuk/clientapi/service/ClaimService.java`, `ReturnService.java`, `controller/ClaimController.java`, `event/ClaimEventPublisher.java`
-- `Automatic-Search/src/main/java/org/shpytchuk/automaticsearch/listener/ClaimListener.java`, `service/ClaimNotifier.java`, `service/ClaimFollowUpJob.java` (+ `ClaimFollowUps`, one transaction per claim), `service/ItemArchiver.java`, `language/PhoneLocales.java`, `src/main/resources/messages*.properties`
+- `Automatic-Search/src/main/java/org/shpytchuk/automaticsearch/listener/ClaimListener.java`, `listener/ArchiveListener.java`, `service/ClaimNotifier.java`, `service/ClaimFollowUpJob.java` (+ `ClaimFollowUps`, one transaction per claim), `service/ItemArchiver.java`, `language/PhoneLocales.java`, `src/main/resources/messages*.properties`
 - `Notification/src/main/java/org/shpytchuk/notification/service/NotificationSender.java`
 - `Admin-API/src/main/java/org/shpytchuk/adminapi/service/AdminItemService.java`, `templates/fragments/dialogs.html`
 - `Web-Client/src/screens/found_lost/claim-card.tsx`, `src/screens/claims/confirm-return.tsx`, `src/app/actions/claim.ts`
 - `DB-Postgres/changelog/changes/006-item-claims.postgresql.sql`
 - `docker/rabbitmq/definitions.json`
-- Tests: `ClaimControllerTests`, `ClaimNotifierTest`, `ClaimFollowUpJobTest`, `PhoneLocalesTest`, `NotificationSenderTest`, `LostItemAdminServiceTest`
+- Tests: `ClaimControllerTests`, `ClaimNotifierTest`, `ClaimFollowUpJobTest`, `ItemArchiverTest`, `ArchiveListenerTest`, `PhoneLocalesTest`, `NotificationSenderTest`, `LostItemAdminServiceTest`

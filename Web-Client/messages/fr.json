@@ -190,7 +190,7 @@
     "orPost": "Ou publiez votre propre annonce :",
     "confirm": {
       "title": "L'objet est-il revenu à son propriétaire ?",
-      "text": "Confirmer ferme l'annonce pour tout le monde : elle disparaît du tableau et les coordonnées envoyées en réponse sont supprimées.",
+      "text": "Confirmer ferme l'annonce pour tout le monde : elle disparaît du tableau et passe aux archives.",
       "button": "Oui, fermer l'annonce",
       "doneTitle": "Merci, l'annonce est fermée",
       "doneText": "Elle n'apparaît plus sur le tableau. Nous sommes ravis que l'objet ait retrouvé son chemin.",

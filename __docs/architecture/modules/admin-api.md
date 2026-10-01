@@ -124,10 +124,12 @@ re-rendering the row. The htmx choreography around it is in
 
 ## Claims
 
-The lost and found lists show how many people responded to a notice and the item dialog lists
-them (phone, email, when, status). `AdminItemService.deleteClaims` runs next to `deleteMatches`
-on archive and delete, removing the claims and their contact infos. See
-[../../features/claims.md](../../features/claims.md).
+The lost and found lists and both archives show how many people responded to a notice and
+the item dialog lists them (phone, email, when, status); the archives look claims up by the
+history copy. `AdminItemService.deleteClaims` runs next to `deleteMatches` on delete, removing
+the claims and their contact infos. Archive does not touch rows at all: it publishes
+`ArchiveRequestedEvent` (`derechi.archive.exchange`, `item.<kind>.archive`) and
+`Automatic-Search` archives the notice. See [../../features/claims.md](../../features/claims.md).
 
 ## Uploads and maps
 

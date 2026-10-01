@@ -1,6 +1,7 @@
 package org.shpytchuk.adminapi.config;
 
 import org.shpytchuk.adminapi.config.property.AdminProperties;
+import org.shpytchuk.adminapi.config.property.ArchiveProperties;
 import org.shpytchuk.adminapi.config.property.NotificationProperties;
 import org.shpytchuk.adminapi.security.KeycloakAuthoritiesMapper;
 import org.shpytchuk.adminapi.security.PermissionChecker;
@@ -20,7 +21,7 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 
 @Configuration
 @EnableMethodSecurity
-@EnableConfigurationProperties({AdminProperties.class, NotificationProperties.class})
+@EnableConfigurationProperties({AdminProperties.class, NotificationProperties.class, ArchiveProperties.class})
 public class SecurityConfig {
 
     @Bean
@@ -36,13 +37,11 @@ public class SecurityConfig {
                 .build();
     }
 
-    /** Дозволяє {@code @RequirePermission} підставляти {scope}/{action} у вираз @PreAuthorize. */
     @Bean
     public AnnotationTemplateExpressionDefaults annotationTemplateExpressionDefaults() {
         return new AnnotationTemplateExpressionDefaults();
     }
 
-    /** Іменований бін {@code perm}, через який @PreAuthorize перевіряє Scope:Action. */
     @Bean("perm")
     public PermissionChecker permissionChecker() {
         return new PermissionChecker();

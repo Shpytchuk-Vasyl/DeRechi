@@ -1,0 +1,215 @@
+# Web-Client
+
+Public web client for DeRechi. Next.js App Router with server rendering, GraphQL against
+`Client-API`, five locales, Tailwind v4 and shadcn/ui.
+
+Not a Maven module: it lives beside the reactor and is built with pnpm.
+
+## Commands
+
+```bash
+pnpm install
+pnpm dev          # http://localhost:3000
+pnpm build        # needs Client-API reachable at GRAPHQL_URL
+pnpm start
+
+pnpm codegen      # regenerate types from Client-API's schema file
+pnpm lint         # Biome (format + lint)
+pnpm format       # Biome with --write
+pnpm typecheck
+pnpm test         # message-bundle parity
+```
+
+## How requests flow
+
+The browser never talks to the Gateway. Server components and server actions call
+`GRAPHQL_URL` from the server, and the only query surface exposed to the client is the
+`loadMoreItems` server action behind the "show more" button. The one exception is images:
+they are served straight from `NEXT_PUBLIC_FILES_URL` (the Gateway's `/files/**` route into
+MinIO), which is why that origin is in `next.config.ts`'s `remotePatterns`.
+
+## Types
+
+`pnpm codegen` reads `../Client-API/src/main/resources/graphql/schema.graphqls` plus
+`graphql/connections.graphqls`; the latter spells out the Relay connection types that
+Spring for GraphQL registers at runtime and therefore keeps out of the schema file. No
+running server is needed, so a schema change shows up as a diff here.
+
+## Locales
+
+`en` (fallback), `uk`, `pl`, `de`, `fr`: the same five the admin panel ships, sharing its
+`DERECHI_LOCALE` cookie. Every URL carries its locale (`/uk/lost`). Copy lives in
+`messages/*.json`; `pnpm test` fails when a key or a message argument exists in one bundle
+and not in the others, which is the only way that divergence is visible before it reaches
+the screen.
+
+## Countries and currencies
+
+Country is a second axis next to the language. The locale lives in the URL and
+`DERECHI_LOCALE`; the country in `DERECHI_COUNTRY`, with no URL segment: a Pole in Germany
+reads Polish copy, sees euro rewards and the German terms.
+
+The list of supported countries, and with it the reward currencies, comes from
+`Client-API`'s `countries` query (`fetchCountries`, cached an hour; during an outage it falls
+back to the API's default country so the layout still renders) and is hardcoded nowhere
+here; country names come from `Intl.DisplayNames`, so a new country needs no message key.
+`CountryProvider` in the locale layout hands the list to the client together with the viewer's
+country, which it reads **from the cookie on the client** (`useSyncExternalStore`, server
+snapshot = the first country in the list). Reading `cookies()` in the layout would make every
+page dynamic; this way the home and list pages stay cacheable and only the client corrects
+the currency of the demos on hydration.
+
+The viewer never chooses the country; there is no switcher. The proxy seeds the cookie from
+Vercel's `x-vercel-ip-country` on the first visit, which is the one thing here that depends on
+the hosting: on any other host the header is absent, the cookie is never written and the
+fallback country applies to everyone. The same holds in `next dev`. The only override is the
+`?country=XX` query on `/terms` and `/privacy`, which the notice form uses to open the legal
+texts for the country of the place being reported.
+
+A notice carries the country of its **place**: the autocomplete reads it from Google's
+`address_components`, the geolocation path from the geocoder result, known places come back
+from the API with it, and a place typed by hand takes the viewer's country. `componentRestrictions`
+now covers all supported countries (Google allows at most five). The reward is `MoneyInput`:
+the amount plus an optional currency; the select in the contacts step shows the currency of
+the place's country and only stores an explicit choice, the same default `Client-API` applies.
+Rewards are displayed in the currency they were posted in (`formatMoney`); nothing converts.
+
+## Claims
+
+A viewer who recognises a notice ("it's mine" on a found one, "I found it" on a lost one)
+answers it from the notice page itself: `ClaimCard` sits where the masked contacts are and
+expands into an inline form (phone, email, messengers: the same `ContactFields` the report
+form uses). The detail page also renders inside the modal route's `RouteDialog`, which is why
+the form is inline and never a nested dialog. Nothing the claimant types is shown anywhere;
+`Client-API` stores it and Automatic-Search mails and texts it to the notice's author.
+
+`claimNotice(kind, id, values)` in `src/app/actions/claim.ts` validates with `claimSchema`,
+runs the same BotID check as `createNotice` (`src/lib/bot-check.ts`; the claim posts to the
+notice page, so `/*/lost/*` and `/*/found/*` are in `instrumentation-client.ts`'s `protect`
+list), calls `claimLostItem`/`claimFoundItem` and sets `DERECHI_CLAIM_<kind>_<id>=1` for an
+hour. The cookie is readable by script on purpose: the page stays cacheable, the server render
+always shows the button, and `ClaimCard` swaps in the "already sent" state on mount. A second
+claim with the same phone or email comes back as `repeated: true`, and nothing is sent again.
+
+The author and later the claimant get a reminder linking to `/<locale>/claims/<token>`. That
+page (`noindex`, disallowed in `robots.txt`) has one button that calls `confirmReturn(token)`;
+the notice is then archived by Automatic-Search. An unknown or used-up token reads as "this
+link is no longer valid". The action revalidates both list tags, but not the notice's own
+detail tag: the token does not say which notice it closes, so that page stays cached until its
+hour runs out, and a claim sent from it in the meantime answers `notFound`, which revalidates
+that notice's tag.
+
+## Legal texts per country
+
+`src/content/legal/<locale>.json` holds the documents; the sentences that depend on the
+country are slots: `{findersLaw}` (finder's duties and fee), `{governingLaw}`, `{dataLaw}`,
+`{rightsBasis}` and `{complaintRight}`. They are filled from
+`src/content/legal/jurisdictions/<CC>.json`, one file per supported country with the five
+sentences in every locale and that country's `updated` date. Adding a country to
+`derechi.countries.supported` therefore means adding one jurisdiction file; without it the
+page falls back to the first jurisdiction and warns in the server log.
+
+`/terms` and `/privacy` read the viewer's country (cookie, then geo header) on the server, so
+only those two pages are dynamic. `?country=XX` overrides it: the consent line in the notice
+form links to the version for the country of the place being reported, since that is the
+market the notice is posted in. The texts are drafts for a lawyer, like the `[OPERATOR NAME]`
+placeholders they already contain.
+
+## Uploads
+
+Photos go **straight from the browser to MinIO through the Gateway**; no image byte passes
+through Node, and `Client-API` needs no upload endpoint.
+
+The file is held in the browser while the form is filled in and travels **when the notice is
+submitted**, not when it is chosen: an abandoned form then leaves nothing in the bucket, and
+the photo is only stored once the rest of the notice has passed validation.
+
+1. `createUploadTicket` (a server action) checks the type and size, generates the key
+   (`items/yyyy/MM/<uuid>.<ext>`, the layout `Admin-API` already writes) and signs a PUT URL
+   with SigV4, see `src/lib/uploads/presign.ts`.
+2. The browser PUTs the file to `http://<gateway>/derechi-files/<key>?X-Amz-…`.
+3. The Gateway's `files-upload` route forwards it to MinIO with **`PreserveHostHeader`** and
+   no path rewrite: the signature covers both, so either one would break it. A presigned PUT
+   cannot cap its own body, so a `RequestSize` filter does (5 MB, `MINIO_MAX_UPLOAD`).
+4. The notice stores the key; reads go through the existing `/files/**` route.
+
+Because the key only exists after the upload, the browser validates the form with
+`draftSchema` (the full schema minus `image`) and the "a found item needs a photo" rule is
+checked against the picked file. The server action still runs the complete `reportSchema`, so
+the contract with Client-API is unchanged.
+
+`S3_PUBLIC_ENDPOINT` must therefore be the origin **the browser** uses (the Gateway), not
+MinIO's internal address: it is signed into the URL. Testing from a phone on the same
+network means the LAN address (`http://192.168.x.y:8080`), and the Gateway's
+`WEB_ORIGIN_PATTERNS` has to let that origin through CORS.
+
+A `403` on the PUT with an **empty body and no `Server: MinIO` header** is the Gateway
+refusing the request on CORS grounds, not a bad signature: MinIO answers with an XML body and
+its own `Server` header. The browser's `Origin` has to match `WEB_ORIGIN_PATTERNS`, which is
+what makes uploads from a phone on the LAN work.
+
+A `404` on the PUT comes from the Gateway, not from MinIO. MinIO would answer `403` for a
+bad signature and `404` only for a missing bucket. It means the `files-upload` route is not
+in the running Gateway. `curl -i -X PUT http://localhost:8080/derechi-files/probe` tells the
+two apart: `403` means the route is live and MinIO rejected the unsigned request, `404` means
+the Gateway is still running an older config.
+
+The signing is verified against a real MinIO rather than a golden string:
+
+```bash
+docker compose up -d minio                   # from the repo root
+./mvnw -pl Getaway spring-boot:run           # for the through-the-Gateway run
+
+S3_TEST_ENDPOINT=http://localhost:9000 pnpm test                      # MinIO directly
+# through the Gateway (adds the 413 size-cap check)
+S3_TEST_ENDPOINT=http://localhost:8080 S3_TEST_READ_URL=http://localhost:8080/files S3_TEST_MAX_BYTES=5242880 pnpm test
+```
+
+Without `S3_TEST_ENDPOINT` those tests skip, so `pnpm test` stays offline by default.
+
+## Tour
+
+driver.js, mounted per page with `<Tour id="home" />`. Steps point at `data-tour` attributes
+rather than class names, and a step whose element is not on the current screen is dropped
+instead of being shown against a page corner.
+
+It runs itself once per visitor (`derechi.tour.<id>` in localStorage, wrapped in try/catch
+because private windows throw) and afterwards only from the header button. That button comes
+from `TourProvider`: a page with a tour registers its run function, and the button renders
+only when one has, so it never offers a tour that is not there.
+
+driver.js substitutes its own `{{current}}`/`{{total}}` in the progress text, which ICU would
+refuse to parse, so the bundle keeps plain `{current}`/`{total}` arguments and the component
+passes driver's tokens in as values.
+## Search
+
+Every page sets its own `canonical` and one `hreflang` per locale (plus `x-default`) through
+`pageAlternates` in `src/lib/seo.ts`; the layout's alternates alone would point every page at
+the locale's home. Notice pages get a title of the form `Lost: Keys – Lviv, 12 Sept 2026`,
+breadcrumbs and an `ItemPage` in JSON-LD; the home page adds `WebSite` with a `SearchAction`.
+Pages without a photo inherit the generated card from `[locale]/opengraph-image.tsx`.
+
+Nothing is indexable unless `NODE_ENV` is `production` **and** `NEXT_PUBLIC_SITE_URL` is a public
+host (`INDEXABLE` in `src/lib/seo.ts`): `next dev`, a local `pnpm start` and a LAN address all
+answer `noindex` on every page and `Disallow: /` in `robots.txt`, so a tunnel or a shared link
+never puts `localhost:3000` into an index.
+
+A notice older than `STALE_AFTER_DAYS` answers `noindex, follow` and drops out of the sitemap:
+the API has no status yet, so age stands in for "resolved". The sitemap is split with
+`generateSitemaps` into `pages` plus one chunk per kind and calendar month (`lost-0`,
+`found-1`, …), each a date window walked with the cursor, and `robots.txt` lists all of them.
+
+The list pages accept `?after=<cursor>`: the page is rendered from that cursor and its
+metadata carries `<link rel="next">` to the following one, so a crawler can walk past the
+first page without the "show more" button.
+
+### TODO
+
+- `lastModified` in the sitemap is the notice's own date, not when the record last changed:
+  `Client-API` exposes no `updatedAt`, so search engines see every notice as never updated.
+- `changeFrequency` on the list pages is ignored by Google; it stays only for other crawlers.
+- Replace the age-based `noindex` with a real status (returned / archived) once the API has
+  one, and answer `410` for notices that are gone for good.
+- City × category landing pages (`/found/[city]/[category]`) with their own copy: that is
+  where most organic traffic on a lost-and-found board lands, and filter URLs cannot rank for
+  it because their canonical collapses onto the plain list.

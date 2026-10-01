@@ -176,7 +176,7 @@
         "heading": "8. Jak długo przechowujemy dane",
         "body": [
           "Ogłoszenie jest przechowywane, dopóki nie zostanie zdjęte z publikacji. Następnie trafia do archiwum i nie jest już wyświetlane na stronie.",
-          "Dane kontaktowe wysłane w odpowiedzi na ogłoszenie przechowujemy do zamknięcia tego ogłoszenia, nie dłużej niż rok. Ogłoszenie z odpowiedziami zostaje zamknięte, gdy jedna ze stron potwierdzi zwrot rzeczy, albo około tygodnia po ostatniej odpowiedzi."
+          "Dane kontaktowe wysłane w odpowiedzi na ogłoszenie przechowujemy przez rok od odpowiedzi, niezależnie od tego, czy ogłoszenie jest nadal opublikowane, czy już zarchiwizowane; potem je usuwamy. Ogłoszenie z odpowiedziami zostaje zamknięte, gdy jedna ze stron potwierdzi zwrot rzeczy, albo około tygodnia po ostatniej odpowiedzi."
         ]
       },
       {

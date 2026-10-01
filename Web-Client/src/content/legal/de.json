@@ -176,7 +176,7 @@
         "heading": "8. Wie lange Daten gespeichert werden",
         "body": [
           "Eine Anzeige wird gespeichert, bis sie von der Veröffentlichung genommen wird. Danach wird sie ins Archiv verschoben und auf der Website nicht mehr angezeigt.",
-          "Kontaktdaten, die als Antwort auf eine Anzeige gesendet wurden, werden gespeichert, bis diese Anzeige geschlossen wird, höchstens jedoch ein Jahr. Eine Anzeige mit Antworten wird geschlossen, sobald eine Seite die Rückgabe bestätigt, oder etwa eine Woche nach der letzten Antwort."
+          "Kontaktdaten, die als Antwort auf eine Anzeige gesendet wurden, werden ein Jahr ab der Antwort gespeichert, egal ob die Anzeige noch veröffentlicht oder schon archiviert ist; danach werden sie gelöscht. Eine Anzeige mit Antworten wird geschlossen, sobald eine Seite die Rückgabe bestätigt, oder etwa eine Woche nach der letzten Antwort."
         ]
       },
       {

@@ -46,6 +46,8 @@ derechi:
     claimant-reminder-after: P1D
     archive-after: P7D
     retention: P365D
+  archive:
+    queue: automatic-search.archive
 
 server:
   port: 8085

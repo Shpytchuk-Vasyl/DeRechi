@@ -190,7 +190,7 @@
     "orPost": "Or post your own notice:",
     "confirm": {
       "title": "Is the item back with its owner?",
-      "text": "Confirming closes the notice for everyone: it leaves the board, and the contacts sent in response to it are deleted.",
+      "text": "Confirming closes the notice for everyone: it leaves the board and moves to the archive.",
       "button": "Yes, close the notice",
       "doneTitle": "Thanks, the notice is closed",
       "doneText": "It no longer shows on the board. We're glad the item made it back.",

@@ -43,7 +43,8 @@ public abstract class AbstractPostgresTests {
         try (Connection connection = connect();
              Statement statement = connection.createStatement()) {
             statement.execute("""
-                    TRUNCATE similar_item, lost_item_history, found_item_history,
+                    TRUNCATE similar_item, lost_item_claim, found_item_claim,
+                             lost_item_history, found_item_history,
                              lost_item, found_item, contact_info, place
                     RESTART IDENTITY CASCADE
                     """);

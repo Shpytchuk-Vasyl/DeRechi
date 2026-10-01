@@ -176,7 +176,7 @@
         "heading": "8. Durée de conservation des données",
         "body": [
           "Une annonce est conservée jusqu’à ce qu’elle soit retirée de la publication. Elle est ensuite déplacée dans les archives et n’est plus affichée sur le site.",
-          "Les coordonnées envoyées en réponse à une annonce sont conservées jusqu’à la fermeture de cette annonce, et un an au maximum. Une annonce ayant reçu des réponses est fermée lorsque l’une des parties confirme la restitution de l’objet, ou environ une semaine après la dernière réponse."
+          "Les coordonnées envoyées en réponse à une annonce sont conservées un an à compter de la réponse, que l’annonce soit encore publiée ou déjà archivée ; elles sont ensuite supprimées. Une annonce ayant reçu des réponses est fermée lorsque l’une des parties confirme la restitution de l’objet, ou environ une semaine après la dernière réponse."
         ]
       },
       {

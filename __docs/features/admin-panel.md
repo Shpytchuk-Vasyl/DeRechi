@@ -42,7 +42,7 @@ The photo is uploaded as soon as it is dropped (`POST /admin/uploads`) and the r
 
 ### Archive versus delete
 
-Both remove the row from `lost_item` or `found_item`, delete its `similar_item` pairs and its claims with their contact infos (see [Claims](claims.md)). Archive first copies the notice into `lost_item_history` or `found_item_history` with `archived_at = now()`. The archive pages list those tables with the same filters but no form. Delete is final.
+Delete is synchronous and final: it removes the row from `lost_item` or `found_item` together with its `similar_item` pairs and its claims with their contact infos. Archive only publishes an `ArchiveRequestedEvent`; `Automatic-Search` then copies the notice into `lost_item_history` or `found_item_history` with `archived_at = now()`, re-points its claims at the copy, drops the matches and deletes the row, a moment after the click. The flash says the notice is being archived and the list catches up on the next load. The archive pages list the history tables with the same filters but no form, including the responses each notice had (see [Claims](claims.md)).
 
 ## Permissions in templates
 
