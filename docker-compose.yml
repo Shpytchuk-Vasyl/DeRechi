@@ -28,6 +28,7 @@ services:
     container_name: derechi-pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@derechi.local
+      PGADMIN_CONFIG_ALLOW_SPECIAL_EMAIL_DOMAINS: "['local']"
       PGADMIN_DEFAULT_PASSWORD: admin
       PGADMIN_CONFIG_SERVER_MODE: "False"
       PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
