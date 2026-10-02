@@ -194,4 +194,4 @@ check details before meeting.
 - `Web-Client/src/screens/found_lost/claim-card.tsx`, `src/screens/claims/confirm-return.tsx`, `src/app/actions/claim.ts`
 - `DB-Postgres/changelog/changes/006-item-claims.postgresql.sql`
 - `docker/rabbitmq/definitions.json`
-- Tests: `ClaimControllerTests`, `ClaimNotifierTest`, `ClaimFollowUpJobTest`, `ItemArchiverTest`, `ArchiveListenerTest`, `PhoneLocalesTest`, `NotificationSenderTest`, `LostItemAdminServiceTest`
+- Tests: `ClaimControllerTests`, `ClaimEventAspectTest`, `ClaimNotifierTest`, `ClaimFollowUpJobTest`, `ClaimFollowUpsTests`, `ClaimRepositoryTests` (Worker), `ClaimHandlersTest`, `ItemArchiverTest`, `ItemArchiverTests`, `ArchiveListenerTest`, `PhoneLocalesTest`, `NotificationSenderTest`, `LostItemAdminServiceTest`, `AdminItemServiceTests`, `ItemClaimsTests`, and in `Web-Client` `claim.test.ts`, `claim-schema.test.ts`, `claim-cookie.test.ts`

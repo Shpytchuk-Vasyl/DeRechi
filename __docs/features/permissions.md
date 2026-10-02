@@ -58,6 +58,6 @@ Dev users: `admin@derechi.local` (`ADMIN_SUPER`), `moderator@derechi.local` (`AD
 - `Admin-API/src/main/java/org/shpytchuk/adminapi/security/`
 - `Admin-API/src/main/java/org/shpytchuk/adminapi/config/SecurityConfig.java`
 - `docker/keycloak/realms/derechi-realm.json`
-- Tests: `PermissionsTest`, and the 403 cases in `LostItemControllerTests` and `LostItemHistoryControllerTests`
+- Tests: `PermissionsTest`, `KeycloakAuthoritiesMapperTest`, `ItemControllerPermissionsTests` (every route of the four item controllers), and the 403 cases in `LostItemControllerTests`, `LostItemHistoryControllerTests`, `MatchControllerTests` and `UploadControllerTests`
 
 Extending: [Add an admin permission](../extending/add-an-admin-permission.md). Realm editing rules: [Keycloak realm changes](../processes/keycloak-realm-changes.md).

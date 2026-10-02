@@ -17,7 +17,7 @@ pnpm codegen      # regenerate types from Client-API's schema file
 pnpm lint         # Biome (format + lint)
 pnpm format       # Biome with --write
 pnpm typecheck
-pnpm test         # message-bundle parity
+pnpm test         # Vitest: bundle parity, schemas, server actions, URL/SEO helpers
 ```
 
 ## How requests flow
@@ -34,6 +34,26 @@ MinIO), which is why that origin is in `next.config.ts`'s `remotePatterns`.
 `graphql/connections.graphqls`; the latter spells out the Relay connection types that
 Spring for GraphQL registers at runtime and therefore keeps out of the schema file. No
 running server is needed, so a schema change shows up as a diff here.
+
+## Tests
+
+Vitest, colocated as `<name>.test.ts`, no browser and no running backend:
+
+- `i18n/messages.test.ts`: the five bundles have the same keys and arguments.
+- `schema/report-schema.test.ts`, `schema/claim-schema.test.ts`: the client rules mirror
+  Client-API's inputs (E.164 phone, email width, photo on a found notice, date window) and
+  the mapping to `ItemInput` / `ContactInfoInput` sends empty optionals as `null`.
+- `app/actions/report.test.ts`, `app/actions/claim.test.ts`: the server actions with
+  `@/graphql/client`, `@/lib/bot-check`, `next/headers` and `next/cache` mocked: invalid
+  input and bots never reach the API, the mutation variables, the one-hour
+  `DERECHI_CLAIM_<kind>_<id>` cookie, `NOT_FOUND` versus other failures, and which cache
+  tags are revalidated.
+- `lib/claim-cookie.test.ts`, `lib/item-search.test.ts` (query string to filter and back),
+  `lib/intl/country.test.ts`, `lib/intl/dates.test.ts`, `lib/seo.test.ts`.
+- `lib/uploads/presign.test.ts` and `presign.integration.test.ts`, see "Uploads" below.
+
+React components are not unit-tested; `async` server components are not supported by
+Vitest, and the screens are checked by hand in `pnpm dev`.
 
 ## Locales
 

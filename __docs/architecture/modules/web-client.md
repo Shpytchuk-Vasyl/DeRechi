@@ -53,8 +53,14 @@ pnpm dev          # http://localhost:3000, needs Getaway + Client-API running
 pnpm codegen      # after a schema change
 pnpm lint         # Biome
 pnpm typecheck
-pnpm test         # bundle parity; upload tests run only with S3_TEST_ENDPOINT set
+pnpm test         # Vitest: bundle parity, schemas, server actions, URL/SEO helpers; upload tests run only with S3_TEST_ENDPOINT set
 ```
+
+`pnpm test` runs offline: besides bundle parity it covers the report and claim schemas, the
+`createNotice` / `claimNotice` / `confirmReturn` server actions with the GraphQL client, bot
+check, cookies and cache mocked (validation, the `DERECHI_CLAIM_<kind>_<id>` cookie, `NOT_FOUND`
+handling, revalidated tags), and the search, date and SEO helpers. React components are not
+unit-tested. The list of test files is in `Web-Client/README.md`.
 
 The web client is not part of the Docker Compose setup or the `Dockerfile`; it runs with
 pnpm on the developer machine or wherever Next.js is deployed.

@@ -50,4 +50,4 @@ In the containerised setup `MINIO_PUBLIC_URL` for `Admin-API` is `http://localho
 - `Admin-API/src/main/java/org/shpytchuk/adminapi/config/property/StorageProperties.java`, `config/StorageConfig.java`
 - `Admin-API/src/main/resources/static/js/image-upload.js`
 - `Getaway/src/main/resources/application.yaml` (routes `files-upload`, `files`)
-- Tests: `ImageStorageIT` (runs only when the local MinIO on port 9000 is up, `@EnabledIf("minioIsUp")`)
+- Tests: `UploadControllerTests` (who may upload, the localized rejection), `ImageStorageIT` (runs only when the local MinIO on port 9000 is up, `@EnabledIf("minioIsUp")`), and in `Web-Client` `presign.test.ts` / `presign.integration.test.ts`

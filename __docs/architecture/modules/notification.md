@@ -102,7 +102,10 @@ healthy. Sent mail shows up at `http://localhost:8025`.
 
 `NotificationSenderTest` uses NotifyHub's `TestNotifyHub` (an in-memory hub from
 `io.notifyhub.core.testing`) to assert that an event with both contacts produces one email
-and one SMS with the message as content. `NotificationApplicationTests` loads the context.
+and one SMS with the message as content, that unconfigured channels are skipped and that the
+dedup key is per event. `NotificationRequestedListenerTest` checks that a failed delivery is
+rejected without requeue, `RabbitConfigTest` that a message labelled `NOTIFICATION` from another
+module is read into this module's record. `NotificationApplicationTests` loads the context.
 
 ```bash
 docker compose up -d rabbitmq mailpit

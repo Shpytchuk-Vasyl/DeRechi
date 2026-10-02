@@ -164,12 +164,15 @@ compression is on for text and JSON.
 
 | Test | Kind |
 |---|---|
-| `LostItemControllerTests`, `LostItemHistoryControllerTests`, `MatchControllerTests`, `ItemFormPlaceSearchTests` | `@WebMvcTest` slices importing `SecurityConfig` and the view helpers, services and `ImageStorage` mocked (the real one would pull in the S3 client) |
+| `LostItemControllerTests`, `LostItemHistoryControllerTests`, `MatchControllerTests`, `ItemFormPlaceSearchTests`, `UploadControllerTests`, `GlobalExceptionHandlerTests` | `@WebMvcTest` slices importing `SecurityConfig` and the view helpers, services and `ImageStorage` mocked (the real one would pull in the S3 client) |
+| `ItemControllerPermissionsTests` | one `@WebMvcTest` over the four item controllers: every route opens with its own `SCOPE:ACTION` and answers 403 to the same action on the neighbouring scope |
+| `service/AdminItemServiceTests`, `service/ItemClaimsTests`, `service/matching/MatchServiceTests` | `@DataJpaTest` on the Testcontainers database (`support/AbstractPostgresTests` + `repository/AbstractRepositoryTests`, copied from `Client-API`): create/update/delete against the real foreign keys, the claim lookups, the top-three candidate query and the totals |
 | `service/matching/MatchNotificationServiceTest`, `service/lost/LostItemAdminServiceTest` | unit tests with mocked repositories and `RabbitTemplate`, next to the services they cover |
-| `PermissionsTest`, `NotifyChannelTest`, `ItemFilterTest`, `FormatsTest`, `CountriesPropertiesTest` | plain unit tests |
+| `PermissionsTest`, `KeycloakAuthoritiesMapperTest`, `NotifyChannelTest`, `ItemFilterTest`, `PagesTest`, `FormatsTest`, `CountriesPropertiesTest` | plain unit tests |
+| `RabbitConfigTest` | the `NOTIFICATION` and `ARCHIVE_REQUESTED` type ids on outgoing messages |
 | `MessagesTest` | bundle parity across the five languages |
 | `ImageStorageIT` | `@SpringBootTest` against a live MinIO on `localhost:9000`, enabled only when its health endpoint answers |
-| `AdminApiApplicationTests` | context load |
+| `AdminApiApplicationTests` | context load; needs Keycloak running, fails without it |
 
 ```bash
 ./mvnw -pl Admin-API test

@@ -64,3 +64,4 @@ The `ukrainian` configuration is not built into PostgreSQL. `docker/postgres/Doc
 - `Worker/src/main/java/org/shpytchuk/worker/language/`
 - `Worker/src/main/java/org/shpytchuk/worker/config/FullTextFunctionContributor.java`
 - `DB-Postgres/changelog/changes/001-extentions-and-configuration.sql`, `004-similar_item.postgresql.sql`
+- Tests: `ItemServiceTests` and `ItemCreatedHandlerTests` (Worker, on the Testcontainers database), `LanguageResolverTest`, `ItemCreatedListenerTest`, `RabbitConfigTest`; `MatchServiceTests` in Admin-API for the page that shows the result

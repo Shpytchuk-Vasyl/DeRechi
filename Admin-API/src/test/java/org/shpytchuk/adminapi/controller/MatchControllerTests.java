@@ -20,6 +20,8 @@ import org.shpytchuk.adminapi.service.matching.MatchService;
 import org.shpytchuk.adminapi.view.matching.CandidateView;
 import org.shpytchuk.adminapi.view.detail.ItemView;
 import org.shpytchuk.adminapi.view.matching.MatchRow;
+import org.shpytchuk.adminapi.view.matching.NotifiedMatch;
+import org.shpytchuk.adminapi.form.NotifyChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -36,6 +38,7 @@ import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -43,9 +46,14 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -128,6 +136,50 @@ class MatchControllerTests {
                         containsString("id=\"found-7\""),
                         containsString("id=\"found-8\""),
                         not(containsString("hx-get")))));
+    }
+
+    @Test
+    void hidesTheMatchesFromAnAdminWithoutMatchView() throws Exception {
+        mockMvc.perform(get("/admin/matches")
+                        .with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.VIEW))))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(get("/admin/matches/3/candidates")
+                        .with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.VIEW))))
+                .andExpect(status().isForbidden());
+
+        verify(matchService, never()).page(any(), any());
+        verify(matchService, never()).rowWithAllCandidates(anyLong());
+    }
+
+    @Test
+    void notifiesTheOwnerThroughTheChosenChannelAndRedrawsOnlyThatRow() throws Exception {
+        when(notificationService.notifyOwner(3L, 7L, "admin@derechi.local", NotifyChannel.EMAIL))
+                .thenReturn(new NotifiedMatch(item(3L, "Lost"), new CandidateView(item(7L, "Found"), 0.94,
+                        Instant.parse("2026-10-01T12:00:00Z"), "admin@derechi.local")));
+
+        mockMvc.perform(post("/admin/matches/notify")
+                        .param("lostItemId", "3").param("foundItemId", "7").param("channel", "EMAIL")
+                        .with(oidcLogin().idToken(token -> token.subject("admin@derechi.local"))
+                                .authorities(authority(Scope.MATCH, Action.NOTIFY)))
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(allOf(
+                        containsString("id=\"candidate-3-7\""),
+                        containsString("Сповіщено"),
+                        not(containsString("<html")))));
+
+        verify(notificationService).notifyOwner(3L, 7L, "admin@derechi.local", NotifyChannel.EMAIL);
+    }
+
+    @Test
+    void refusesToNotifyWithoutNotifyPermission() throws Exception {
+        mockMvc.perform(post("/admin/matches/notify")
+                        .param("lostItemId", "3").param("foundItemId", "7")
+                        .with(oidcLogin().authorities(authority(Scope.MATCH, Action.VIEW)))
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
+
+        verify(notificationService, never()).notifyOwner(any(), any(), any(), any());
     }
 
     private static ItemView item(Long id, String title) {

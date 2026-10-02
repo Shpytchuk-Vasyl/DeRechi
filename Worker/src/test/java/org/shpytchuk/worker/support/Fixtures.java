@@ -7,9 +7,16 @@ import org.shpytchuk.worker.entity.detail.ContactInfo;
 import org.shpytchuk.worker.entity.detail.ContactInfo.SocialMediaEnum;
 import org.shpytchuk.worker.entity.found.FoundItem;
 import org.shpytchuk.worker.entity.lost.LostItem;
+import org.shpytchuk.worker.entity.detail.Place;
+import org.shpytchuk.worker.entity.matching.Claim;
+import org.shpytchuk.worker.entity.thing.Thing;
+import org.shpytchuk.worker.entity.thing.ThingCategory;
+import org.shpytchuk.worker.event.ItemCreatedEvent;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.util.UUID;
 
 public final class Fixtures {
 
@@ -48,6 +55,41 @@ public final class Fixtures {
         claim.setToken("0b9a3c1d-5e2f-4a6b-8c7d-9e0f1a2b3c4d");
         claim.setCreatedAt(Instant.parse("2026-09-01T10:00:00Z"));
         return claim;
+    }
+
+    public static <T extends Thing> T item(T item, String title, String description, LocalDate date,
+                                           ThingCategory category, Place place, ContactInfo info) {
+        item.setTitle(title);
+        item.setDescription(description);
+        item.setDate(date);
+        item.setCurrency("UAH");
+        item.setCategory(category);
+        item.setPlace(place);
+        item.setInfo(info);
+        return item;
+    }
+
+    public static <C extends Claim> C claim(C claim, Thing item, ContactInfo claimant, Instant createdAt) {
+        switch (claim) {
+            case LostItemClaim lost -> lost.setItem((LostItem) item);
+            case FoundItemClaim found -> found.setItem((FoundItem) item);
+            default -> throw new IllegalArgumentException("Unknown claim type " + claim.getClass());
+        }
+        claim.setContactInfo(claimant);
+        claim.setToken(UUID.randomUUID().toString());
+        claim.setCreatedAt(createdAt);
+        return claim;
+    }
+
+    public static ItemCreatedEvent created(Long id, String title, LocalDate date, Long categoryId, double lat, double lon) {
+        ItemCreatedEvent event = new ItemCreatedEvent();
+        event.setId(id);
+        event.setTitle(title);
+        event.setDate(date);
+        event.setCategory(categoryId);
+        event.setLat(lat);
+        event.setLon(lon);
+        return event;
     }
 
     public static ContactInfo contact(String phone, String email, SocialMediaEnum... socialMedias) {

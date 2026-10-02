@@ -44,6 +44,8 @@
 
         <liquibase.version>5.0.4</liquibase.version>
         <liquibase-hibernate.version>5.0.4</liquibase-hibernate.version>
+
+        <jacoco.version>0.8.15</jacoco.version>
     </properties>
 
     <dependencyManagement>
@@ -150,6 +152,11 @@
                         <release>${java.version}</release>
                         <parameters>true</parameters>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

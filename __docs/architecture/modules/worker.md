@@ -125,14 +125,30 @@ The `RabbitConfig` and `event` package are the same copy-per-module pattern desc
 
 ## Tests
 
-`WorkerApplicationTests` (context load) plus unit tests for the claims flow:
-`PhoneLocalesTest`, `ClaimNotifierTest` (mocked `RabbitTemplate`, real bundles),
-`ClaimListenerTest` and `ArchiveListenerTest` (dispatch), `ItemArchiverTest` (claims follow the
-notice into history), `ClaimFollowUpJobTest` (publish-then-stamp order, newest-claim rule,
-retention) and `MessagesTest` (bundle parity). The ranking query and the language
-resolver have no automated tests yet; `insert into similar_item` by hand (see the root
-`README.md`) is how the match page is exercised locally without going through the queue.
+Database-backed, on the Testcontainers harness copied from `Client-API`
+(`support/AbstractPostgresTests`, `repository/AbstractRepositoryTests`; places are inserted with
+SQL because this module's `Place` maps only the id and the coordinate):
+
+- `service/ItemServiceTests`: the candidate query and `rankAll` (same category, ±3 days, 20 km,
+  most relevant first, the rank of each candidate equal to PostgreSQL's own `ts_rank`, five at
+  most, a blank title ranks zero, a Ukrainian title goes through `ts_rank_ukrainian`);
+- `handler/ItemCreatedHandlerTests`: both handlers end to end into `similar_item`, a redelivered
+  event does not duplicate rows;
+- `repository/ClaimRepositoryTests`: the derived queries `ClaimFollowUpJob` selects its work with;
+- `cron/ClaimFollowUpsTests`: purge and the reminder stamp against the real foreign keys;
+- `service/ItemArchiverTests`: history copy, claims re-pointed under the `CHECK`, matches dropped.
+
+Unit tests: `LanguageResolverTest`, `PhoneLocalesTest`, `ClaimNotifierTest` (mocked
+`RabbitTemplate`, real bundles), `ItemCreatedListenerTest`, `ClaimListenerTest` and
+`ArchiveListenerTest` (dispatch), `ClaimHandlersTest` (what `claimed` and `returned` do, replays),
+`ItemArchiverTest`, `ClaimFollowUpJobTest` (publish-then-stamp order, newest-claim rule,
+retention), `RabbitConfigTest` (the type ids read from Client-API and Admin-API, the one written
+for Notification) and `MessagesTest` (bundle parity). `WorkerApplicationTests` starts the context
+on the test container with `ddl-auto=validate`, so the scheduled job never touches the developer
+database. `insert into similar_item` by hand (see the root `README.md`) is still how the match
+page is exercised locally without going through the queue.
 
 ```bash
+./mvnw -pl Worker test                     # needs Docker for the container-backed tests
 ./mvnw -pl Worker spring-boot:run
 ```

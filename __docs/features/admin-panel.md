@@ -79,4 +79,4 @@ htmx is loaded from a CDN in `fragments/layout :: head`. The Matches page uses i
 - `Admin-API/src/main/java/org/shpytchuk/adminapi/service/AdminItemService.java`
 - `Admin-API/src/main/java/org/shpytchuk/adminapi/config/SecurityConfig.java`, `LocaleConfig.java`, `cache/`
 - `Admin-API/src/main/resources/templates/`
-- Tests: `LostItemControllerTests`, `LostItemHistoryControllerTests`, `ItemFormPlaceSearchTests`, `MatchControllerTests`, `MessagesTest`
+- Tests: `LostItemControllerTests`, `LostItemHistoryControllerTests`, `ItemControllerPermissionsTests`, `ItemFormPlaceSearchTests`, `MatchControllerTests`, `UploadControllerTests`, `GlobalExceptionHandlerTests`, `AdminItemServiceTests`, `MatchServiceTests`, `PagesTest`, `MessagesTest`

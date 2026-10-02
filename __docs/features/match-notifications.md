@@ -59,4 +59,4 @@ Channels are enabled by configuration presence under `notify.channels.*`. Today 
 - `Admin-API/src/main/resources/templates/matches.html`, `fragments/candidates.html`
 - `Notification/src/main/java/org/shpytchuk/notification/service/NotificationSender.java`
 - `docker/rabbitmq/definitions.json`
-- Tests: `MatchControllerTests`, `MatchNotificationServiceTest`, `NotifyChannelTest`, `NotificationSenderTest`
+- Tests: `MatchControllerTests`, `MatchServiceTests`, `MatchNotificationServiceTest`, `NotifyChannelTest`, `NotificationSenderTest`, `NotificationRequestedListenerTest`, and `RabbitConfigTest` in Admin-API and Notification (the `NOTIFICATION` type id)
