@@ -3,10 +3,10 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { CircleCheck } from "lucide-react"
 import { useTranslations } from "next-intl"
-import { type ReactNode, useEffect, useState } from "react"
+import { type ReactNode, useCallback, useEffect, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import type { ItemKind } from "@/api/items"
-import { claimNotice } from "@/app/actions/claim"
+import { claimNotice, claimStatus } from "@/app/actions/claim"
 import { ContactFields } from "@/components/form/contact-fields"
 import { LegalLink } from "@/components/form/legal-link"
 import { Button } from "@/components/pouf/Button"
@@ -16,8 +16,12 @@ import { Blob } from "@/components/pouf/media"
 import { Heading, Text } from "@/components/pouf/text"
 import { Link } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
-import { hasClaimCookie } from "@/lib/claim-cookie"
-import { type ClaimValues, claimSchema } from "@/schema/claim-schema"
+import { readClaimCookie } from "@/lib/claim-cookie"
+import { CLAIM_TOKEN, type ClaimValues, claimSchema } from "@/schema/claim-schema"
+import ClaimUnlock, {
+  type ClaimPayment,
+  type PaymentStatus,
+} from "@/screens/found_lost/claim-unlock"
 
 type Props = {
   kind: ItemKind
@@ -35,6 +39,7 @@ export default function ClaimCard({ kind, id, countryCode, contact }: Props) {
   const [open, setOpen] = useState(false)
   const [sent, setSent] = useState<Sent>(null)
   const [failure, setFailure] = useState<string | null>(null)
+  const [payment, setPayment] = useState<ClaimPayment | null>(null)
   const otherKind: ItemKind = kind === "lost" ? "found" : "lost"
 
   const form = useForm<ClaimValues>({
@@ -48,10 +53,35 @@ export default function ClaimCard({ kind, id, countryCode, contact }: Props) {
   } = form
 
   useEffect(() => {
-    if (hasClaimCookie(document.cookie, kind, id)) {
-      setSent((current) => current ?? "repeated")
+    const token = readClaimCookie(document.cookie, kind, id)
+    if (token === null) return
+    setSent((current) => current ?? "repeated")
+    if (!CLAIM_TOKEN.test(token)) return
+
+    let active = true
+    claimStatus(token)
+      .then((status) => {
+        if (active && status.ok) {
+          setPayment(
+            (current) =>
+              current ?? {
+                token,
+                checkoutUrl: status.checkoutUrl,
+                paid: status.paid,
+                contactsSent: status.contactsSent,
+              },
+          )
+        }
+      })
+      .catch(() => {})
+    return () => {
+      active = false
     }
   }, [kind, id])
+
+  const updatePayment = useCallback((status: PaymentStatus) => {
+    setPayment((current) => (current ? { ...current, ...status } : current))
+  }, [])
 
   useEffect(() => {
     if (open) setFocus("phone")
@@ -62,6 +92,12 @@ export default function ClaimCard({ kind, id, countryCode, contact }: Props) {
     const result = await claimNotice(kind, id, values)
     if (result.ok) {
       setSent(result.repeated ? "repeated" : "new")
+      setPayment({
+        token: result.token,
+        checkoutUrl: result.checkoutUrl,
+        paid: result.paid,
+        contactsSent: result.contactsSent,
+      })
       return
     }
     setFailure(tc(`error.${result.reason}`))
@@ -102,6 +138,7 @@ export default function ClaimCard({ kind, id, countryCode, contact }: Props) {
                       ? tc("doneOwner")
                       : tc("doneFinder")}
                 </Text>
+                {payment ? <ClaimUnlock payment={payment} onStatus={updatePayment} /> : null}
               </div>
             </div>
           ) : (

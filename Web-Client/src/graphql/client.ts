@@ -20,6 +20,10 @@ export class GraphQLRequestError extends Error {
   get isNotFound(): boolean {
     return this.errors.some((error) => error.extensions?.classification === "NOT_FOUND")
   }
+
+  get isPaymentUnavailable(): boolean {
+    return this.errors.some((error) => error.extensions?.classification === "PAYMENT_UNAVAILABLE")
+  }
 }
 
 type RequestOptions = {

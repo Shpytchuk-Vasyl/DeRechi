@@ -184,6 +184,10 @@ export const ClaimLostItemMutation = graphql(`
     claimLostItem(id: $id, contact: $contact) {
       id
       repeated
+      token
+      checkoutUrl
+      paid
+      contactsSent
     }
   }
 `)
@@ -193,6 +197,32 @@ export const ClaimFoundItemMutation = graphql(`
     claimFoundItem(id: $id, contact: $contact) {
       id
       repeated
+      token
+      checkoutUrl
+      paid
+      contactsSent
+    }
+  }
+`)
+
+export const ClaimByTokenQuery = graphql(`
+  query ClaimByToken($token: String!) {
+    claim(token: $token) {
+      id
+      checkoutUrl
+      paid
+      contactsSent
+    }
+  }
+`)
+
+export const UnlockClaimMutation = graphql(`
+  mutation UnlockClaim($token: String!) {
+    unlockClaim(token: $token) {
+      id
+      checkoutUrl
+      paid
+      contactsSent
     }
   }
 `)

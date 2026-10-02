@@ -29,6 +29,7 @@ public class ClaimEventAspect {
     private static final String FOUND_PREFIX = "item.found";
     private static final String CLAIMED = ".claimed";
     private static final String RETURNED = ".returned";
+    private static final String PAID = ".paid";
 
     private final RabbitTemplate rabbitTemplate;
     private final ClaimsProperties properties;
@@ -41,6 +42,10 @@ public class ClaimEventAspect {
     public void confirmed() {
     }
 
+    @Pointcut("execution(* org.shpytchuk.clientapi.service.ClaimService+.markPaid(..))")
+    public void paid() {
+    }
+
     @AfterReturning(pointcut = "claimed()", returning = "claim")
     public void publishClaimed(JoinPoint joinPoint, ClaimDto claim) {
         publish(joinPoint, claim, CLAIMED);
@@ -49,6 +54,11 @@ public class ClaimEventAspect {
     @AfterReturning(pointcut = "confirmed()", returning = "claim")
     public void publishReturned(JoinPoint joinPoint, Optional<ClaimDto> claim) {
         claim.ifPresent(dto -> publish(joinPoint, dto, RETURNED));
+    }
+
+    @AfterReturning(pointcut = "paid()", returning = "claim")
+    public void publishPaid(JoinPoint joinPoint, Optional<ClaimDto> claim) {
+        claim.ifPresent(dto -> publish(joinPoint, dto, PAID));
     }
 
     private void publish(JoinPoint joinPoint, ClaimDto claim, String verb) {

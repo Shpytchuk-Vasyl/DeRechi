@@ -45,6 +45,18 @@ public abstract class Claim<T extends Thing> {
     @Column
     private Instant confirmedAt;
 
+    @Column(length = 64)
+    private String paymentProductId;
+
+    @Column(unique = true, length = 64)
+    private String paymentVariantId;
+
+    @Column
+    private Instant paidAt;
+
+    @Column
+    private Instant contactsSentAt;
+
     public abstract T getItem();
 
     public abstract void setItem(T item);

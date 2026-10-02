@@ -56,3 +56,12 @@ derechi:
     fallback: UA
   claims:
     exchange: derechi.items
+  fourthwall:
+    api-url: https://api.fourthwall.com/open-api/v1.0
+    shop-url: ${FOURTHWALL_SHOP_URL:https://derechi-shop.fourthwall.com}
+    username: ${FOURTHWALL_API_USERNAME:dev-user}
+    password: ${FOURTHWALL_API_PASSWORD:dev-password}
+    webhook-secret: ${FOURTHWALL_WEBHOOK_SECRET:dev-secret}
+    price: 1
+    product-name: "Author's phone number (%s)"
+    product-description: "After the payment, the phone number of the author of the notice is sent by SMS and email to the contacts you left in your response on DeRechi. Nothing is shipped."

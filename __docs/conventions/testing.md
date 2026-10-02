@@ -9,7 +9,7 @@ Tests are JUnit 5 with AssertJ and Spring Boot's test starters. Database-backed 
 - `Client-API`: `ContactMaskerTest`, `ItemSortTest`, `ItemMapperTest`, `ItemCreatedEventTest`, `EventTypeScannerTest`, `WithinDaysLocalDateValidatorTest`, `CountriesPropertiesTest`
 - `Admin-API`: `FormatsTest`, `NotifyChannelTest`, `ItemFilterTest`, `PermissionsTest`, `MessagesTest`, `CountriesPropertiesTest`, `MatchNotificationServiceTest`, `LostItemAdminServiceTest`, `KeycloakAuthoritiesMapperTest` (realm and client roles to authorities), `PagesTest` (the sort whitelist), `RabbitConfigTest`
 - `Notification`: `NotificationSenderTest` (uses NotifyHub's `TestNotifyHub` to capture what would be sent), `NotificationRequestedListenerTest` (a failed delivery is rejected without requeue), `RabbitConfigTest`
-- `Worker`: `PhoneLocalesTest`, `LanguageResolverTest`, `ClaimNotifierTest`, `ClaimFollowUpJobTest`, `ItemArchiverTest`, `ClaimListenerTest`, `ArchiveListenerTest`, `ItemCreatedListenerTest`, `ClaimHandlersTest` (`ClaimedHandler` and `ReturnedHandler`, replays included), `RabbitConfigTest`, `MessagesTest`
+- `Worker`: `PhoneLocalesTest`, `LanguageResolverTest`, `ClaimNotifierTest`, `ClaimFollowUpJobTest`, `ItemArchiverTest`, `PaidHandlerTest`, `ClaimListenerTest`, `ArchiveListenerTest`, `ItemCreatedListenerTest`, `ClaimHandlersTest` (`ClaimedHandler` and `ReturnedHandler`, replays included), `RabbitConfigTest`, `MessagesTest`
 
 **Slice tests** (`*Tests`): one layer with a Spring context.
 

@@ -56,6 +56,14 @@ type Claim {
     id: ID!
     "true when this phone or email had already responded to the notice; nothing was sent again"
     repeated: Boolean!
+    "The secret of this response: it reads the status, prepares the payment and closes the notice"
+    token: String!
+    "Fourthwall checkout that unlocks the author's phone number; null until unlockClaim prepared it"
+    checkoutUrl: String
+    "The payment arrived"
+    paid: Boolean!
+    "The author's phone number was sent to the responder by email and SMS"
+    contactsSent: Boolean!
 }
 
 "Lost Item Notice."
@@ -153,6 +161,9 @@ type Query {
 
     "Places sorted by name; `name` is a case-insensitive substring"
     places(name: String, first: Int, after: String): PlaceConnection!
+
+    "The response behind a token, to show whether the payment arrived; null for an unknown token"
+    claim(token: String!): Claim
 }
 
 type Mutation {
@@ -170,4 +181,6 @@ type Mutation {
     claimFoundItem(id: ID!, contact: ContactInfoInput!): Claim!
     "From the link in a reminder: the item is back with its owner, so the notice can be closed. Unknown token: NOT_FOUND."
     confirmReturn(token: String!): Boolean!
+    "Prepare the payment for the author's phone number: a product is created on Fourthwall and its checkout comes back in checkoutUrl. Unknown token: NOT_FOUND; Fourthwall unreachable or rate-limited: PAYMENT_UNAVAILABLE."
+    unlockClaim(token: String!): Claim!
 }

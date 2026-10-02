@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { claimSchema, toContactInput } from "./claim-schema"
+import { CLAIM_TOKEN, claimSchema, toContactInput } from "./claim-schema"
 
 const valid = { phone: "+380671234567", email: "olena@example.com", socialMedias: ["TELEGRAM"] }
 
@@ -36,6 +36,22 @@ describe("claimSchema", () => {
   it("accepts only the messengers the API knows", () => {
     expect(claimSchema.safeParse({ ...valid, socialMedias: ["SIGNAL"] }).success).toBe(false)
     expect(claimSchema.safeParse({ phone: valid.phone, email: valid.email }).success).toBe(true)
+  })
+})
+
+describe("CLAIM_TOKEN", () => {
+  it("accepts the UUID Client-API issues", () => {
+    expect(CLAIM_TOKEN.test("6f1c2a52-0d7e-4c1e-9a43-6f0d4f3a9b11")).toBe(true)
+  })
+
+  it.each([
+    ["an upper-case UUID", "6F1C2A52-0D7E-4C1E-9A43-6F0D4F3A9B11"],
+    ["an old payment code", "DR-7K3M9Q"],
+    ["the old cookie value", "1"],
+    ["a UUID with trailing text", "6f1c2a52-0d7e-4c1e-9a43-6f0d4f3a9b11; Path=/"],
+    ["a UUID without dashes", "6f1c2a520d7e4c1e9a436f0d4f3a9b11"],
+  ])("rejects %s", (_, value) => {
+    expect(CLAIM_TOKEN.test(value)).toBe(false)
   })
 })
 

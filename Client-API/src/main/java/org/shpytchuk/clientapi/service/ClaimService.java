@@ -8,9 +8,11 @@ import org.shpytchuk.clientapi.entity.Claim;
 import org.shpytchuk.clientapi.entity.thing.Thing;
 import org.shpytchuk.clientapi.exeption.NotFoundException;
 import org.shpytchuk.clientapi.input.ContactInfoInput;
+import org.shpytchuk.clientapi.mapper.ClaimMapper;
 import org.shpytchuk.clientapi.repository.ClaimRepository;
 import org.shpytchuk.clientapi.repository.detail.ContactInfoRepository;
 import org.shpytchuk.clientapi.repository.thing.ThingRepository;
+import org.shpytchuk.clientapi.client.FourthwallProduct;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
@@ -35,7 +37,7 @@ public abstract class ClaimService<T extends Thing, C extends Claim<T>> {
         Optional<C> repeat = claimRepository.findFirstByItemIdAndContactInfoPhoneOrderByIdAsc(itemId, contact.phone())
                 .or(() -> claimRepository.findFirstByItemIdAndContactInfoEmailIgnoreCaseOrderByIdAsc(itemId, contact.email()));
         if (repeat.isPresent()) {
-            return new ClaimDto(repeat.get().getId(), true);
+            return ClaimMapper.toDto(repeat.get(), true);
         }
 
         ContactInfo info = new ContactInfo();
@@ -50,19 +52,47 @@ public abstract class ClaimService<T extends Thing, C extends Claim<T>> {
         claim.setToken(UUID.randomUUID().toString());
         claim.setCreatedAt(Instant.now());
         claimRepository.save(claim);
-        return new ClaimDto(claim.getId(), false);
+        return ClaimMapper.toDto(claim, false);
     }
 
     @Transactional
     public Optional<ClaimDto> confirm(String token) {
         return claimRepository.findByToken(token).map(claim -> {
             if (claim.getConfirmedAt() != null) {
-                return new ClaimDto(claim.getId(), true);
+                return ClaimMapper.toDto(claim, true);
             }
             claim.setConfirmedAt(Instant.now());
             claimRepository.save(claim);
-            return new ClaimDto(claim.getId(), false);
+            return ClaimMapper.toDto(claim, false);
         });
+    }
+
+    @Transactional
+    public Optional<ClaimDto> markPaid(Long claimId) {
+        return claimRepository.findById(claimId).map(claim -> {
+            if (claim.getPaidAt() != null) {
+                return ClaimMapper.toDto(claim, true);
+            }
+            claim.setPaidAt(Instant.now());
+            claimRepository.save(claim);
+            return ClaimMapper.toDto(claim, false);
+        });
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<ClaimDto> findByToken(String token) {
+        return claimRepository.findByToken(token).map(claim -> ClaimMapper.toDto(claim, false));
+    }
+
+    @Transactional
+    public ClaimDto attachProduct(Long claimId, FourthwallProduct product) {
+        C claim = claimRepository.findById(claimId).orElseThrow(() -> new NotFoundException(entityName + "Claim", claimId));
+        if (claim.getPaymentVariantId() == null) {
+            claim.setPaymentProductId(product.productId());
+            claim.setPaymentVariantId(product.variantId());
+            claimRepository.save(claim);
+        }
+        return ClaimMapper.toDto(claim, false);
     }
 
     private static SocialMediaEnum[] toArray(List<SocialMediaEnum> socialMedias) {

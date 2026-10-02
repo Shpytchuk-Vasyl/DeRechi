@@ -34,4 +34,18 @@ public abstract class Claim {
 
     @Column
     private Instant confirmedAt;
+
+    @Size(max = 64)
+    @Column(length = 64)
+    private String paymentProductId;
+
+    @Size(max = 64)
+    @Column(unique = true, length = 64)
+    private String paymentVariantId;
+
+    @Column
+    private Instant paidAt;
+
+    @Column
+    private Instant contactsSentAt;
 }

@@ -59,7 +59,7 @@ public final class ItemMapper {
                 info.getEmail(),
                 socialMedias(info),
                 claim.getCreatedAt(),
-                ClaimStatus.of(claim.getConfirmedAt(), claim.getAuthorRemindedAt(), claim.getClaimantRemindedAt()));
+                ClaimStatus.of(claim.getConfirmedAt(), claim.getPaidAt(), claim.getAuthorRemindedAt(), claim.getClaimantRemindedAt()));
     }
 
     public static void copy(Thing from, Thing to) {

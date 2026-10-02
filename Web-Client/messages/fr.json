@@ -188,6 +188,22 @@
     "doneOwner": "Nous avons transmis vos coordonnées à la personne qui l'a perdu. Elle vous contactera.",
     "repeated": "Vous avez déjà répondu à cette annonce : son auteur a vos coordonnées.",
     "orPost": "Ou publiez votre propre annonce :",
+    "unlock": {
+      "button": "Obtenir le numéro de l'auteur de l'annonce",
+      "title": "Le numéro de téléphone de l'auteur de l'annonce",
+      "text": "Nous enverrons le numéro de téléphone de l'auteur par SMS et par e-mail aux coordonnées que vous avez données dans votre réponse.",
+      "support": "DeRechi est gratuit et vit grâce au soutien de ses utilisateurs : cette étape coûte environ 1 $. Vous payez sur Fourthwall avec Apple Pay, Google Pay ou une carte.",
+      "pay": "Payer sur Fourthwall",
+      "preparing": "Préparation du paiement…",
+      "unavailable": "Les paiements sont saturés pour le moment. Réessayez dans une minute.",
+      "failed": "Impossible de préparer le paiement. Réessayez.",
+      "retry": "Réessayer",
+      "timing": "Cela prend généralement quelques minutes après le paiement.",
+      "waiting": "Cette fenêtre se met à jour toute seule ; vous pouvez aussi la fermer, le numéro arrivera quand même.",
+      "stopped": "Toujours pas de paiement ? Rouvrez cette fenêtre plus tard pour vérifier.",
+      "paid": "Paiement reçu, le numéro est en route.",
+      "sent": "Le numéro de téléphone a été envoyé à votre e-mail et à votre téléphone."
+    },
     "confirm": {
       "title": "L'objet est-il revenu à son propriétaire ?",
       "text": "Confirmer ferme l'annonce pour tout le monde : elle disparaît du tableau et passe aux archives.",

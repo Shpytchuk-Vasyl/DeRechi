@@ -188,6 +188,22 @@
     "doneOwner": "Przekazaliśmy Twoje dane właścicielowi. Ta osoba się z Tobą skontaktuje.",
     "repeated": "To ogłoszenie ma już Twoją odpowiedź: autor ma Twoje dane.",
     "orPost": "Albo dodaj własne ogłoszenie:",
+    "unlock": {
+      "button": "Uzyskaj numer autora ogłoszenia",
+      "title": "Numer telefonu autora ogłoszenia",
+      "text": "Numer telefonu autora wyślemy SMS-em i e-mailem na dane z Twojej odpowiedzi.",
+      "support": "DeRechi jest bezpłatny i działa dzięki wsparciu, dlatego ten krok kosztuje około 1 $. Płacisz na Fourthwall przez Apple Pay, Google Pay lub kartą.",
+      "pay": "Zapłać na Fourthwall",
+      "preparing": "Przygotowujemy płatność…",
+      "unavailable": "Płatności są teraz przeciążone. Spróbuj ponownie za minutę.",
+      "failed": "Nie udało się przygotować płatności. Spróbuj ponownie.",
+      "retry": "Spróbuj ponownie",
+      "timing": "Zwykle trwa to kilka minut od płatności.",
+      "waiting": "To okno odświeża się samo; można je też zamknąć, numer i tak dotrze.",
+      "stopped": "Płatność jeszcze nie dotarła? Otwórz to okno później, aby sprawdzić.",
+      "paid": "Płatność otrzymana, numer jest w drodze.",
+      "sent": "Numer telefonu wysłano na Twój e-mail i telefon."
+    },
     "confirm": {
       "title": "Czy rzecz wróciła do właściciela?",
       "text": "Potwierdzenie zamyka ogłoszenie dla wszystkich: zniknie z tablicy i trafi do archiwum.",

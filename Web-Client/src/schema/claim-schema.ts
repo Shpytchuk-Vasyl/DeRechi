@@ -7,6 +7,8 @@ export const claimSchema = z.object({
   socialMedias: z.array(z.enum(SOCIAL_MEDIA)).optional(),
 })
 
+export const CLAIM_TOKEN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+
 export type ClaimValues = z.infer<typeof claimSchema>
 
 export function toContactInput(values: ClaimValues) {

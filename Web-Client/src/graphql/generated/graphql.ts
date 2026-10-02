@@ -141,7 +141,7 @@ export type ClaimLostItemMutationVariables = Exact<{
 }>;
 
 
-export type ClaimLostItemMutation = { claimLostItem: { id: string, repeated: boolean } };
+export type ClaimLostItemMutation = { claimLostItem: { id: string, repeated: boolean, token: string, checkoutUrl: string | null, paid: boolean, contactsSent: boolean } };
 
 export type ClaimFoundItemMutationVariables = Exact<{
   id: string | number;
@@ -149,7 +149,21 @@ export type ClaimFoundItemMutationVariables = Exact<{
 }>;
 
 
-export type ClaimFoundItemMutation = { claimFoundItem: { id: string, repeated: boolean } };
+export type ClaimFoundItemMutation = { claimFoundItem: { id: string, repeated: boolean, token: string, checkoutUrl: string | null, paid: boolean, contactsSent: boolean } };
+
+export type ClaimByTokenQueryVariables = Exact<{
+  token: string;
+}>;
+
+
+export type ClaimByTokenQuery = { claim: { id: string, checkoutUrl: string | null, paid: boolean, contactsSent: boolean } | null };
+
+export type UnlockClaimMutationVariables = Exact<{
+  token: string;
+}>;
+
+
+export type UnlockClaimMutation = { unlockClaim: { id: string, checkoutUrl: string | null, paid: boolean, contactsSent: boolean } };
 
 export type ConfirmReturnMutationVariables = Exact<{
   token: string;
@@ -360,6 +374,10 @@ export const ClaimLostItemDocument = new TypedDocumentString(`
   claimLostItem(id: $id, contact: $contact) {
     id
     repeated
+    token
+    checkoutUrl
+    paid
+    contactsSent
   }
 }
     `) as unknown as TypedDocumentString<ClaimLostItemMutation, ClaimLostItemMutationVariables>;
@@ -368,9 +386,33 @@ export const ClaimFoundItemDocument = new TypedDocumentString(`
   claimFoundItem(id: $id, contact: $contact) {
     id
     repeated
+    token
+    checkoutUrl
+    paid
+    contactsSent
   }
 }
     `) as unknown as TypedDocumentString<ClaimFoundItemMutation, ClaimFoundItemMutationVariables>;
+export const ClaimByTokenDocument = new TypedDocumentString(`
+    query ClaimByToken($token: String!) {
+  claim(token: $token) {
+    id
+    checkoutUrl
+    paid
+    contactsSent
+  }
+}
+    `) as unknown as TypedDocumentString<ClaimByTokenQuery, ClaimByTokenQueryVariables>;
+export const UnlockClaimDocument = new TypedDocumentString(`
+    mutation UnlockClaim($token: String!) {
+  unlockClaim(token: $token) {
+    id
+    checkoutUrl
+    paid
+    contactsSent
+  }
+}
+    `) as unknown as TypedDocumentString<UnlockClaimMutation, UnlockClaimMutationVariables>;
 export const ConfirmReturnDocument = new TypedDocumentString(`
     mutation ConfirmReturn($token: String!) {
   confirmReturn(token: $token)

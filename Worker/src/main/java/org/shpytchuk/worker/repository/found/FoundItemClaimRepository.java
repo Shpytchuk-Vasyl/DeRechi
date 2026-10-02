@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface FoundItemClaimRepository extends ClaimRepository<FoundItemClaim> {
 
     @Override
-    @EntityGraph(attributePaths = {"contactInfo", "item", "item.info"})
+    @EntityGraph(attributePaths = {"contactInfo", "item", "item.info", "archivedItem", "archivedItem.info"})
     Optional<FoundItemClaim> findWithDetailsById(Long id);
 
     @Override

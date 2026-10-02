@@ -2,12 +2,12 @@
   "updated": "Mise à jour",
   "terms": {
     "title": "Conditions d’utilisation",
-    "summary": "Les règles de fonctionnement de DeRechi, un tableau d’annonces gratuit pour les objets perdus et trouvés. En publiant une annonce, vous les acceptez.",
+    "summary": "Les règles de fonctionnement de DeRechi, un tableau d’annonces d’objets perdus et trouvés gratuit à l’usage, financé par l’étape payante d’obtention des coordonnées d’un auteur. En publiant une annonce, vous les acceptez.",
     "sections": [
       {
         "heading": "1. Qu’est-ce que DeRechi",
         "body": [
-          "DeRechi aide les personnes qui ont perdu quelque chose et celles qui ont trouvé quelque chose à se retrouver. Le service est gratuit, ne nécessite pas d’inscription et n’affiche pas de publicité. L’opérateur du site est {operator}.",
+          "DeRechi aide les personnes qui ont perdu quelque chose et celles qui ont trouvé quelque chose à se retrouver. Publier et consulter les annonces est gratuit, sans inscription ni publicité ; la seule étape payante est l’obtention des coordonnées complètes de l’auteur d’une annonce, c’est ce qui finance le service (voir la section 4). L’opérateur du site est {operator}.",
           "Nous ne conservons pas d’objets, ne servons pas d’intermédiaire pour leur remise et ne prenons aucune commission. Le propriétaire et la personne qui a trouvé l’objet conviennent eux-mêmes de sa restitution."
         ]
       },
@@ -44,7 +44,8 @@
         "heading": "4. Coordonnées",
         "body": [
           "Sur l’annonce, votre téléphone et votre adresse e-mail ne sont visibles que partiellement, afin de vous protéger du spam.",
-          "Toute personne qui reconnaît l’objet peut envoyer ses propres coordonnées à l’auteur de l’annonce via le site. Nous les transmettons par e-mail et SMS et ne les affichons jamais publiquement. En envoyant vos coordonnées, vous confirmez qu’elles sont les vôtres et que vous ne contactez l’auteur qu’au sujet de cet objet."
+          "Toute personne qui reconnaît l’objet peut envoyer ses propres coordonnées à l’auteur de l’annonce via le site. Nous les transmettons par e-mail et SMS et ne les affichons jamais publiquement. En envoyant vos coordonnées, vous confirmez qu’elles sont les vôtres et que vous ne contactez l’auteur qu’au sujet de cet objet.",
+          "L’obtention du numéro de téléphone de l’auteur d’une annonce est une fonction payante. Vous payez environ 1 $ via Fourthwall, dans une page de paiement que le site ouvre pour vous ; les données de votre carte ou de votre portefeuille vont à Fourthwall, jamais à nous. Dès que Fourthwall nous confirme le paiement, nous envoyons le numéro de téléphone de l’auteur par SMS et par e-mail aux coordonnées que vous avez indiquées dans votre réponse. L’adresse e-mail de l’auteur n’est pas envoyée. Le paiement n’est pas remboursé une fois le numéro envoyé."
         ]
       },
       {
@@ -65,7 +66,7 @@
         "heading": "7. Sécurité",
         "body": [
           "Avant de remettre un objet, demandez au propriétaire de décrire des signes distinctifs qui ne figurent pas sur la photo. Choisissez des lieux fréquentés pour vous rencontrer.",
-          "Ne payez jamais à l’avance une personne qui affirme avoir trouvé votre objet, et ne communiquez à personne les données de votre carte bancaire ni les codes reçus par SMS. DeRechi est gratuit et ne demande jamais de paiement ni de telles données : quiconque vous les demande est un escroc. En cas d’escroquerie, adressez-vous à la police et prévenez-nous à {email}.",
+          "Ne payez jamais à l’avance une personne qui affirme avoir trouvé votre objet, et ne communiquez à personne les données de votre carte bancaire ni les codes reçus par SMS. Le seul paiement sur DeRechi est le paiement via Fourthwall pour le numéro de téléphone d’un auteur, effectué sur la page de Fourthwall lui-même ; DeRechi ne demande jamais de données de carte, de codes SMS ni aucun autre paiement : quiconque vous les demande est un escroc. En cas d’escroquerie, adressez-vous à la police et prévenez-nous à {email}.",
           "DeRechi ne vérifie pas l’identité des utilisateurs et n’est pas responsable de leurs actes lors de la rencontre."
         ]
       },
@@ -119,6 +120,10 @@
           [
             "vos coordonnées : le numéro de téléphone, l’adresse e-mail et les messageries que vous envoyez à l’auteur de l’annonce."
           ],
+          "Lorsque vous payez pour le numéro de téléphone d’un auteur :",
+          [
+            "les données de commande que Fourthwall nous transmet : l’adresse e-mail et le nom que vous avez indiqués sur Fourthwall, le montant, la devise, l’heure et le numéro de commande, qui nous servent à relier le paiement à votre réponse."
+          ],
           "Nous n’avons ni comptes ni mots de passe, nous ne conservons donc aucune autre donnée vous concernant.",
           "N’ajoutez pas à l’annonce d’informations sur la santé, la religion, des données biométriques ou d’autres données sensibles, ni sur vous-même ni sur d’autres personnes.",
           "Lors de la visite du site, le serveur, comme tout serveur web, peut enregistrer des données techniques de la requête (adresse IP, type de navigateur et heure de la requête) afin de se protéger contre les abus."
@@ -155,7 +160,8 @@
         "body": [
           [
             "Google Maps Platform : suggestions d’adresses et détermination de l’adresse à partir des coordonnées dans le formulaire d’annonce ; le texte que vous saisissez dans le champ du lieu et les coordonnées sont transmis à Google ;",
-            "Vercel BotID : vérification que le formulaire est envoyé par un humain et non par un robot ;"
+            "Vercel BotID : vérification que le formulaire est envoyé par un humain et non par un robot ;",
+            "Fourthwall : encaissement du paiement ; les données de votre carte ou de votre portefeuille sont traitées par Fourthwall et ses prestataires de paiement, et nous recevons l’adresse e-mail et le nom du payeur, le montant et le numéro de commande afin de relier le paiement à votre réponse ;"
           ],
           "Ces services traitent les données selon leurs propres politiques de confidentialité, y compris dans d’autres pays. Nous ne vendons pas vos données et ne les transmettons pas à des annonceurs."
         ]
@@ -167,7 +173,7 @@
           [
             "le cookie DERECHI_LOCALE : il mémorise la langue choisie pendant un an ;",
             "le cookie DERECHI_COUNTRY : il mémorise votre pays pendant un an, pour afficher la bonne devise et les bons textes juridiques ;",
-            "les cookies DERECHI_CLAIM_* : ils mémorisent pendant une heure que vous avez répondu à une annonce."
+            "les cookies DERECHI_CLAIM_* : ils mémorisent pendant 30 jours que vous avez répondu à une annonce, ainsi que le code de paiement de cette réponse."
           ],
           "Il n’y a sur le site aucun cookie d’analyse ni de publicité."
         ]
@@ -176,7 +182,8 @@
         "heading": "8. Durée de conservation des données",
         "body": [
           "Une annonce est conservée jusqu’à ce qu’elle soit retirée de la publication. Elle est ensuite déplacée dans les archives et n’est plus affichée sur le site.",
-          "Les coordonnées envoyées en réponse à une annonce sont conservées un an à compter de la réponse, que l’annonce soit encore publiée ou déjà archivée ; elles sont ensuite supprimées. Une annonce ayant reçu des réponses est fermée lorsque l’une des parties confirme la restitution de l’objet, ou environ une semaine après la dernière réponse."
+          "Les coordonnées envoyées en réponse à une annonce sont conservées un an à compter de la réponse, que l’annonce soit encore publiée ou déjà archivée ; elles sont ensuite supprimées. Une annonce ayant reçu des réponses est fermée lorsque l’une des parties confirme la restitution de l’objet, ou environ une semaine après la dernière réponse.",
+          "Les informations d’une commande Fourthwall (e-mail, nom, montant, numéro de commande) sont conservées comme trace du paiement reçu ; lorsque la réponse à laquelle elles étaient associées est supprimée, le lien est retiré et l’enregistrement subsiste sans rattachement à une annonce."
         ]
       },
       {

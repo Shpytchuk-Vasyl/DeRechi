@@ -29,10 +29,12 @@ public class ClaimNotifier {
 
     public static final String CREATED_ROUTING_KEY = "notification.claim.created";
     public static final String REMINDER_ROUTING_KEY = "notification.claim.reminder";
+    public static final String UNLOCKED_ROUTING_KEY = "notification.claim.unlocked";
 
     private static final String MESSENGERS_NONE_KEY = "claim.messengers.none";
     private static final String AUTHOR_REMINDER_KEY = "claim.reminder.author";
     private static final String CLAIMANT_REMINDER_KEY = "claim.reminder.claimant";
+    private static final String UNLOCKED_KEY = "claim.unlocked";
 
     private static final PhoneNumberUtil PHONE_NUMBERS = PhoneNumberUtil.getInstance();
 
@@ -67,6 +69,21 @@ public class ClaimNotifier {
     public void remindClaimant(ItemKind kind, Claim claim) {
         remind(kind, claim, claim.getContactInfo(), CLAIMANT_REMINDER_KEY,
                 "claim:%s:%d:claimant-reminder".formatted(kind.segment(), claim.getId()));
+    }
+
+    public void sendAuthorContacts(ItemKind kind, Claim claim) {
+        Thing notice = claim.notice();
+        ContactInfo author = notice.getInfo();
+        ContactInfo claimant = claim.getContactInfo();
+        Locale locale = PhoneLocales.of(claimant.getPhone());
+        String title = notice.getTitle();
+
+        publish(UNLOCKED_ROUTING_KEY, claimant,
+                text(UNLOCKED_KEY + ".subject", locale, title),
+                text(UNLOCKED_KEY + ".body", locale, title, formatPhone(author.getPhone())),
+                "claim:%s:%d:unlocked".formatted(kind.segment(), claim.getId()));
+        log.info("Sent the author's phone number of item {} to the claimant of {} claim {}",
+                notice.getId(), kind, claim.getId());
     }
 
     private void remind(ItemKind kind, Claim claim, ContactInfo recipient, String key, String deduplicationKey) {

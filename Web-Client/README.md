@@ -45,9 +45,9 @@ Vitest, colocated as `<name>.test.ts`, no browser and no running backend:
   the mapping to `ItemInput` / `ContactInfoInput` sends empty optionals as `null`.
 - `app/actions/report.test.ts`, `app/actions/claim.test.ts`: the server actions with
   `@/graphql/client`, `@/lib/bot-check`, `next/headers` and `next/cache` mocked: invalid
-  input and bots never reach the API, the mutation variables, the one-hour
-  `DERECHI_CLAIM_<kind>_<id>` cookie, `NOT_FOUND` versus other failures, and which cache
-  tags are revalidated.
+  input and bots never reach the API, the mutation variables, the 30-day
+  `DERECHI_CLAIM_<kind>_<id>` cookie holding the payment code, `NOT_FOUND` versus other
+  failures, which cache tags are revalidated, and `claimStatus` refusing a malformed code.
 - `lib/claim-cookie.test.ts`, `lib/item-search.test.ts` (query string to filter and back),
   `lib/intl/country.test.ts`, `lib/intl/dates.test.ts`, `lib/seo.test.ts`.
 - `lib/uploads/presign.test.ts` and `presign.integration.test.ts`, see "Uploads" below.
@@ -100,16 +100,17 @@ A viewer who recognises a notice ("it's mine" on a found one, "I found it" on a 
 answers it from the notice page itself: `ClaimCard` sits where the masked contacts are and
 expands into an inline form (phone, email, messengers: the same `ContactFields` the report
 form uses). The detail page also renders inside the modal route's `RouteDialog`, which is why
-the form is inline and never a nested dialog. Nothing the claimant types is shown anywhere;
+the form is inline and not a nested dialog; the small unlock dialog is the one exception. Nothing the claimant types is shown anywhere;
 `Client-API` stores it and Worker mails and texts it to the notice's author.
 
 `claimNotice(kind, id, values)` in `src/app/actions/claim.ts` validates with `claimSchema`,
 runs the same BotID check as `createNotice` (`src/lib/bot-check.ts`; the claim posts to the
 notice page, so `/*/lost/*` and `/*/found/*` are in `instrumentation-client.ts`'s `protect`
-list), calls `claimLostItem`/`claimFoundItem` and sets `DERECHI_CLAIM_<kind>_<id>=1` for an
-hour. The cookie is readable by script on purpose: the page stays cacheable, the server render
-always shows the button, and `ClaimCard` swaps in the "already sent" state on mount. A second
-claim with the same phone or email comes back as `repeated: true`, and nothing is sent again.
+list), calls `claimLostItem`/`claimFoundItem` and sets `DERECHI_CLAIM_<kind>_<id>` to the
+claim's token (a UUID, `CLAIM_TOKEN` in `claim-schema.ts`) for 30 days. The cookie is readable
+by script on purpose: the page stays cacheable, the server render always shows the button, and
+`ClaimCard` swaps in the "already sent" state on mount. A second claim with the same phone or
+email comes back as `repeated: true`, and nothing is sent again.
 
 The author and later the claimant get a reminder linking to `/<locale>/claims/<token>`. That
 page (`noindex`, disallowed in `robots.txt`) has one button that calls `confirmReturn(token)`;
@@ -118,6 +119,31 @@ link is no longer valid". The action revalidates both list tags, but not the not
 detail tag: the token does not say which notice it closes, so that page stays cached until its
 hour runs out, and a claim sent from it in the meantime answers `notFound`, which revalidates
 that notice's tag.
+
+### Unlocking the author's phone number (Fourthwall)
+
+After a claim, the "done" state offers the author's phone number (only the number, not the
+email) for about $1 paid on Fourthwall (`ClaimUnlock` in
+`src/screens/found_lost/claim-unlock.tsx`). Nothing on the site ever shows the number: the
+Fourthwall webhook marks the claim paid, and Worker sends the number to the claimant by email
+and SMS.
+
+- Opening the dialog calls `unlockClaim(token)` (`src/app/actions/claim.ts`, behind the same
+  BotID check as the claim itself). Client-API creates a hidden digital product on Fourthwall
+  for this claim and answers with its `checkoutUrl`
+  (`https://derechi-shop.fourthwall.com/cart/checkout?products=<variantId>:1`); the dialog
+  shows it as a "Pay on Fourthwall" link that opens in a new tab, where Apple Pay, Google Pay
+  and cards are available. A `PAYMENT_UNAVAILABLE` error (Fourthwall rate-limits product
+  creation) reads as "try again in a minute" with a retry button; any other failure gets a
+  generic retry. There is no code to type and no environment variable on this side.
+- The claim cookie holds the token instead of `1`, for 30 days, so a returning claimant sees
+  the button and the payment state; `ClaimCard` reads it with `readClaimCookie` and asks
+  `claimStatus(token)` on mount, which also returns the `checkoutUrl` once it exists. Old
+  cookies holding `1` or a `DR-` payment code still mean "already responded" and simply show
+  no unlock block.
+- While the dialog is open, it polls `claimStatus` every 20 s until the number is sent, and
+  gives up after 15 minutes; reopening the dialog starts a new window. The webhook is the only
+  source of truth, so there is no "I paid" button.
 
 ## Legal texts per country
 

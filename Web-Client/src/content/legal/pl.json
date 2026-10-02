@@ -2,12 +2,12 @@
   "updated": "Zaktualizowano",
   "terms": {
     "title": "Regulamin",
-    "summary": "Zasady, na jakich działa DeRechi: bezpłatna tablica ogłoszeń o zgubionych i znalezionych rzeczach. Publikując ogłoszenie, akceptujesz je.",
+    "summary": "Zasady, na jakich działa DeRechi: tablica ogłoszeń o zgubionych i znalezionych rzeczach, bezpłatna w użyciu, utrzymywana z płatnego uzyskiwania kontaktu do autora. Publikując ogłoszenie, akceptujesz je.",
     "sections": [
       {
         "heading": "1. Czym jest DeRechi",
         "body": [
-          "DeRechi pomaga ludziom, którzy coś zgubili, i tym, którzy coś znaleźli, odnaleźć się nawzajem. Serwis jest bezpłatny, nie wymaga rejestracji i nie wyświetla reklam. Operatorem strony jest {operator}.",
+          "DeRechi pomaga ludziom, którzy coś zgubili, i tym, którzy coś znaleźli, odnaleźć się nawzajem. Dodawanie i przeglądanie ogłoszeń jest bezpłatne, bez rejestracji i bez reklam; jedynym płatnym krokiem jest uzyskanie pełnych danych kontaktowych autora ogłoszenia, z czego utrzymuje się serwis (zob. punkt 4). Operatorem strony jest {operator}.",
           "Nie przechowujemy rzeczy, nie pośredniczymy w ich przekazaniu i nie pobieramy prowizji. O zwrocie umawiają się bezpośrednio właściciel i znalazca."
         ]
       },
@@ -44,7 +44,8 @@
         "heading": "4. Dane kontaktowe",
         "body": [
           "W ogłoszeniu Twój telefon i e-mail są widoczne tylko częściowo, żeby chronić Cię przed spamem.",
-          "Każdy, kto rozpozna rzecz, może przez stronę wysłać autorowi ogłoszenia swoje dane kontaktowe. Przekazujemy je e-mailem i SMS-em i nigdy nie pokazujemy publicznie. Wysyłając dane kontaktowe, potwierdzasz, że są Twoje i że kontaktujesz się z autorem wyłącznie w sprawie tej rzeczy."
+          "Każdy, kto rozpozna rzecz, może przez stronę wysłać autorowi ogłoszenia swoje dane kontaktowe. Przekazujemy je e-mailem i SMS-em i nigdy nie pokazujemy publicznie. Wysyłając dane kontaktowe, potwierdzasz, że są Twoje i że kontaktujesz się z autorem wyłącznie w sprawie tej rzeczy.",
+          "Uzyskanie numeru telefonu autora ogłoszenia jest funkcją płatną. Płacisz około 1 $ przez Fourthwall w oknie płatności, które otwiera strona; dane karty lub portfela trafiają do Fourthwall, nie do nas. Gdy Fourthwall potwierdzi nam płatność, wyślemy numer telefonu autora SMS-em i e-mailem na dane z Twojej odpowiedzi. E-maila autora nie wysyłamy. Płatność nie podlega zwrotowi po wysłaniu numeru."
         ]
       },
       {
@@ -65,7 +66,7 @@
         "heading": "7. Bezpieczeństwo",
         "body": [
           "Zanim oddasz rzecz, poproś właściciela o opisanie cech, których nie widać na zdjęciu. Na spotkanie wybieraj miejsca, w których jest dużo ludzi.",
-          "Nigdy nie płać z góry komuś, kto twierdzi, że znalazł Twoją rzecz, i nikomu nie podawaj danych karty ani kodów z SMS-ów. DeRechi jest bezpłatny i nigdy nie prosi ani o zapłatę, ani o takie dane: kto o nie prosi, jest oszustem. W razie oszustwa zgłoś się na policję i daj nam znać na {email}.",
+          "Nigdy nie płać z góry komuś, kto twierdzi, że znalazł Twoją rzecz, i nikomu nie podawaj danych karty ani kodów z SMS-ów. Jedyną płatnością w DeRechi jest płatność przez Fourthwall za numer telefonu autora, dokonywana na stronie samego Fourthwall; DeRechi nigdy nie prosi o dane karty, kody z SMS-ów ani żadną inną zapłatę, a kto o nie prosi, jest oszustem. W razie oszustwa zgłoś się na policję i daj nam znać na {email}.",
           "DeRechi nie weryfikuje tożsamości użytkowników i nie odpowiada za ich działania podczas spotkania."
         ]
       },
@@ -119,6 +120,10 @@
           [
             "dane kontaktowe: numer telefonu, adres e-mail i komunikatory, które wysyłasz autorowi ogłoszenia."
           ],
+          "Gdy płacisz za numer telefonu autora:",
+          [
+            "dane zamówienia, które przesyła nam Fourthwall: e-mail i imię (lub nazwę) podane w Fourthwall, kwotę, walutę, czas i numer zamówienia; służą nam do połączenia płatności z Twoją odpowiedzią."
+          ],
           "Nie mamy kont ani haseł, więc nie przechowujemy o Tobie żadnych innych danych.",
           "Nie umieszczaj w ogłoszeniu informacji o zdrowiu, wyznaniu, danych biometrycznych ani innych danych wrażliwych, ani o sobie, ani o innych.",
           "Podczas odwiedzin strony serwer, jak każdy serwer WWW, może rejestrować dane techniczne żądania: adres IP, typ przeglądarki i czas wejścia, aby chronić serwis przed nadużyciami."
@@ -155,7 +160,8 @@
         "body": [
           [
             "Google Maps Platform: podpowiedzi adresów i ustalanie adresu na podstawie współrzędnych w formularzu ogłoszenia; tekst, który wpisujesz w pole miejsca, oraz współrzędne są przekazywane Google;",
-            "Vercel BotID: sprawdzenie, czy formularz wysyła człowiek, a nie bot;"
+            "Vercel BotID: sprawdzenie, czy formularz wysyła człowiek, a nie bot;",
+            "Fourthwall: przyjmowanie płatności; dane karty lub portfela przetwarza Fourthwall i jego dostawcy płatności, a my otrzymujemy e-mail i imię płacącego, kwotę i numer zamówienia, aby połączyć płatność z Twoją odpowiedzią;"
           ],
           "Usługi te przetwarzają dane zgodnie z własnymi politykami prywatności, w tym również w innych krajach. Nie sprzedajemy Twoich danych ani nie przekazujemy ich reklamodawcom."
         ]
@@ -167,7 +173,7 @@
           [
             "cookie DERECHI_LOCALE: zapamiętuje wybrany język na rok;",
             "cookie DERECHI_COUNTRY: zapamiętuje Twój kraj na rok, żeby pokazywać właściwą walutę i dokumenty prawne;",
-            "cookie DERECHI_CLAIM_*: przez godzinę pamiętają, że ogłoszenie ma już Twoją odpowiedź."
+            "cookie DERECHI_CLAIM_*: przez 30 dni pamiętają, że ogłoszenie ma już Twoją odpowiedź, oraz kod płatności tej odpowiedzi."
           ],
           "Na stronie nie ma analitycznych ani reklamowych plików cookie."
         ]
@@ -176,7 +182,8 @@
         "heading": "8. Jak długo przechowujemy dane",
         "body": [
           "Ogłoszenie jest przechowywane, dopóki nie zostanie zdjęte z publikacji. Następnie trafia do archiwum i nie jest już wyświetlane na stronie.",
-          "Dane kontaktowe wysłane w odpowiedzi na ogłoszenie przechowujemy przez rok od odpowiedzi, niezależnie od tego, czy ogłoszenie jest nadal opublikowane, czy już zarchiwizowane; potem je usuwamy. Ogłoszenie z odpowiedziami zostaje zamknięte, gdy jedna ze stron potwierdzi zwrot rzeczy, albo około tygodnia po ostatniej odpowiedzi."
+          "Dane kontaktowe wysłane w odpowiedzi na ogłoszenie przechowujemy przez rok od odpowiedzi, niezależnie od tego, czy ogłoszenie jest nadal opublikowane, czy już zarchiwizowane; potem je usuwamy. Ogłoszenie z odpowiedziami zostaje zamknięte, gdy jedna ze stron potwierdzi zwrot rzeczy, albo około tygodnia po ostatniej odpowiedzi.",
+          "Dane zamówienia w Fourthwall (e-mail, imię, kwota, numer zamówienia) przechowujemy jako zapis otrzymanej płatności; gdy odpowiedź, z którą je powiązano, zostaje usunięta, powiązanie znika, a zapis pozostaje bez związku z żadnym ogłoszeniem."
         ]
       },
       {

@@ -5,7 +5,10 @@ import graphql.GraphqlErrorBuilder;
 import graphql.schema.DataFetchingEnvironment;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import graphql.ErrorClassification;
 import org.shpytchuk.clientapi.exeption.NotFoundException;
+import org.shpytchuk.clientapi.exeption.PaymentErrorType;
+import org.shpytchuk.clientapi.exeption.PaymentUnavailableException;
 import org.springframework.graphql.execution.DataFetcherExceptionResolverAdapter;
 import org.springframework.graphql.execution.ErrorType;
 import org.springframework.stereotype.Component;
@@ -19,13 +22,14 @@ public class GraphQlExceptionResolver extends DataFetcherExceptionResolverAdapte
     protected GraphQLError resolveToSingleError(Throwable ex, DataFetchingEnvironment env) {
         return switch (ex) {
             case NotFoundException e -> error(ErrorType.NOT_FOUND, e.getMessage(), env);
+            case PaymentUnavailableException e -> error(PaymentErrorType.PAYMENT_UNAVAILABLE, e.getMessage(), env);
             case ConstraintViolationException e -> error(ErrorType.BAD_REQUEST, describe(e), env);
             case IllegalArgumentException e -> error(ErrorType.BAD_REQUEST, e.getMessage(), env);
             default -> null;
         };
     }
 
-    private static GraphQLError error(ErrorType type, String message, DataFetchingEnvironment env) {
+    private static GraphQLError error(ErrorClassification type, String message, DataFetchingEnvironment env) {
         return GraphqlErrorBuilder.newError(env)
                 .errorType(type)
                 .message(message)

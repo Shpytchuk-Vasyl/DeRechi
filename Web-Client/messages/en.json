@@ -188,6 +188,22 @@
     "doneOwner": "We passed your contacts to the owner. They'll get in touch.",
     "repeated": "You already responded to this notice; the author has your contacts.",
     "orPost": "Or post your own notice:",
+    "unlock": {
+      "button": "Get the author's phone number",
+      "title": "The author's phone number",
+      "text": "We'll send the author's phone number by SMS and email to the contacts you gave in your response.",
+      "support": "DeRechi is free and lives on support, so this step costs about $1. You pay on Fourthwall with Apple Pay, Google Pay or a card.",
+      "pay": "Pay on Fourthwall",
+      "preparing": "Preparing the payment…",
+      "unavailable": "Payments are busy right now. Try again in a minute.",
+      "failed": "Couldn't prepare the payment. Try again.",
+      "retry": "Try again",
+      "timing": "It usually takes a few minutes after the payment.",
+      "waiting": "This window updates by itself; you can also close it, the number will arrive anyway.",
+      "stopped": "Still no payment? Open this window again later to check.",
+      "paid": "Payment received, the phone number is on its way.",
+      "sent": "The phone number was sent to your email and phone."
+    },
     "confirm": {
       "title": "Is the item back with its owner?",
       "text": "Confirming closes the notice for everyone: it leaves the board and moves to the archive.",

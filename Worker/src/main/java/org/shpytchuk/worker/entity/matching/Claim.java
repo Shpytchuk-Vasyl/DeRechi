@@ -45,12 +45,29 @@ public abstract class Claim {
     @Column
     private Instant confirmedAt;
 
+    @Column(length = 64)
+    private String paymentProductId;
+
+    @Column(unique = true, length = 64)
+    private String paymentVariantId;
+
+    @Column
+    private Instant paidAt;
+
+    @Column
+    private Instant contactsSentAt;
+
     public abstract Thing getItem();
 
     public abstract Thing getArchivedItem();
 
     public boolean isLive() {
         return getItem() != null;
+    }
+
+    /** The notice the claim answers: the live item, or its history copy once it was archived. */
+    public Thing notice() {
+        return isLive() ? getItem() : getArchivedItem();
     }
 
     public abstract void moveToArchive(Thing history);

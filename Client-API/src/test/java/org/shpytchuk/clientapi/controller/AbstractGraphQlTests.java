@@ -22,7 +22,7 @@ import java.util.Map;
         "spring.cloud.discovery.enabled=false"
 })
 @AutoConfigureGraphQlTester
-abstract class AbstractGraphQlTests extends AbstractPostgresTests {
+public abstract class AbstractGraphQlTests extends AbstractPostgresTests {
 
     @Autowired
     protected GraphQlTester tester;

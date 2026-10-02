@@ -2,6 +2,7 @@ package org.shpytchuk.worker.config;
 
 import org.shpytchuk.worker.handler.ClaimHandler;
 import org.shpytchuk.worker.handler.ClaimedHandler;
+import org.shpytchuk.worker.handler.PaidHandler;
 import org.shpytchuk.worker.handler.ReturnedHandler;
 import org.shpytchuk.worker.service.ClaimNotifier;
 import org.shpytchuk.worker.service.ClaimRepositories;
@@ -42,5 +43,15 @@ public class ClaimsConfig {
     @Bean
     public ClaimHandler foundReturnedHandler(ClaimRepositories repositories, ItemArchiver archiver) {
         return new ReturnedHandler(ItemKind.FOUND, repositories, archiver);
+    }
+
+    @Bean
+    public ClaimHandler lostPaidHandler(ClaimRepositories repositories, ClaimNotifier notifier, Clock clock) {
+        return new PaidHandler(ItemKind.LOST, repositories, notifier, clock);
+    }
+
+    @Bean
+    public ClaimHandler foundPaidHandler(ClaimRepositories repositories, ClaimNotifier notifier, Clock clock) {
+        return new PaidHandler(ItemKind.FOUND, repositories, notifier, clock);
     }
 }

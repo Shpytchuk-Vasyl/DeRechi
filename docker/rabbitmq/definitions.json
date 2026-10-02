@@ -224,6 +224,22 @@
       "destination_type": "queue",
       "routing_key": "item.*.archive",
       "arguments": {}
+    },
+    {
+      "source": "derechi.items",
+      "vhost": "/",
+      "destination": "worker.claims",
+      "destination_type": "queue",
+      "routing_key": "item.*.paid",
+      "arguments": {}
+    },
+    {
+      "source": "derechi.items.dlx",
+      "vhost": "/",
+      "destination": "worker.claims.dlq",
+      "destination_type": "queue",
+      "routing_key": "item.*.paid",
+      "arguments": {}
     }
   ]
 }

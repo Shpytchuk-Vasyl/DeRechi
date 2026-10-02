@@ -146,6 +146,22 @@ class ClaimRepositoryTests extends AbstractRepositoryTests {
         }).as("everything the notifier reads is fetched up front").doesNotThrowAnyException();
     }
 
+    @Test
+    void loadsAClaimOfAnArchivedNoticeWithTheHistoryCopyAndItsAuthor() {
+        LostItemClaim claim = archived(claim(lost, "+380501111111", NOW));
+        entityManager.clear();
+
+        LostItemClaim loaded = lostClaims.findWithDetailsById(claim.getId()).orElseThrow();
+        entityManager.clear();
+
+        assertThat(loaded.isLive()).isFalse();
+        assertThatCode(() -> {
+            assertThat(loaded.getContactInfo().getPhone()).isEqualTo("+380501111111");
+            assertThat(loaded.notice().getTitle()).isEqualTo("Wallet");
+            assertThat(loaded.notice().getInfo().getEmail()).isEqualTo("author@example.com");
+        }).as("the history copy and its author are fetched up front").doesNotThrowAnyException();
+    }
+
     private LostItem lostItem() {
         return item(new LostItem(), "Wallet", null, LocalDate.of(2026, 9, 10), wallets, rynok);
     }

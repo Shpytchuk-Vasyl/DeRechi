@@ -36,6 +36,9 @@ Only `JAVA_OPTS`. Port 8761.
 | `SPRING_DATASOURCE_USERNAME` / `SPRING_DATASOURCE_PASSWORD` | `derechi` / `derechi` | same | from the `x-postgres` anchor |
 | `SPRING_RABBITMQ_HOST` / `SPRING_RABBITMQ_PORT` | `localhost` / `5672` | `rabbitmq` / `5672` | from the `x-rabbitmq` anchor |
 | `SPRING_RABBITMQ_USERNAME` / `SPRING_RABBITMQ_PASSWORD` | `derechi` / `derechi` | same | |
+| `FOURTHWALL_SHOP_URL` | `https://derechi-shop.fourthwall.com` | `${FOURTHWALL_SHOP_URL:-https://derechi-shop.fourthwall.com}` | the shop whose checkout the unlock dialog opens |
+| `FOURTHWALL_API_USERNAME` / `FOURTHWALL_API_PASSWORD` | `dev-user` / `dev-password` | `${FOURTHWALL_API_USERNAME:-dev-user}` / `${FOURTHWALL_API_PASSWORD:-dev-password}` | the API user from Settings, For developers, Open API (basic auth); creates the per-response products. Real values never go into the repository |
+| `FOURTHWALL_WEBHOOK_SECRET` | `dev-secret` | `${FOURTHWALL_WEBHOOK_SECRET:-dev-secret}` | the secret of the `ORDER_PLACED` webhook; every webhook body is signed with it (`X-Fourthwall-Hmac-SHA256`) |
 
 Supported countries are not an environment variable; they are `derechi.countries.supported` in the YAML and must match Admin-API's list.
 

@@ -151,12 +151,69 @@ the notice is *being* archived and the row leaves the list on the next load. If 
 the button fails like "Notify" does. "Delete" stays synchronous and final: it deletes the matches,
 the claims **and their contact infos** (`deleteClaims`, next to `deleteMatches`), then the row.
 
+## Getting the author's phone number (paid, through Fourthwall)
+
+A responder never sees the author's contacts for free; the author decides whom to call back.
+After responding, the notice page offers "Get the author's phone number": a small dialog explains
+that the number will be sent by SMS and email to the contacts the responder gave, that this is how
+the service is funded (about $1), and shows a "Pay on Fourthwall" button that opens the checkout in
+a new tab. Only the phone number is sent; the author's email and messengers stay private. The
+dialog polls `claim(token)` every 20 seconds and switches to "payment received" and then "sent to
+your email and phone".
+
+Why a product per response: Fourthwall has no custom checkout fields and no signed redirect, but
+it has a Platform API that creates products and a signed `ORDER_PLACED` webhook that names the
+product and variant bought. So each response that asks for the number gets its own hidden digital
+product, and the variant id in the order is what ties the payment to the response. Nobody types a
+code, and the payer's email does not matter.
+
+The flow:
+
+1. Opening the dialog calls `unlockClaim(token)`. `ClaimUnlockService` finds the claim by its token
+   (the same secret the reminder links carry), and if it is unpaid and has no product yet, asks
+   `FourthwallClient` for one: `POST /open-api/v1.0/products` with `type: digital`,
+   `publishOnCreate: false`, the name `derechi.fourthwall.product-name` with the claim reference
+   (`lost-42`), then `GET /products/{id}` for the variant id. Both ids are stored on the claim
+   (`payment_product_id`, `payment_variant_id`) and the checkout comes back as
+   `Claim.checkoutUrl`: `<shop>/cart/checkout?products=<variantId>:1`. The product is created
+   outside any transaction; a second click reuses it. Fourthwall allows 5 product creations a
+   minute per shop, so a 429, a 5xx or a timeout surfaces as the GraphQL error
+   `PAYMENT_UNAVAILABLE` and the dialog offers to try again. The product is kept after the payment
+   on purpose: it is the shop's record of the sale.
+2. Fourthwall posts `ORDER_PLACED` to `POST /api/client/webhooks/fourthwall` (through the gateway's
+   `/api/client/**` route). `FourthwallWebhookController` checks `X-Fourthwall-Hmac-SHA256`
+   (HMAC-SHA256 of the raw body, base64, key `derechi.fourthwall.webhook-secret`), answers 401
+   otherwise, ignores other event types with 200 and stores every accepted order in
+   `fourthwall_order` keyed by the order id, so a retried webhook is a no-op.
+3. `FourthwallOrderService` matches the order to the claim whose product or variant id is among
+   the items bought (`offers[].id`, `offers[].variant.id`, `variants[].id`), skips `CANCELLED`
+   orders, and leaves anything else unmatched with a warning in the log. Orders sent from the
+   dashboard's "Send test notification" carry `testMode: true` and are stored with that flag.
+4. A match stamps `paid_at` through `ClaimService.markPaid`, and `ClaimEventAspect` publishes
+   `item.<kind>.paid` after the commit, exactly like `claimed` and `returned`. A second order for
+   an already paid claim is stored but publishes nothing.
+5. `Worker` (`PaidHandler` on `worker.claims`) sends the author's phone number to the responder,
+   `notification.claim.unlocked`, in the responder's language, dedup `claim:<kind>:<id>:unlocked`,
+   and stamps `contacts_sent_at`. If the notice was archived in the meantime the number comes from
+   the history copy. The author is not notified.
+
+The admin item dialog shows the response as "Paid" once the payment arrived.
+
+Settings on the Fourthwall side: an API user (Settings, For developers, Open API) gives the basic
+auth pair `FOURTHWALL_API_USERNAME` / `FOURTHWALL_API_PASSWORD`; a webhook on the same page with
+the URL above and the `ORDER_PLACED` event gives `FOURTHWALL_WEBHOOK_SECRET`; the shop domain is
+`FOURTHWALL_SHOP_URL`. Prices are in USD only; Fourthwall shows the local currency itself.
+
 ## Storage
 
-`lost_item_claim` and `found_item_claim` (migration `006-item-claims`), one row per response:
+`lost_item_claim` and `found_item_claim` (migrations `006-item-claims`, `007-claim-payment`), one row per response:
 `item_id` **or** `archived_item_id` (a `CHECK` makes it exactly one), the claimant's
 `contact_info_id`, `token`, `created_at`, `author_reminded_at`, `claimant_reminded_at`,
-`confirmed_at`. While the notice is published the claim points at it; archiving re-points it at
+`confirmed_at`, plus `payment_product_id`, `payment_variant_id`, `paid_at` and `contacts_sent_at`
+for the paid phone number. `fourthwall_order` keeps every accepted `ORDER_PLACED` webhook (`order_id`
+unique, friendly id, status, payer email and name, amount, currency, test flag, and the claim it was
+matched to, if any; the link is dropped when the claim is deleted). While the notice is published
+the claim points at it; archiving re-points it at
 the history copy, so the claim and the claimant's contacts survive and the archive pages can show
 who responded and whether the return was confirmed. Plain foreign keys without cascade: deleting a
 notice outright must delete its claims first, and a forgotten clean-up fails loudly instead of
@@ -179,6 +236,13 @@ check details before meeting.
 
 ## Known gaps
 
+- An order that names no known product (a test notification, a product created by hand in the
+  dashboard) stays unmatched; there is no admin page for unmatched `fourthwall_order` rows yet, only
+  the log.
+- Product creation is capped at 5 a minute per shop; the dialog asks to try again, there is no
+  queue or pool of ready products yet.
+- SMS has no provider, so until it has one the author's phone number reaches the responder by email only.
+
 - SMS is still not wired in `Notification` (no provider); authors get email only until it is.
 - Messengers are only listed as text in the message; nothing is sent through them.
 - The author cannot see the responses anywhere except the messages; there is no "my notice" page.
@@ -187,11 +251,11 @@ check details before meeting.
 
 ## Where to look
 
-- `Client-API/src/main/java/org/shpytchuk/clientapi/service/ClaimService.java`, `ReturnService.java`, `controller/ClaimController.java`, `aspect/ClaimEventAspect.java`
+- `Client-API/src/main/java/org/shpytchuk/clientapi/service/ClaimService.java`, `ReturnService.java`, `controller/ClaimController.java`, `aspect/ClaimEventAspect.java`, `service/payment/ClaimUnlockService.java`, `service/payment/FourthwallOrderService.java`, `controller/payment/FourthwallWebhookController.java`, `client/FourthwallClient.java`, `config/FourthwallProperties.java`
 - `Worker/src/main/java/org/shpytchuk/worker/listener/ClaimListener.java`, `listener/ArchiveListener.java`, `handler/ClaimedHandler.java`, `handler/ReturnedHandler.java`, `service/ClaimNotifier.java`, `cron/ClaimFollowUpJob.java` (+ `ClaimFollowUps`, one transaction per claim), `service/ItemArchiver.java`, `language/PhoneLocales.java`, `src/main/resources/messages*.properties`
 - `Notification/src/main/java/org/shpytchuk/notification/service/NotificationSender.java`
 - `Admin-API/src/main/java/org/shpytchuk/adminapi/service/AdminItemService.java`, `templates/fragments/dialogs.html`
 - `Web-Client/src/screens/found_lost/claim-card.tsx`, `src/screens/claims/confirm-return.tsx`, `src/app/actions/claim.ts`
-- `DB-Postgres/changelog/changes/006-item-claims.postgresql.sql`
+- `DB-Postgres/changelog/changes/006-item-claims.postgresql.sql`, `007-claim-payment.postgresql.sql`
 - `docker/rabbitmq/definitions.json`
-- Tests: `ClaimControllerTests`, `ClaimEventAspectTest`, `ClaimNotifierTest`, `ClaimFollowUpJobTest`, `ClaimFollowUpsTests`, `ClaimRepositoryTests` (Worker), `ClaimHandlersTest`, `ItemArchiverTest`, `ItemArchiverTests`, `ArchiveListenerTest`, `PhoneLocalesTest`, `NotificationSenderTest`, `LostItemAdminServiceTest`, `AdminItemServiceTests`, `ItemClaimsTests`, and in `Web-Client` `claim.test.ts`, `claim-schema.test.ts`, `claim-cookie.test.ts`
+- Tests: `ClaimControllerTests`, `FourthwallWebhookControllerTests`, `FourthwallClientTest`, `FourthwallOrderPlacedTest`, `FourthwallPropertiesTest`, `ClaimEventAspectTest`, `ClaimNotifierTest`, `ClaimFollowUpJobTest`, `ClaimFollowUpsTests`, `ClaimRepositoryTests` (Worker), `ClaimHandlersTest`, `ItemArchiverTest`, `ItemArchiverTests`, `ArchiveListenerTest`, `PhoneLocalesTest`, `NotificationSenderTest`, `LostItemAdminServiceTest`, `AdminItemServiceTests`, `ItemClaimsTests`, and in `Web-Client` `claim.test.ts`, `claim-schema.test.ts`, `claim-cookie.test.ts`

@@ -7,11 +7,9 @@ server:
 
 eureka:
   client:
-    # сам реєстр себе не реєструє і реєстр не тягне
     register-with-eureka: false
     fetch-registry: false
   server:
-    # на деві інстанси піднімаються/падають часто — self-preservation тільки заважає
     enable-self-preservation: false
 
 management:

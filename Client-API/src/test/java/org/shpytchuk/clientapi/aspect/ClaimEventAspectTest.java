@@ -41,7 +41,7 @@ class ClaimEventAspectTest {
 
     @Test
     void publishesANewLostClaimUnderItsOwnRoutingKey() {
-        given(lostClaimService.claim(1L, CONTACT)).willReturn(new ClaimDto(7L, false));
+        given(lostClaimService.claim(1L, CONTACT)).willReturn(dto(7L, false));
         ArgumentCaptor<ClaimEvent> captor = ArgumentCaptor.forClass(ClaimEvent.class);
 
         proxy(lostClaimService).claim(1L, CONTACT);
@@ -52,7 +52,7 @@ class ClaimEventAspectTest {
 
     @Test
     void publishesANewFoundClaimUnderItsOwnRoutingKey() {
-        given(foundClaimService.claim(2L, CONTACT)).willReturn(new ClaimDto(8L, false));
+        given(foundClaimService.claim(2L, CONTACT)).willReturn(dto(8L, false));
 
         proxy(foundClaimService).claim(2L, CONTACT);
 
@@ -61,7 +61,7 @@ class ClaimEventAspectTest {
 
     @Test
     void staysSilentOnARepeatedClaim() {
-        given(lostClaimService.claim(1L, CONTACT)).willReturn(new ClaimDto(7L, true));
+        given(lostClaimService.claim(1L, CONTACT)).willReturn(dto(7L, true));
 
         proxy(lostClaimService).claim(1L, CONTACT);
 
@@ -70,7 +70,7 @@ class ClaimEventAspectTest {
 
     @Test
     void publishesAFreshConfirmationAsReturned() {
-        given(foundClaimService.confirm("token")).willReturn(Optional.of(new ClaimDto(8L, false)));
+        given(foundClaimService.confirm("token")).willReturn(Optional.of(dto(8L, false)));
 
         proxy(foundClaimService).confirm("token");
 
@@ -80,11 +80,41 @@ class ClaimEventAspectTest {
     @Test
     void staysSilentWhenTheTokenIsUnknownHereOrAlreadyConfirmed() {
         given(lostClaimService.confirm("missing")).willReturn(Optional.empty());
-        given(lostClaimService.confirm("done")).willReturn(Optional.of(new ClaimDto(7L, true)));
+        given(lostClaimService.confirm("done")).willReturn(Optional.of(dto(7L, true)));
 
         LostClaimService proxy = proxy(lostClaimService);
         proxy.confirm("missing");
         proxy.confirm("done");
+
+        verify(rabbitTemplate, never()).convertAndSend(any(String.class), any(String.class), any(Object.class));
+    }
+
+    @Test
+    void publishesAFreshLostPaymentAsPaid() {
+        given(lostClaimService.markPaid(7L)).willReturn(Optional.of(dto(7L, false)));
+
+        proxy(lostClaimService).markPaid(7L);
+
+        verify(rabbitTemplate).convertAndSend(eq(EXCHANGE), eq("item.lost.paid"), eq(new ClaimEvent(7L)));
+    }
+
+    @Test
+    void publishesAFreshFoundPaymentAsPaid() {
+        given(foundClaimService.markPaid(8L)).willReturn(Optional.of(dto(8L, false)));
+
+        proxy(foundClaimService).markPaid(8L);
+
+        verify(rabbitTemplate).convertAndSend(eq(EXCHANGE), eq("item.found.paid"), eq(new ClaimEvent(8L)));
+    }
+
+    @Test
+    void staysSilentWhenTheClaimIsUnknownHereOrAlreadyPaid() {
+        given(lostClaimService.markPaid(1L)).willReturn(Optional.empty());
+        given(lostClaimService.markPaid(7L)).willReturn(Optional.of(dto(7L, true)));
+
+        LostClaimService proxy = proxy(lostClaimService);
+        proxy.markPaid(1L);
+        proxy.markPaid(7L);
 
         verify(rabbitTemplate, never()).convertAndSend(any(String.class), any(String.class), any(Object.class));
     }
@@ -100,6 +130,10 @@ class ClaimEventAspectTest {
         }
 
         verify(rabbitTemplate, never()).convertAndSend(any(String.class), any(String.class), any(Object.class));
+    }
+
+    private static ClaimDto dto(Long id, boolean repeated) {
+        return new ClaimDto(id, repeated, "6f1c2a52-0d7e-4c1e-9a43-6f0d4f3a9b11", null, false, false);
     }
 
     private <T> T proxy(T target) {

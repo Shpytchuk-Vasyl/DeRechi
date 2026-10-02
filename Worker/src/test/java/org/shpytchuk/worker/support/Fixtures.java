@@ -12,7 +12,10 @@ import org.shpytchuk.worker.entity.matching.Claim;
 import org.shpytchuk.worker.entity.thing.Thing;
 import org.shpytchuk.worker.entity.thing.ThingCategory;
 import org.shpytchuk.worker.event.ItemCreatedEvent;
+import org.springframework.context.MessageSource;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -24,7 +27,18 @@ public final class Fixtures {
             "worker.claims", "derechi.notifications", "http://localhost:3000/",
             Duration.ofMinutes(10), Duration.ofDays(1), Duration.ofDays(1), Duration.ofDays(7), Duration.ofDays(365));
 
+
     private Fixtures() {
+    }
+
+    /** Same settings as spring.messages; without the system-locale switch "en" would land on the machine's language. */
+    public static MessageSource messages() {
+        ResourceBundleMessageSource source = new ResourceBundleMessageSource();
+        source.setBasename("messages");
+        source.setDefaultEncoding(StandardCharsets.UTF_8.name());
+        source.setFallbackToSystemLocale(false);
+        source.setAlwaysUseMessageFormat(true);
+        return source;
     }
 
     public static LostItemClaim lostClaim(String authorPhone, SocialMediaEnum... claimantMessengers) {

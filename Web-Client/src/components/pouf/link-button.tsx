@@ -10,6 +10,7 @@ export function LinkButton({
   size = "md",
   variant = "solid",
   block,
+  target,
   children,
 }: {
   href: string
@@ -17,11 +18,14 @@ export function LinkButton({
   size?: "md" | "lg"
   variant?: "solid" | "quiet"
   block?: boolean
+  target?: "_blank"
   children: ReactNode
 }) {
   return (
     <Link
       href={href}
+      target={target}
+      rel={target === "_blank" ? "noopener noreferrer" : undefined}
       className={cx(buttonClasses({ size, variant, block }), "no-underline", toneClass(tone))}
     >
       {children}

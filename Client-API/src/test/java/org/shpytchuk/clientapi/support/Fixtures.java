@@ -4,13 +4,16 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.shpytchuk.clientapi.entity.Claim;
 import org.shpytchuk.clientapi.entity.detail.ContactInfo;
 import org.shpytchuk.clientapi.entity.detail.ContactInfo.SocialMediaEnum;
 import org.shpytchuk.clientapi.entity.detail.Place;
 import org.shpytchuk.clientapi.entity.thing.Thing;
 import org.shpytchuk.clientapi.entity.thing.ThingCategory;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.util.UUID;
 
 public final class Fixtures {
 
@@ -42,6 +45,21 @@ public final class Fixtures {
         info.setEmail("finder@example.com");
         info.setSocialMedias(socialMedias.length == 0 ? null : socialMedias);
         return info;
+    }
+
+    public static ContactInfo contact(String phone, String email) {
+        ContactInfo info = new ContactInfo();
+        info.setPhone(phone);
+        info.setEmail(email);
+        return info;
+    }
+
+    public static <T extends Thing, C extends Claim<T>> C claim(C claim, T item, ContactInfo claimant, Instant createdAt) {
+        claim.setItem(item);
+        claim.setContactInfo(claimant);
+        claim.setToken(UUID.randomUUID().toString());
+        claim.setCreatedAt(createdAt);
+        return claim;
     }
 
     public static <T extends Thing> T item(T item, String title, LocalDate date,

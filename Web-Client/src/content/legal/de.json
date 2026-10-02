@@ -2,12 +2,12 @@
   "updated": "Aktualisiert",
   "terms": {
     "title": "Nutzungsbedingungen",
-    "summary": "Die Regeln, nach denen DeRechi funktioniert – ein kostenloses Schwarzes Brett für verlorene und gefundene Gegenstände. Mit der Veröffentlichung einer Anzeige erklären Sie sich damit einverstanden.",
+    "summary": "Die Regeln, nach denen DeRechi funktioniert – ein kostenlos nutzbares Schwarzes Brett für verlorene und gefundene Gegenstände, finanziert durch den kostenpflichtigen Erhalt der Kontaktdaten eines Autors. Mit der Veröffentlichung einer Anzeige erklären Sie sich damit einverstanden.",
     "sections": [
       {
         "heading": "1. Was ist DeRechi",
         "body": [
-          "DeRechi hilft Menschen, die etwas verloren haben, und denen, die etwas gefunden haben, einander zu finden. Der Dienst ist kostenlos, erfordert keine Registrierung und zeigt keine Werbung. Betreiber der Website ist {operator}.",
+          "DeRechi hilft Menschen, die etwas verloren haben, und denen, die etwas gefunden haben, einander zu finden. Anzeigen aufgeben und durchsuchen ist kostenlos, ohne Registrierung und ohne Werbung; der einzige kostenpflichtige Schritt ist der Erhalt der vollständigen Kontaktdaten eines Anzeigenautors, daraus finanziert sich der Dienst (siehe Abschnitt 4). Betreiber der Website ist {operator}.",
           "Wir bewahren keine Gegenstände auf, vermitteln nicht bei ihrer Übergabe und erheben keine Provision. Die Rückgabe vereinbaren Eigentümer und Finder unmittelbar miteinander."
         ]
       },
@@ -44,7 +44,8 @@
         "heading": "4. Kontaktdaten",
         "body": [
           "In der Anzeige sind Ihre Telefonnummer und E-Mail-Adresse nur teilweise sichtbar, um Sie vor Spam zu schützen.",
-          "Wer den Gegenstand wiedererkennt, kann dem Verfasser der Anzeige über die Website die eigenen Kontaktdaten senden. Wir leiten sie per E-Mail und SMS weiter und zeigen sie nie öffentlich. Mit dem Senden bestätigen Sie, dass es Ihre eigenen Kontaktdaten sind und dass Sie den Verfasser nur wegen dieses Gegenstands kontaktieren."
+          "Wer den Gegenstand wiedererkennt, kann dem Verfasser der Anzeige über die Website die eigenen Kontaktdaten senden. Wir leiten sie per E-Mail und SMS weiter und zeigen sie nie öffentlich. Mit dem Senden bestätigen Sie, dass es Ihre eigenen Kontaktdaten sind und dass Sie den Verfasser nur wegen dieses Gegenstands kontaktieren.",
+          "Die Telefonnummer des Verfassers einer Anzeige zu erhalten, ist eine kostenpflichtige Funktion. Sie zahlen etwa 1 $ über Fourthwall in einem Bezahlfenster, das die Website für Sie öffnet; Ihre Karten- oder Wallet-Daten gehen an Fourthwall, nie an uns. Sobald Fourthwall uns die Zahlung bestätigt, senden wir die Telefonnummer des Verfassers per SMS und E-Mail an die Kontaktdaten, die Sie in Ihrer Antwort angegeben haben. Die E-Mail-Adresse des Verfassers wird nicht versandt. Die Zahlung wird nicht erstattet, sobald die Telefonnummer versandt wurde."
         ]
       },
       {
@@ -65,7 +66,7 @@
         "heading": "7. Sicherheit",
         "body": [
           "Bevor Sie einen Gegenstand übergeben, bitten Sie den Eigentümer, Merkmale zu beschreiben, die auf dem Foto nicht zu sehen sind. Wählen Sie für ein Treffen belebte Orte.",
-          "Zahlen Sie niemals im Voraus an jemanden, der behauptet, Ihren Gegenstand gefunden zu haben, und geben Sie niemandem Ihre Kartendaten oder SMS-Codes weiter. DeRechi ist kostenlos und verlangt niemals eine Zahlung oder solche Daten – wer danach fragt, ist ein Betrüger. Wenden Sie sich im Betrugsfall an die Polizei und informieren Sie uns unter {email}.",
+          "Zahlen Sie niemals im Voraus an jemanden, der behauptet, Ihren Gegenstand gefunden zu haben, und geben Sie niemandem Ihre Kartendaten oder SMS-Codes weiter. Die einzige Zahlung auf DeRechi ist die Zahlung über Fourthwall für die Telefonnummer eines Verfassers, und sie erfolgt auf der Seite von Fourthwall selbst; DeRechi verlangt niemals Kartendaten, SMS-Codes oder eine andere Zahlung – wer danach fragt, ist ein Betrüger. Wenden Sie sich im Betrugsfall an die Polizei und informieren Sie uns unter {email}.",
           "DeRechi überprüft nicht die Identität der Nutzer und haftet nicht für deren Handlungen während eines Treffens."
         ]
       },
@@ -119,6 +120,10 @@
           [
             "Kontaktdaten: Telefonnummer, E-Mail-Adresse und Messenger, die Sie dem Verfasser der Anzeige senden."
           ],
+          "Wenn Sie für die Telefonnummer eines Verfassers bezahlen:",
+          [
+            "Bestelldaten, die uns Fourthwall übermittelt: die E-Mail-Adresse und der Name, die Sie bei Fourthwall angegeben haben, Betrag, Währung, Zeitpunkt und Bestellnummer; damit ordnen wir die Zahlung Ihrer Antwort zu."
+          ],
           "Wir haben keine Konten und Passwörter, daher speichern wir keine weiteren Daten über Sie.",
           "Fügen Sie Ihrer Anzeige keine Angaben zu Gesundheit, Religion, biometrischen Merkmalen oder andere sensible Daten hinzu – weder über sich selbst noch über andere.",
           "Beim Besuch der Website kann der Server – wie jeder Webserver – technische Daten der Anfrage erfassen, nämlich IP-Adresse, Browsertyp und Zeitpunkt des Zugriffs, um Missbrauch abzuwehren."
@@ -155,7 +160,8 @@
         "body": [
           [
             "Google Maps Platform – Adressvorschläge und Ermittlung der Adresse anhand von Koordinaten im Anzeigenformular; der Text, den Sie in das Ortsfeld eingeben, und die Koordinaten werden an Google übermittelt;",
-            "Vercel BotID – Prüfung, dass das Formular von einem Menschen und nicht von einem Bot gesendet wird;"
+            "Vercel BotID – Prüfung, dass das Formular von einem Menschen und nicht von einem Bot gesendet wird;",
+            "Fourthwall – Abwicklung der Zahlung; Ihre Karten- oder Wallet-Daten verarbeiten Fourthwall und seine Zahlungsdienstleister, und wir erhalten E-Mail-Adresse und Name der zahlenden Person, Betrag und Bestellnummer, um die Zahlung Ihrer Antwort zuzuordnen;"
           ],
           "Diese Dienste verarbeiten Daten nach ihren eigenen Datenschutzrichtlinien, auch in anderen Ländern. Wir verkaufen Ihre Daten nicht und geben sie nicht an Werbetreibende weiter."
         ]
@@ -167,7 +173,7 @@
           [
             "das Cookie DERECHI_LOCALE – speichert die gewählte Sprache für ein Jahr;",
             "das Cookie DERECHI_COUNTRY – speichert Ihr Land für ein Jahr, damit Währung und Rechtstexte passen;",
-            "die Cookies DERECHI_CLAIM_* – speichern für eine Stunde, dass Sie auf eine Anzeige geantwortet haben."
+            "die Cookies DERECHI_CLAIM_* – speichern für 30 Tage, dass Sie auf eine Anzeige geantwortet haben, und den Zahlungscode dieser Antwort."
           ],
           "Analyse- oder Werbe-Cookies gibt es auf der Website nicht."
         ]
@@ -176,7 +182,8 @@
         "heading": "8. Wie lange Daten gespeichert werden",
         "body": [
           "Eine Anzeige wird gespeichert, bis sie von der Veröffentlichung genommen wird. Danach wird sie ins Archiv verschoben und auf der Website nicht mehr angezeigt.",
-          "Kontaktdaten, die als Antwort auf eine Anzeige gesendet wurden, werden ein Jahr ab der Antwort gespeichert, egal ob die Anzeige noch veröffentlicht oder schon archiviert ist; danach werden sie gelöscht. Eine Anzeige mit Antworten wird geschlossen, sobald eine Seite die Rückgabe bestätigt, oder etwa eine Woche nach der letzten Antwort."
+          "Kontaktdaten, die als Antwort auf eine Anzeige gesendet wurden, werden ein Jahr ab der Antwort gespeichert, egal ob die Anzeige noch veröffentlicht oder schon archiviert ist; danach werden sie gelöscht. Eine Anzeige mit Antworten wird geschlossen, sobald eine Seite die Rückgabe bestätigt, oder etwa eine Woche nach der letzten Antwort.",
+          "Die Angaben zu einer Fourthwall-Bestellung (E-Mail, Name, Betrag, Bestellnummer) werden als Nachweis der erhaltenen Zahlung gespeichert; wird die Antwort gelöscht, der sie zugeordnet waren, entfällt die Verknüpfung, und der Eintrag bleibt ohne Bezug zu einer Anzeige bestehen."
         ]
       },
       {

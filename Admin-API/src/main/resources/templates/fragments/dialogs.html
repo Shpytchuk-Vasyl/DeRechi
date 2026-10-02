@@ -111,7 +111,7 @@
                             <span class="ml-2 mr-3" th:text="${claim.email}">mail</span>
                             <span class="is-size-7 has-text-grey numeric mr-2" th:text="${fmt.dateTime(claim.createdAt)}">2026-01-01 12:00</span>
                             <span class="tag is-light is-rounded"
-                                  th:classappend="${claim.status.name() == 'CONFIRMED'} ? 'is-success' : (${claim.status.name() == 'REMINDED'} ? 'is-warning' : '')"
+                                  th:classappend="${claim.status.name() == 'CONFIRMED'} ? 'is-success' : (${claim.status.name() == 'PAID'} ? 'is-info' : (${claim.status.name() == 'REMINDED'} ? 'is-warning' : ''))"
                                   th:text="#{__${claim.status.key()}__}">New</span>
                         </li>
                     </ul>
