@@ -101,6 +101,10 @@ services:
     environment:
       <<: [*jvm, *eureka, *postgres, *rabbitmq]
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/derechi
+      FOURTHWALL_SHOP_URL: ${FOURTHWALL_SHOP_URL:-https://derechi-shop.fourthwall.com}
+      FOURTHWALL_API_USERNAME: ${FOURTHWALL_API_USERNAME:-dev-user}
+      FOURTHWALL_API_PASSWORD: ${FOURTHWALL_API_PASSWORD:-dev-password}
+      FOURTHWALL_WEBHOOK_SECRET: ${FOURTHWALL_WEBHOOK_SECRET:-dev-secret}
     depends_on:
       discovery:
         condition: service_started

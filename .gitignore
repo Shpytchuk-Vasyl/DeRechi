@@ -3,6 +3,8 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 .kotlin
+/docker-compose.services-prod.yml
+
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
