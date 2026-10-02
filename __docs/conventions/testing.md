@@ -14,8 +14,8 @@ Tests are JUnit 5 with AssertJ and Spring Boot's test starters. Database-backed 
 **Slice tests** (`*Tests`): one layer with a Spring context.
 
 - `Admin-API` controllers: `@WebMvcTest` + `MockMvc`, with `oidcLogin().authorities(...)` from `security-oauth2-client-test` to act as an admin holding specific `SCOPE:ACTION` authorities. Services are `@MockitoBean`s. Examples: `LostItemControllerTests`, `LostItemHistoryControllerTests`, `MatchControllerTests`, `ItemFormPlaceSearchTests`.
-- `Client-API` repositories: `AbstractRepositoryTests` on top of a real database (`ThingRepositoryTests`, `PlaceRepositoryTests`, `ContactInfoRepositoryTests`).
-- `Client-API` GraphQL: `AbstractGraphQlTests` starts the full context with `@AutoConfigureGraphQlTester`, mocks `RabbitTemplate`, and seeds categories before each test (`LostItemControllerTests`, `FoundItemControllerTests`, `PlaceControllerTests`, `ReferenceControllerTests`; `ReferenceControllerSliceTests` runs the lighter GraphQL slice). `ItemEventAspectTest` and `ItemServiceTests` sit on the same base.
+- `Client-API` repositories: `AbstractRepositoryTests` on top of a real database (`thing/ThingRepositoryTests`, `detail/PlaceRepositoryTests`, `detail/ContactInfoRepositoryTests`).
+- `Client-API` GraphQL: `AbstractGraphQlTests` starts the full context with `@AutoConfigureGraphQlTester`, mocks `RabbitTemplate`, and seeds categories before each test (`LostItemControllerTests`, `FoundItemControllerTests`, `ClaimControllerTests`, `ReferenceControllerTests` for categories, countries and places; `ReferenceControllerSliceTests` runs the lighter GraphQL slice). `ItemEventAspectTest` and `ItemServiceTests` sit on the same base.
 
 **Context tests** (`*ApplicationTests`): every module has one that starts the context and nothing else. They catch broken wiring (a missing bean, a bad property) and are the only tests in `Discovery`, `Getaway` and `DB-Postgres`.
 
@@ -38,6 +38,10 @@ Tests are JUnit 5 with AssertJ and Spring Boot's test starters. Database-backed 
 A consequence worth knowing: a new migration is exercised by `./mvnw -pl Client-API test` even if you touch nothing in `Client-API`. Run it after writing a changeset.
 
 `Admin-API` declares the Testcontainers dependencies but has no database-backed tests yet; its services are tested through mocks. When adding one, copy the `AbstractPostgresTests` approach rather than inventing a second harness.
+
+## Layout
+
+A test lives in the same package as the class it covers, sub-package included: `service/lost/LostItemAdminServiceTest` next to `service/lost/LostItemAdminService`, `repository/detail/PlaceRepositoryTests` next to `repository/detail/PlaceRepository`. Base classes and fixtures stay at the root of their package (`repository/AbstractRepositoryTests`, `support/Fixtures`) and are public, so the sub-packages can reach them. A test for a class that serves both notice kinds (`ItemServiceTests`, `ClaimControllerTests`) stays at the root like the class.
 
 ## Rules
 

@@ -1,4 +1,4 @@
-package org.shpytchuk.adminapi.service;
+package org.shpytchuk.adminapi.service.lost;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,8 +20,6 @@ import org.shpytchuk.adminapi.repository.lost.LostItemClaimRepository;
 import org.shpytchuk.adminapi.repository.lost.LostItemHistoryRepository;
 import org.shpytchuk.adminapi.repository.lost.LostItemRepository;
 import org.shpytchuk.adminapi.repository.matching.SimilarItemRepository;
-import org.shpytchuk.adminapi.service.lost.LostItemAdminService;
-import org.shpytchuk.adminapi.service.lost.LostItemHistoryAdminService;
 import org.shpytchuk.adminapi.view.matching.ClaimStatus;
 import org.shpytchuk.adminapi.view.matching.ClaimView;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

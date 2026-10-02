@@ -1,8 +1,8 @@
-package org.shpytchuk.clientapi.repository;
+package org.shpytchuk.clientapi.repository.detail;
 
+import org.shpytchuk.clientapi.repository.AbstractRepositoryTests;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Point;
-import org.shpytchuk.clientapi.repository.detail.PlaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 

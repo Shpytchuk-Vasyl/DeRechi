@@ -59,7 +59,7 @@ The `ukrainian` configuration is not built into PostgreSQL. `docker/postgres/Doc
 ## Where to look
 
 - `Worker/src/main/java/org/shpytchuk/worker/listener/ItemCreatedListener.java`
-- `Worker/src/main/java/org/shpytchuk/worker/service/ItemService.java`, `LostItemCreatedHandler.java`, `FoundItemCreatedHandler.java`
+- `Worker/src/main/java/org/shpytchuk/worker/service/ItemService.java`, `handler/LostItemCreatedHandler.java`, `handler/FoundItemCreatedHandler.java`
 - `Worker/src/main/java/org/shpytchuk/worker/specification/ThingSpecifications.java`
 - `Worker/src/main/java/org/shpytchuk/worker/language/`
 - `Worker/src/main/java/org/shpytchuk/worker/config/FullTextFunctionContributor.java`

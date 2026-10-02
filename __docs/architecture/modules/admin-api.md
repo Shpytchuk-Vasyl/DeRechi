@@ -165,7 +165,7 @@ compression is on for text and JSON.
 | Test | Kind |
 |---|---|
 | `LostItemControllerTests`, `LostItemHistoryControllerTests`, `MatchControllerTests`, `ItemFormPlaceSearchTests` | `@WebMvcTest` slices importing `SecurityConfig` and the view helpers, services and `ImageStorage` mocked (the real one would pull in the S3 client) |
-| `MatchNotificationServiceTest` | unit test with a mocked `RabbitTemplate` and repository |
+| `service/matching/MatchNotificationServiceTest`, `service/lost/LostItemAdminServiceTest` | unit tests with mocked repositories and `RabbitTemplate`, next to the services they cover |
 | `PermissionsTest`, `NotifyChannelTest`, `ItemFilterTest`, `FormatsTest`, `CountriesPropertiesTest` | plain unit tests |
 | `MessagesTest` | bundle parity across the five languages |
 | `ImageStorageIT` | `@SpringBootTest` against a live MinIO on `localhost:9000`, enabled only when its health endpoint answers |

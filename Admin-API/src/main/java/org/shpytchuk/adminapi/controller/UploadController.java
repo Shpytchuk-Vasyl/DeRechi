@@ -22,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping(UploadController.BASE_PATH)
 public class UploadController {
 
-    static final String BASE_PATH = "/admin/uploads";
+    public static final String BASE_PATH = "/admin/uploads";
 
     private final ImageStorage storage;
     private final MessageSource messages;

@@ -1,4 +1,4 @@
-package org.shpytchuk.adminapi.service;
+package org.shpytchuk.adminapi.service.matching;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,6 @@ import org.shpytchuk.adminapi.event.NotificationRequestedEvent;
 import org.shpytchuk.adminapi.exception.NotFoundException;
 import org.shpytchuk.adminapi.form.NotifyChannel;
 import org.shpytchuk.adminapi.repository.matching.SimilarItemRepository;
-import org.shpytchuk.adminapi.service.matching.MatchNotificationService;
 import org.shpytchuk.adminapi.view.Formats;
 import org.shpytchuk.adminapi.view.matching.NotifiedMatch;
 import org.junit.jupiter.api.AfterEach;

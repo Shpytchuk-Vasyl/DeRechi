@@ -1,5 +1,6 @@
-package org.shpytchuk.clientapi.repository;
+package org.shpytchuk.clientapi.repository.thing;
 
+import org.shpytchuk.clientapi.repository.AbstractRepositoryTests;
 import org.hibernate.Hibernate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,6 @@ import org.shpytchuk.clientapi.input.ItemFilterInput;
 import org.shpytchuk.clientapi.input.NearInput;
 import org.shpytchuk.clientapi.repository.found.FoundItemRepository;
 import org.shpytchuk.clientapi.repository.lost.LostItemRepository;
-import org.shpytchuk.clientapi.repository.thing.ThingCategoryRepository;
 import org.shpytchuk.clientapi.specification.ThingSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;

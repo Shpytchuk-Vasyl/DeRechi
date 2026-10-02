@@ -26,7 +26,7 @@ web-client change too, see [web-client.md](web-client.md).
 | `claimLostItem(id, contact)`, `claimFoundItem(id, contact)`, `confirmReturn(token)` | `ClaimController` | responses to a notice and the "item is back" link, see [../../features/claims.md](../../features/claims.md) |
 | `categories` | `ReferenceController` | all `thing_category` rows |
 | `countries` | `ReferenceController` | supported countries with their currency, from `CountriesProperties` |
-| `places(name, first, after)` | `PlaceController` | case-insensitive substring on `name`, sorted by name |
+| `places(name, first, after)` | `ReferenceController` | case-insensitive substring on `name`, sorted by name |
 
 The `Date` scalar comes from `graphql-java-extended-scalars`, registered in `GraphQlConfig`.
 
@@ -103,8 +103,8 @@ overridden with `SPRING_DATASOURCE_URL`, `SPRING_RABBITMQ_HOST` and friends.
 | Base class | Kind | What it gives |
 |---|---|---|
 | `support/AbstractPostgresTests` | Testcontainers `postgis/postgis:17-3.5`, started once per JVM, `@Testcontainers(disabledWithoutDocker = true)` | applies the `DB-Postgres` changelog from disk, stubs the `ukrainian` text search config as a copy of `simple`, truncates all tables before each test |
-| `repository/AbstractRepositoryTests` | `@DataJpaTest` with `ddl-auto=validate` and the real database | repository and specification tests |
-| `controller/AbstractGraphQlTests` | `@SpringBootTest` + `@AutoConfigureGraphQlTester`, Eureka off, `RabbitTemplate` mocked | end-to-end GraphQL tests with seeded categories |
+| `repository/AbstractRepositoryTests` | `@DataJpaTest` with `ddl-auto=validate` and the real database | repository and specification tests in `repository/thing` and `repository/detail` |
+| `controller/AbstractGraphQlTests` | `@SpringBootTest` + `@AutoConfigureGraphQlTester`, Eureka off, `RabbitTemplate` mocked | end-to-end GraphQL tests with seeded categories: items, claims, and `ReferenceControllerTests` for categories, countries and places |
 | `support/Fixtures` | static builders for `Place`, `ContactInfo`, items | shared test data |
 
 Unit tests without a container cover the aspect (`ItemEventAspectTest`, Mockito), the

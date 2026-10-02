@@ -54,7 +54,7 @@ Channels are enabled by configuration presence under `notify.channels.*`. Today 
 ## Where to look
 
 - `Admin-API/src/main/java/org/shpytchuk/adminapi/controller/MatchController.java`
-- `Admin-API/src/main/java/org/shpytchuk/adminapi/service/MatchService.java`, `MatchNotificationService.java`
+- `Admin-API/src/main/java/org/shpytchuk/adminapi/service/matching/MatchService.java`, `MatchNotificationService.java`
 - `Admin-API/src/main/java/org/shpytchuk/adminapi/form/NotifyChannel.java`
 - `Admin-API/src/main/resources/templates/matches.html`, `fragments/candidates.html`
 - `Notification/src/main/java/org/shpytchuk/notification/service/NotificationSender.java`

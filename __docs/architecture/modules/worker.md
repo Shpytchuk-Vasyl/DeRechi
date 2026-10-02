@@ -85,7 +85,7 @@ item, history and claim tables. Texts live in this module's own five `messages*.
 ## Entities
 
 The `entity` package is a copy of the shared schema, laid out like `DB-Postgres`
-(`core`, `core.thing`, `history`, `analysis`, `claim`), with one addition: `Thing` has a
+(`thing`, `lost`, `found`, `detail`, `matching`), with one addition: `Thing` has a
 `@Transient Double orderMatch` that carries the rank from the query to the insert.
 
 Packages by role: `listener` takes messages off the queues and dispatches by routing key,

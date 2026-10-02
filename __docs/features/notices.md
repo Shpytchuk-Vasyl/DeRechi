@@ -71,7 +71,7 @@ One row in `lost_item` or `found_item`, one `contact_info` row per notice, one `
 ## Where to look
 
 - `Client-API/src/main/resources/graphql/schema.graphqls`
-- `Client-API/src/main/java/org/shpytchuk/clientapi/service/ItemService.java`, `LostItemService.java`, `FoundItemService.java`
+- `Client-API/src/main/java/org/shpytchuk/clientapi/service/ItemService.java`, `lost/LostItemService.java`, `found/FoundItemService.java`
 - `Client-API/src/main/java/org/shpytchuk/clientapi/controller/LostItemController.java`, `FoundItemController.java`
 - `Client-API/src/main/java/org/shpytchuk/clientapi/util/ContactMasker.java`
 - Tests: `LostItemControllerTests`, `FoundItemControllerTests`, `ItemServiceTests`, `ContactMaskerTest`, `WithinDaysLocalDateValidatorTest`

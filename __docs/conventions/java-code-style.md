@@ -139,7 +139,8 @@ Each service follows the same shape under `org.shpytchuk.<module>`:
 
 ```
 config/        @Configuration classes, properties records, interceptors
-controller/    MVC or GraphQL controllers (and @ControllerAdvice)
+controller/    MVC or GraphQL controllers
+model/         Admin-API only: @ControllerAdvice and the model helpers templates rely on
 entity/        JPA entities, copied from DB-Postgres
 event/         @EventType records/classes, EventTypeScanner
 form/ input/   request-side objects (MVC forms, GraphQL inputs)
@@ -149,10 +150,18 @@ repository/    Spring Data repositories and *Specifications
 security/      Admin-API only: Scope, Action, Permissions, mappers
 service/       business logic
 listener/      RabbitMQ consumers (Worker, Notification)
+handler/       Worker only: one handler per routing key, picked by the listeners
+cron/          Worker only: @Scheduled jobs
 util/          pure static helpers
 ```
 
-Keep new code in these packages rather than adding new top-level ones. If a package starts holding two unrelated concerns, split by feature inside it (`repository/items/`, `entity/items/`) as `Admin-API` already does.
+Inside `entity`, `repository`, `service` and `view` the classes are split by the thing they
+are about, the same way in every module: `lost/` and `found/` for the notice kind and
+everything that hangs off it (item, history, claim), `thing/` for the shared `Thing` and its
+category, `detail/` for `ContactInfo` and `Place`, `matching/` for `SimilarItem`, `Claim` and
+the match views. A class that serves both kinds (`ItemService`, `ClaimRepository`,
+`AdminItemService`) stays at the package root. Keep new code in these packages rather than
+adding new top-level ones.
 
 ## Comments
 

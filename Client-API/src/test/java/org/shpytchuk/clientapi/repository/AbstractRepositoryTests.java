@@ -6,5 +6,5 @@ import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabas
 
 @DataJpaTest(properties = "spring.jpa.hibernate.ddl-auto=validate")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-abstract class AbstractRepositoryTests extends AbstractPostgresTests {
+public abstract class AbstractRepositoryTests extends AbstractPostgresTests {
 }

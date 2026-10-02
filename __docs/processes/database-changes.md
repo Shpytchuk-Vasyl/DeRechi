@@ -19,12 +19,13 @@ The full Liquibase command reference, including rollback and recovery goals, is 
 
 ## Step by step
 
-1. **Change the entity in `DB-Postgres`** under `src/main/java/org/shpytchuk/dbpostgres`.
-   Ordinary JPA work.
+1. **Change the entity in `DB-Postgres`** under `src/main/java/org/shpytchuk/dbpostgres`
+   (`thing/`, `lost/`, `found/`, `detail/`, `matching/`). Ordinary JPA work.
 
 2. **Change the same entity in every service that has a copy.** Entities are deliberately
    duplicated per service (`org.shpytchuk.adminapi.entity`, `org.shpytchuk.clientapi.entity`,
-   `org.shpytchuk.worker.entity`). Services that do not use the field can skip it only
+   `org.shpytchuk.worker.entity`, each split into the same `thing/`, `lost/`, `found/`,
+   `detail/`, `matching/` sub-packages). Services that do not use the field can skip it only
    if their copy of the entity does not map that table at all; otherwise `ddl-auto: validate`
    in the tests will complain.
 

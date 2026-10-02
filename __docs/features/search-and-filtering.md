@@ -27,7 +27,7 @@ Paging is Relay-style (`first`, `after`, `edges`, `pageInfo`) on top of offset p
 
 ### Places
 
-`places(name, first, after)` returns places sorted by name with a case-insensitive substring match (`PlaceService`, `name` up to 100 characters). The Web-Client uses it for the "near" picker, see [Places](places.md).
+`places(name, first, after)` returns places sorted by name with a case-insensitive substring match (`ReferenceService.places`, `name` up to 100 characters). The Web-Client uses it for the "near" picker, see [Places](places.md).
 
 ## Admin panel (`Admin-API`)
 

@@ -22,11 +22,11 @@ Read [Notices](../features/notices.md) and [Search and filtering](../features/se
    }
    ```
 
-2. **Persisted: entity and migration.** Add the property to `Thing` in `DB-Postgres/src/main/java/org/shpytchuk/dbpostgres/core/thing/Thing.java`, generate and review the migration (`./mvnw -pl DB-Postgres compile liquibase:diff`, then rename and fix the file; see [Database migrations](../conventions/database-migrations.md)). Then copy the same property into every module's `Thing`:
+2. **Persisted: entity and migration.** Add the property to `Thing` in `DB-Postgres/src/main/java/org/shpytchuk/dbpostgres/thing/Thing.java`, generate and review the migration (`./mvnw -pl DB-Postgres compile liquibase:diff`, then rename and fix the file; see [Database migrations](../conventions/database-migrations.md)). Then copy the same property into every module's `Thing`:
 
-   - `Client-API/.../entity/Thing.java`
-   - `Admin-API/.../entity/Thing.java`
-   - `Worker/.../entity/Thing.java`
+   - `Client-API/.../entity/thing/Thing.java`
+   - `Admin-API/.../entity/thing/Thing.java`
+   - `Worker/.../entity/thing/Thing.java`
 
    Every service runs with `ddl-auto: none`, so a forgotten copy does not fail at startup; it fails on the first query that touches the column, or worse, silently ignores the data. Keep the copies byte-for-byte identical apart from the package.
 

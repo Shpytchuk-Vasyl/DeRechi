@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-final class ItemClaims<C extends Claim> {
+public final class ItemClaims<C extends Claim> {
 
     private final ClaimRepository<C> repository;
     private final ContactInfoRepository contactInfoRepository;
@@ -34,21 +34,21 @@ final class ItemClaims<C extends Claim> {
         this.itemIdOf = itemIdOf;
     }
 
-    static <C extends Claim> ItemClaims<C> ofLive(ClaimRepository<C> repository,
+    public static <C extends Claim> ItemClaims<C> ofLive(ClaimRepository<C> repository,
                                                       ContactInfoRepository contactInfoRepository) {
         return new ItemClaims<>(repository, contactInfoRepository,
                 repository::findByItemIdInOrderByCreatedAtDescIdDesc, repository::findByItemId,
                 claim -> claim.getItem().getId());
     }
 
-    static <C extends Claim> ItemClaims<C> ofArchived(ClaimRepository<C> repository,
+    public static <C extends Claim> ItemClaims<C> ofArchived(ClaimRepository<C> repository,
                                                           ContactInfoRepository contactInfoRepository) {
         return new ItemClaims<>(repository, contactInfoRepository,
                 repository::findByArchivedItemIdInOrderByCreatedAtDescIdDesc, repository::findByArchivedItemId,
                 claim -> claim.getArchivedItem().getId());
     }
 
-    Map<Long, List<ClaimView>> byItem(Collection<Long> itemIds) {
+    public Map<Long, List<ClaimView>> byItem(Collection<Long> itemIds) {
         Map<Long, List<ClaimView>> result = new LinkedHashMap<>();
         itemIds.forEach(id -> result.put(id, new ArrayList<>()));
         if (itemIds.isEmpty()) {
@@ -61,7 +61,7 @@ final class ItemClaims<C extends Claim> {
         return result;
     }
 
-    void deleteOf(Long itemId) {
+    public void deleteOf(Long itemId) {
         List<C> claims = byId.apply(itemId);
         if (claims.isEmpty()) {
             return;

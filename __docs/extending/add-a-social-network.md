@@ -19,10 +19,10 @@ Migration `002-init-schema` defines the column without a CHECK constraint, so th
 
 1. **Entity copies.** The enum is nested in `ContactInfo` and the class is copied per module. Change all four identically:
 
-   - `DB-Postgres/src/main/java/org/shpytchuk/dbpostgres/core/ContactInfo.java`
-   - `Client-API/src/main/java/org/shpytchuk/clientapi/entity/ContactInfo.java`
-   - `Admin-API/src/main/java/org/shpytchuk/adminapi/entity/ContactInfo.java`
-   - `Worker/src/main/java/org/shpytchuk/worker/entity/ContactInfo.java`
+   - `DB-Postgres/src/main/java/org/shpytchuk/dbpostgres/detail/ContactInfo.java`
+   - `Client-API/src/main/java/org/shpytchuk/clientapi/entity/detail/ContactInfo.java`
+   - `Admin-API/src/main/java/org/shpytchuk/adminapi/entity/detail/ContactInfo.java`
+   - `Worker/src/main/java/org/shpytchuk/worker/entity/detail/ContactInfo.java`
 
    ```java
    public enum SocialMediaEnum {
@@ -37,7 +37,7 @@ Migration `002-init-schema` defines the column without a CHECK constraint, so th
 
 3. **Admin Notify menu.** `Admin-API/src/main/java/org/shpytchuk/adminapi/form/NotifyChannel.java`: add `SIGNAL`. `social()` converts any non-`ALL`/`EMAIL`/`PHONE` constant with `SocialMediaEnum.valueOf(name())`, so the name must equal the entity constant. `isNeedPhone()` already returns `true` for everything except `EMAIL`, which is right for a phone-addressed messenger. `NotifyChannelTest.everySocialMediaHasItsOwnChannel` fails until the constant exists.
 
-4. **Icon.** `Admin-API/src/main/java/org/shpytchuk/adminapi/view/SocialMediaIcons.java` maps constants to Font Awesome classes (`fa-brands fa-signal-messenger`); anything missing falls back to a generic comment icon, so this is optional but looks sloppy without it.
+4. **Icon.** `Admin-API/src/main/java/org/shpytchuk/adminapi/view/detail/SocialMediaIcons.java` maps constants to Font Awesome classes (`fa-brands fa-signal-messenger`); anything missing falls back to a generic comment icon, so this is optional but looks sloppy without it.
 
 5. **Labels.** The form checkboxes (`items/form.html`, iterating `allSocialMedias`) and the Notify dropdown (`fragments/candidates.html`) render `#{social.__${messenger}__}`. Add `social.SIGNAL=Signal` to all five bundles or `MessagesTest` fails and the screen shows the key.
 

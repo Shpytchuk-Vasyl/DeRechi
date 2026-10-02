@@ -31,7 +31,7 @@ The create/edit form has a search box (`#place-search`) wired by `static/js/plac
 ## Public API
 
 - `PlaceInput` on `createLostItem` / `createFoundItem` carries the same five fields; the Web-Client gets them from its own Google Maps integration (`@vis.gl/react-google-maps`).
-- `places(name, first, after)` lists stored places sorted by name, with `name` as a case-insensitive substring (`PlaceService`, max 100 characters). The Web-Client uses it to offer "near" suggestions from places that already have notices.
+- `places(name, first, after)` lists stored places sorted by name, with `name` as a case-insensitive substring (`ReferenceService.places`, max 100 characters). The Web-Client uses it to offer "near" suggestions from places that already have notices.
 - `near` in `ItemFilterInput` filters notices by distance from a point; see [Search and filtering](search-and-filtering.md).
 
 ## Known gaps
@@ -42,8 +42,8 @@ The create/edit form has a search box (`#place-search`) wired by `static/js/plac
 
 ## Where to look
 
-- `Client-API/src/main/java/org/shpytchuk/clientapi/entity/Place.java`, `util/GeoPoints.java`, `service/PlaceService.java`, `controller/PlaceController.java`
+- `Client-API/src/main/java/org/shpytchuk/clientapi/entity/detail/Place.java`, `util/GeoPoints.java`, `service/ReferenceService.java`, `controller/ReferenceController.java`
 - `Admin-API/src/main/java/org/shpytchuk/adminapi/view/GoogleMaps.java`, `config/property/MapsProperties.java`
 - `Admin-API/src/main/resources/static/js/place-autocomplete.js`
 - `Admin-API/src/main/resources/templates/items/form.html` (the place section)
-- Tests: `PlaceControllerTests`, `PlaceRepositoryTests`, `ItemFormPlaceSearchTests`
+- Tests: `ReferenceControllerTests` (the `places` query), `PlaceRepositoryTests`, `ItemFormPlaceSearchTests`

@@ -19,15 +19,18 @@ DB-Postgres/
 │       ├── 002-init-schema.postgresql.sql
 │       ├── 003-add-base_categories.postgresql.sql
 │       ├── 004-similar_item.postgresql.sql
-│       └── 005-country-and-currency.postgresql.sql
+│       ├── 005-country-and-currency.postgresql.sql
+│       └── 006-item-claims.postgresql.sql
 ├── liquibase.properties                # for the Maven plugin; not under src/ on purpose
 ├── pom.xml
 └── src/main/
     ├── java/org/shpytchuk/dbpostgres/
     │   ├── DbPostgresApplication.java
-    │   ├── core/        ContactInfo, Place, thing/{Thing, LostItem, FoundItem, ThingCategory}
-    │   ├── history/     LostItemHistory, FoundItemHistory
-    │   └── analysis/    SimilarItem
+    │   ├── thing/       Thing, ThingCategory
+    │   ├── lost/        LostItem, LostItemHistory, LostItemClaim
+    │   ├── found/       FoundItem, FoundItemHistory, FoundItemClaim
+    │   ├── detail/      ContactInfo, Place
+    │   └── matching/    SimilarItem, Claim
     └── resources/application.yaml      # ddl-auto: validate, liquibase enabled
 ```
 
