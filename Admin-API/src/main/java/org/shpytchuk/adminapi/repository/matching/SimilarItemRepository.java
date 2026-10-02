@@ -30,7 +30,7 @@ public interface SimilarItemRepository extends JpaRepository<SimilarItem, Simila
                                             @Param("limit") long limit);
 
     @Query("""
-            select new org.shpytchuk.adminapi.view.CandidateCount(s.id.lostItemId, count(s))
+            select new org.shpytchuk.adminapi.view.matching.CandidateCount(s.id.lostItemId, count(s))
             from SimilarItem s
             where s.id.lostItemId in :lostItemIds
             group by s.id.lostItemId

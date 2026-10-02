@@ -1,6 +1,7 @@
 package org.shpytchuk.notification.service;
 
 import io.notifyhub.core.Channel;
+import io.notifyhub.core.NotificationBuilder;
 import io.notifyhub.core.NotifyHub;
 import io.notifyhub.core.dedup.DuplicateNotificationException;
 import org.shpytchuk.notification.event.NotificationRequestedEvent;
@@ -38,7 +39,7 @@ public class NotificationSender {
 
         log.debug("Надсилаємо {} через {}", event.subject(), target);
         try {
-            notify.to(event.getRecipient(target))
+            builder(target, event)
                     .via(target)
                     .subject(event.subject())
                     .content(event.message())
@@ -47,6 +48,11 @@ public class NotificationSender {
         } catch (DuplicateNotificationException duplicate) {
             log.info("Повтор {} через {}, не надсилаємо вдруге", event.deduplicationKey(), target);
         }
+    }
+
+    private NotificationBuilder builder(Channel target, NotificationRequestedEvent event) {
+        String recipient = event.getRecipient(target);
+        return target == Channel.EMAIL ? notify.to(recipient) : notify.toPhone(recipient);
     }
 
     private boolean isConfigured(Channel channel) {

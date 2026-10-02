@@ -78,7 +78,7 @@ class MatchNotificationServiceTest {
 
         assertThat(event.getValue().email()).isEqualTo("owner@example.com");
         assertThat(event.getValue().phone()).isEqualTo("+380671234567");
-        assertThat(event.getValue().socialMedias()).containsExactly(SocialMediaEnum.TELEGRAM);
+        assertThat(event.getValue().socialMedias()).as("ALL means email and SMS, no messenger").isEmpty();
         assertThat(event.getValue().deduplicationKey()).isEqualTo("match:1:2");
         assertThat(event.getValue().subject()).isEqualTo("DeRechi: вашу річ знайшли");
         assertThat(event.getValue().message())

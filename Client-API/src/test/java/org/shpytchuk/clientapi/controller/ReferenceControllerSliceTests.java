@@ -3,6 +3,7 @@ package org.shpytchuk.clientapi.controller;
 import org.junit.jupiter.api.Test;
 import org.shpytchuk.clientapi.config.CountriesProperties;
 import org.shpytchuk.clientapi.config.GraphQlConfig;
+import org.shpytchuk.clientapi.repository.detail.PlaceRepository;
 import org.shpytchuk.clientapi.repository.thing.ThingCategoryRepository;
 import org.shpytchuk.clientapi.service.ReferenceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ class ReferenceControllerSliceTests {
 
     @MockitoBean
     private ThingCategoryRepository categoryRepository;
+
+    @MockitoBean
+    private PlaceRepository placeRepository;
 
     @Test
     void returnsTheConfiguredCountriesInOrderWithTheirCurrencies() {
