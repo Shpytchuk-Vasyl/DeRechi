@@ -2,7 +2,7 @@ package org.shpytchuk.clientapi.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.shpytchuk.clientapi.repository.PlaceRepository;
+import org.shpytchuk.clientapi.repository.detail.PlaceRepository;
 import org.shpytchuk.clientapi.support.Fixtures;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.execution.ErrorType;

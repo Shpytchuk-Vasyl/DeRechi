@@ -10,7 +10,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.shpytchuk.adminapi.entity.ContactInfo.SocialMediaEnum;
+import org.shpytchuk.adminapi.entity.detail.ContactInfo.SocialMediaEnum;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;

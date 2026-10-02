@@ -1,6 +1,6 @@
 package org.shpytchuk.worker.event;
 
-import org.shpytchuk.worker.entity.core.ContactInfo.SocialMediaEnum;
+import org.shpytchuk.worker.entity.detail.ContactInfo.SocialMediaEnum;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 

@@ -1,10 +1,10 @@
 package org.shpytchuk.worker.service;
 
 import lombok.AllArgsConstructor;
-import org.shpytchuk.worker.entity.claim.Claim;
+import org.shpytchuk.worker.entity.matching.Claim;
 import org.shpytchuk.worker.repository.ClaimRepository;
-import org.shpytchuk.worker.repository.FoundItemClaimRepository;
-import org.shpytchuk.worker.repository.LostItemClaimRepository;
+import org.shpytchuk.worker.repository.found.FoundItemClaimRepository;
+import org.shpytchuk.worker.repository.lost.LostItemClaimRepository;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -6,10 +6,10 @@ import org.shpytchuk.clientapi.dto.ContactInfoDto;
 import org.shpytchuk.clientapi.dto.ItemDto;
 import org.shpytchuk.clientapi.dto.MoneyDto;
 import org.shpytchuk.clientapi.dto.PlaceDto;
-import org.shpytchuk.clientapi.entity.ContactInfo;
-import org.shpytchuk.clientapi.entity.Place;
-import org.shpytchuk.clientapi.entity.Thing;
-import org.shpytchuk.clientapi.entity.ThingCategory;
+import org.shpytchuk.clientapi.entity.detail.ContactInfo;
+import org.shpytchuk.clientapi.entity.detail.Place;
+import org.shpytchuk.clientapi.entity.thing.Thing;
+import org.shpytchuk.clientapi.entity.thing.ThingCategory;
 import org.shpytchuk.clientapi.util.ContactMasker;
 
 public final class ItemMapper {

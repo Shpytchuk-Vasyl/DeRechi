@@ -1,8 +1,8 @@
 package org.shpytchuk.worker.handler;
 
 import lombok.AllArgsConstructor;
-import org.shpytchuk.worker.entity.core.thing.LostItem;
-import org.shpytchuk.worker.entity.core.thing.Thing;
+import org.shpytchuk.worker.entity.lost.LostItem;
+import org.shpytchuk.worker.entity.thing.Thing;
 import org.shpytchuk.worker.event.ItemCreatedEvent;
 import org.shpytchuk.worker.repository.SimilarItemRepository;
 import org.shpytchuk.worker.service.ItemKind;

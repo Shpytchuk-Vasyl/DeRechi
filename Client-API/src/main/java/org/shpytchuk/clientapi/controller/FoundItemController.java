@@ -6,7 +6,7 @@ import org.shpytchuk.clientapi.dto.ItemDto;
 import org.shpytchuk.clientapi.input.ItemFilterInput;
 import org.shpytchuk.clientapi.input.ItemInput;
 import org.shpytchuk.clientapi.dto.ItemSort;
-import org.shpytchuk.clientapi.service.FoundItemService;
+import org.shpytchuk.clientapi.service.found.FoundItemService;
 import org.springframework.data.domain.Window;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;

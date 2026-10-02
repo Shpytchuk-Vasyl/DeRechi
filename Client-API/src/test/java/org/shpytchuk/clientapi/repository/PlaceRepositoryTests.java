@@ -2,11 +2,9 @@ package org.shpytchuk.clientapi.repository;
 
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Point;
-import org.shpytchuk.clientapi.entity.Place;
+import org.shpytchuk.clientapi.repository.detail.PlaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
-
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.shpytchuk.clientapi.support.Fixtures.place;

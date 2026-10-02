@@ -1,11 +1,11 @@
 package org.shpytchuk.adminapi.service;
 
-import org.shpytchuk.adminapi.entity.ContactInfo;
-import org.shpytchuk.adminapi.entity.items.Claim;
+import org.shpytchuk.adminapi.entity.detail.ContactInfo;
+import org.shpytchuk.adminapi.entity.matching.Claim;
 import org.shpytchuk.adminapi.mapper.ItemMapper;
-import org.shpytchuk.adminapi.repository.ContactInfoRepository;
-import org.shpytchuk.adminapi.repository.items.ClaimRepository;
-import org.shpytchuk.adminapi.view.ClaimView;
+import org.shpytchuk.adminapi.repository.detail.ContactInfoRepository;
+import org.shpytchuk.adminapi.repository.matching.ClaimRepository;
+import org.shpytchuk.adminapi.view.matching.ClaimView;
 
 import java.util.ArrayList;
 import java.util.Collection;

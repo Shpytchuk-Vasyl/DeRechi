@@ -1,7 +1,7 @@
 package org.shpytchuk.adminapi.form;
 
 import org.jspecify.annotations.Nullable;
-import org.shpytchuk.adminapi.entity.ContactInfo.SocialMediaEnum;
+import org.shpytchuk.adminapi.entity.detail.ContactInfo.SocialMediaEnum;
 
 public enum NotifyChannel {
 

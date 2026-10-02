@@ -1,8 +1,8 @@
 package org.shpytchuk.clientapi.controller;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.shpytchuk.clientapi.entity.ThingCategory;
-import org.shpytchuk.clientapi.repository.ThingCategoryRepository;
+import org.shpytchuk.clientapi.entity.thing.ThingCategory;
+import org.shpytchuk.clientapi.repository.thing.ThingCategoryRepository;
 import org.shpytchuk.clientapi.support.AbstractPostgresTests;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,11 +1,11 @@
 package org.shpytchuk.clientapi.controller;
 
 import org.junit.jupiter.api.Test;
-import org.shpytchuk.clientapi.entity.ContactInfo.SocialMediaEnum;
-import org.shpytchuk.clientapi.entity.LostItem;
+import org.shpytchuk.clientapi.entity.detail.ContactInfo.SocialMediaEnum;
+import org.shpytchuk.clientapi.entity.lost.LostItem;
 import org.shpytchuk.clientapi.event.ItemCreatedEvent;
-import org.shpytchuk.clientapi.repository.LostItemRepository;
-import org.shpytchuk.clientapi.repository.PlaceRepository;
+import org.shpytchuk.clientapi.repository.lost.LostItemRepository;
+import org.shpytchuk.clientapi.repository.detail.PlaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.execution.ErrorType;
 

@@ -1,13 +1,14 @@
 package org.shpytchuk.adminapi.controller;
 
 import org.shpytchuk.adminapi.config.cache.CachedPage;
-import org.shpytchuk.adminapi.entity.Thing;
+import org.shpytchuk.adminapi.entity.thing.Thing;
 import org.shpytchuk.adminapi.form.ItemFilter;
 import org.shpytchuk.adminapi.form.ItemForm;
 import org.shpytchuk.adminapi.form.ItemFormValidator;
+import org.shpytchuk.adminapi.model.ItemModel;
 import org.shpytchuk.adminapi.security.Scope;
 import org.shpytchuk.adminapi.service.AdminItemService;
-import org.shpytchuk.adminapi.view.ItemView;
+import org.shpytchuk.adminapi.view.detail.ItemView;
 import org.shpytchuk.adminapi.view.Pager;
 import org.shpytchuk.adminapi.view.SortView;
 import org.springframework.context.MessageSource;

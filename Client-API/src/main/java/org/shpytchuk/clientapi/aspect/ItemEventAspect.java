@@ -6,7 +6,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.shpytchuk.clientapi.dto.ItemDto;
 import org.shpytchuk.clientapi.event.ItemCreatedEvent;
-import org.shpytchuk.clientapi.service.LostItemService;
+import org.shpytchuk.clientapi.service.lost.LostItemService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

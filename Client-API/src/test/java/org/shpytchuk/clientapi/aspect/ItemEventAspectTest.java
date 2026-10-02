@@ -15,8 +15,8 @@ import org.shpytchuk.clientapi.input.ContactInfoInput;
 import org.shpytchuk.clientapi.input.ItemInput;
 import org.shpytchuk.clientapi.input.MoneyInput;
 import org.shpytchuk.clientapi.input.PlaceInput;
-import org.shpytchuk.clientapi.service.FoundItemService;
-import org.shpytchuk.clientapi.service.LostItemService;
+import org.shpytchuk.clientapi.service.found.FoundItemService;
+import org.shpytchuk.clientapi.service.lost.LostItemService;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 

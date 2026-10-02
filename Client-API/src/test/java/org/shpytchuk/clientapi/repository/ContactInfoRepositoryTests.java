@@ -1,8 +1,9 @@
 package org.shpytchuk.clientapi.repository;
 
 import org.junit.jupiter.api.Test;
-import org.shpytchuk.clientapi.entity.ContactInfo;
-import org.shpytchuk.clientapi.entity.ContactInfo.SocialMediaEnum;
+import org.shpytchuk.clientapi.entity.detail.ContactInfo;
+import org.shpytchuk.clientapi.entity.detail.ContactInfo.SocialMediaEnum;
+import org.shpytchuk.clientapi.repository.detail.ContactInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.jdbc.core.JdbcTemplate;

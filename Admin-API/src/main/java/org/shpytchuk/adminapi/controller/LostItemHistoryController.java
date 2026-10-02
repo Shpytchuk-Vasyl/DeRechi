@@ -1,14 +1,15 @@
 package org.shpytchuk.adminapi.controller;
 
 import jakarta.validation.Valid;
-import org.shpytchuk.adminapi.entity.items.LostItemHistory;
+import org.shpytchuk.adminapi.entity.lost.LostItemHistory;
 import org.shpytchuk.adminapi.form.ItemFilter;
 import org.shpytchuk.adminapi.form.ItemForm;
 import org.shpytchuk.adminapi.form.ItemFormValidator;
+import org.shpytchuk.adminapi.model.ItemModel;
 import org.shpytchuk.adminapi.security.Action;
 import org.shpytchuk.adminapi.security.RequirePermission;
 import org.shpytchuk.adminapi.security.Scope;
-import org.shpytchuk.adminapi.service.LostItemHistoryAdminService;
+import org.shpytchuk.adminapi.service.lost.LostItemHistoryAdminService;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;

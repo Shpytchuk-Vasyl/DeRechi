@@ -1,10 +1,10 @@
 package org.shpytchuk.worker.config;
 
-import org.shpytchuk.worker.entity.core.thing.FoundItem;
-import org.shpytchuk.worker.entity.core.thing.LostItem;
+import org.shpytchuk.worker.entity.found.FoundItem;
+import org.shpytchuk.worker.entity.lost.LostItem;
 import org.shpytchuk.worker.language.LanguageResolver;
-import org.shpytchuk.worker.repository.FoundItemRepository;
-import org.shpytchuk.worker.repository.LostItemRepository;
+import org.shpytchuk.worker.repository.found.FoundItemRepository;
+import org.shpytchuk.worker.repository.lost.LostItemRepository;
 import org.shpytchuk.worker.service.ItemService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

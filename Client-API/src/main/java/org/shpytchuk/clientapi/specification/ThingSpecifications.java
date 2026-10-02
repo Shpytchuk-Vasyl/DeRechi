@@ -1,6 +1,6 @@
 package org.shpytchuk.clientapi.specification;
 
-import org.shpytchuk.clientapi.entity.Thing;
+import org.shpytchuk.clientapi.entity.thing.Thing;
 import org.shpytchuk.clientapi.input.ItemFilterInput;
 import org.shpytchuk.clientapi.input.NearInput;
 import org.shpytchuk.clientapi.util.GeoPoints;

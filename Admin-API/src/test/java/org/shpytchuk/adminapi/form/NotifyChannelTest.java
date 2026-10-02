@@ -1,7 +1,7 @@
 package org.shpytchuk.adminapi.form;
 
 import org.junit.jupiter.api.Test;
-import org.shpytchuk.adminapi.entity.ContactInfo.SocialMediaEnum;
+import org.shpytchuk.adminapi.entity.detail.ContactInfo.SocialMediaEnum;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

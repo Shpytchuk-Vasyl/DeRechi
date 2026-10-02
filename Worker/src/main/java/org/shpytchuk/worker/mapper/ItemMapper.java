@@ -1,6 +1,6 @@
 package org.shpytchuk.worker.mapper;
 
-import org.shpytchuk.worker.entity.core.thing.Thing;
+import org.shpytchuk.worker.entity.thing.Thing;
 
 public final class ItemMapper {
 

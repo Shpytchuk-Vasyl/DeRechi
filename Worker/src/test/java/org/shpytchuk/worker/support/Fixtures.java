@@ -1,12 +1,12 @@
 package org.shpytchuk.worker.support;
 
 import org.shpytchuk.worker.config.ClaimsProperties;
-import org.shpytchuk.worker.entity.claim.FoundItemClaim;
-import org.shpytchuk.worker.entity.claim.LostItemClaim;
-import org.shpytchuk.worker.entity.core.ContactInfo;
-import org.shpytchuk.worker.entity.core.ContactInfo.SocialMediaEnum;
-import org.shpytchuk.worker.entity.core.thing.FoundItem;
-import org.shpytchuk.worker.entity.core.thing.LostItem;
+import org.shpytchuk.worker.entity.found.FoundItemClaim;
+import org.shpytchuk.worker.entity.lost.LostItemClaim;
+import org.shpytchuk.worker.entity.detail.ContactInfo;
+import org.shpytchuk.worker.entity.detail.ContactInfo.SocialMediaEnum;
+import org.shpytchuk.worker.entity.found.FoundItem;
+import org.shpytchuk.worker.entity.lost.LostItem;
 
 import java.time.Duration;
 import java.time.Instant;

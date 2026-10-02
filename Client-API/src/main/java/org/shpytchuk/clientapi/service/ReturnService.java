@@ -2,6 +2,8 @@ package org.shpytchuk.clientapi.service;
 
 import lombok.AllArgsConstructor;
 import org.shpytchuk.clientapi.exeption.NotFoundException;
+import org.shpytchuk.clientapi.service.found.FoundClaimService;
+import org.shpytchuk.clientapi.service.lost.LostClaimService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

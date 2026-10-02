@@ -4,11 +4,11 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
-import org.shpytchuk.clientapi.entity.ContactInfo;
-import org.shpytchuk.clientapi.entity.ContactInfo.SocialMediaEnum;
-import org.shpytchuk.clientapi.entity.Place;
-import org.shpytchuk.clientapi.entity.Thing;
-import org.shpytchuk.clientapi.entity.ThingCategory;
+import org.shpytchuk.clientapi.entity.detail.ContactInfo;
+import org.shpytchuk.clientapi.entity.detail.ContactInfo.SocialMediaEnum;
+import org.shpytchuk.clientapi.entity.detail.Place;
+import org.shpytchuk.clientapi.entity.thing.Thing;
+import org.shpytchuk.clientapi.entity.thing.ThingCategory;
 
 import java.time.LocalDate;
 

@@ -1,16 +1,16 @@
 package org.shpytchuk.adminapi.mapper;
 
 import org.locationtech.jts.geom.Point;
-import org.shpytchuk.adminapi.entity.ContactInfo;
-import org.shpytchuk.adminapi.entity.Place;
-import org.shpytchuk.adminapi.entity.Thing;
-import org.shpytchuk.adminapi.entity.items.Claim;
-import org.shpytchuk.adminapi.entity.items.SimilarItem;
+import org.shpytchuk.adminapi.entity.detail.ContactInfo;
+import org.shpytchuk.adminapi.entity.detail.Place;
+import org.shpytchuk.adminapi.entity.thing.Thing;
+import org.shpytchuk.adminapi.entity.matching.Claim;
+import org.shpytchuk.adminapi.entity.matching.SimilarItem;
 import org.shpytchuk.adminapi.form.ItemForm;
-import org.shpytchuk.adminapi.view.CandidateView;
-import org.shpytchuk.adminapi.view.ClaimStatus;
-import org.shpytchuk.adminapi.view.ClaimView;
-import org.shpytchuk.adminapi.view.ItemView;
+import org.shpytchuk.adminapi.view.matching.CandidateView;
+import org.shpytchuk.adminapi.view.matching.ClaimStatus;
+import org.shpytchuk.adminapi.view.matching.ClaimView;
+import org.shpytchuk.adminapi.view.detail.ItemView;
 
 import java.util.Arrays;
 import java.util.List;

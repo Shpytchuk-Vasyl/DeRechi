@@ -2,16 +2,16 @@ package org.shpytchuk.clientapi.service;
 
 import lombok.AllArgsConstructor;
 import org.shpytchuk.clientapi.dto.ClaimDto;
-import org.shpytchuk.clientapi.entity.ContactInfo;
-import org.shpytchuk.clientapi.entity.ContactInfo.SocialMediaEnum;
+import org.shpytchuk.clientapi.entity.detail.ContactInfo;
+import org.shpytchuk.clientapi.entity.detail.ContactInfo.SocialMediaEnum;
 import org.shpytchuk.clientapi.entity.Claim;
-import org.shpytchuk.clientapi.entity.Thing;
+import org.shpytchuk.clientapi.entity.thing.Thing;
 import org.shpytchuk.clientapi.event.ClaimChange;
 import org.shpytchuk.clientapi.exeption.NotFoundException;
 import org.shpytchuk.clientapi.input.ContactInfoInput;
 import org.shpytchuk.clientapi.repository.ClaimRepository;
-import org.shpytchuk.clientapi.repository.ContactInfoRepository;
-import org.shpytchuk.clientapi.repository.ThingRepository;
+import org.shpytchuk.clientapi.repository.detail.ContactInfoRepository;
+import org.shpytchuk.clientapi.repository.thing.ThingRepository;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 

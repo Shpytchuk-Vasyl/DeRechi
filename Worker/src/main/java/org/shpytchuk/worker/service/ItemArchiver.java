@@ -1,16 +1,16 @@
 package org.shpytchuk.worker.service;
 
 import lombok.AllArgsConstructor;
-import org.shpytchuk.worker.entity.claim.Claim;
-import org.shpytchuk.worker.entity.core.thing.Thing;
-import org.shpytchuk.worker.entity.history.FoundItemHistory;
-import org.shpytchuk.worker.entity.history.LostItemHistory;
+import org.shpytchuk.worker.entity.matching.Claim;
+import org.shpytchuk.worker.entity.thing.Thing;
+import org.shpytchuk.worker.entity.found.FoundItemHistory;
+import org.shpytchuk.worker.entity.lost.LostItemHistory;
 import org.shpytchuk.worker.mapper.ItemMapper;
 import org.shpytchuk.worker.repository.ClaimRepository;
-import org.shpytchuk.worker.repository.FoundItemHistoryRepository;
-import org.shpytchuk.worker.repository.FoundItemRepository;
-import org.shpytchuk.worker.repository.LostItemHistoryRepository;
-import org.shpytchuk.worker.repository.LostItemRepository;
+import org.shpytchuk.worker.repository.found.FoundItemHistoryRepository;
+import org.shpytchuk.worker.repository.found.FoundItemRepository;
+import org.shpytchuk.worker.repository.lost.LostItemHistoryRepository;
+import org.shpytchuk.worker.repository.lost.LostItemRepository;
 import org.shpytchuk.worker.repository.SimilarItemRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

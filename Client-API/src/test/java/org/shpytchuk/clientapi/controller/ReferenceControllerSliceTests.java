@@ -3,7 +3,7 @@ package org.shpytchuk.clientapi.controller;
 import org.junit.jupiter.api.Test;
 import org.shpytchuk.clientapi.config.CountriesProperties;
 import org.shpytchuk.clientapi.config.GraphQlConfig;
-import org.shpytchuk.clientapi.repository.ThingCategoryRepository;
+import org.shpytchuk.clientapi.repository.thing.ThingCategoryRepository;
 import org.shpytchuk.clientapi.service.ReferenceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

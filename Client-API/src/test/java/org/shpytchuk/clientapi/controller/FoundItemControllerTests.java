@@ -1,10 +1,10 @@
 package org.shpytchuk.clientapi.controller;
 
 import org.junit.jupiter.api.Test;
-import org.shpytchuk.clientapi.entity.FoundItem;
+import org.shpytchuk.clientapi.entity.found.FoundItem;
 import org.shpytchuk.clientapi.event.ItemCreatedEvent;
-import org.shpytchuk.clientapi.repository.FoundItemRepository;
-import org.shpytchuk.clientapi.repository.LostItemRepository;
+import org.shpytchuk.clientapi.repository.found.FoundItemRepository;
+import org.shpytchuk.clientapi.repository.lost.LostItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.execution.ErrorType;
 

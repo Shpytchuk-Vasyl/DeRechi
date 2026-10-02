@@ -1,7 +1,7 @@
 package org.shpytchuk.worker.handler;
 
 import lombok.AllArgsConstructor;
-import org.shpytchuk.worker.entity.claim.Claim;
+import org.shpytchuk.worker.entity.matching.Claim;
 import org.shpytchuk.worker.event.ClaimEvent;
 import org.shpytchuk.worker.service.ClaimNotifier;
 import org.shpytchuk.worker.service.ClaimRepositories;
