@@ -1,13 +1,12 @@
 package org.shpytchuk.worker.repository;
 
-import org.shpytchuk.worker.entity.Claim;
+import org.shpytchuk.worker.entity.claim.Claim;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-
 
 @NoRepositoryBean
 public interface ClaimRepository<C extends Claim> extends JpaRepository<C, Long> {

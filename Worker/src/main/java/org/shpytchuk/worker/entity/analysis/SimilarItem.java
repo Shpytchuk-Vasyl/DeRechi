@@ -1,9 +1,11 @@
-package org.shpytchuk.worker.entity;
+package org.shpytchuk.worker.entity.analysis;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.shpytchuk.worker.entity.core.thing.FoundItem;
+import org.shpytchuk.worker.entity.core.thing.LostItem;
 
 import java.io.Serializable;
 import java.util.Objects;

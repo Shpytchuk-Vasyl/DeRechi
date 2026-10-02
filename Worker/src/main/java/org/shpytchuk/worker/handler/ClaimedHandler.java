@@ -1,8 +1,11 @@
-package org.shpytchuk.worker.service;
+package org.shpytchuk.worker.handler;
 
 import lombok.AllArgsConstructor;
-import org.shpytchuk.worker.entity.Claim;
+import org.shpytchuk.worker.entity.claim.Claim;
 import org.shpytchuk.worker.event.ClaimEvent;
+import org.shpytchuk.worker.service.ClaimNotifier;
+import org.shpytchuk.worker.service.ClaimRepositories;
+import org.shpytchuk.worker.service.ItemKind;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

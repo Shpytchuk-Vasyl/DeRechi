@@ -1,9 +1,12 @@
-package org.shpytchuk.worker.service;
+package org.shpytchuk.worker.cron;
 
 import lombok.AllArgsConstructor;
 import org.shpytchuk.worker.config.ClaimsProperties;
-import org.shpytchuk.worker.entity.Claim;
+import org.shpytchuk.worker.entity.claim.Claim;
 import org.shpytchuk.worker.repository.ClaimRepository;
+import org.shpytchuk.worker.service.ClaimRepositories;
+import org.shpytchuk.worker.service.ItemArchiver;
+import org.shpytchuk.worker.service.ItemKind;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpException;

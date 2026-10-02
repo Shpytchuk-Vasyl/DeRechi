@@ -6,7 +6,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
-import org.shpytchuk.worker.entity.Thing;
+import org.shpytchuk.worker.entity.core.thing.Thing;
 import org.shpytchuk.worker.event.ItemCreatedEvent;
 import org.shpytchuk.worker.language.SearchLanguage;
 import org.springframework.data.jpa.domain.Specification;

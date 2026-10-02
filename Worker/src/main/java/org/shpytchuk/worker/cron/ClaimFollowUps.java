@@ -1,9 +1,12 @@
-package org.shpytchuk.worker.service;
+package org.shpytchuk.worker.cron;
 
 import lombok.AllArgsConstructor;
-import org.shpytchuk.worker.entity.Claim;
+import org.shpytchuk.worker.entity.claim.Claim;
 import org.shpytchuk.worker.repository.ClaimRepository;
 import org.shpytchuk.worker.repository.ContactInfoRepository;
+import org.shpytchuk.worker.service.ClaimNotifier;
+import org.shpytchuk.worker.service.ClaimRepositories;
+import org.shpytchuk.worker.service.ItemKind;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

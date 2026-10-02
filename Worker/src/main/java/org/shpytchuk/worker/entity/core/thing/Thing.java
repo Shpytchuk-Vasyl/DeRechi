@@ -1,9 +1,11 @@
-package org.shpytchuk.worker.entity;
+package org.shpytchuk.worker.entity.core.thing;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.shpytchuk.worker.entity.core.ContactInfo;
+import org.shpytchuk.worker.entity.core.Place;
 
 import java.time.LocalDate;
 

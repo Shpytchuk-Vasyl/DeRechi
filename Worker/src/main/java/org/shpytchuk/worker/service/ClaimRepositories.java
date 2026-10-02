@@ -1,7 +1,7 @@
 package org.shpytchuk.worker.service;
 
 import lombok.AllArgsConstructor;
-import org.shpytchuk.worker.entity.Claim;
+import org.shpytchuk.worker.entity.claim.Claim;
 import org.shpytchuk.worker.repository.ClaimRepository;
 import org.shpytchuk.worker.repository.FoundItemClaimRepository;
 import org.shpytchuk.worker.repository.LostItemClaimRepository;

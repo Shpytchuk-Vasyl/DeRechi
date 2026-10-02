@@ -1,5 +1,6 @@
 package org.shpytchuk.worker.service;
 
+
 public enum ItemKind {
 
     LOST("lost"),

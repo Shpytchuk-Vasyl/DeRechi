@@ -1,7 +1,7 @@
 package org.shpytchuk.worker.config;
 
-import org.shpytchuk.worker.entity.FoundItem;
-import org.shpytchuk.worker.entity.LostItem;
+import org.shpytchuk.worker.entity.core.thing.FoundItem;
+import org.shpytchuk.worker.entity.core.thing.LostItem;
 import org.shpytchuk.worker.language.LanguageResolver;
 import org.shpytchuk.worker.repository.FoundItemRepository;
 import org.shpytchuk.worker.repository.LostItemRepository;

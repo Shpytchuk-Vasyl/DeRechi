@@ -2,8 +2,8 @@ package org.shpytchuk.worker.listener;
 
 import org.junit.jupiter.api.Test;
 import org.shpytchuk.worker.event.ArchiveRequestedEvent;
-import org.shpytchuk.worker.service.ItemKind;
 import org.shpytchuk.worker.service.ItemArchiver;
+import org.shpytchuk.worker.service.ItemKind;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;

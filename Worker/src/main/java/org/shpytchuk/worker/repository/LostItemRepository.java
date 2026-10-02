@@ -1,6 +1,6 @@
 package org.shpytchuk.worker.repository;
 
-import org.shpytchuk.worker.entity.LostItem;
+import org.shpytchuk.worker.entity.core.thing.LostItem;
 import org.springframework.stereotype.Repository;
 
 @Repository

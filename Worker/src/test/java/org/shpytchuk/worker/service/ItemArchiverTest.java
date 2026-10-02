@@ -4,9 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
-import org.shpytchuk.worker.entity.LostItem;
-import org.shpytchuk.worker.entity.LostItemClaim;
-import org.shpytchuk.worker.entity.LostItemHistory;
+import org.shpytchuk.worker.entity.claim.LostItemClaim;
+import org.shpytchuk.worker.entity.core.thing.LostItem;
+import org.shpytchuk.worker.entity.history.LostItemHistory;
 import org.shpytchuk.worker.repository.FoundItemClaimRepository;
 import org.shpytchuk.worker.repository.FoundItemHistoryRepository;
 import org.shpytchuk.worker.repository.FoundItemRepository;
@@ -14,6 +14,8 @@ import org.shpytchuk.worker.repository.LostItemClaimRepository;
 import org.shpytchuk.worker.repository.LostItemHistoryRepository;
 import org.shpytchuk.worker.repository.LostItemRepository;
 import org.shpytchuk.worker.repository.SimilarItemRepository;
+
+import org.shpytchuk.worker.support.Fixtures;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -54,7 +56,7 @@ class ItemArchiverTest {
 
     @Test
     void copiesTheItemAndRepointsItsClaimsAtTheCopy() {
-        LostItemClaim claim = ClaimNotifierTest.lostClaim("+380671234567");
+        LostItemClaim claim = Fixtures.lostClaim("+380671234567");
         LostItem item = (LostItem) claim.getItem();
         item.setCurrency("UAH");
         when(lostItems.findById(1L)).thenReturn(Optional.of(item));

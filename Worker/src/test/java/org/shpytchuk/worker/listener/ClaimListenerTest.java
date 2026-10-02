@@ -3,7 +3,7 @@ package org.shpytchuk.worker.listener;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.shpytchuk.worker.event.ClaimEvent;
-import org.shpytchuk.worker.service.ClaimHandler;
+import org.shpytchuk.worker.handler.ClaimHandler;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;

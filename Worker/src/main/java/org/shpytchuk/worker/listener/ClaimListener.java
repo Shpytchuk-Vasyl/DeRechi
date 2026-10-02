@@ -1,7 +1,7 @@
 package org.shpytchuk.worker.listener;
 
 import org.shpytchuk.worker.event.ClaimEvent;
-import org.shpytchuk.worker.service.ClaimHandler;
+import org.shpytchuk.worker.handler.ClaimHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;

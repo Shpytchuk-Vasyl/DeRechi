@@ -1,6 +1,7 @@
-package org.shpytchuk.worker.service;
+package org.shpytchuk.worker.handler;
 
 import org.shpytchuk.worker.event.ItemCreatedEvent;
+import org.shpytchuk.worker.service.ItemKind;
 
 public interface ItemCreatedHandler {
 

@@ -1,14 +1,14 @@
 package org.shpytchuk.worker.service;
 
+import org.shpytchuk.worker.entity.core.ContactInfo.SocialMediaEnum;
 import com.google.i18n.phonenumbers.NumberParseException;
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import lombok.AllArgsConstructor;
 import org.shpytchuk.worker.config.ClaimsProperties;
-import org.shpytchuk.worker.entity.ContactInfo;
-import org.shpytchuk.worker.entity.ContactInfo.SocialMediaEnum;
-import org.shpytchuk.worker.entity.Claim;
-import org.shpytchuk.worker.entity.Thing;
+import org.shpytchuk.worker.entity.claim.Claim;
+import org.shpytchuk.worker.entity.core.ContactInfo;
+import org.shpytchuk.worker.entity.core.thing.Thing;
 import org.shpytchuk.worker.event.NotificationRequestedEvent;
 import org.shpytchuk.worker.language.PhoneLocales;
 import org.slf4j.Logger;

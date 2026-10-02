@@ -1,12 +1,12 @@
 package org.shpytchuk.worker.config;
 
-import org.shpytchuk.worker.service.ClaimHandler;
-import org.shpytchuk.worker.service.ItemKind;
+import org.shpytchuk.worker.handler.ClaimHandler;
+import org.shpytchuk.worker.handler.ClaimedHandler;
+import org.shpytchuk.worker.handler.ReturnedHandler;
 import org.shpytchuk.worker.service.ClaimNotifier;
 import org.shpytchuk.worker.service.ClaimRepositories;
-import org.shpytchuk.worker.service.ClaimedHandler;
 import org.shpytchuk.worker.service.ItemArchiver;
-import org.shpytchuk.worker.service.ReturnedHandler;
+import org.shpytchuk.worker.service.ItemKind;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

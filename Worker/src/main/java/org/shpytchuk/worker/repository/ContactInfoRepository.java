@@ -1,6 +1,6 @@
 package org.shpytchuk.worker.repository;
 
-import org.shpytchuk.worker.entity.ContactInfo;
+import org.shpytchuk.worker.entity.core.ContactInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

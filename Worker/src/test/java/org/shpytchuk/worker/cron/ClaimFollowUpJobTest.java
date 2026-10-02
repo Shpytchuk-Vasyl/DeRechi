@@ -1,12 +1,17 @@
-package org.shpytchuk.worker.service;
+package org.shpytchuk.worker.cron;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
-import org.shpytchuk.worker.entity.LostItemClaim;
+import org.shpytchuk.worker.entity.claim.LostItemClaim;
 import org.shpytchuk.worker.repository.ContactInfoRepository;
 import org.shpytchuk.worker.repository.FoundItemClaimRepository;
 import org.shpytchuk.worker.repository.LostItemClaimRepository;
+import org.shpytchuk.worker.service.ClaimNotifier;
+import org.shpytchuk.worker.service.ClaimRepositories;
+import org.shpytchuk.worker.service.ItemArchiver;
+import org.shpytchuk.worker.service.ItemKind;
+import org.shpytchuk.worker.support.Fixtures;
 import org.springframework.amqp.AmqpConnectException;
 
 import java.time.Clock;
@@ -48,12 +53,12 @@ class ClaimFollowUpJobTest {
         Clock clock = Clock.fixed(NOW, ZoneOffset.UTC);
         ClaimRepositories repositories = new ClaimRepositories(lostClaims, mock(FoundItemClaimRepository.class));
         ClaimFollowUps followUps = new ClaimFollowUps(repositories, notifier, contactInfos, clock);
-        job = new ClaimFollowUpJob(repositories, followUps, archiver, ClaimNotifierTest.PROPERTIES, clock);
+        job = new ClaimFollowUpJob(repositories, followUps, archiver, Fixtures.PROPERTIES, clock);
     }
 
     @Test
     void remindsTheAuthorFirstAndStampsTheClaimAfterwards() {
-        LostItemClaim claim = ClaimNotifierTest.lostClaim("+380671234567");
+        LostItemClaim claim = Fixtures.lostClaim("+380671234567");
         when(lostClaims.findByItemNotNullAndConfirmedAtNullAndAuthorRemindedAtNullAndCreatedAtLessThanEqualOrderByIdAsc(
                 NOW.minus(Duration.ofDays(1)))).thenReturn(List.of(claim));
         when(lostClaims.findWithDetailsById(42L)).thenReturn(Optional.of(claim));
@@ -73,9 +78,9 @@ class ClaimFollowUpJobTest {
 
     @Test
     void leavesTheClaimDueWhenTheBrokerIsDown() {
-        LostItemClaim claim = ClaimNotifierTest.lostClaim("+380671234567");
+        LostItemClaim claim = Fixtures.lostClaim("+380671234567");
         claim.setAuthorRemindedAt(NOW.minus(Duration.ofDays(2)));
-        LostItemClaim next = ClaimNotifierTest.lostClaim("+380671234567");
+        LostItemClaim next = Fixtures.lostClaim("+380671234567");
         next.setId(43L);
         when(lostClaims.findByItemNotNullAndConfirmedAtNullAndClaimantRemindedAtNullAndAuthorRemindedAtLessThanEqualOrderByIdAsc(
                 NOW.minus(Duration.ofDays(1)))).thenReturn(List.of(claim, next));
@@ -92,7 +97,7 @@ class ClaimFollowUpJobTest {
 
     @Test
     void doesNotRemindAboutAClaimConfirmedInTheMeantime() {
-        LostItemClaim claim = ClaimNotifierTest.lostClaim("+380671234567");
+        LostItemClaim claim = Fixtures.lostClaim("+380671234567");
         claim.setConfirmedAt(NOW.minus(Duration.ofMinutes(1)));
         when(lostClaims.findByItemNotNullAndConfirmedAtNullAndAuthorRemindedAtNullAndCreatedAtLessThanEqualOrderByIdAsc(any()))
                 .thenReturn(List.of(claim));
@@ -106,7 +111,7 @@ class ClaimFollowUpJobTest {
 
     @Test
     void archivesItemsWithAConfirmedClaim() {
-        LostItemClaim claim = ClaimNotifierTest.lostClaim("+380671234567");
+        LostItemClaim claim = Fixtures.lostClaim("+380671234567");
         claim.getItem().setId(5L);
         when(lostClaims.findByItemNotNullAndConfirmedAtNotNull()).thenReturn(List.of(claim));
 
@@ -118,9 +123,9 @@ class ClaimFollowUpJobTest {
     @Test
     void archivesOnlyItemsWhoseNewestClaimIsOlderThanTheWait() {
         Instant cutoff = NOW.minus(Duration.ofDays(7));
-        LostItemClaim quiet = ClaimNotifierTest.lostClaim("+380671234567");
+        LostItemClaim quiet = Fixtures.lostClaim("+380671234567");
         quiet.getItem().setId(1L);
-        LostItemClaim busy = ClaimNotifierTest.lostClaim("+380671234567");
+        LostItemClaim busy = Fixtures.lostClaim("+380671234567");
         busy.setId(43L);
         busy.getItem().setId(2L);
         when(lostClaims.findByItemNotNullAndCreatedAtLessThanEqual(cutoff)).thenReturn(List.of(quiet, busy));
@@ -135,7 +140,7 @@ class ClaimFollowUpJobTest {
 
     @Test
     void deletesExpiredClaimsWithTheirContacts() {
-        LostItemClaim claim = ClaimNotifierTest.lostClaim("+380671234567");
+        LostItemClaim claim = Fixtures.lostClaim("+380671234567");
         claim.getContactInfo().setId(77L);
         when(lostClaims.findByCreatedAtLessThanEqualOrderByIdAsc(NOW.minus(Duration.ofDays(365)))).thenReturn(List.of(claim));
         when(lostClaims.findById(42L)).thenReturn(Optional.of(claim));

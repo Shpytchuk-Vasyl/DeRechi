@@ -1,4 +1,4 @@
-package org.shpytchuk.worker.entity;
+package org.shpytchuk.worker.entity.core.thing;
 
 import jakarta.persistence.*;
 import lombok.Getter;

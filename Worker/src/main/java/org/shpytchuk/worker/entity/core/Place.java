@@ -1,4 +1,4 @@
-package org.shpytchuk.worker.entity;
+package org.shpytchuk.worker.entity.core;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,7 +9,6 @@ import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.locationtech.jts.geom.Point;
-
 
 @Entity
 @Getter

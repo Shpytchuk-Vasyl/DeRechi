@@ -33,7 +33,7 @@ Tests are JUnit 5 with AssertJ and Spring Boot's test starters. Database-backed 
 - truncates every table with `RESTART IDENTITY CASCADE` before each test,
 - points `spring.datasource.*` at the container through `@DynamicPropertySource`.
 
-`Fixtures` builds entities for these tests. Extend it rather than building entities inline.
+`Fixtures` builds entities for these tests. Extend it rather than building entities inline. `Worker` has its own `support/Fixtures` for claim entities and the claims properties.
 
 A consequence worth knowing: a new migration is exercised by `./mvnw -pl Client-API test` even if you touch nothing in `Client-API`. Run it after writing a changeset.
 

@@ -1,8 +1,8 @@
 package org.shpytchuk.worker.listener;
 
 import org.shpytchuk.worker.event.ArchiveRequestedEvent;
-import org.shpytchuk.worker.service.ItemKind;
 import org.shpytchuk.worker.service.ItemArchiver;
+import org.shpytchuk.worker.service.ItemKind;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;

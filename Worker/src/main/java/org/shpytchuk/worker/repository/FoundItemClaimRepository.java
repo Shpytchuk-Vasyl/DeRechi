@@ -1,6 +1,6 @@
 package org.shpytchuk.worker.repository;
 
-import org.shpytchuk.worker.entity.FoundItemClaim;
+import org.shpytchuk.worker.entity.claim.FoundItemClaim;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Repository;
 

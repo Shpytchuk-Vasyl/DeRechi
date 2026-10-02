@@ -1,10 +1,12 @@
-package org.shpytchuk.worker.service;
+package org.shpytchuk.worker.handler;
 
 import lombok.AllArgsConstructor;
-import org.shpytchuk.worker.entity.FoundItem;
-import org.shpytchuk.worker.entity.Thing;
+import org.shpytchuk.worker.entity.core.thing.FoundItem;
+import org.shpytchuk.worker.entity.core.thing.Thing;
 import org.shpytchuk.worker.event.ItemCreatedEvent;
 import org.shpytchuk.worker.repository.SimilarItemRepository;
+import org.shpytchuk.worker.service.ItemKind;
+import org.shpytchuk.worker.service.ItemService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

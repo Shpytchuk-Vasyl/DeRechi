@@ -1,10 +1,10 @@
 package org.shpytchuk.worker.service;
 
 import lombok.AllArgsConstructor;
-import org.shpytchuk.worker.entity.Claim;
-import org.shpytchuk.worker.entity.FoundItemHistory;
-import org.shpytchuk.worker.entity.LostItemHistory;
-import org.shpytchuk.worker.entity.Thing;
+import org.shpytchuk.worker.entity.claim.Claim;
+import org.shpytchuk.worker.entity.core.thing.Thing;
+import org.shpytchuk.worker.entity.history.FoundItemHistory;
+import org.shpytchuk.worker.entity.history.LostItemHistory;
 import org.shpytchuk.worker.mapper.ItemMapper;
 import org.shpytchuk.worker.repository.ClaimRepository;
 import org.shpytchuk.worker.repository.FoundItemHistoryRepository;

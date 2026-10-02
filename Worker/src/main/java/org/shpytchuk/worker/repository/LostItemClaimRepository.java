@@ -1,6 +1,6 @@
 package org.shpytchuk.worker.repository;
 
-import org.shpytchuk.worker.entity.LostItemClaim;
+import org.shpytchuk.worker.entity.claim.LostItemClaim;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Repository;
 
