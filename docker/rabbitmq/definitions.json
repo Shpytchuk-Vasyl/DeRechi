@@ -68,7 +68,7 @@
   ],
   "queues": [
     {
-      "name": "automatic-search.items",
+      "name": "worker.items",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
@@ -78,7 +78,7 @@
       }
     },
     {
-      "name": "automatic-search.items.dlq",
+      "name": "worker.items.dlq",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
@@ -87,7 +87,7 @@
       }
     },
     {
-      "name": "automatic-search.claims",
+      "name": "worker.claims",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
@@ -97,7 +97,7 @@
       }
     },
     {
-      "name": "automatic-search.claims.dlq",
+      "name": "worker.claims.dlq",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
@@ -125,7 +125,7 @@
       }
     },
     {
-      "name": "automatic-search.archive",
+      "name": "worker.archive",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
@@ -135,7 +135,7 @@
       }
     },
     {
-      "name": "automatic-search.archive.dlq",
+      "name": "worker.archive.dlq",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
@@ -148,7 +148,7 @@
     {
       "source": "derechi.items",
       "vhost": "/",
-      "destination": "automatic-search.items",
+      "destination": "worker.items",
       "destination_type": "queue",
       "routing_key": "item.*.created",
       "arguments": {}
@@ -156,7 +156,7 @@
     {
       "source": "derechi.items.dlx",
       "vhost": "/",
-      "destination": "automatic-search.items.dlq",
+      "destination": "worker.items.dlq",
       "destination_type": "queue",
       "routing_key": "item.*.created",
       "arguments": {}
@@ -164,7 +164,7 @@
     {
       "source": "derechi.items",
       "vhost": "/",
-      "destination": "automatic-search.claims",
+      "destination": "worker.claims",
       "destination_type": "queue",
       "routing_key": "item.*.claimed",
       "arguments": {}
@@ -172,7 +172,7 @@
     {
       "source": "derechi.items",
       "vhost": "/",
-      "destination": "automatic-search.claims",
+      "destination": "worker.claims",
       "destination_type": "queue",
       "routing_key": "item.*.returned",
       "arguments": {}
@@ -180,7 +180,7 @@
     {
       "source": "derechi.items.dlx",
       "vhost": "/",
-      "destination": "automatic-search.claims.dlq",
+      "destination": "worker.claims.dlq",
       "destination_type": "queue",
       "routing_key": "item.*.claimed",
       "arguments": {}
@@ -188,7 +188,7 @@
     {
       "source": "derechi.items.dlx",
       "vhost": "/",
-      "destination": "automatic-search.claims.dlq",
+      "destination": "worker.claims.dlq",
       "destination_type": "queue",
       "routing_key": "item.*.returned",
       "arguments": {}
@@ -212,7 +212,7 @@
     {
       "source": "derechi.items",
       "vhost": "/",
-      "destination": "automatic-search.archive",
+      "destination": "worker.archive",
       "destination_type": "queue",
       "routing_key": "item.*.archive",
       "arguments": {}
@@ -220,7 +220,7 @@
     {
       "source": "derechi.items.dlx",
       "vhost": "/",
-      "destination": "automatic-search.archive.dlq",
+      "destination": "worker.archive.dlq",
       "destination_type": "queue",
       "routing_key": "item.*.archive",
       "arguments": {}

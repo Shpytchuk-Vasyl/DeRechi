@@ -19,7 +19,7 @@ a staging host, tags). Where something does not exist in the repository yet, it 
 - One Docker image per service, built from the root `Dockerfile` with `--build-arg MODULE=...`.
   The build stage compiles the whole reactor once and is cached; the runtime stage copies one
   module's jar. `docker-compose.services.yml` already does this for `Discovery`, `Getaway`,
-  `Client-API`, `Admin-API`, `Automatic-Search` and `Notification`.
+  `Client-API`, `Admin-API`, `Worker` and `Notification`.
 - `DB-Postgres` is not a service and has no image. Its migrations are applied by hand, see
   [database changes](database-changes.md).
 - `Launcher` is a local-development convenience, is commented out in the root `<modules>`, and
@@ -72,8 +72,8 @@ docker compose -f docker-compose.yml -f docker-compose.services.yml up -d --buil
 - [ ] Prometheus `Status > Targets` shows every target up, including Keycloak, MinIO and RabbitMQ.
 - [ ] GraphiQL through the gateway (`/graphiql`) runs `categories` and `countries`, and a
       `createLostItem` mutation succeeds.
-- [ ] `Automatic-Search` logs the search for that item and nothing lands in
-      `automatic-search.items.dlq`.
+- [ ] `Worker` logs the search for that item and nothing lands in
+      `worker.items.dlq`.
 - [ ] The admin panel logs in through Keycloak and the Matches page renders.
 - [ ] Notifying a candidate produces an email in Mailpit (or the real mail provider) and the
       row shows "Notified".

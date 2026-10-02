@@ -13,9 +13,9 @@ its connection. Changing the topology means editing that file and recreating the
 
 | Exchange (topic) | Queue | Binding key | Dead-letter exchange | DLQ |
 |---|---|---|---|---|
-| `derechi.items` | `automatic-search.items` | `item.*.created` | `derechi.items.dlx` | `automatic-search.items.dlq` (bound with `item.*.created`) |
-| `derechi.items` | `automatic-search.claims` | `item.*.claimed`, `item.*.returned` | `derechi.items.dlx` | `automatic-search.claims.dlq` (bound with the same two patterns) |
-| `derechi.items` | `automatic-search.archive` | `item.*.archive` | `derechi.items.dlx` | `automatic-search.archive.dlq` (bound with `item.*.archive`) |
+| `derechi.items` | `worker.items` | `item.*.created` | `derechi.items.dlx` | `worker.items.dlq` (bound with `item.*.created`) |
+| `derechi.items` | `worker.claims` | `item.*.claimed`, `item.*.returned` | `derechi.items.dlx` | `worker.claims.dlq` (bound with the same two patterns) |
+| `derechi.items` | `worker.archive` | `item.*.archive` | `derechi.items.dlx` | `worker.archive.dlq` (bound with `item.*.archive`) |
 | `derechi.notifications` | `notification.events` | `notification.#` | `derechi.notifications.dlx` | `notification.events.dlq` (bound with `#`) |
 
 All eight queues are quorum queues (`x-queue-type: quorum`), durable, on the default vhost.
@@ -26,11 +26,11 @@ Prometheus metrics on 15692.
 
 | Event | Type id | Producer | Exchange and routing key | Consumer |
 |---|---|---|---|---|
-| `ItemCreatedEvent` | `ITEM_CREATED` | `Client-API`, `ItemEventAspect` after `ItemService.create(...)` returns | `derechi.items`, `item.lost.created` or `item.found.created` | `Automatic-Search`, `ItemCreatedListener` |
+| `ItemCreatedEvent` | `ITEM_CREATED` | `Client-API`, `ItemEventAspect` after `ItemService.create(...)` returns | `derechi.items`, `item.lost.created` or `item.found.created` | `Worker`, `ItemCreatedListener` |
 | `NotificationRequestedEvent` | `NOTIFICATION` | `Admin-API`, `MatchNotificationService.notifyOwner(...)` | `derechi.notifications`, `notification.match.found` (from `derechi.notifications.routing-key`) | `Notification`, `NotificationRequestedListener` |
-| `ClaimEvent` | `CLAIM` | `Client-API`, `ClaimEventPublisher` after the claim transaction commits | `derechi.items`, `item.lost.claimed`, `item.found.claimed`, `item.lost.returned`, `item.found.returned` | `Automatic-Search`, `ClaimListener` |
-| `ArchiveRequestedEvent` | `ARCHIVE_REQUESTED` | `Admin-API`, `AdminItemService.archive(id, actor)` | `derechi.items`, `item.lost.archive`, `item.found.archive` (exchange from `derechi.archive.exchange`) | `Automatic-Search`, `ArchiveListener` |
-| `NotificationRequestedEvent` | `NOTIFICATION` | `Automatic-Search`, `ClaimNotifier` | `derechi.notifications`, `notification.claim.created`, `notification.claim.reminder` | `Notification`, `NotificationRequestedListener` |
+| `ClaimEvent` | `CLAIM` | `Client-API`, `ClaimEventPublisher` after the claim transaction commits | `derechi.items`, `item.lost.claimed`, `item.found.claimed`, `item.lost.returned`, `item.found.returned` | `Worker`, `ClaimListener` |
+| `ArchiveRequestedEvent` | `ARCHIVE_REQUESTED` | `Admin-API`, `AdminItemService.archive(id, actor)` | `derechi.items`, `item.lost.archive`, `item.found.archive` (exchange from `derechi.archive.exchange`) | `Worker`, `ArchiveListener` |
+| `NotificationRequestedEvent` | `NOTIFICATION` | `Worker`, `ClaimNotifier` | `derechi.notifications`, `notification.claim.created`, `notification.claim.reminder` | `Notification`, `NotificationRequestedListener` |
 
 `ItemCreatedEvent` carries only what matching needs: `id`, `date`, `category` (id), `lat`,
 `lon`, `title`. The routing key says whether it was a lost or a found notice; the payload
@@ -42,7 +42,7 @@ channel does not need are sent as `null`; see
 [../features/match-notifications.md](../features/match-notifications.md).
 
 `ClaimEvent` carries only the claim `id` and `ArchiveRequestedEvent` the item `id` plus the
-admin's login for the log; the routing key says the kind and the verb, and `Automatic-Search`
+admin's login for the log; the routing key says the kind and the verb, and `Worker`
 reads the rest from the shared database. That is why it is published after
 the commit, from a `@TransactionalEventListener(AFTER_COMMIT)`, not from an aspect: see
 [../features/claims.md](../features/claims.md).

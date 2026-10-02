@@ -24,7 +24,7 @@ The full Liquibase command reference, including rollback and recovery goals, is 
 
 2. **Change the same entity in every service that has a copy.** Entities are deliberately
    duplicated per service (`org.shpytchuk.adminapi.entity`, `org.shpytchuk.clientapi.entity`,
-   `org.shpytchuk.automaticsearch.entity`). Services that do not use the field can skip it only
+   `org.shpytchuk.worker.entity`). Services that do not use the field can skip it only
    if their copy of the entity does not map that table at all; otherwise `ddl-auto: validate`
    in the tests will complain.
 

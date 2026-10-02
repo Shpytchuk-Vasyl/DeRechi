@@ -15,7 +15,7 @@ COPY Discovery Discovery
 COPY Getaway Getaway
 COPY Client-API Client-API
 COPY Admin-API Admin-API
-COPY Automatic-Search Automatic-Search
+COPY Worker Worker
 COPY Notification Notification
 RUN --mount=type=cache,target=/root/.m2 ./mvnw -B -DskipTests package
 

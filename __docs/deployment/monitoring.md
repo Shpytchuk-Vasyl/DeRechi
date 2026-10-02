@@ -18,7 +18,7 @@ The override file switches Prometheus to the second config by replacing its `--c
 | Job | Targets | Path |
 |---|---|---|
 | `prometheus` | itself | `/metrics` |
-| `derechi-services` | Discovery 8761, Getaway 8080, Client-API 8082, Admin-API 8083, Automatic-Search 8085, Notification 8084 | `/actuator/prometheus` |
+| `derechi-services` | Discovery 8761, Getaway 8080, Client-API 8082, Admin-API 8083, Worker 8085, Notification 8084 | `/actuator/prometheus` |
 | `keycloak` | `keycloak:9000` | `/metrics` |
 | `minio` | `minio:9000` | `/minio/v2/metrics/cluster` |
 | `rabbitmq` | `rabbitmq:15692` | `/metrics` |

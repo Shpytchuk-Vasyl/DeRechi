@@ -23,7 +23,7 @@ keep. Go through it every time:
       typmods, array columns, naming, indexes, backfill of `NOT NULL` columns. See
       [database changes](database-changes.md).
 - [ ] Entity changes were made in `DB-Postgres` **and** in every service that carries a copy of
-      that entity (`Admin-API`, `Client-API`, `Automatic-Search`). A diff that touches one copy
+      that entity (`Admin-API`, `Client-API`, `Worker`). A diff that touches one copy
       and not the others is a bug waiting for `ddl-auto: validate`.
 - [ ] Every new message key is present in all five bundles (`messages.properties`, `_uk`,
       `_pl`, `_de`, `_fr`) and `MessagesTest` is green.

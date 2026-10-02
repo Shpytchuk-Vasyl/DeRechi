@@ -26,7 +26,7 @@ Read [Notices](../features/notices.md) and [Search and filtering](../features/se
 
    - `Client-API/.../entity/Thing.java`
    - `Admin-API/.../entity/Thing.java`
-   - `Automatic-Search/.../entity/Thing.java`
+   - `Worker/.../entity/Thing.java`
 
    Every service runs with `ddl-auto: none`, so a forgotten copy does not fail at startup; it fails on the first query that touches the column, or worse, silently ignores the data. Keep the copies byte-for-byte identical apart from the package.
 

@@ -108,9 +108,9 @@ window. Check at least one non-English locale with `?lang=uk`.
 
 | Queue | Consumer | Fed by |
 |---|---|---|
-| `automatic-search.items` | `Automatic-Search` | `derechi.items` with `item.*.created` |
+| `worker.items` | `Worker` | `derechi.items` with `item.*.created` |
 | `notification.events` | `Notification` | `derechi.notifications` with `notification.#` |
-| `automatic-search.items.dlq`, `notification.events.dlq` | nobody | Dead letters after 3 failed attempts |
+| `worker.items.dlq`, `notification.events.dlq` | nobody | Dead letters after 3 failed attempts |
 
 A healthy run leaves the DLQs at zero. A message there can be opened in the UI ("Get
 messages") to see the payload and the `x-death` header with the reason.

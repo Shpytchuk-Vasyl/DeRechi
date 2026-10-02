@@ -4,7 +4,7 @@ One reactor, one wrapper, versions declared once. The full picture of the build 
 
 ## Names must match letter for letter
 
-The module folder, its `<artifactId>` and the `<module>` entry in the root `pom.xml` are the same string, case included: `Admin-API`, `Client-API`, `DB-Postgres`, `Automatic-Search`.
+The module folder, its `<artifactId>` and the `<module>` entry in the root `pom.xml` are the same string, case included: `Admin-API`, `Client-API`, `DB-Postgres`, `Worker`.
 
 Git Bash and NTFS on Windows are case-insensitive, so `admin-api` and `Admin-API` look like the same folder locally. The Docker build runs on Linux and `COPY Admin-API Admin-API` will not find `admin-api`. Also, the `ARG MODULE` in the `Dockerfile` becomes the jar path `/workspace/${MODULE}/target/*.jar`, so compose and Maven must agree on the spelling.
 

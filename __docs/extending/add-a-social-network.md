@@ -22,7 +22,7 @@ Migration `002-init-schema` defines the column without a CHECK constraint, so th
    - `DB-Postgres/src/main/java/org/shpytchuk/dbpostgres/core/ContactInfo.java`
    - `Client-API/src/main/java/org/shpytchuk/clientapi/entity/ContactInfo.java`
    - `Admin-API/src/main/java/org/shpytchuk/adminapi/entity/ContactInfo.java`
-   - `Automatic-Search/src/main/java/org/shpytchuk/automaticsearch/entity/ContactInfo.java`
+   - `Worker/src/main/java/org/shpytchuk/worker/entity/ContactInfo.java`
 
    ```java
    public enum SocialMediaEnum {

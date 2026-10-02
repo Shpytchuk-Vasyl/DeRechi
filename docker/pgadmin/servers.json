@@ -1,0 +1,24 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "derechi",
+      "Group": "DeRechi",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "derechi",
+      "Username": "derechi",
+      "PassFile": "/pgadmin4/pgpass",
+      "SSLMode": "prefer"
+    },
+    "2": {
+      "Name": "keycloak",
+      "Group": "DeRechi",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "keycloak",
+      "Username": "derechi",
+      "PassFile": "/pgadmin4/pgpass",
+      "SSLMode": "prefer"
+    }
+  }
+}

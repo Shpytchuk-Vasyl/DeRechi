@@ -15,7 +15,7 @@ because skipping it has bitten us in this repository specifically.
    country, permission, social network, channel, event, module) there is a checklist that
    lists every file to touch. Use it.
 5. List the modules you will change. Remember the things that span modules:
-   - entities are copied into `Admin-API`, `Client-API` and `Automatic-Search`, with the
+   - entities are copied into `Admin-API`, `Client-API` and `Worker`, with the
      source of truth in `DB-Postgres`;
    - events are copied per module too (`ItemCreatedEvent`, `NotificationRequestedEvent`),
      matched by their `@EventType` id;
@@ -100,7 +100,7 @@ Tests do not exercise Eureka, the gateway, RabbitMQ topology or Keycloak. Start 
 |---|---|
 | GraphQL query or mutation | GraphiQL at `http://localhost:8080/graphiql`, through the gateway so routing is covered too |
 | Admin page or action | `http://localhost:8083/admin` with the dev user whose role should and should not see it |
-| Matching | `Automatic-Search` log, `similar_item` table, the Matches page |
+| Matching | `Worker` log, `similar_item` table, the Matches page |
 | Notification | Mailpit at `http://localhost:8025`, the `Notification` log |
 | Anything on RabbitMQ | `http://localhost:15672`: message counts on the queue and, above all, **nothing in a `.dlq`** |
 | Image upload | MinIO console at `http://localhost:9001`, and the image served from `http://localhost:8080/files/<key>` |

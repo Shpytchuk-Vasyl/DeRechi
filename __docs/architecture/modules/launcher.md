@@ -19,7 +19,7 @@ Dockerfile's `COPY` list. Read the "Re-enabling" section before switching it on.
 2. Rewrites every `lb://SERVICE` value in those configs to `http://localhost:<that
    service's port>` and sets `eureka.client.enabled=false`. Inside one JVM there is no need
    for a registry, and this is also why `Discovery` is commented out of the `SERVICES` list.
-3. Starts, in order, `Getaway` (reactive), `Client-API`, `Admin-API` and `Automatic-Search`
+3. Starts, in order, `Getaway` (reactive), `Client-API`, `Admin-API` and `Worker`
    (servlet) with `SpringApplicationBuilder`, each with a list of auto-configurations
    excluded so that one module's classpath does not leak into another's context (security
    into `Client-API`, GraphQL into `Admin-API`, persistence and AMQP into `Getaway`, the
@@ -33,7 +33,7 @@ join.
 ## Why it is the odd one out
 
 - It is the **only** module that depends on other service modules (`Discovery`, `Getaway`,
-  `Client-API`, `Admin-API`, `Automatic-Search` are its dependencies). Everything else
+  `Client-API`, `Admin-API`, `Worker` are its dependencies). Everything else
   depends only on libraries.
 - All service jars are on one classpath, so auto-configuration has to be excluded by hand
   and bean name clashes are possible. A real deployment runs one process per service.

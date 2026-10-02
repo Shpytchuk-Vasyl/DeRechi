@@ -1,10 +1,10 @@
 # Add an event
 
-A new asynchronous message between services over RabbitMQ. The pattern is already in place twice (`ITEM_CREATED` from `Client-API` to `Automatic-Search`, `NOTIFICATION` from `Admin-API` to `Notification`); copy it rather than inventing a third way.
+A new asynchronous message between services over RabbitMQ. The pattern is already in place twice (`ITEM_CREATED` from `Client-API` to `Worker`, `NOTIFICATION` from `Admin-API` to `Notification`); copy it rather than inventing a third way.
 
 ## Before you start
 
-Read [Messaging](../architecture/messaging.md). The example adds `ITEM_ARCHIVED`, published by `Admin-API` when a notice is archived, consumed by `Automatic-Search` to drop stale candidates.
+Read [Messaging](../architecture/messaging.md). The example adds `ITEM_ARCHIVED`, published by `Admin-API` when a notice is archived, consumed by `Worker` to drop stale candidates.
 
 ## How events are typed
 
@@ -26,7 +26,7 @@ Each module has its own copy of `EventType` and `EventTypeScanner`; they are del
 
    Records work for publishing (Jackson reads the components). Keep payloads flat and small: ids and the few values the consumer needs, no entities.
 
-2. **Event class, consumer side.** `Automatic-Search/src/main/java/org/shpytchuk/automaticsearch/event/ItemArchivedEvent.java` with the same id and the same property names. The existing consumer-side events are mutable classes with Lombok (`@Getter @Setter @NoArgsConstructor`); a record works too as long as the property names match.
+2. **Event class, consumer side.** `Worker/src/main/java/org/shpytchuk/worker/event/ItemArchivedEvent.java` with the same id and the same property names. The existing consumer-side events are mutable classes with Lombok (`@Getter @Setter @NoArgsConstructor`); a record works too as long as the property names match.
 
 3. **Broker topology.** `docker/rabbitmq/definitions.json` is loaded by the broker on first start. Decide whether the event fits an existing exchange (`derechi.items` for item lifecycle, `derechi.notifications` for anything that ends in a message to a person) or needs a new one. For a new consumer, add:
 
@@ -34,7 +34,7 @@ Each module has its own copy of `EventType` and `EventTypeScanner`; they are del
    - its `.dlq` queue bound to the dead-letter exchange with `#`;
    - a binding from the topic exchange with a routing-key pattern.
 
-   Routing keys follow `<entity>.<kind>.<verb>`: `item.lost.created`, `item.found.created`, `notification.match.found`. For the example: `item.lost.archived` and `item.found.archived`, and the existing `automatic-search.items` queue bound with a second pattern `item.*.archived`.
+   Routing keys follow `<entity>.<kind>.<verb>`: `item.lost.created`, `item.found.created`, `notification.match.found`. For the example: `item.lost.archived` and `item.found.archived`, and the existing `worker.items` queue bound with a second pattern `item.*.archived`.
 
    The broker only reads this file when its data volume is empty. On a dev box that means `docker compose down -v rabbitmq` (or `down -v` for everything) and `up -d`, or add the objects by hand in the management UI at `http://localhost:15672` and mirror them into the file.
 

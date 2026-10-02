@@ -71,7 +71,7 @@ AMQP's own retry would only triple the attempts; the message goes to
 4. a NotifyHub duplicate is treated as sent.
 
 Each send carries `deduplicationKey = "<event.deduplicationKey>:<CHANNEL>"`
-(`match:<lostId>:<foundId>` from `Admin-API`, `claim:<kind>:<id>` from `Automatic-Search`), one
+(`match:<lostId>:<foundId>` from `Admin-API`, `claim:<kind>:<id>` from `Worker`), one
 per channel so a dropped SMS cannot also drop the email. An event without a key falls back to
 `<recipient>:<CHANNEL>`, which only stops exact replays.
 
@@ -89,7 +89,7 @@ Until that is solved, choosing a messenger in the admin panel results in an SMS,
 
 `NotificationRequestedEvent` is a record `(subject, message, phone, email, socialMedias,
 deduplicationKey)` with `@EventType("NOTIFICATION")`. The producers' copies in `Admin-API`
-and `Automatic-Search` have the same shape; the type id is what ties them together, see
+and `Worker` have the same shape; the type id is what ties them together, see
 [../messaging.md](../messaging.md). Subject and body arrive already localized, so this
 module has no message bundles.
 

@@ -30,17 +30,17 @@ mail scanners follow links: it shows a button, "Yes, close the notice", and only
 ## The flow
 
 ```
-viewer ──claimLostItem/claimFoundItem──▶ Client-API ──item.<kind>.claimed──▶ Automatic-Search
+viewer ──claimLostItem/claimFoundItem──▶ Client-API ──item.<kind>.claimed──▶ Worker
                                             │                                     │
                                             │ lost_item_claim / found_item_claim  │ notification.claim.created
                                             ▼                                     ▼
                                         PostgreSQL                           Notification ──▶ author (email + SMS)
 
-day +1   Automatic-Search job ──notification.claim.reminder──▶ author:   "is it back? close the notice: <link>"
-day +2   Automatic-Search job ──notification.claim.reminder──▶ claimant: "did you get it back? <link>"
-link     Web-Client ──confirmReturn(token)──▶ Client-API ──item.<kind>.returned──▶ Automatic-Search archives the notice
-day +7   Automatic-Search job archives the notice if nobody confirmed (counted from the newest claim)
-admin    Admin-API ──item.<kind>.archive──▶ Automatic-Search archives the notice (same code path)
+day +1   Worker job ──notification.claim.reminder──▶ author:   "is it back? close the notice: <link>"
+day +2   Worker job ──notification.claim.reminder──▶ claimant: "did you get it back? <link>"
+link     Web-Client ──confirmReturn(token)──▶ Client-API ──item.<kind>.returned──▶ Worker archives the notice
+day +7   Worker job archives the notice if nobody confirmed (counted from the newest claim)
+admin    Admin-API ──item.<kind>.archive──▶ Worker archives the notice (same code path)
 ```
 
 ### Client-API
@@ -53,7 +53,7 @@ Three mutations in `schema.graphqls`, handled by `ClaimController`:
 | `claimFoundItem(id, contact)` | the viewer owns the found item; the finder is notified |
 | `confirmReturn(token)` | from a reminder link; stamps `confirmed_at` and asks for the archive |
 
-Everything that archives goes through Automatic-Search, which is why the admin panel also only
+Everything that archives goes through Worker, which is why the admin panel also only
 *asks* (see below): one archiver, one place that knows how claims follow a notice into history.
 
 `contact` is the same `ContactInfoInput` as in `ItemInput` (E.164 phone, email, optional
@@ -68,9 +68,9 @@ on `derechi.items` **after commit** (`@TransactionalEventListener(AFTER_COMMIT)`
 commit would race it. `confirmReturn` does the same with `item.<kind>.returned`; a token that is
 already confirmed returns `true` and publishes nothing.
 
-### Automatic-Search
+### Worker
 
-The worker gained a second queue, `automatic-search.claims`, bound with `item.*.claimed` and
+The worker gained a second queue, `worker.claims`, bound with `item.*.claimed` and
 `item.*.returned`, and a scheduled job.
 
 - `ClaimListener` dispatches by routing key like `ItemCreatedListener`. `claimed` loads the claim
@@ -96,7 +96,7 @@ The worker gained a second queue, `automatic-search.claims`, bound with `item.*.
   is retried on the next run, and a stamp failure at worst repeats a message inside NotifyHub's
   one-hour dedup window.
 - `ItemArchiver` is the **only** code that archives a notice; the admin "Archive" button sends an
-  `ARCHIVE_REQUESTED` event (`item.<kind>.archive`, queue `automatic-search.archive`,
+  `ARCHIVE_REQUESTED` event (`item.<kind>.archive`, queue `worker.archive`,
   `ArchiveListener`) and this class runs it, as it does for a confirmed return and for the job.
   It copies the item into `*_item_history` with `archived_at`, deletes its `similar_item` rows,
   re-points its claims at the history copy (`item_id` → `null`, `archived_item_id` →
@@ -104,12 +104,12 @@ The worker gained a second queue, `automatic-search.claims`, bound with `item.*.
   this the module carries `LostItemHistory`/`FoundItemHistory` and `Thing` has `compensation`
   and `currency` like the other copies.
 
-Config, `Automatic-Search/src/main/resources/application.yaml`:
+Config, `Worker/src/main/resources/application.yaml`:
 
 ```yaml
 derechi:
   claims:
-    queue: automatic-search.claims
+    queue: worker.claims
     exchange: derechi.notifications
     site-url: ${DERECHI_SITE_URL:http://localhost:3000}   # links in messages
     check-every: PT10M
@@ -142,7 +142,7 @@ history copy.
 
 "Archive" no longer copies anything itself: `AdminItemService.archive(id, actor)` checks the
 notice exists and publishes `ArchiveRequestedEvent` to `derechi.items` with
-`item.<kind>.archive`; Automatic-Search does the work a moment later, so the flash message says
+`item.<kind>.archive`; Worker does the work a moment later, so the flash message says
 the notice is *being* archived and the row leaves the list on the next load. If RabbitMQ is down
 the button fails like "Notify" does. "Delete" stays synchronous and final: it deletes the matches,
 the claims **and their contact infos** (`deleteClaims`, next to `deleteMatches`), then the row.
@@ -184,7 +184,7 @@ check details before meeting.
 ## Where to look
 
 - `Client-API/src/main/java/org/shpytchuk/clientapi/service/ClaimService.java`, `ReturnService.java`, `controller/ClaimController.java`, `event/ClaimEventPublisher.java`
-- `Automatic-Search/src/main/java/org/shpytchuk/automaticsearch/listener/ClaimListener.java`, `listener/ArchiveListener.java`, `service/ClaimNotifier.java`, `service/ClaimFollowUpJob.java` (+ `ClaimFollowUps`, one transaction per claim), `service/ItemArchiver.java`, `language/PhoneLocales.java`, `src/main/resources/messages*.properties`
+- `Worker/src/main/java/org/shpytchuk/worker/listener/ClaimListener.java`, `listener/ArchiveListener.java`, `service/ClaimNotifier.java`, `service/ClaimFollowUpJob.java` (+ `ClaimFollowUps`, one transaction per claim), `service/ItemArchiver.java`, `language/PhoneLocales.java`, `src/main/resources/messages*.properties`
 - `Notification/src/main/java/org/shpytchuk/notification/service/NotificationSender.java`
 - `Admin-API/src/main/java/org/shpytchuk/adminapi/service/AdminItemService.java`, `templates/fragments/dialogs.html`
 - `Web-Client/src/screens/found_lost/claim-card.tsx`, `src/screens/claims/confirm-return.tsx`, `src/app/actions/claim.ts`

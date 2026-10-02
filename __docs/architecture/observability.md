@@ -27,7 +27,7 @@ Both files define the same jobs:
 | Job | Targets | Path |
 |---|---|---|
 | `prometheus` | itself | `/metrics` |
-| `derechi-services` | all six Spring services, each with an `application` label (`Discovery`, `Getaway`, `Client-API`, `Admin-API`, `Automatic-Search`, `Notification`) | `/actuator/prometheus` |
+| `derechi-services` | all six Spring services, each with an `application` label (`Discovery`, `Getaway`, `Client-API`, `Admin-API`, `Worker`, `Notification`) | `/actuator/prometheus` |
 | `keycloak` | `keycloak:9000` (management port, `KC_METRICS_ENABLED=true`) | `/metrics` |
 | `minio` | `minio:9000` | `/minio/v2/metrics/cluster` (public, `MINIO_PROMETHEUS_AUTH_TYPE=public`) |
 | `rabbitmq` | `rabbitmq:15692` | `/metrics` (the `rabbitmq_prometheus` plugin) |

@@ -13,7 +13,7 @@ module pom stays a short list of dependencies and nothing else.
     <module>Getaway</module>
     <module>Client-API</module>
     <module>Admin-API</module>
-    <module>Automatic-Search</module>
+    <module>Worker</module>
     <module>Notification</module>
 <!--    <module>Launcher</module>-->
 </modules>
@@ -64,7 +64,7 @@ generates them and we delete them.
 
 ## Lombok
 
-`Admin-API`, `Client-API` and `Automatic-Search` declare Lombok as `provided` + `optional`
+`Admin-API`, `Client-API` and `Worker` declare Lombok as `provided` + `optional`
 and add it to `annotationProcessorPaths` in their own `maven-compiler-plugin` block, which
 otherwise inherits the root configuration. The other modules do not use Lombok at all.
 Where it is used is a convention question, covered in

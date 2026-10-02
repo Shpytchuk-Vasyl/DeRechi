@@ -1,6 +1,6 @@
 # Add a search language
 
-A new language for the full-text ranking in `Automatic-Search`. This decides how a notice title is stemmed and matched; it has nothing to do with the UI languages (see [Add a language](add-a-language.md)).
+A new language for the full-text ranking in `Worker`. This decides how a notice title is stemmed and matched; it has nothing to do with the UI languages (see [Add a language](add-a-language.md)).
 
 ## Before you start
 
@@ -18,7 +18,7 @@ Two cases follow.
 
 ## Case 1: PostgreSQL already has the config (example: Portuguese)
 
-1. **Enum.** `Automatic-Search/src/main/java/org/shpytchuk/automaticsearch/language/SearchLanguage.java`:
+1. **Enum.** `Worker/src/main/java/org/shpytchuk/worker/language/SearchLanguage.java`:
 
    ```java
    PORTUGUESE("pt", "portuguese"),
@@ -59,7 +59,7 @@ Two cases follow.
 
 ## Tests to add or update
 
-`Automatic-Search` has only a context test today. A worthwhile addition for either case: a `@SpringBootTest` on a Testcontainers PostGIS database (copy the pattern from `Client-API`'s `AbstractPostgresTests`) that inserts two found items and one event and asserts the ranking order for a title in the new language. For case 2 the test container needs the dictionary too, so the test either builds from `docker/postgres` or stubs the config and only checks that detection resolves to the new enum constant.
+`Worker` has only a context test today. A worthwhile addition for either case: a `@SpringBootTest` on a Testcontainers PostGIS database (copy the pattern from `Client-API`'s `AbstractPostgresTests`) that inserts two found items and one event and asserts the ranking order for a title in the new language. For case 2 the test container needs the dictionary too, so the test either builds from `docker/postgres` or stubs the config and only checks that detection resolves to the new enum constant.
 
 ## Migration needed?
 
@@ -73,6 +73,6 @@ None. Search language is internal to matching.
 
 - [ ] `pg_ts_config` has the regconfig (or the dictionary, migration and image rebuild are done)
 - [ ] `SearchLanguage` constant added, `DETECT_ONLY_CODES` cleaned up
-- [ ] `Automatic-Search` starts (profile found, functions registered)
+- [ ] `Worker` starts (profile found, functions registered)
 - [ ] Test bases that run the changelog stub the new config if it needs files
 - [ ] Ranking verified with a notice in the language

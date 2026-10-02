@@ -50,7 +50,7 @@ Application-specific settings live under the `derechi` prefix and are bound to a
 | `derechi.storage` | `StorageProperties` (`bucket`, `public-url`, `max-size`) | Admin-API |
 | `derechi.maps` | `MapsProperties` (`api-key`, `region`) | Admin-API |
 | `derechi.notifications` | `NotificationProperties` (`exchange`, `routing-key`) | Admin-API |
-| `derechi.items.queue` | read with `${...}` in `@RabbitListener` | Automatic-Search |
+| `derechi.items.queue` | read with `${...}` in `@RabbitListener` | Worker |
 | `derechi.notification.queue` | read with `${...}` in `@RabbitListener` | Notification |
 
 `derechi.countries` is declared in both `Admin-API` and `Client-API` and must list the same countries; see [add-a-country](../extending/add-a-country.md).
@@ -77,7 +77,7 @@ Known issue: `Admin-API/src/main/resources/application.yaml` ships a Google Maps
 | Getaway | 8080 | routes, global CORS from `WEB_ORIGIN_PATTERNS`, `files` and `files-upload` routes to MinIO |
 | Client-API | 8082 | GraphQL schema location, GraphiQL enabled, `derechi.countries` |
 | Admin-API | 8083 | OIDC client `derechi-admin`, Caffeine cache `categories`, static resource content hashing, multipart 5 MB, S3 client for MinIO, `derechi.*` |
-| Automatic-Search | 8085 | listener retry `max-attempts: 3`, `default-requeue-rejected: false`, queue name |
+| Worker | 8085 | listener retry `max-attempts: 3`, `default-requeue-rejected: false`, queue name |
 | Notification | 8084 | same listener retry, `notify.*` NotifyHub config, queue name |
 
 All servlet modules set `spring.threads.virtual.enabled: true`, `spring.jpa.open-in-view: false` and `ddl-auto: none`. Copy those three lines into any new module.

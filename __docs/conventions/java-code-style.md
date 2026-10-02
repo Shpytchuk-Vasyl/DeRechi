@@ -36,7 +36,7 @@ public class MatchService { private final LostItemRepository lostItemRepository;
 
 Do not put `@Data`, `@Builder` or `@Value` on anything. `@Data` generates `equals`/`hashCode` over all fields, which is wrong for entities and unnecessary for records.
 
-Lombok is declared with `provided` + `optional` scope and listed in `annotationProcessorPaths` only in `Admin-API`, `Client-API` and `Automatic-Search`. Modules without Lombok (`Notification`, `Getaway`, `Discovery`) stay without it.
+Lombok is declared with `provided` + `optional` scope and listed in `annotationProcessorPaths` only in `Admin-API`, `Client-API` and `Worker`. Modules without Lombok (`Notification`, `Getaway`, `Discovery`) stay without it.
 
 ## Logging
 
@@ -97,10 +97,10 @@ Use JSpecify `org.jspecify.annotations.Nullable` and `NonNull` on record compone
 
 ### Entities copied per module
 
-Entities live in `DB-Postgres` for migrations and are **copied** into each service that needs them (`org.shpytchuk.adminapi.entity`, `...clientapi.entity`, `...automaticsearch.entity`). No module depends on `DB-Postgres`. That means:
+Entities live in `DB-Postgres` for migrations and are **copied** into each service that needs them (`org.shpytchuk.adminapi.entity`, `...clientapi.entity`, `...worker.entity`). No module depends on `DB-Postgres`. That means:
 
 - A mapping change is made in `DB-Postgres` first, then mirrored in every copy. Table and column names, nullability, lengths and `@JdbcTypeCode` must stay identical; tests run with `ddl-auto: validate` against the real changelog and will fail on drift, but only in the modules that have such tests.
-- A service copy may omit fields and relations it does not read (`Notification` has no entities at all), but it must not rename or retype anything it keeps. `Automatic-Search` carries the history and claim entities because it archives notices.
+- A service copy may omit fields and relations it does not read (`Notification` has no entities at all), but it must not rename or retype anything it keeps. `Worker` carries the history and claim entities because it archives notices.
 - `ContactInfo.SocialMediaEnum` is stored as an ordinal array (`smallint[]`). Enum constants may only be **appended**; reordering or inserting changes the meaning of every stored row.
 
 ## Constants
@@ -148,7 +148,7 @@ mapper/        static entity-to-record mappers
 repository/    Spring Data repositories and *Specifications
 security/      Admin-API only: Scope, Action, Permissions, mappers
 service/       business logic
-listener/      RabbitMQ consumers (Automatic-Search, Notification)
+listener/      RabbitMQ consumers (Worker, Notification)
 util/          pure static helpers
 ```
 

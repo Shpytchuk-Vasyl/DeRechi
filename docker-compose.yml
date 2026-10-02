@@ -23,6 +23,25 @@ services:
       timeout: 5s
       retries: 5
 
+  pgadmin:
+    image: dpage/pgadmin4:9
+    container_name: derechi-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@derechi.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+      PGADMIN_SERVER_JSON_FILE: /pgadmin4/servers.json
+    ports:
+      - "5050:80"       # UI -> http://localhost:5050
+    volumes:
+      - ./docker/pgadmin/servers.json:/pgadmin4/servers.json:ro
+      - ./docker/pgadmin/pgpass:/pgadmin4/pgpass:ro
+      - pgadmindata:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   rabbitmq:
     image: rabbitmq:4.3.5-management
     container_name: derechi-rabbitmq
@@ -149,6 +168,7 @@ services:
 
 volumes:
   pgdata:
+  pgadmindata:
   rabbitdata:
   prometheusdata:
   grafanadata:

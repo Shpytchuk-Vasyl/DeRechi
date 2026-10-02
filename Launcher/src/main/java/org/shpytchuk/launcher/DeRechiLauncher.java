@@ -1,7 +1,7 @@
 package org.shpytchuk.launcher;
 
 import org.shpytchuk.adminapi.AdminApiApplication;
-import org.shpytchuk.automaticsearch.AutomaticSearchApplication;
+import org.shpytchuk.worker.WorkerApplication;
 import org.shpytchuk.clientapi.ClientApiApplication;
 //import org.shpytchuk.discovery.DiscoveryApplication;
 import org.shpytchuk.getaway.GetawayApplication;
@@ -102,7 +102,7 @@ public final class DeRechiLauncher {
                     excludes(SECURITY, GATEWAY)),
             new Service("Admin-API", AdminApiApplication.class, WebApplicationType.SERVLET,
                     excludes(GRAPHQL, GATEWAY)),
-            new Service("Automatic-Search", AutomaticSearchApplication.class, WebApplicationType.SERVLET,
+            new Service("Worker", WorkerApplication.class, WebApplicationType.SERVLET,
                     excludes(SECURITY, GRAPHQL, GATEWAY)));
 
     private DeRechiLauncher() {
@@ -141,7 +141,7 @@ public final class DeRechiLauncher {
                   Discovery        http://localhost:8761
                   Client-API       http://localhost:8082 (graphiql: /graphiql)
                   Admin-API        http://localhost:8083/admin
-                  Automatic-Search http://localhost:8085
+                  Worker http://localhost:8085
                 """);
     }
 

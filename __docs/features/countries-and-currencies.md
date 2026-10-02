@@ -69,7 +69,7 @@ Hibernate's schema validation (`ddl-auto: validate` in `DB-Postgres` and in test
 
 ## Modules not involved
 
-`Automatic-Search` and `Notification` read neither the amount nor the country. Matching is by category, date and distance, and the notification body does not mention the reward.
+`Worker` and `Notification` read neither the amount nor the country. Matching is by category, date and distance, and the notification body does not mention the reward.
 
 ## Where to look
 

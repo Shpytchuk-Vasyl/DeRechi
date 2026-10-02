@@ -39,7 +39,7 @@ Sorting comes from Spring's `Pageable` resolver (`?sort=date,desc`), but `Pages.
 
 ## Known gaps
 
-- Public search is `LIKE`-based. Full-text search with language-aware ranking exists only in `Automatic-Search` (see [Automatic matching](automatic-matching.md)); the public API does not use it.
+- Public search is `LIKE`-based. Full-text search with language-aware ranking exists only in `Worker` (see [Automatic matching](automatic-matching.md)); the public API does not use it.
 - No search over compensation, contacts or social networks, by design.
 - The admin filter has no "near" option.
 

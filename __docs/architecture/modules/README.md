@@ -10,7 +10,7 @@ library and the web client.
 | [Getaway](getaway.md) | 8080 | single public entry point, routes to Client-API, Keycloak and MinIO | Spring Cloud Gateway (WebFlux) | Eureka, Keycloak, MinIO |
 | [Client-API](client-api.md) | 8082 | public GraphQL API for the web client | Spring MVC, Spring for GraphQL, JPA | PostgreSQL, RabbitMQ (publishes), Eureka |
 | [Admin-API](admin-api.md) | 8083 | administration UI under `/admin/**` | Spring MVC, Thymeleaf, htmx, Spring Security OAuth2 client | PostgreSQL, RabbitMQ (publishes), MinIO, Keycloak, Eureka |
-| [Automatic-Search](automatic-search.md) | 8085 | background worker: finds candidate matches for every new notice | Spring AMQP, JPA, PostGIS, full-text search | PostgreSQL, RabbitMQ (consumes), Eureka |
+| [Worker](worker.md) | 8085 | background worker: finds candidate matches for every new notice | Spring AMQP, JPA, PostGIS, full-text search | PostgreSQL, RabbitMQ (consumes), Eureka |
 | [Notification](notification.md) | 8084 | background worker: delivers notifications through NotifyHub | Spring AMQP, NotifyHub | RabbitMQ (consumes), SMTP (Mailpit), Eureka |
 | [Launcher](launcher.md) | none | starts several services in one JVM for local development; currently disabled | | |
 | [Web-Client](web-client.md) | 3000 | public website, not a Maven module | Next.js, pnpm | Getaway (GraphQL, files) |

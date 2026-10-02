@@ -24,7 +24,7 @@
         <module>Getaway</module>
         <module>Client-API</module>
         <module>Admin-API</module>
-        <module>Automatic-Search</module>
+        <module>Worker</module>
         <module>Notification</module>
 <!--        <module>Launcher</module>-->
     </modules>

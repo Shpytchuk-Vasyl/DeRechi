@@ -28,7 +28,7 @@ The example adds `CLOTHING`. (The admin bundle already has a `category.CLOTHING`
 
 4. **Client-API needs nothing.** `categories { id key }` reads the table on every call (no cache there) and returns the key; translation is the client's job.
 
-5. **Automatic-Search needs nothing.** Matching only compares `category.id`; a new category simply forms its own pool.
+5. **Worker needs nothing.** Matching only compares `category.id`; a new category simply forms its own pool.
 
 6. **Removing or renaming** a category is a different job: `thing.category_id` is `NOT NULL` with a foreign key, so rows must be re-pointed first, and renaming a key breaks the message lookup and every client that stored the old key.
 

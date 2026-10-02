@@ -31,7 +31,7 @@ business logic (identity, file storage, mail, metrics) is an off-the-shelf conta
                         │     item.*.created│      │notification.#     │
                         │                   ▼      ▼                   │
                         │     ┌──────────────────┐ ┌──────────────┐    │
-                        │     │ Automatic-Search │ │ Notification │    │
+                        │     │ Worker │ │ Notification │    │
                         │     │ (8085)           │ │ (8084)       │    │
                         │     └────────┬─────────┘ └──────┬───────┘    │
                         │              │ similar_item     │ SMTP       │
@@ -68,7 +68,7 @@ Two things in the picture are deliberate and worth knowing before reading furthe
    the reward currency, and saves `place`, `contact_info` and the item.
 3. An aspect around `ItemService.create` publishes an `ItemCreatedEvent` to the
    `derechi.items` exchange with the routing key `item.lost.created` or `item.found.created`.
-4. `Automatic-Search` consumes it from `automatic-search.items`, looks for notices of the
+4. `Worker` consumes it from `worker.items`, looks for notices of the
    opposite kind in the same category, within three days and twenty kilometres, ranks them by
    full-text similarity of the title, and stores the top five in `similar_item`.
 

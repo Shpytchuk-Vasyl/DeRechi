@@ -30,7 +30,7 @@ docker compose up -d
 ```
 
 The first run builds our Postgres image (PostGIS plus a Ukrainian full-text dictionary) and
-pulls RabbitMQ, Keycloak, MinIO, Mailpit, Prometheus and Grafana. Wait until
+pulls RabbitMQ, Keycloak, MinIO, Mailpit, pgAdmin, Prometheus and Grafana. Wait until
 `docker compose ps` shows every service healthy or running. Keycloak imports the `derechi`
 realm on this first start; MinIO's init container creates the `derechi-files` bucket and exits.
 
@@ -58,7 +58,7 @@ it is not there. After that, order does not matter.
 
 From IDEA, run the `*Application` classes: `DiscoveryApplication`, then
 `GetawayApplication`, `ClientApiApplication`, `AdminApiApplication`,
-`AutomaticSearchApplication`, `NotificationApplication`. From a terminal, one module per
+`WorkerApplication`, `NotificationApplication`. From a terminal, one module per
 window:
 
 ```bash
@@ -66,18 +66,18 @@ window:
 ./mvnw -pl Getaway spring-boot:run
 ./mvnw -pl Client-API spring-boot:run
 ./mvnw -pl Admin-API spring-boot:run
-./mvnw -pl Automatic-Search spring-boot:run
+./mvnw -pl Worker spring-boot:run
 ./mvnw -pl Notification spring-boot:run
 ```
 
 The `Launcher` module starts `Discovery`, `Getaway`, `Client-API`, `Admin-API` and
-`Automatic-Search` as separate contexts in one JVM, which is lighter on a laptop. It is
+`Worker` as separate contexts in one JVM, which is lighter on a laptop. It is
 currently commented out in the root `pom.xml` `<modules>` list; uncomment it locally if you
 want it, but do not commit that, and note it starts neither `Notification` nor anything in
 Docker. See [architecture/modules/launcher.md](../architecture/modules/launcher.md).
 
 Ports: Discovery 8761, Getaway 8080, Client-API 8082, Admin-API 8083, Notification 8084,
-Automatic-Search 8085. `http://localhost:8761` shows who has registered.
+Worker 8085. `http://localhost:8761` shows who has registered.
 
 The alternative, everything in containers, is one command and is covered in
 [deployment/local-development.md](../deployment/local-development.md):
@@ -136,9 +136,9 @@ mutation {
 ```
 
 Each mutation publishes an `item.lost.created` or `item.found.created` event on the
-`derechi.items` exchange. Watch the `Automatic-Search` log: it says it is searching for
+`derechi.items` exchange. Watch the `Worker` log: it says it is searching for
 candidates and how many it saved. The RabbitMQ UI at `http://localhost:15672`
-(`derechi` / `derechi`) shows the message passing through `automatic-search.items`.
+(`derechi` / `derechi`) shows the message passing through `worker.items`.
 
 ## 6. See the match and notify the owner
 

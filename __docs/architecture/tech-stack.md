@@ -50,7 +50,7 @@ actually builds today is 17. Treat 17 as the truth until the Dockerfile changes.
 ## Threading model
 
 Virtual threads are on (`spring.threads.virtual.enabled: true`) in every blocking service:
-`Client-API`, `Admin-API`, `Automatic-Search`, `Notification`. That is why the code is plain
+`Client-API`, `Admin-API`, `Worker`, `Notification`. That is why the code is plain
 blocking Spring MVC, JPA and `RestClient`; there is no WebFlux and no `RestTemplate` in the
 services. The one reactive module is `Getaway`, because Spring Cloud Gateway's server is
 WebFlux-based.
@@ -60,16 +60,16 @@ WebFlux-based.
 | Library | Where | Why |
 |---|---|---|
 | Spring Data JPA + Hibernate 7 | all DB services | entities, specifications, repositories |
-| `hibernate-spatial` + JTS | `Client-API`, `Admin-API`, `Automatic-Search`, `DB-Postgres` | `geography(Point,4326)` on `place.coordinate`, `distanceWithin` predicates |
+| `hibernate-spatial` + JTS | `Client-API`, `Admin-API`, `Worker`, `DB-Postgres` | `geography(Point,4326)` on `place.coordinate`, `distanceWithin` predicates |
 | Liquibase 5.0.4 + `liquibase-hibernate7` | `DB-Postgres` | migrations, and diffing them from the entities |
 | Spring for GraphQL + `graphql-java-extended-scalars` 24.0 | `Client-API` | the public API; `Date` scalar |
 | Spring Security OAuth2 client | `Admin-API` | OIDC login against Keycloak |
 | Thymeleaf, Bulma (CDN), htmx (CDN), Font Awesome | `Admin-API` | server-rendered admin UI with partial updates |
 | Caffeine | `Admin-API` | the `categories` cache |
-| libphonenumber | `Admin-API`, `Automatic-Search` | phone formatting in `Formats`; the recipient's language for claim messages (`PhoneLocales`) |
-| optimaize `language-detector` 0.6 | `Automatic-Search` | picks the PostgreSQL text search configuration from the title |
+| libphonenumber | `Admin-API`, `Worker` | phone formatting in `Formats`; the recipient's language for claim messages (`PhoneLocales`) |
+| optimaize `language-detector` 0.6 | `Worker` | picks the PostgreSQL text search configuration from the title |
 | NotifyHub 1.1.0 (`notify-spring-boot-starter`, `notify-email`, `notify-telegram` managed) | `Notification` | one API over email / SMS / messengers |
-| Lombok | `Admin-API`, `Client-API`, `Automatic-Search` | entities and forms only; see [../conventions/java-code-style.md](../conventions/java-code-style.md) |
+| Lombok | `Admin-API`, `Client-API`, `Worker` | entities and forms only; see [../conventions/java-code-style.md](../conventions/java-code-style.md) |
 | Testcontainers (PostgreSQL module) | `Client-API`, `Admin-API` | integration tests against real PostGIS |
 | Micrometer Prometheus registry | all | `/actuator/prometheus` |
 

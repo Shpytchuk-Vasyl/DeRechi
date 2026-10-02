@@ -140,13 +140,13 @@ alpha-2 code, has no currency in the JDK, or `fallback` is not in the list.
 
 ## Messaging and notifications
 
-### A message ended up in `automatic-search.items.dlq` or `notification.events.dlq`
+### A message ended up in `worker.items.dlq` or `notification.events.dlq`
 
 After three failed attempts the listener rejects the message and the broker dead-letters it.
 Open the queue in the management UI and "Get messages": the `x-death` header carries the
 reason. The usual causes:
 
-- the routing key has no handler (`No handler for the key ...` in `Automatic-Search`);
+- the routing key has no handler (`No handler for the key ...` in `Worker`);
 - the payload's `__TypeId__` does not match any `@EventType` in the consumer, typically after
   renaming an event in one module but not the other;
 - a real exception in the handler (database down, entity missing); fix the cause, then re-create the

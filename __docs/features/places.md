@@ -4,7 +4,7 @@ A place is where a thing was lost or found. It is a Google Places result frozen 
 
 ## The entity
 
-`place` table, entity `Place` (copied into `DB-Postgres`, `Client-API`, `Admin-API`, `Automatic-Search`):
+`place` table, entity `Place` (copied into `DB-Postgres`, `Client-API`, `Admin-API`, `Worker`):
 
 | Column | Type | Notes |
 |---|---|---|

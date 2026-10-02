@@ -81,7 +81,7 @@ answers it from the notice page itself: `ClaimCard` sits where the masked contac
 expands into an inline form (phone, email, messengers: the same `ContactFields` the report
 form uses). The detail page also renders inside the modal route's `RouteDialog`, which is why
 the form is inline and never a nested dialog. Nothing the claimant types is shown anywhere;
-`Client-API` stores it and Automatic-Search mails and texts it to the notice's author.
+`Client-API` stores it and Worker mails and texts it to the notice's author.
 
 `claimNotice(kind, id, values)` in `src/app/actions/claim.ts` validates with `claimSchema`,
 runs the same BotID check as `createNotice` (`src/lib/bot-check.ts`; the claim posts to the
@@ -93,7 +93,7 @@ claim with the same phone or email comes back as `repeated: true`, and nothing i
 
 The author and later the claimant get a reminder linking to `/<locale>/claims/<token>`. That
 page (`noindex`, disallowed in `robots.txt`) has one button that calls `confirmReturn(token)`;
-the notice is then archived by Automatic-Search. An unknown or used-up token reads as "this
+the notice is then archived by Worker. An unknown or used-up token reads as "this
 link is no longer valid". The action revalidates both list tags, but not the notice's own
 detail tag: the token does not say which notice it closes, so that page stays cached until its
 hour runs out, and a claim sent from it in the meantime answers `notFound`, which revalidates

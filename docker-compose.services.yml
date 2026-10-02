@@ -137,14 +137,14 @@ services:
       minio-init:
         condition: service_completed_successfully
 
-  automatic-search:
+  worker:
     <<: *service-base
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        MODULE: Automatic-Search
-    container_name: derechi-automatic-search
+        MODULE: Worker
+    container_name: derechi-worker
     ports:
       - "8085:8085"
     environment:

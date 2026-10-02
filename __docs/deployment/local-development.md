@@ -19,7 +19,7 @@ Maven itself is not required; use the wrapper in the repository root (`./mvnw` o
 docker compose up -d
 ```
 
-This builds the custom PostGIS image on first run (it downloads the Ukrainian hunspell dictionary), then starts PostgreSQL, RabbitMQ, Keycloak, MinIO (plus the `minio-init` job that creates the `derechi-files` bucket), Mailpit, Prometheus and Grafana. Wait until `docker compose ps` shows `healthy` for postgres, rabbitmq, minio and mailpit. Keycloak takes the longest; it is ready when `http://localhost:8180` answers.
+This builds the custom PostGIS image on first run (it downloads the Ukrainian hunspell dictionary), then starts PostgreSQL, RabbitMQ, Keycloak, MinIO (plus the `minio-init` job that creates the `derechi-files` bucket), Mailpit, pgAdmin, Prometheus and Grafana. Wait until `docker compose ps` shows `healthy` for postgres, rabbitmq, minio and mailpit. Keycloak takes the longest; it is ready when `http://localhost:8180` answers.
 
 ## 2. Create the schema
 
@@ -40,11 +40,11 @@ If your JVM's default timezone is `Europe/Kiev`, this fails with `invalid value 
 ./mvnw -pl Getaway spring-boot:run
 ./mvnw -pl Client-API spring-boot:run
 ./mvnw -pl Admin-API spring-boot:run
-./mvnw -pl Automatic-Search spring-boot:run
+./mvnw -pl Worker spring-boot:run
 ./mvnw -pl Notification spring-boot:run
 ```
 
-Start only what you need: `Admin-API` alone is enough for admin UI work (it needs PostgreSQL, Keycloak, MinIO and RabbitMQ from compose, and `Discovery` if you want it registered). `Automatic-Search` and `Notification` are only needed when you exercise the event flows.
+Start only what you need: `Admin-API` alone is enough for admin UI work (it needs PostgreSQL, Keycloak, MinIO and RabbitMQ from compose, and `Discovery` if you want it registered). `Worker` and `Notification` are only needed when you exercise the event flows.
 
 In IDEA, create a Spring Boot run configuration per `*Application` class, or use a compound configuration that starts `Discovery` first. The `Launcher` module exists to start several contexts in one JVM for manual testing but is currently commented out of the reactor; see [launcher](../architecture/modules/launcher.md).
 
@@ -58,6 +58,7 @@ In IDEA, create a Spring Boot run configuration per `*Application` class, or use
 | Keycloak console | `http://localhost:8180` | `admin` / `admin` |
 | RabbitMQ management | `http://localhost:15672` | `derechi` / `derechi` |
 | Mailpit (outgoing mail) | `http://localhost:8025` | none |
+| pgAdmin | `http://localhost:5050` | `admin@derechi.local` / `admin` |
 | MinIO console | `http://localhost:9001` | `derechi` / `derechi123` |
 | Prometheus | `http://localhost:9090` | none |
 | Grafana | `http://localhost:3000` | `admin` / `admin` |

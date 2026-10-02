@@ -3,7 +3,7 @@
 The administration panel: a server-rendered Spring MVC application with Thymeleaf
 templates, Bulma for styling and htmx for partial page updates. Administrators log in
 through Keycloak and work with lost and found notices, their archives, and the candidate
-matches produced by `Automatic-Search`. There is no REST API and no OpenAPI here; every
+matches produced by `Worker`. There is no REST API and no OpenAPI here; every
 endpoint returns HTML (or a fragment of it).
 
 What the panel does from a user's point of view is in
@@ -129,7 +129,7 @@ the item dialog lists them (phone, email, when, status); the archives look claim
 history copy. `AdminItemService.deleteClaims` runs next to `deleteMatches` on delete, removing
 the claims and their contact infos. Archive does not touch rows at all: it publishes
 `ArchiveRequestedEvent` (`derechi.archive.exchange`, `item.<kind>.archive`) and
-`Automatic-Search` archives the notice. See [../../features/claims.md](../../features/claims.md).
+`Worker` archives the notice. See [../../features/claims.md](../../features/claims.md).
 
 ## Uploads and maps
 

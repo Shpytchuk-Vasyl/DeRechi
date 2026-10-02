@@ -53,7 +53,7 @@ Read [Maven reactor](../architecture/maven-reactor.md), [Maven and modules](../c
 
 5. **Database, if any.** Copy the entities you need into `org.shpytchuk.reportexport.entity` (they are copied per module on purpose, no module depends on `DB-Postgres`), set `spring.jpa.hibernate.ddl-auto: none`, do not add Liquibase; the schema is owned by `DB-Postgres`. Add the datasource block and, if you touch `place.coordinate`, the `hibernate-spatial` dependency.
 
-6. **Events, if any.** Copy `event/EventType.java`, `event/EventTypeScanner.java` and `config/RabbitConfig.java` from `Automatic-Search`, change the package, and follow [Add an event](add-an-event.md).
+6. **Events, if any.** Copy `event/EventType.java`, `event/EventTypeScanner.java` and `config/RabbitConfig.java` from `Worker`, change the package, and follow [Add an event](add-an-event.md).
 
 7. **Dockerfile.** Root `Dockerfile`, build stage: add `COPY Report-Export Report-Export` next to the other modules. Without it Maven sees the module in `<modules>` but the directory is missing and the image build fails for **every** service, not just the new one.
 

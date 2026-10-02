@@ -21,8 +21,8 @@ scrape_configs:
         labels: { application: Client-API }
       - targets: ["admin-api:8083"]
         labels: { application: Admin-API }
-      - targets: ["automatic-search:8085"]
-        labels: { application: Automatic-Search }
+      - targets: ["worker:8085"]
+        labels: { application: Worker }
       - targets: ["notification:8084"]
         labels: { application: Notification }
 

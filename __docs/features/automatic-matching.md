@@ -1,11 +1,11 @@
 # Automatic matching
 
-Every new notice is compared in the background against notices of the opposite kind. The result is a list of candidate pairs with a relevance score, which the admin panel shows on the Matches page (see [Match notifications](match-notifications.md)). The work is done by the `Automatic-Search` module, a RabbitMQ consumer with no HTTP API beyond the actuator.
+Every new notice is compared in the background against notices of the opposite kind. The result is a list of candidate pairs with a relevance score, which the admin panel shows on the Matches page (see [Match notifications](match-notifications.md)). The work is done by the `Worker` module, a RabbitMQ consumer with no HTTP API beyond the actuator.
 
 ## Flow
 
 1. `Client-API` publishes `ItemCreatedEvent` (`id`, `date`, `category`, `lat`, `lon`, `title`) to the `derechi.items` exchange with key `item.lost.created` or `item.found.created`.
-2. The queue `automatic-search.items` is bound with `item.*.created`. `ItemCreatedListener` reads the routing key from the message and dispatches to the `ItemCreatedHandler` registered for it. An unknown key is rejected without requeue.
+2. The queue `worker.items` is bound with `item.*.created`. `ItemCreatedListener` reads the routing key from the message and dispatches to the `ItemCreatedHandler` registered for it. An unknown key is rejected without requeue.
 3. `LostItemCreatedHandler` searches `found_item`; `FoundItemCreatedHandler` searches `lost_item`. Both delegate to an `ItemService<T>` bean (two instances, wired in `ItemSearchConfig`).
 4. `ItemService.findAllMostSuitable` builds the candidate query, takes the first page and asks the repository to rank the candidates.
 5. The handler inserts the pairs into `similar_item` with `SimilarItemRepository.insertAll` (one statement with arrays). The pair `(found_item_id, lost_item_id)` is the primary key.
@@ -46,21 +46,21 @@ The `ukrainian` configuration is not built into PostgreSQL. `docker/postgres/Doc
 
 ## Failure handling
 
-`spring.rabbitmq.listener.simple.retry` retries a failing message 3 times in-process; `default-requeue-rejected: false` then dead-letters it to `derechi.items.dlx`, bound to `automatic-search.items.dlq`. Nothing reads the DLQ today; it is there for inspection in the RabbitMQ UI. See [Messaging](../architecture/messaging.md).
+`spring.rabbitmq.listener.simple.retry` retries a failing message 3 times in-process; `default-requeue-rejected: false` then dead-letters it to `derechi.items.dlx`, bound to `worker.items.dlq`. Nothing reads the DLQ today; it is there for inspection in the RabbitMQ UI. See [Messaging](../architecture/messaging.md).
 
 ## Known gaps and ideas
 
 - The radius, the date window and the page size are constants, not configuration.
 - Only the title is used for detection and ranking input; the candidate's description is part of the document but the event's description is not sent.
-- A notice created while `Automatic-Search` is down is matched when the service comes back (the queue is durable), but a notice whose publish failed in `Client-API` is never matched.
+- A notice created while `Worker` is down is matched when the service comes back (the queue is durable), but a notice whose publish failed in `Client-API` is never matched.
 - Matching is one-shot at creation time. A lost notice posted before the matching found notice is still found, because the found notice triggers its own search in the other direction, but edits in the admin panel do not re-run matching.
 - The project README floats an idea of score thresholds (around 0.8 to notify an admin, above 0.9 to confirm with an external model before notifying the owner). Nothing of that is implemented.
 
 ## Where to look
 
-- `Automatic-Search/src/main/java/org/shpytchuk/automaticsearch/listener/ItemCreatedListener.java`
-- `Automatic-Search/src/main/java/org/shpytchuk/automaticsearch/service/ItemService.java`, `LostItemCreatedHandler.java`, `FoundItemCreatedHandler.java`
-- `Automatic-Search/src/main/java/org/shpytchuk/automaticsearch/specification/ThingSpecifications.java`
-- `Automatic-Search/src/main/java/org/shpytchuk/automaticsearch/language/`
-- `Automatic-Search/src/main/java/org/shpytchuk/automaticsearch/config/FullTextFunctionContributor.java`
+- `Worker/src/main/java/org/shpytchuk/worker/listener/ItemCreatedListener.java`
+- `Worker/src/main/java/org/shpytchuk/worker/service/ItemService.java`, `LostItemCreatedHandler.java`, `FoundItemCreatedHandler.java`
+- `Worker/src/main/java/org/shpytchuk/worker/specification/ThingSpecifications.java`
+- `Worker/src/main/java/org/shpytchuk/worker/language/`
+- `Worker/src/main/java/org/shpytchuk/worker/config/FullTextFunctionContributor.java`
 - `DB-Postgres/changelog/changes/001-extentions-and-configuration.sql`, `004-similar_item.postgresql.sql`
