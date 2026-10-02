@@ -28,7 +28,7 @@ Prometheus metrics on 15692.
 |---|---|---|---|---|
 | `ItemCreatedEvent` | `ITEM_CREATED` | `Client-API`, `ItemEventAspect` after `ItemService.create(...)` returns | `derechi.items`, `item.lost.created` or `item.found.created` | `Worker`, `ItemCreatedListener` |
 | `NotificationRequestedEvent` | `NOTIFICATION` | `Admin-API`, `MatchNotificationService.notifyOwner(...)` | `derechi.notifications`, `notification.match.found` (from `derechi.notifications.routing-key`) | `Notification`, `NotificationRequestedListener` |
-| `ClaimEvent` | `CLAIM` | `Client-API`, `ClaimEventPublisher` after the claim transaction commits | `derechi.items`, `item.lost.claimed`, `item.found.claimed`, `item.lost.returned`, `item.found.returned` | `Worker`, `ClaimListener` |
+| `ClaimEvent` | `CLAIM` | `Client-API`, `ClaimEventAspect` after `ClaimService.claim(..)` / `confirm(..)` returns | `derechi.items`, `item.lost.claimed`, `item.found.claimed`, `item.lost.returned`, `item.found.returned` | `Worker`, `ClaimListener` |
 | `ArchiveRequestedEvent` | `ARCHIVE_REQUESTED` | `Admin-API`, `AdminItemService.archive(id, actor)` | `derechi.items`, `item.lost.archive`, `item.found.archive` (exchange from `derechi.archive.exchange`) | `Worker`, `ArchiveListener` |
 | `NotificationRequestedEvent` | `NOTIFICATION` | `Worker`, `ClaimNotifier` | `derechi.notifications`, `notification.claim.created`, `notification.claim.reminder` | `Notification`, `NotificationRequestedListener` |
 
@@ -43,9 +43,10 @@ channel does not need are sent as `null`; see
 
 `ClaimEvent` carries only the claim `id` and `ArchiveRequestedEvent` the item `id` plus the
 admin's login for the log; the routing key says the kind and the verb, and `Worker`
-reads the rest from the shared database. That is why it is published after
-the commit, from a `@TransactionalEventListener(AFTER_COMMIT)`, not from an aspect: see
-[../features/claims.md](../features/claims.md).
+reads the rest from the shared database. That is why it is published after the commit, by
+`ClaimEventAspect` with the same `@Order(0)` trick as `ItemEventAspect`; the advice skips a
+`repeated` result, so a second claim from the same person or a second click on a confirm link
+sends nothing. See [../features/claims.md](../features/claims.md).
 
 The producer side of `Admin-API` is a plain `RabbitTemplate.convertAndSend(exchange, key,
 event)`. In `Client-API` the publish is an AspectJ `@AfterReturning` advice on every

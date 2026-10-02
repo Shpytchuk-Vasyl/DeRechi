@@ -78,9 +78,10 @@ reused across notices) and the item in one transaction.
 an `ItemCreatedEvent` to `derechi.items` with `item.lost.created` or `item.found.created`.
 See [../messaging.md](../messaging.md) for why it is an aspect.
 
-`ClaimService` (per kind) and `ReturnService` record responses to a notice and publish a
-`ClaimEvent` through `ClaimEventPublisher`, a `@TransactionalEventListener(AFTER_COMMIT)`,
-with `item.<kind>.claimed` / `item.<kind>.returned`; the exchange is `derechi.claims.exchange`.
+`ClaimService` (per kind) and `ReturnService` record responses to a notice; `ClaimEventAspect`
+publishes a `ClaimEvent` with `item.<kind>.claimed` / `item.<kind>.returned` after `claim(..)` or
+`confirm(..)` returns a non-repeated result, the same `@AfterReturning` + `@Order(0)` pattern as
+`ItemEventAspect`. The exchange is `derechi.claims.exchange`.
 
 ## Config
 

@@ -44,7 +44,7 @@ Each module has its own copy of `EventType` and `EventTypeScanner`; they are del
    rabbitTemplate.convertAndSend(properties.exchange(), "item.lost.archived", new ItemArchivedEvent(id, "LOST"));
    ```
 
-   `Admin-API` keeps exchange and routing key in `derechi.notifications.*` (`NotificationProperties`); `Client-API` hard-codes them in `ItemEventAspect`. Prefer a `@ConfigurationProperties` record for anything new. Publishing inside a `@Transactional` method sends before commit; if that matters, publish from an aspect or a `@TransactionalEventListener(AFTER_COMMIT)` as `Client-API` does with the aspect.
+   `Admin-API` keeps exchange and routing key in `derechi.notifications.*` (`NotificationProperties`); `Client-API` hard-codes them in `ItemEventAspect`. Prefer a `@ConfigurationProperties` record for anything new. Publishing inside a `@Transactional` method sends before commit; if that matters, publish from an `@AfterReturning` aspect with `@Order(0)` as `Client-API` does in `ItemEventAspect` and `ClaimEventAspect`, and make sure the advised method owns the outermost transaction.
 
 5. **Consume.** Either a new `@RabbitListener` on a new queue, or, when reusing a queue, extend the dispatch. `ItemCreatedListener` maps the received routing key (`message.getMessageProperties().getReceivedRoutingKey()`) to an `ItemCreatedHandler` and throws `AmqpRejectAndDontRequeueException` for an unknown key. A listener method is typed to one event class, so a second event type on the same queue needs a second `@RabbitListener` method (Spring AMQP picks by payload type) or a separate queue. The separate queue is the simpler option.
 

@@ -6,7 +6,6 @@ import org.shpytchuk.clientapi.repository.detail.ContactInfoRepository;
 import org.shpytchuk.clientapi.repository.found.FoundItemClaimRepository;
 import org.shpytchuk.clientapi.repository.found.FoundItemRepository;
 import org.shpytchuk.clientapi.service.ClaimService;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,9 +13,7 @@ public class FoundClaimService extends ClaimService<FoundItem, FoundItemClaim> {
 
     public FoundClaimService(FoundItemRepository itemRepository,
                              FoundItemClaimRepository claimRepository,
-                             ContactInfoRepository contactInfoRepository,
-                             ApplicationEventPublisher events) {
-        super(itemRepository, claimRepository, contactInfoRepository, events,
-                FoundItemClaim::new, "FoundItem", "item.found");
+                             ContactInfoRepository contactInfoRepository) {
+        super(itemRepository, claimRepository, contactInfoRepository, FoundItemClaim::new, "FoundItem");
     }
 }

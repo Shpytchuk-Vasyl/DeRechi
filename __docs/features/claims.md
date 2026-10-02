@@ -62,11 +62,15 @@ messengers) with the same validation. Unknown item or token → `NOT_FOUND`.
 `ClaimService` (one subclass per kind) looks for an existing claim on the item with the same phone
 **or** email; if there is one it returns its id with `repeated: true` and publishes nothing.
 Otherwise it saves a new `contact_info` row, the claim (`token` = random UUID, `created_at`), and
-publishes a Spring application event that `ClaimEventPublisher` turns into `ClaimEvent { id }`
-on `derechi.items` **after commit** (`@TransactionalEventListener(AFTER_COMMIT)`), routing key
-`item.lost.claimed` or `item.found.claimed`. The consumer reads the row, so publishing before the
-commit would race it. `confirmReturn` does the same with `item.<kind>.returned`; a token that is
-already confirmed returns `true` and publishes nothing.
+returns `ClaimDto(id, repeated = false)`. `ClaimEventAspect`, an `@AfterReturning` advice on
+`ClaimService+.claim(..)` and `confirm(..)` with `@Order(0)` (outside the transaction proxy, like
+`ItemEventAspect`), publishes `ClaimEvent { id }` on `derechi.items` with `item.lost.claimed` or
+`item.found.claimed` once the transaction has committed; a `repeated` result publishes nothing.
+The consumer reads the row, so publishing before the commit would race it. `confirm(token)`
+returns the claim the same way, with `repeated = true` for a token that was already confirmed,
+and the aspect turns a fresh confirmation into `item.<kind>.returned`. `ReturnService`, which
+tries both kinds, deliberately has no transaction of its own: the per-kind transaction must be
+the outermost one, or the advice would fire before the commit.
 
 ### Worker
 
@@ -183,7 +187,7 @@ check details before meeting.
 
 ## Where to look
 
-- `Client-API/src/main/java/org/shpytchuk/clientapi/service/ClaimService.java`, `ReturnService.java`, `controller/ClaimController.java`, `event/ClaimEventPublisher.java`
+- `Client-API/src/main/java/org/shpytchuk/clientapi/service/ClaimService.java`, `ReturnService.java`, `controller/ClaimController.java`, `aspect/ClaimEventAspect.java`
 - `Worker/src/main/java/org/shpytchuk/worker/listener/ClaimListener.java`, `listener/ArchiveListener.java`, `handler/ClaimedHandler.java`, `handler/ReturnedHandler.java`, `service/ClaimNotifier.java`, `cron/ClaimFollowUpJob.java` (+ `ClaimFollowUps`, one transaction per claim), `service/ItemArchiver.java`, `language/PhoneLocales.java`, `src/main/resources/messages*.properties`
 - `Notification/src/main/java/org/shpytchuk/notification/service/NotificationSender.java`
 - `Admin-API/src/main/java/org/shpytchuk/adminapi/service/AdminItemService.java`, `templates/fragments/dialogs.html`
