@@ -429,8 +429,8 @@
     transform: none;
     width: 100%;
     max-width: none;
-    height: 100dvh;
-    max-height: 100dvh;
+    height: auto;
+    max-height: 75dvh;
     border-radius: var(--r-card) var(--r-card) 0 0;
     padding: var(--s5);
     padding-bottom: calc(var(--s5) + env(safe-area-inset-bottom, 0px));

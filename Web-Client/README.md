@@ -145,6 +145,15 @@ and SMS.
   gives up after 15 minutes; reopening the dialog starts a new window. The webhook is the only
   source of truth, so there is no "I paid" button.
 
+- Paying for real is not needed in development: `/<locale>/playground` has a "Fourthwall" bench
+  that posts a fake `ORDER_PLACED` for the variant from a checkout URL to Client-API's webhook,
+  signed with `FOURTHWALL_WEBHOOK_SECRET` (must equal Client-API's
+  `derechi.fourthwall.webhook-secret`, default `dev-secret`). Everything for it lives in
+  `src/app/[locale]/playground/` (the bench, the `sendFakePayment` action, the signing helpers and
+  their test); the playground folder is the home of such local test tools, nothing of it goes
+  elsewhere in the project. The bench can also read the claim token from the `DERECHI_CLAIM_*`
+  cookie and show `claimStatus` for it. The page and the action refuse in production.
+
 ## Legal texts per country
 
 `src/content/legal/<locale>.json` holds the documents; the sentences that depend on the
