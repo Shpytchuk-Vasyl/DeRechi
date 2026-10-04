@@ -46,8 +46,8 @@ Vitest, colocated as `<name>.test.ts`, no browser and no running backend:
 - `app/actions/report.test.ts`, `app/actions/claim.test.ts`: the server actions with
   `@/graphql/client`, `@/lib/bot-check`, `next/headers` and `next/cache` mocked: invalid
   input and bots never reach the API, the mutation variables, the 30-day
-  `DERECHI_CLAIM_<kind>_<id>` cookie holding the payment code, `NOT_FOUND` versus other
-  failures, which cache tags are revalidated, and `claimStatus` refusing a malformed code.
+  `DERECHI_CLAIM_<kind>_<id>` cookie holding the claim id, `NOT_FOUND` versus other
+  failures, which cache tags are revalidated, and `claimStatus` refusing a malformed id.
 - `lib/claim-cookie.test.ts`, `lib/item-search.test.ts` (query string to filter and back),
   `lib/intl/country.test.ts`, `lib/intl/dates.test.ts`, `lib/seo.test.ts`.
 - `lib/uploads/presign.test.ts` and `presign.integration.test.ts`, see "Uploads" below.
@@ -132,7 +132,7 @@ and SMS.
   BotID check as the claim itself). Client-API creates a hidden digital product on Fourthwall
   for this claim and answers with its `checkoutUrl`
   (`https://derechi-shop.fourthwall.com/cart/checkout?products=<variantId>:1`); the dialog
-  shows it as a "Pay on Fourthwall" link that opens in a new tab, where Apple Pay, Google Pay
+  shows it as a "Continue to payment" link that opens in a new tab, where Apple Pay, Google Pay
   and cards are available. A `PAYMENT_UNAVAILABLE` error (Fourthwall rate-limits product
   creation) reads as "try again in a minute" with a retry button; any other failure gets a
   generic retry. There is no code to type and no environment variable on this side.

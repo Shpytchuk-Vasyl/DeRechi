@@ -2,12 +2,12 @@
   "updated": "Last updated",
   "terms": {
     "title": "Terms of use",
-    "summary": "The rules DeRechi runs by: a board of lost and found notices that is free to use, funded by the optional paid step of getting an author's contacts. By posting a notice you agree to them.",
+    "summary": "The rules DeRechi runs by: a board of lost and found notices that is free to use, funded by the optional $1 payment for a notice author's phone number. By posting a notice you agree to them.",
     "sections": [
       {
         "heading": "1. What DeRechi is",
         "body": [
-          "DeRechi helps people who lost something and people who found something find each other. Posting and browsing notices is free, needs no registration and shows no ads; the only paid step is getting a notice author's full contacts, which is how the service is funded (see section 4). The site is run by {operator}.",
+          "DeRechi helps people who lost something and people who found something find each other. Posting and browsing notices is free, needs no registration and shows no ads; the only paid step is getting a notice author's phone number for $1, which is how the service is funded (see section 4). The site is run by {operator}.",
           "We don't keep items, don't act as a go-between in handing them over and take no commission. The owner and the finder arrange the return themselves."
         ]
       },
@@ -43,9 +43,9 @@
       {
         "heading": "4. Contacts",
         "body": [
-          "Your phone and email are only partly visible on a notice, to keep you safe from spam.",
+          "Your phone and email are only partly visible on a notice, to keep you safe from spam. Your full phone number is sent only to someone who has responded to your notice and paid for it (see below); your email is never sent to anyone.",
           "Anyone who recognises the item can send the notice's author their own contacts through the site. We pass them on by email and SMS and never show them publicly. By sending your contacts you confirm that they are your own and that you contact the author about this item only.",
-          "Getting the author's phone number is a paid feature. You pay about $1 through Fourthwall, in a checkout the site opens for you; your card or wallet details go to Fourthwall, never to us. Once Fourthwall confirms the payment to us, we send the author's phone number by SMS and email to the contacts you gave in your response. The author's email is not sent. The payment is not refunded once the phone number has been sent."
+          "Getting the author's phone number is a paid feature that costs $1. You pay on a Fourthwall checkout page that opens in a new tab; your card or wallet details go to Fourthwall, never to us. Once Fourthwall confirms the payment to us, we send the author's phone number by SMS and email to the contacts you gave in your response. The author's email is not sent. The payment is not refunded once the phone number has been sent."
         ]
       },
       {
@@ -66,7 +66,7 @@
         "heading": "7. Safety",
         "body": [
           "Before handing an item over, ask the owner to describe details the photo doesn't show. Meet in busy places.",
-          "Never pay in advance to someone who says they found your thing, and never give anyone your card details or SMS codes. The only payment on DeRechi is the Fourthwall checkout for an author's phone number, made on Fourthwall's own page; DeRechi never asks for card details, SMS codes or any other payment, and anyone who does is a scammer. In case of fraud, contact the police and let us know at {email}.",
+          "Never pay in advance to someone who says they found your thing, and never give anyone your card details or SMS codes. The only payment on DeRechi is $1 for an author's phone number, made on Fourthwall's checkout page; DeRechi never asks for card details, SMS codes or any other payment, and anyone who does is a scammer. In case of fraud, contact the police and let us know at {email}.",
           "DeRechi doesn't verify users' identity and isn't responsible for what they do when they meet."
         ]
       },
@@ -122,7 +122,7 @@
           ],
           "When you pay for an author's phone number:",
           [
-            "the order details Fourthwall sends us: the email and name you give Fourthwall, the amount, the currency, the time and the order number, which we use to match the payment to your response."
+            "the order details Fourthwall sends us: the email and name you give Fourthwall, the amount, the currency, the status, the time and the order number, which we use to match the payment to your response."
           ],
           "We have no accounts or passwords, so we keep no other data about you.",
           "Don't put information about health, religion, biometrics or other sensitive data in a notice, about yourself or anyone else.",
@@ -132,7 +132,7 @@
       {
         "heading": "3. What others can see",
         "body": [
-          "The item's description, the place with its coordinates and the photo are public. The phone and email on a notice are only partly shown (for example, +38067*****67); messengers aren't shown at all.",
+          "The item's description, the place with its coordinates and the photo are public. The phone and email on a notice are only partly shown (for example, +38067*****67); messengers aren't shown at all. An author's full phone number is sent only to someone who has responded to the notice and paid for it; an author's email is never sent to anyone.",
           "Contacts you send in response to a notice are shown only to that notice's author, in the message we send them, and are never published."
         ]
       },
@@ -141,11 +141,12 @@
         "body": [
           [
             "to show your notice to other people and let them find it by search;",
-            "to pass your contacts to the author of the notice you responded to;",
+            "to pass your contacts to the author of the notice you responded to and, once you have paid, to send you the author's phone number;",
+            "to match a payment to your response and keep a record of the payments we receive;",
             "to remind both sides to close the notice once the item is back;",
             "to protect the site from spam and abuse."
           ],
-          "The legal basis is your consent, which you give by posting a notice or by responding to one."
+          "The legal basis is your consent, which you give by posting a notice or by responding to one. Payment details are processed to fulfil the order you place on Fourthwall, that is, to send you the author's phone number."
         ]
       },
       {
@@ -173,7 +174,7 @@
           [
             "the DERECHI_LOCALE cookie: remembers your language for a year;",
             "the DERECHI_COUNTRY cookie: remembers your country for a year, to show the right currency and legal texts;",
-            "DERECHI_CLAIM_* cookies: remember for 30 days that you have responded to a notice, together with that response's payment code."
+            "DERECHI_CLAIM_* cookies: remember for 30 days that you have responded to a notice, together with that response's number, so the site can show whether the payment has arrived."
           ],
           "There are no analytics or advertising cookies on the site."
         ]

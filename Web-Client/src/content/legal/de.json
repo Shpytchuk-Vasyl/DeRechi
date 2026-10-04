@@ -2,12 +2,12 @@
   "updated": "Aktualisiert",
   "terms": {
     "title": "Nutzungsbedingungen",
-    "summary": "Die Regeln, nach denen DeRechi funktioniert – ein kostenlos nutzbares Schwarzes Brett für verlorene und gefundene Gegenstände, finanziert durch den kostenpflichtigen Erhalt der Kontaktdaten eines Autors. Mit der Veröffentlichung einer Anzeige erklären Sie sich damit einverstanden.",
+    "summary": "Die Regeln, nach denen DeRechi funktioniert – ein kostenlos nutzbares Schwarzes Brett für verlorene und gefundene Gegenstände, finanziert durch Zahlungen von 1 $ für die Telefonnummer eines Anzeigenverfassers. Mit der Veröffentlichung einer Anzeige erklären Sie sich damit einverstanden.",
     "sections": [
       {
         "heading": "1. Was ist DeRechi",
         "body": [
-          "DeRechi hilft Menschen, die etwas verloren haben, und denen, die etwas gefunden haben, einander zu finden. Anzeigen aufgeben und durchsuchen ist kostenlos, ohne Registrierung und ohne Werbung; der einzige kostenpflichtige Schritt ist der Erhalt der vollständigen Kontaktdaten eines Anzeigenautors, daraus finanziert sich der Dienst (siehe Abschnitt 4). Betreiber der Website ist {operator}.",
+          "DeRechi hilft Menschen, die etwas verloren haben, und denen, die etwas gefunden haben, einander zu finden. Anzeigen aufgeben und durchsuchen ist kostenlos, ohne Registrierung und ohne Werbung; der einzige kostenpflichtige Schritt ist der Erhalt der Telefonnummer eines Anzeigenverfassers für 1 $, daraus finanziert sich der Dienst (siehe Abschnitt 4). Betreiber der Website ist {operator}.",
           "Wir bewahren keine Gegenstände auf, vermitteln nicht bei ihrer Übergabe und erheben keine Provision. Die Rückgabe vereinbaren Eigentümer und Finder unmittelbar miteinander."
         ]
       },
@@ -43,9 +43,9 @@
       {
         "heading": "4. Kontaktdaten",
         "body": [
-          "In der Anzeige sind Ihre Telefonnummer und E-Mail-Adresse nur teilweise sichtbar, um Sie vor Spam zu schützen.",
+          "In der Anzeige sind Ihre Telefonnummer und E-Mail-Adresse nur teilweise sichtbar, um Sie vor Spam zu schützen. Ihre vollständige Telefonnummer erhält nur, wer auf Ihre Anzeige geantwortet und dafür bezahlt hat (siehe unten); Ihre E-Mail-Adresse wird an niemanden versandt.",
           "Wer den Gegenstand wiedererkennt, kann dem Verfasser der Anzeige über die Website die eigenen Kontaktdaten senden. Wir leiten sie per E-Mail und SMS weiter und zeigen sie nie öffentlich. Mit dem Senden bestätigen Sie, dass es Ihre eigenen Kontaktdaten sind und dass Sie den Verfasser nur wegen dieses Gegenstands kontaktieren.",
-          "Die Telefonnummer des Verfassers einer Anzeige zu erhalten, ist eine kostenpflichtige Funktion. Sie zahlen etwa 1 $ über Fourthwall in einem Bezahlfenster, das die Website für Sie öffnet; Ihre Karten- oder Wallet-Daten gehen an Fourthwall, nie an uns. Sobald Fourthwall uns die Zahlung bestätigt, senden wir die Telefonnummer des Verfassers per SMS und E-Mail an die Kontaktdaten, die Sie in Ihrer Antwort angegeben haben. Die E-Mail-Adresse des Verfassers wird nicht versandt. Die Zahlung wird nicht erstattet, sobald die Telefonnummer versandt wurde."
+          "Die Telefonnummer des Verfassers einer Anzeige zu erhalten, ist eine kostenpflichtige Funktion und kostet 1 $. Sie zahlen auf einer Bezahlseite von Fourthwall, die sich in einem neuen Tab öffnet; Ihre Karten- oder Wallet-Daten gehen an Fourthwall, nie an uns. Sobald Fourthwall uns die Zahlung bestätigt, senden wir die Telefonnummer des Verfassers per SMS und E-Mail an die Kontaktdaten, die Sie in Ihrer Antwort angegeben haben. Die E-Mail-Adresse des Verfassers wird nicht versandt. Die Zahlung wird nicht erstattet, sobald die Telefonnummer versandt wurde."
         ]
       },
       {
@@ -66,7 +66,7 @@
         "heading": "7. Sicherheit",
         "body": [
           "Bevor Sie einen Gegenstand übergeben, bitten Sie den Eigentümer, Merkmale zu beschreiben, die auf dem Foto nicht zu sehen sind. Wählen Sie für ein Treffen belebte Orte.",
-          "Zahlen Sie niemals im Voraus an jemanden, der behauptet, Ihren Gegenstand gefunden zu haben, und geben Sie niemandem Ihre Kartendaten oder SMS-Codes weiter. Die einzige Zahlung auf DeRechi ist die Zahlung über Fourthwall für die Telefonnummer eines Verfassers, und sie erfolgt auf der Seite von Fourthwall selbst; DeRechi verlangt niemals Kartendaten, SMS-Codes oder eine andere Zahlung – wer danach fragt, ist ein Betrüger. Wenden Sie sich im Betrugsfall an die Polizei und informieren Sie uns unter {email}.",
+          "Zahlen Sie niemals im Voraus an jemanden, der behauptet, Ihren Gegenstand gefunden zu haben, und geben Sie niemandem Ihre Kartendaten oder SMS-Codes weiter. Die einzige Zahlung auf DeRechi sind 1 $ für die Telefonnummer eines Verfassers, und sie erfolgt auf der Bezahlseite von Fourthwall; DeRechi verlangt niemals Kartendaten, SMS-Codes oder eine andere Zahlung – wer danach fragt, ist ein Betrüger. Wenden Sie sich im Betrugsfall an die Polizei und informieren Sie uns unter {email}.",
           "DeRechi überprüft nicht die Identität der Nutzer und haftet nicht für deren Handlungen während eines Treffens."
         ]
       },
@@ -122,7 +122,7 @@
           ],
           "Wenn Sie für die Telefonnummer eines Verfassers bezahlen:",
           [
-            "Bestelldaten, die uns Fourthwall übermittelt: die E-Mail-Adresse und der Name, die Sie bei Fourthwall angegeben haben, Betrag, Währung, Zeitpunkt und Bestellnummer; damit ordnen wir die Zahlung Ihrer Antwort zu."
+            "Bestelldaten, die uns Fourthwall übermittelt: die E-Mail-Adresse und der Name, die Sie bei Fourthwall angegeben haben, Betrag, Währung, Status, Zeitpunkt und Bestellnummer; damit ordnen wir die Zahlung Ihrer Antwort zu."
           ],
           "Wir haben keine Konten und Passwörter, daher speichern wir keine weiteren Daten über Sie.",
           "Fügen Sie Ihrer Anzeige keine Angaben zu Gesundheit, Religion, biometrischen Merkmalen oder andere sensible Daten hinzu – weder über sich selbst noch über andere.",
@@ -132,7 +132,7 @@
       {
         "heading": "3. Was andere sehen",
         "body": [
-          "Die Beschreibung des Gegenstands, der Ort mit Koordinaten und das Foto werden öffentlich angezeigt. Telefonnummer und E-Mail-Adresse werden in der Anzeige nur teilweise dargestellt (zum Beispiel +38067*****67), Messenger werden überhaupt nicht angezeigt.",
+          "Die Beschreibung des Gegenstands, der Ort mit Koordinaten und das Foto werden öffentlich angezeigt. Telefonnummer und E-Mail-Adresse werden in der Anzeige nur teilweise dargestellt (zum Beispiel +38067*****67), Messenger werden überhaupt nicht angezeigt. Die vollständige Telefonnummer des Verfassers erhält nur, wer auf die Anzeige geantwortet und dafür bezahlt hat; die E-Mail-Adresse des Verfassers wird an niemanden versandt.",
           "Kontaktdaten, die Sie als Antwort auf eine Anzeige senden, sieht nur der Verfasser dieser Anzeige, und zwar in der Nachricht, die wir ihm schicken; veröffentlicht werden sie nirgends."
         ]
       },
@@ -141,11 +141,12 @@
         "body": [
           [
             "um die Anzeige anderen Menschen zu zeigen und sie über die Suche auffindbar zu machen;",
-            "um Ihre Kontaktdaten an den Verfasser der Anzeige weiterzugeben, auf die Sie geantwortet haben;",
+            "um Ihre Kontaktdaten an den Verfasser der Anzeige weiterzugeben, auf die Sie geantwortet haben, und Ihnen nach der Zahlung die Telefonnummer des Verfassers zu senden;",
+            "um eine Zahlung Ihrer Antwort zuzuordnen und die erhaltenen Zahlungen nachzuweisen;",
             "um beide Seiten daran zu erinnern, die Anzeige zu schließen, sobald der Gegenstand zurück ist;",
             "um die Website vor Spam und Missbrauch zu schützen."
           ],
-          "Rechtsgrundlage der Verarbeitung ist Ihre Einwilligung, die Sie mit der Veröffentlichung einer Anzeige oder mit einer Antwort darauf erteilen."
+          "Rechtsgrundlage der Verarbeitung ist Ihre Einwilligung, die Sie mit der Veröffentlichung einer Anzeige oder mit einer Antwort darauf erteilen. Zahlungsdaten verarbeiten wir, um die Bestellung zu erfüllen, die Sie bei Fourthwall aufgeben, also um Ihnen die Telefonnummer des Verfassers zu senden."
         ]
       },
       {
@@ -173,7 +174,7 @@
           [
             "das Cookie DERECHI_LOCALE – speichert die gewählte Sprache für ein Jahr;",
             "das Cookie DERECHI_COUNTRY – speichert Ihr Land für ein Jahr, damit Währung und Rechtstexte passen;",
-            "die Cookies DERECHI_CLAIM_* – speichern für 30 Tage, dass Sie auf eine Anzeige geantwortet haben, und den Zahlungscode dieser Antwort."
+            "die Cookies DERECHI_CLAIM_* – speichern für 30 Tage, dass Sie auf eine Anzeige geantwortet haben, und die Nummer dieser Antwort, damit die Website anzeigen kann, ob die Zahlung eingegangen ist."
           ],
           "Analyse- oder Werbe-Cookies gibt es auf der Website nicht."
         ]

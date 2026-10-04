@@ -57,8 +57,8 @@ export function FourthwallBench() {
           <Heading level={2}>Fourthwall: оплата без грошей</Heading>
           <Text muted className="mt-1 block leading-relaxed">
             Шле на вебхук Client-API такий самий ORDER_PLACED, як Fourthwall після покупки,
-            підписаний секретом з FOURTHWALL_WEBHOOK_SECRET. Встав посилання «Оплатити на
-            Fourthwall» з діалогу або сам id варіанта.
+            підписаний секретом з FOURTHWALL_WEBHOOK_SECRET. Встав посилання «Перейти до оплати» з
+            діалогу або сам id варіанта.
           </Text>
         </div>
 
