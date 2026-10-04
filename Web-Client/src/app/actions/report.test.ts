@@ -40,7 +40,7 @@ describe("createNotice", () => {
 
     const [document, variables, options] = mocks.graphqlRequest.mock.calls[0] ?? []
     expect(document).toBe(CreateLostItemMutation)
-    expect(options).toEqual({ revalidate: false })
+    expect(options).toEqual({ cache: "no-store" })
     expect(variables.input).toMatchObject({
       title: "Brown leather wallet",
       description: null,

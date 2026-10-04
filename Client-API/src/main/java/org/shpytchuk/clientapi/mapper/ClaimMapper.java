@@ -12,7 +12,6 @@ public final class ClaimMapper {
         return new ClaimDto(
                 claim.getId(),
                 repeated,
-                claim.getToken(),
                 claim.getPaymentVariantId(),
                 claim.getPaidAt() != null,
                 claim.getContactsSentAt() != null

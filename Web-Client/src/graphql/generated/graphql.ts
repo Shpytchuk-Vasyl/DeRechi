@@ -141,7 +141,7 @@ export type ClaimLostItemMutationVariables = Exact<{
 }>;
 
 
-export type ClaimLostItemMutation = { claimLostItem: { id: string, repeated: boolean, token: string, checkoutUrl: string | null, paid: boolean, contactsSent: boolean } };
+export type ClaimLostItemMutation = { claimLostItem: { id: string, repeated: boolean, checkoutUrl: string | null, paid: boolean, contactsSent: boolean } };
 
 export type ClaimFoundItemMutationVariables = Exact<{
   id: string | number;
@@ -149,21 +149,39 @@ export type ClaimFoundItemMutationVariables = Exact<{
 }>;
 
 
-export type ClaimFoundItemMutation = { claimFoundItem: { id: string, repeated: boolean, token: string, checkoutUrl: string | null, paid: boolean, contactsSent: boolean } };
+export type ClaimFoundItemMutation = { claimFoundItem: { id: string, repeated: boolean, checkoutUrl: string | null, paid: boolean, contactsSent: boolean } };
 
-export type ClaimByTokenQueryVariables = Exact<{
-  token: string;
+export type LostItemClaimQueryVariables = Exact<{
+  itemId: string | number;
+  id: string | number;
 }>;
 
 
-export type ClaimByTokenQuery = { claim: { id: string, checkoutUrl: string | null, paid: boolean, contactsSent: boolean } | null };
+export type LostItemClaimQuery = { lostItemClaim: { id: string, checkoutUrl: string | null, paid: boolean, contactsSent: boolean } | null };
 
-export type UnlockClaimMutationVariables = Exact<{
-  token: string;
+export type FoundItemClaimQueryVariables = Exact<{
+  itemId: string | number;
+  id: string | number;
 }>;
 
 
-export type UnlockClaimMutation = { unlockClaim: { id: string, checkoutUrl: string | null, paid: boolean, contactsSent: boolean } };
+export type FoundItemClaimQuery = { foundItemClaim: { id: string, checkoutUrl: string | null, paid: boolean, contactsSent: boolean } | null };
+
+export type UnlockLostItemClaimMutationVariables = Exact<{
+  itemId: string | number;
+  id: string | number;
+}>;
+
+
+export type UnlockLostItemClaimMutation = { unlockLostItemClaim: { id: string, checkoutUrl: string | null, paid: boolean, contactsSent: boolean } };
+
+export type UnlockFoundItemClaimMutationVariables = Exact<{
+  itemId: string | number;
+  id: string | number;
+}>;
+
+
+export type UnlockFoundItemClaimMutation = { unlockFoundItemClaim: { id: string, checkoutUrl: string | null, paid: boolean, contactsSent: boolean } };
 
 export type ConfirmReturnMutationVariables = Exact<{
   token: string;
@@ -374,7 +392,6 @@ export const ClaimLostItemDocument = new TypedDocumentString(`
   claimLostItem(id: $id, contact: $contact) {
     id
     repeated
-    token
     checkoutUrl
     paid
     contactsSent
@@ -386,33 +403,52 @@ export const ClaimFoundItemDocument = new TypedDocumentString(`
   claimFoundItem(id: $id, contact: $contact) {
     id
     repeated
-    token
     checkoutUrl
     paid
     contactsSent
   }
 }
     `) as unknown as TypedDocumentString<ClaimFoundItemMutation, ClaimFoundItemMutationVariables>;
-export const ClaimByTokenDocument = new TypedDocumentString(`
-    query ClaimByToken($token: String!) {
-  claim(token: $token) {
+export const LostItemClaimDocument = new TypedDocumentString(`
+    query LostItemClaim($itemId: ID!, $id: ID!) {
+  lostItemClaim(itemId: $itemId, id: $id) {
     id
     checkoutUrl
     paid
     contactsSent
   }
 }
-    `) as unknown as TypedDocumentString<ClaimByTokenQuery, ClaimByTokenQueryVariables>;
-export const UnlockClaimDocument = new TypedDocumentString(`
-    mutation UnlockClaim($token: String!) {
-  unlockClaim(token: $token) {
+    `) as unknown as TypedDocumentString<LostItemClaimQuery, LostItemClaimQueryVariables>;
+export const FoundItemClaimDocument = new TypedDocumentString(`
+    query FoundItemClaim($itemId: ID!, $id: ID!) {
+  foundItemClaim(itemId: $itemId, id: $id) {
     id
     checkoutUrl
     paid
     contactsSent
   }
 }
-    `) as unknown as TypedDocumentString<UnlockClaimMutation, UnlockClaimMutationVariables>;
+    `) as unknown as TypedDocumentString<FoundItemClaimQuery, FoundItemClaimQueryVariables>;
+export const UnlockLostItemClaimDocument = new TypedDocumentString(`
+    mutation UnlockLostItemClaim($itemId: ID!, $id: ID!) {
+  unlockLostItemClaim(itemId: $itemId, id: $id) {
+    id
+    checkoutUrl
+    paid
+    contactsSent
+  }
+}
+    `) as unknown as TypedDocumentString<UnlockLostItemClaimMutation, UnlockLostItemClaimMutationVariables>;
+export const UnlockFoundItemClaimDocument = new TypedDocumentString(`
+    mutation UnlockFoundItemClaim($itemId: ID!, $id: ID!) {
+  unlockFoundItemClaim(itemId: $itemId, id: $id) {
+    id
+    checkoutUrl
+    paid
+    contactsSent
+  }
+}
+    `) as unknown as TypedDocumentString<UnlockFoundItemClaimMutation, UnlockFoundItemClaimMutationVariables>;
 export const ConfirmReturnDocument = new TypedDocumentString(`
     mutation ConfirmReturn($token: String!) {
   confirmReturn(token: $token)

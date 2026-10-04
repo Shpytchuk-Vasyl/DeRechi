@@ -51,13 +51,13 @@ class ClaimControllerTests extends AbstractGraphQlTests {
 
     private static final String CLAIM_LOST = """
             mutation Claim($id: ID!, $contact: ContactInfoInput!) {
-              claimLostItem(id: $id, contact: $contact) { id repeated token checkoutUrl paid contactsSent }
+              claimLostItem(id: $id, contact: $contact) { id repeated checkoutUrl paid contactsSent }
             }
             """;
 
     private static final String CLAIM_FOUND = """
             mutation Claim($id: ID!, $contact: ContactInfoInput!) {
-              claimFoundItem(id: $id, contact: $contact) { id repeated token checkoutUrl paid contactsSent }
+              claimFoundItem(id: $id, contact: $contact) { id repeated checkoutUrl paid contactsSent }
             }
             """;
 
@@ -67,20 +67,31 @@ class ClaimControllerTests extends AbstractGraphQlTests {
             }
             """;
 
-    private static final String BY_TOKEN = """
-            query ByToken($token: String!) {
-              claim(token: $token) { id repeated token checkoutUrl paid contactsSent }
+    private static final String LOST_CLAIM = """
+            query LostClaim($itemId: ID!, $id: ID!) {
+              lostItemClaim(itemId: $itemId, id: $id) { id repeated checkoutUrl paid contactsSent }
             }
             """;
 
-    private static final String UNLOCK = """
-            mutation Unlock($token: String!) {
-              unlockClaim(token: $token) { id repeated token checkoutUrl paid contactsSent }
+    private static final String FOUND_CLAIM = """
+            query FoundClaim($itemId: ID!, $id: ID!) {
+              foundItemClaim(itemId: $itemId, id: $id) { id repeated checkoutUrl paid contactsSent }
+            }
+            """;
+
+    private static final String UNLOCK_LOST = """
+            mutation Unlock($itemId: ID!, $id: ID!) {
+              unlockLostItemClaim(itemId: $itemId, id: $id) { id repeated checkoutUrl paid contactsSent }
+            }
+            """;
+
+    private static final String UNLOCK_FOUND = """
+            mutation Unlock($itemId: ID!, $id: ID!) {
+              unlockFoundItemClaim(itemId: $itemId, id: $id) { id repeated checkoutUrl paid contactsSent }
             }
             """;
 
     private static final String TOKEN_FORMAT = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
-    private static final String UNKNOWN_TOKEN = "00000000-0000-0000-0000-000000000000";
     private static final FourthwallProduct PRODUCT = new FourthwallProduct("prod-1", "var-1");
     private static final String CHECKOUT = "https://derechi-shop.fourthwall.com/cart/checkout?products=var-1:1";
 
@@ -290,105 +301,110 @@ class ClaimControllerTests extends AbstractGraphQlTests {
     }
 
     @Test
-    void givesANewClaimATokenAndStartsUnpaidWithoutACheckout() {
+    void givesANewClaimAnInternalTokenAndStartsUnpaidWithoutACheckout() {
         Long itemId = lostItem("ChIJrynok").getId();
 
         GraphQlTester.Response response = claimLost(itemId, claimant(PHONE, EMAIL));
-        String token = response.path("claimLostItem.token").entity(String.class).get();
         response.path("claimLostItem.checkoutUrl").valueIsNull()
                 .path("claimLostItem.paid").entity(Boolean.class).isEqualTo(false)
                 .path("claimLostItem.contactsSent").entity(Boolean.class).isEqualTo(false);
 
-        assertThat(token).matches(TOKEN_FORMAT);
         Long claimId = response.path("claimLostItem.id").entity(Long.class).get();
         LostItemClaim stored = lostClaimRepository.findById(claimId).orElseThrow();
-        assertThat(stored.getToken()).isEqualTo(token);
+        assertThat(stored.getToken()).matches(TOKEN_FORMAT);
         assertThat(stored.getPaymentProductId()).isNull();
         assertThat(stored.getPaymentVariantId()).isNull();
     }
 
     @Test
-    void answersARepeatWithTheExistingToken() {
-        Long itemId = foundItem("ChIJrynok").getId();
-        String first = claimFound(itemId, claimant(PHONE, EMAIL))
-                .path("claimFoundItem.token").entity(String.class).get();
+    void keepsTheTokenOutOfTheApi() {
+        Long itemId = lostItem("ChIJrynok").getId();
 
-        claimFound(itemId, claimant(PHONE, "someone.else@example.com"))
-                .path("claimFoundItem.repeated").entity(Boolean.class).isEqualTo(true)
-                .path("claimFoundItem.token").entity(String.class).isEqualTo(first);
+        tester.document("""
+                        mutation Claim($id: ID!, $contact: ContactInfoInput!) {
+                          claimLostItem(id: $id, contact: $contact) { token }
+                        }
+                        """)
+                .variable("id", itemId).variable("contact", claimant(PHONE, EMAIL))
+                .execute()
+                .errors().satisfy(errors -> assertThat(errors).singleElement()
+                        .satisfies(error -> assertThat(error.getMessage()).contains("token")));
+
+        assertThat(lostClaimRepository.findAll()).isEmpty();
     }
 
     @Test
-    void answersNullForAnUnknownToken() {
-        claimLostId(lostItem("ChIJrynok").getId(), claimant(PHONE, EMAIL));
+    void findsAClaimOfEitherKindByItsItemAndId() {
+        Long lostItemId = lostItem("ChIJrynok").getId();
+        Long foundItemId = foundItem("ChIJopera").getId();
+        Long lostClaimId = claimLostId(lostItemId, claimant(PHONE, EMAIL));
+        Long foundClaimId = claimFoundId(foundItemId, claimant(PHONE, EMAIL));
 
-        byToken(UNKNOWN_TOKEN).path("claim").valueIsNull();
-        byToken("   ").path("claim").valueIsNull();
+        lostClaim(lostItemId, lostClaimId)
+                .path("lostItemClaim.id").entity(Long.class).isEqualTo(lostClaimId)
+                .path("lostItemClaim.repeated").entity(Boolean.class).isEqualTo(false)
+                .path("lostItemClaim.checkoutUrl").valueIsNull()
+                .path("lostItemClaim.paid").entity(Boolean.class).isEqualTo(false)
+                .path("lostItemClaim.contactsSent").entity(Boolean.class).isEqualTo(false);
+        foundClaim(foundItemId, foundClaimId)
+                .path("foundItemClaim.id").entity(Long.class).isEqualTo(foundClaimId);
     }
 
     @Test
-    void findsAClaimOfEitherKindByItsToken() {
-        GraphQlTester.Response lost = claimLost(lostItem("ChIJrynok").getId(), claimant(PHONE, EMAIL));
-        GraphQlTester.Response found = claimFound(foundItem("ChIJopera").getId(), claimant(PHONE, EMAIL));
-        String lostToken = lost.path("claimLostItem.token").entity(String.class).get();
-        String foundToken = found.path("claimFoundItem.token").entity(String.class).get();
+    void answersNullForAClaimThatIsNotOnThatItem() {
+        Long keys = lostItem("ChIJrynok").getId();
+        Long wallet = lostItem("ChIJopera").getId();
+        Long claimId = claimLostId(keys, claimant(PHONE, EMAIL));
 
-        byToken(lostToken)
-                .path("claim.id").entity(Long.class).isEqualTo(lost.path("claimLostItem.id").entity(Long.class).get())
-                .path("claim.token").entity(String.class).isEqualTo(lostToken)
-                .path("claim.repeated").entity(Boolean.class).isEqualTo(false)
-                .path("claim.checkoutUrl").valueIsNull()
-                .path("claim.paid").entity(Boolean.class).isEqualTo(false)
-                .path("claim.contactsSent").entity(Boolean.class).isEqualTo(false);
-        byToken(foundToken)
-                .path("claim.id").entity(Long.class).isEqualTo(found.path("claimFoundItem.id").entity(Long.class).get());
+        lostClaim(wallet, claimId).path("lostItemClaim").valueIsNull();
+        lostClaim(keys, -1L).path("lostItemClaim").valueIsNull();
+        foundClaim(keys, claimId).path("foundItemClaim").valueIsNull();
     }
 
     @Test
     void showsThePaymentAndTheSentContactsOnceTheyHappen() {
-        Long claimId = claimLostId(lostItem("ChIJrynok").getId(), claimant(PHONE, EMAIL));
-        String token = lostClaimRepository.findById(claimId).orElseThrow().getToken();
+        Long itemId = lostItem("ChIJrynok").getId();
+        Long claimId = claimLostId(itemId, claimant(PHONE, EMAIL));
 
         lostClaimService.markPaid(claimId);
-        byToken(token)
-                .path("claim.paid").entity(Boolean.class).isEqualTo(true)
-                .path("claim.contactsSent").entity(Boolean.class).isEqualTo(false);
+        lostClaim(itemId, claimId)
+                .path("lostItemClaim.paid").entity(Boolean.class).isEqualTo(true)
+                .path("lostItemClaim.contactsSent").entity(Boolean.class).isEqualTo(false);
 
         LostItemClaim claim = lostClaimRepository.findById(claimId).orElseThrow();
         claim.setContactsSentAt(Instant.now());
         lostClaimRepository.save(claim);
-        byToken(token)
-                .path("claim.paid").entity(Boolean.class).isEqualTo(true)
-                .path("claim.contactsSent").entity(Boolean.class).isEqualTo(true);
+        lostClaim(itemId, claimId)
+                .path("lostItemClaim.paid").entity(Boolean.class).isEqualTo(true)
+                .path("lostItemClaim.contactsSent").entity(Boolean.class).isEqualTo(true);
     }
 
     @Test
     void unlockingCreatesAHiddenFourthwallProductForTheClaimAndReturnsItsCheckout() {
-        Long claimId = claimLostId(lostItem("ChIJrynok").getId(), claimant(PHONE, EMAIL));
-        String token = lostClaimRepository.findById(claimId).orElseThrow().getToken();
+        Long itemId = lostItem("ChIJrynok").getId();
+        Long claimId = claimLostId(itemId, claimant(PHONE, EMAIL));
         when(fourthwall.createDigitalProduct(eq("Author's phone number (lost-" + claimId + ")"), any(), eq(BigDecimal.ONE)))
                 .thenReturn(PRODUCT);
 
-        unlock(token)
-                .path("unlockClaim.id").entity(Long.class).isEqualTo(claimId)
-                .path("unlockClaim.checkoutUrl").entity(String.class).isEqualTo(CHECKOUT)
-                .path("unlockClaim.paid").entity(Boolean.class).isEqualTo(false);
+        unlockLost(itemId, claimId)
+                .path("unlockLostItemClaim.id").entity(Long.class).isEqualTo(claimId)
+                .path("unlockLostItemClaim.checkoutUrl").entity(String.class).isEqualTo(CHECKOUT)
+                .path("unlockLostItemClaim.paid").entity(Boolean.class).isEqualTo(false);
 
         LostItemClaim stored = lostClaimRepository.findById(claimId).orElseThrow();
         assertThat(stored.getPaymentProductId()).isEqualTo("prod-1");
         assertThat(stored.getPaymentVariantId()).isEqualTo("var-1");
-        byToken(token).path("claim.checkoutUrl").entity(String.class).isEqualTo(CHECKOUT);
+        lostClaim(itemId, claimId).path("lostItemClaim.checkoutUrl").entity(String.class).isEqualTo(CHECKOUT);
         verify(rabbitTemplate, never()).convertAndSend(eq(EXCHANGE), eq("item.lost.paid"), any(ClaimEvent.class));
     }
 
     @Test
     void unlockingAFoundClaimNamesTheProductAfterIt() {
-        Long claimId = claimFound(foundItem("ChIJrynok").getId(), claimant(PHONE, EMAIL))
-                .path("claimFoundItem.id").entity(Long.class).get();
-        String token = foundClaimRepository.findById(claimId).orElseThrow().getToken();
+        Long itemId = foundItem("ChIJrynok").getId();
+        Long claimId = claimFoundId(itemId, claimant(PHONE, EMAIL));
         when(fourthwall.createDigitalProduct(any(), any(), any())).thenReturn(PRODUCT);
 
-        unlock(token).path("unlockClaim.checkoutUrl").entity(String.class).isEqualTo(CHECKOUT);
+        unlockFound(itemId, claimId).path("unlockFoundItemClaim.checkoutUrl").entity(String.class).isEqualTo(CHECKOUT);
 
         verify(fourthwall).createDigitalProduct(eq("Author's phone number (found-" + claimId + ")"), any(), eq(BigDecimal.ONE));
         assertThat(foundClaimRepository.findById(claimId).orElseThrow().getPaymentVariantId()).isEqualTo("var-1");
@@ -396,44 +412,50 @@ class ClaimControllerTests extends AbstractGraphQlTests {
 
     @Test
     void unlockingTwiceReusesTheProduct() {
-        Long claimId = claimLostId(lostItem("ChIJrynok").getId(), claimant(PHONE, EMAIL));
-        String token = lostClaimRepository.findById(claimId).orElseThrow().getToken();
+        Long itemId = lostItem("ChIJrynok").getId();
+        Long claimId = claimLostId(itemId, claimant(PHONE, EMAIL));
         when(fourthwall.createDigitalProduct(any(), any(), any())).thenReturn(PRODUCT);
 
-        unlock(token).path("unlockClaim.checkoutUrl").entity(String.class).isEqualTo(CHECKOUT);
-        unlock(token).path("unlockClaim.checkoutUrl").entity(String.class).isEqualTo(CHECKOUT);
+        unlockLost(itemId, claimId).path("unlockLostItemClaim.checkoutUrl").entity(String.class).isEqualTo(CHECKOUT);
+        unlockLost(itemId, claimId).path("unlockLostItemClaim.checkoutUrl").entity(String.class).isEqualTo(CHECKOUT);
 
         verify(fourthwall, times(1)).createDigitalProduct(any(), any(), any());
     }
 
     @Test
     void unlockingAPaidClaimCreatesNothing() {
-        Long claimId = claimLostId(lostItem("ChIJrynok").getId(), claimant(PHONE, EMAIL));
-        String token = lostClaimRepository.findById(claimId).orElseThrow().getToken();
+        Long itemId = lostItem("ChIJrynok").getId();
+        Long claimId = claimLostId(itemId, claimant(PHONE, EMAIL));
         lostClaimService.markPaid(claimId);
 
-        unlock(token)
-                .path("unlockClaim.paid").entity(Boolean.class).isEqualTo(true)
-                .path("unlockClaim.checkoutUrl").valueIsNull();
+        unlockLost(itemId, claimId)
+                .path("unlockLostItemClaim.paid").entity(Boolean.class).isEqualTo(true)
+                .path("unlockLostItemClaim.checkoutUrl").valueIsNull();
 
         verify(fourthwall, never()).createDigitalProduct(any(), any(), any());
     }
 
     @Test
-    void unlockingReportsAnUnknownTokenAsNotFound() {
-        expectError(unlock(UNKNOWN_TOKEN), ErrorType.NOT_FOUND, "Claim.id: " + UNKNOWN_TOKEN);
+    void unlockingReportsAClaimThatIsNotOnThatItemAsNotFound() {
+        Long keys = lostItem("ChIJrynok").getId();
+        Long wallet = lostItem("ChIJopera").getId();
+        Long claimId = claimLostId(keys, claimant(PHONE, EMAIL));
+
+        expectError(unlockLost(wallet, claimId), ErrorType.NOT_FOUND, "LostItemClaim.id: " + claimId);
+        expectError(unlockFound(keys, claimId), ErrorType.NOT_FOUND, "FoundItemClaim.id: " + claimId);
 
         verify(fourthwall, never()).createDigitalProduct(any(), any(), any());
+        assertThat(lostClaimRepository.findById(claimId).orElseThrow().getPaymentVariantId()).isNull();
     }
 
     @Test
     void unlockingReportsFourthwallTroubleAsPaymentUnavailableAndStoresNothing() {
-        Long claimId = claimLostId(lostItem("ChIJrynok").getId(), claimant(PHONE, EMAIL));
-        String token = lostClaimRepository.findById(claimId).orElseThrow().getToken();
+        Long itemId = lostItem("ChIJrynok").getId();
+        Long claimId = claimLostId(itemId, claimant(PHONE, EMAIL));
         when(fourthwall.createDigitalProduct(any(), any(), any()))
                 .thenThrow(new PaymentUnavailableException("Fourthwall answered 429: Too many requests"));
 
-        expectError(unlock(token), PaymentErrorType.PAYMENT_UNAVAILABLE, "429");
+        expectError(unlockLost(itemId, claimId), PaymentErrorType.PAYMENT_UNAVAILABLE, "429");
 
         assertThat(lostClaimRepository.findById(claimId).orElseThrow().getPaymentVariantId()).isNull();
     }
@@ -451,12 +473,24 @@ class ClaimControllerTests extends AbstractGraphQlTests {
         assertThat(published("item.lost.paid").id()).isEqualTo(claimId);
     }
 
-    private GraphQlTester.Response byToken(String token) {
-        return tester.document(BY_TOKEN).variable("token", token).execute();
+    private GraphQlTester.Response lostClaim(Long itemId, Long claimId) {
+        return byItemAndId(LOST_CLAIM, itemId, claimId);
     }
 
-    private GraphQlTester.Response unlock(String token) {
-        return tester.document(UNLOCK).variable("token", token).execute();
+    private GraphQlTester.Response foundClaim(Long itemId, Long claimId) {
+        return byItemAndId(FOUND_CLAIM, itemId, claimId);
+    }
+
+    private GraphQlTester.Response unlockLost(Long itemId, Long claimId) {
+        return byItemAndId(UNLOCK_LOST, itemId, claimId);
+    }
+
+    private GraphQlTester.Response unlockFound(Long itemId, Long claimId) {
+        return byItemAndId(UNLOCK_FOUND, itemId, claimId);
+    }
+
+    private GraphQlTester.Response byItemAndId(String document, Long itemId, Long claimId) {
+        return tester.document(document).variable("itemId", itemId).variable("id", claimId).execute();
     }
 
     private ClaimEvent published(String routingKey) {
@@ -475,6 +509,10 @@ class ClaimControllerTests extends AbstractGraphQlTests {
 
     private Long claimLostId(Long itemId, Map<String, Object> contact) {
         return claimLost(itemId, contact).path("claimLostItem.id").entity(Long.class).get();
+    }
+
+    private Long claimFoundId(Long itemId, Map<String, Object> contact) {
+        return claimFound(itemId, contact).path("claimFoundItem.id").entity(Long.class).get();
     }
 
     private GraphQlTester.Response claimLost(Long itemId, Map<String, Object> contact) {

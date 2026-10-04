@@ -56,8 +56,6 @@ type Claim {
     id: ID!
     "true when this phone or email had already responded to the notice; nothing was sent again"
     repeated: Boolean!
-    "The secret of this response: it reads the status, prepares the payment and closes the notice"
-    token: String!
     "Fourthwall checkout that unlocks the author's phone number; null until unlockClaim prepared it"
     checkoutUrl: String
     "The payment arrived"
@@ -162,8 +160,10 @@ type Query {
     "Places sorted by name; `name` is a case-insensitive substring"
     places(name: String, first: Int, after: String): PlaceConnection!
 
-    "The response behind a token, to show whether the payment arrived; null for an unknown token"
-    claim(token: String!): Claim
+    "A response to a lost item notice, to show whether the payment arrived; null when the notice has no such response"
+    lostItemClaim(itemId: ID!, id: ID!): Claim
+    "A response to a found item notice, to show whether the payment arrived; null when the notice has no such response"
+    foundItemClaim(itemId: ID!, id: ID!): Claim
 }
 
 type Mutation {
@@ -181,6 +181,8 @@ type Mutation {
     claimFoundItem(id: ID!, contact: ContactInfoInput!): Claim!
     "From the link in a reminder: the item is back with its owner, so the notice can be closed. Unknown token: NOT_FOUND."
     confirmReturn(token: String!): Boolean!
-    "Prepare the payment for the author's phone number: a product is created on Fourthwall and its checkout comes back in checkoutUrl. Unknown token: NOT_FOUND; Fourthwall unreachable or rate-limited: PAYMENT_UNAVAILABLE."
-    unlockClaim(token: String!): Claim!
+    "Prepare the payment for the phone number of the lost item's owner: a product is created on Fourthwall and its checkout comes back in checkoutUrl. No such response on the notice: NOT_FOUND; Fourthwall unreachable or rate-limited: PAYMENT_UNAVAILABLE."
+    unlockLostItemClaim(itemId: ID!, id: ID!): Claim!
+    "The same for the phone number of the found item's finder."
+    unlockFoundItemClaim(itemId: ID!, id: ID!): Claim!
 }

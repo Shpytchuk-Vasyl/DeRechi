@@ -14,6 +14,8 @@ public interface ClaimRepository<C extends Claim<?>> extends JpaRepository<C, Lo
 
     Optional<C> findByToken(String token);
 
+    Optional<C> findByIdAndItemId(Long id, Long itemId);
+
     Optional<C> findFirstByItemIdAndContactInfoPhoneOrderByIdAsc(Long itemId, String phone);
 
     Optional<C> findFirstByItemIdAndContactInfoEmailIgnoreCaseOrderByIdAsc(Long itemId, String email);

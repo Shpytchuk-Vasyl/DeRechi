@@ -16,7 +16,7 @@ import { formatNoticeDate, fromIsoDate } from "@/lib/intl/dates"
 import { formatMoney } from "@/lib/intl/money"
 import { mapsUrl } from "@/lib/maps"
 import { absoluteUrl, isStale, pageAlternates, snippet } from "@/lib/seo"
-import ClaimCard from "@/screens/found_lost/claim-card"
+import ClaimCard from "@/screens/found_lost/claim/claim-card"
 import PhotoViewer from "@/screens/found_lost/photo-viewer"
 
 type Props = {

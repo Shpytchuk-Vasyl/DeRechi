@@ -52,6 +52,16 @@ Three mutations in `schema.graphqls`, handled by `ClaimController`:
 | `claimLostItem(id, contact)` | the viewer found the lost item; the owner is notified |
 | `claimFoundItem(id, contact)` | the viewer owns the found item; the finder is notified |
 | `confirmReturn(token)` | from a reminder link; stamps `confirmed_at` and asks for the archive |
+| `unlockLostItemClaim(itemId, id)`, `unlockFoundItemClaim(itemId, id)` | prepares the payment for the author's phone number (see below) |
+
+| Query | Behaviour |
+|---|---|
+| `lostItemClaim(itemId, id)`, `foundItemClaim(itemId, id)` | the unlock state of a claim; `null` when the notice has no such claim |
+
+A claim is addressed by its notice and its own id. The `token` is internal: it is not part of the
+`Claim` type and only travels in the reminder links, where it closes the notice. Guessing ids only
+shows someone else's unlock state; the author's number itself only ever goes by SMS and email to
+the contacts the claimant left.
 
 Everything that archives goes through Worker, which is why the admin panel also only
 *asks* (see below): one archiver, one place that knows how claims follow a notice into history.
@@ -59,7 +69,8 @@ Everything that archives goes through Worker, which is why the admin panel also 
 `contact` is the same `ContactInfoInput` as in `ItemInput` (E.164 phone, email, optional
 messengers) with the same validation. Unknown item or token → `NOT_FOUND`.
 
-`ClaimService` (one subclass per kind) looks for an existing claim on the item with the same phone
+`ClaimService` (one subclass per kind) locks the item row (`PESSIMISTIC_WRITE`, so two concurrent
+claims cannot both miss each other) and looks for an existing claim on the item with the same phone
 **or** email; if there is one it returns its id with `repeated: true` and publishes nothing.
 Otherwise it saves a new `contact_info` row, the claim (`token` = random UUID, `created_at`), and
 returns `ClaimDto(id, repeated = false)`. `ClaimEventAspect`, an `@AfterReturning` advice on
@@ -158,7 +169,7 @@ After responding, the notice page offers "Get the author's phone number": a smal
 that the number will be sent by SMS and email to the contacts the responder gave, that this is how
 the service is funded (about $1), and shows a "Pay on Fourthwall" button that opens the checkout in
 a new tab. Only the phone number is sent; the author's email and messengers stay private. The
-dialog polls `claim(token)` every 20 seconds and switches to "payment received" and then "sent to
+dialog polls the claim status every 20 seconds and switches to "payment received" and then "sent to
 your email and phone".
 
 Why a product per response: Fourthwall has no custom checkout fields and no signed redirect, but
@@ -169,8 +180,8 @@ code, and the payer's email does not matter.
 
 The flow:
 
-1. Opening the dialog calls `unlockClaim(token)`. `ClaimUnlockService` finds the claim by its token
-   (the same secret the reminder links carry), and if it is unpaid and has no product yet, asks
+1. Opening the dialog calls `unlockLostItemClaim` or `unlockFoundItemClaim` with the notice id and
+   the claim id. `ClaimUnlockService` finds the claim on that notice, and if it is unpaid and has no product yet, asks
    `FourthwallClient` for one: `POST /open-api/v1.0/products` with `type: digital`,
    `publishOnCreate: false`, the name `derechi.fourthwall.product-name` with the claim reference
    (`lost-42`), then `GET /products/{id}` for the variant id. Both ids are stored on the claim

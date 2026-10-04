@@ -13,8 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @AllArgsConstructor
 public class ClaimUnlockService {
@@ -26,31 +24,29 @@ public class ClaimUnlockService {
     private final FourthwallClient fourthwall;
     private final FourthwallProperties properties;
 
-    public Optional<ClaimDto> status(String token) {
-        return lostClaimService.findByToken(token).or(() -> foundClaimService.findByToken(token));
+    public ClaimDto unlockLost(Long itemId, Long claimId) {
+        return unlock(lostClaimService, itemId, claimId, "lost");
     }
 
-    public ClaimDto unlock(String token) {
-        return unlock(lostClaimService, token, "lost")
-                .or(() -> unlock(foundClaimService, token, "found"))
-                .orElseThrow(() -> new NotFoundException("Claim", token));
+    public ClaimDto unlockFound(Long itemId, Long claimId) {
+        return unlock(foundClaimService, itemId, claimId, "found");
     }
 
-    private Optional<ClaimDto> unlock(ClaimService<?, ?> service, String token, String kind) {
-        return service.findByToken(token).map(claim -> {
-            if (claim.paid() || claim.paymentVariantId() != null) {
-                return claim;
-            }
-            FourthwallProduct product = fourthwall.createDigitalProduct(
-                    properties.productName().formatted(kind + "-" + claim.id()),
-                    properties.productDescription(),
-                    properties.price());
-            ClaimDto attached = service.attachProduct(claim.id(), product);
-            if (!product.variantId().equals(attached.paymentVariantId())) {
-                log.warn("Fourthwall product {} is orphaned: {} claim {} already had variant {}",
-                        product.productId(), kind, claim.id(), attached.paymentVariantId());
-            }
-            return attached;
-        });
+    private ClaimDto unlock(ClaimService<?, ?> service, Long itemId, Long claimId, String kind) {
+        ClaimDto claim = service.find(itemId, claimId)
+                .orElseThrow(() -> new NotFoundException(service.claimEntityName(), claimId));
+        if (claim.paid() || claim.paymentVariantId() != null) {
+            return claim;
+        }
+        FourthwallProduct product = fourthwall.createDigitalProduct(
+                properties.productName().formatted(kind + "-" + claim.id()),
+                properties.productDescription(),
+                properties.price());
+        ClaimDto attached = service.attachProduct(claim.id(), product);
+        if (!product.variantId().equals(attached.paymentVariantId())) {
+            log.warn("Fourthwall product {} is orphaned: {} claim {} already had variant {}",
+                    product.productId(), kind, claim.id(), attached.paymentVariantId());
+        }
+        return attached;
     }
 }

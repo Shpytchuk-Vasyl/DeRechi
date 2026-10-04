@@ -28,8 +28,13 @@ public class ClaimController {
     private final FourthwallProperties fourthwall;
 
     @QueryMapping
-    public ClaimDto claim(@Argument String token) {
-        return unlockService.status(token).orElse(null);
+    public ClaimDto lostItemClaim(@Argument Long itemId, @Argument Long id) {
+        return lostClaimService.find(itemId, id).orElse(null);
+    }
+
+    @QueryMapping
+    public ClaimDto foundItemClaim(@Argument Long itemId, @Argument Long id) {
+        return foundClaimService.find(itemId, id).orElse(null);
     }
 
     @SchemaMapping(typeName = "Claim")
@@ -53,7 +58,12 @@ public class ClaimController {
     }
 
     @MutationMapping
-    public ClaimDto unlockClaim(@Argument String token) {
-        return unlockService.unlock(token);
+    public ClaimDto unlockLostItemClaim(@Argument Long itemId, @Argument Long id) {
+        return unlockService.unlockLost(itemId, id);
+    }
+
+    @MutationMapping
+    public ClaimDto unlockFoundItemClaim(@Argument Long itemId, @Argument Long id) {
+        return unlockService.unlockFound(itemId, id);
     }
 }

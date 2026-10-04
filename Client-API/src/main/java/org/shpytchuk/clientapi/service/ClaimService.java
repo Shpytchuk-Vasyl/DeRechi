@@ -80,13 +80,17 @@ public abstract class ClaimService<T extends Thing, C extends Claim<T>> {
     }
 
     @Transactional(readOnly = true)
-    public Optional<ClaimDto> findByToken(String token) {
-        return claimRepository.findByToken(token).map(claim -> ClaimMapper.toDto(claim, false));
+    public Optional<ClaimDto> find(Long itemId, Long claimId) {
+        return claimRepository.findByIdAndItemId(claimId, itemId).map(claim -> ClaimMapper.toDto(claim, false));
+    }
+
+    public String claimEntityName() {
+        return entityName + "Claim";
     }
 
     @Transactional
     public ClaimDto attachProduct(Long claimId, FourthwallProduct product) {
-        C claim = claimRepository.findById(claimId).orElseThrow(() -> new NotFoundException(entityName + "Claim", claimId));
+        C claim = claimRepository.findById(claimId).orElseThrow(() -> new NotFoundException(claimEntityName(), claimId));
         if (claim.getPaymentVariantId() == null) {
             claim.setPaymentProductId(product.productId());
             claim.setPaymentVariantId(product.variantId());

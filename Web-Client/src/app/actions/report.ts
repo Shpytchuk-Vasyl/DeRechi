@@ -26,9 +26,9 @@ export async function createNotice(kind: ItemKind, values: unknown): Promise<Rep
   try {
     const created =
       kind === "lost"
-        ? (await graphqlRequest(CreateLostItemMutation, { input }, { revalidate: false }))
+        ? (await graphqlRequest(CreateLostItemMutation, { input }, { cache: "no-store" }))
             .createLostItem
-        : (await graphqlRequest(CreateFoundItemMutation, { input }, { revalidate: false }))
+        : (await graphqlRequest(CreateFoundItemMutation, { input }, { cache: "no-store" }))
             .createFoundItem
 
     revalidateTag(`items:${kind}`, "max")

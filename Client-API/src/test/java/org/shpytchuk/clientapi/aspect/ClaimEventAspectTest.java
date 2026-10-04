@@ -133,7 +133,7 @@ class ClaimEventAspectTest {
     }
 
     private static ClaimDto dto(Long id, boolean repeated) {
-        return new ClaimDto(id, repeated, "6f1c2a52-0d7e-4c1e-9a43-6f0d4f3a9b11", null, false, false);
+        return new ClaimDto(id, repeated, null, false, false);
     }
 
     private <T> T proxy(T target) {

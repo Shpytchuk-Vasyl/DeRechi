@@ -7,17 +7,19 @@ import { Card } from "@/components/pouf/card"
 import { ErrorNote } from "@/components/pouf/feedback"
 import { Field, Input } from "@/components/pouf/Input"
 import { Heading, Text } from "@/components/pouf/text"
-import { CLAIM_TOKEN } from "@/schema/claim-schema"
 import { type FakePaymentResult, sendFakePayment } from "./actions"
 
 const STATUSES = ["COMPLETED", "CONFIRMED", "CANCELLED"] as const
 
 type Status = Awaited<ReturnType<typeof claimStatus>> | null
 
+const CLAIM_REF = /^(lost|found)\/([\w-]{1,64})\/([1-9]\d{0,17})$/
+const CLAIM_COOKIE = /^DERECHI_CLAIM_(lost|found)_([\w-]{1,64})=([1-9]\d{0,17})$/
+
 export function FourthwallBench() {
   const [checkout, setCheckout] = useState("")
   const [status, setStatus] = useState<(typeof STATUSES)[number]>("COMPLETED")
-  const [token, setToken] = useState("")
+  const [claimRef, setClaimRef] = useState("")
   const [sending, setSending] = useState(false)
   const [result, setResult] = useState<FakePaymentResult | null>(null)
   const [claim, setClaim] = useState<Status>(null)
@@ -30,20 +32,22 @@ export function FourthwallBench() {
     setSending(false)
   }
 
+  const ref = CLAIM_REF.exec(claimRef.trim())
+
   async function check() {
+    if (!ref) return
+    const [, kind, itemId, claimId] = ref
     setChecking(true)
-    setClaim(await claimStatus(token.trim()))
+    setClaim(await claimStatus(kind as "lost" | "found", itemId, claimId))
     setChecking(false)
   }
 
-  function readToken(cookieHeader: string) {
+  function readClaim(cookieHeader: string) {
     const found = cookieHeader
       .split(";")
-      .map((part) => part.trim())
-      .filter((part) => part.startsWith("DERECHI_CLAIM_"))
-      .map((part) => part.slice(part.indexOf("=") + 1))
-      .find((value) => CLAIM_TOKEN.test(value))
-    if (found) setToken(found)
+      .map((part) => CLAIM_COOKIE.exec(part.trim()))
+      .find((match) => match !== null)
+    if (found) setClaimRef(`${found[1]}/${found[2]}/${found[3]}`)
   }
 
   return (
@@ -117,30 +121,25 @@ export function FourthwallBench() {
 
         <div className="border-border border-t pt-5">
           <Field
-            label="Token заявки (кукі DERECHI_CLAIM_…)"
+            label="Заявка: вид/id речі/id заявки (кукі DERECHI_CLAIM_…)"
             hint="Після імітації статус має стати paid, а за мить contactsSent."
           >
             {(id, describedBy) => (
               <Input
                 id={id}
                 describedBy={describedBy}
-                value={token}
-                onChange={setToken}
-                placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                value={claimRef}
+                onChange={setClaimRef}
+                placeholder="lost/7/11"
                 mono
               />
             )}
           </Field>
           <div className="mt-3 flex flex-wrap items-center gap-3">
-            <Button variant="quiet" size="sm" onClick={() => readToken(document.cookie)}>
+            <Button variant="quiet" size="sm" onClick={() => readClaim(document.cookie)}>
               Взяти з кукі
             </Button>
-            <Button
-              size="sm"
-              onClick={check}
-              loading={checking}
-              disabled={!CLAIM_TOKEN.test(token.trim())}
-            >
+            <Button size="sm" onClick={check} loading={checking} disabled={!ref}>
               Перевірити статус
             </Button>
             {claim ? (

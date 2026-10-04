@@ -23,22 +23,22 @@ describe("claim cookie", () => {
     expect(hasClaimCookie("", "lost", "7")).toBe(false)
   })
 
-  it("reads the token stored for this notice", () => {
-    const header = `DERECHI_CLAIM_lost_17=0b9a3c1d-5e2f-4a6b-8c7d-9e0f1a2b3c4d; DERECHI_CLAIM_lost_7=6f1c2a52-0d7e-4c1e-9a43-6f0d4f3a9b11; DERECHI_LOCALE=uk`
+  it("reads the claim id stored for this notice", () => {
+    const header = "DERECHI_CLAIM_lost_17=12; DERECHI_CLAIM_lost_7=11; DERECHI_LOCALE=uk"
 
-    expect(readClaimCookie(header, "lost", "7")).toBe("6f1c2a52-0d7e-4c1e-9a43-6f0d4f3a9b11")
-    expect(readClaimCookie(header, "lost", "17")).toBe("0b9a3c1d-5e2f-4a6b-8c7d-9e0f1a2b3c4d")
+    expect(readClaimCookie(header, "lost", "7")).toBe("11")
+    expect(readClaimCookie(header, "lost", "17")).toBe("12")
   })
 
-  it("returns the old value of a cookie set before tokens", () => {
+  it("returns the old value of a cookie set before claim ids", () => {
     expect(readClaimCookie("DERECHI_CLAIM_found_7=1", "found", "7")).toBe("1")
-    expect(readClaimCookie("DERECHI_CLAIM_found_7=DR-7K3M9Q", "found", "7")).toBe("DR-7K3M9Q")
+    expect(
+      readClaimCookie("DERECHI_CLAIM_found_7=6f1c2a52-0d7e-4c1e-9a43-6f0d4f3a9b11", "found", "7"),
+    ).toBe("6f1c2a52-0d7e-4c1e-9a43-6f0d4f3a9b11")
   })
 
   it("returns null when this notice has no cookie", () => {
-    expect(
-      readClaimCookie(`DERECHI_CLAIM_found_7=6f1c2a52-0d7e-4c1e-9a43-6f0d4f3a9b11`, "lost", "7"),
-    ).toBeNull()
+    expect(readClaimCookie("DERECHI_CLAIM_found_7=11", "lost", "7")).toBeNull()
     expect(readClaimCookie("", "lost", "7")).toBeNull()
   })
 })

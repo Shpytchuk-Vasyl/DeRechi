@@ -1,10 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import {
-  ClaimByTokenQuery,
   ClaimFoundItemMutation,
   ClaimLostItemMutation,
   ConfirmReturnMutation,
-  UnlockClaimMutation,
+  FoundItemClaimQuery,
+  LostItemClaimQuery,
+  UnlockFoundItemClaimMutation,
+  UnlockLostItemClaimMutation,
 } from "@/graphql/documents"
 
 const mocks = vi.hoisted(() => {
@@ -50,12 +52,13 @@ const contact = {
   socialMedias: ["VIBER", "WHATSAPP"],
 }
 
-const TOKEN = "6f1c2a52-0d7e-4c1e-9a43-6f0d4f3a9b11"
-const OTHER_TOKEN = "0b9a3c1d-5e2f-4a6b-8c7d-9e0f1a2b3c4d"
+const CLAIM_ID = "11"
+const OTHER_CLAIM_ID = "12"
+const OLD_TOKEN = "6f1c2a52-0d7e-4c1e-9a43-6f0d4f3a9b11"
 const CHECKOUT = "https://derechi-shop.fourthwall.com/cart/checkout?products=var_1:1"
 
-const unpaid = { token: TOKEN, checkoutUrl: null, paid: false, contactsSent: false }
-const paidUp = { token: OTHER_TOKEN, checkoutUrl: CHECKOUT, paid: true, contactsSent: true }
+const unpaid = { checkoutUrl: null, paid: false, contactsSent: false }
+const paidUp = { checkoutUrl: CHECKOUT, paid: true, contactsSent: true }
 
 const notFound = () =>
   new mocks.GraphQLRequestError("LostItem.id: 7", [{ extensions: { classification: "NOT_FOUND" } }])
@@ -69,37 +72,37 @@ beforeEach(() => {
 describe("claimNotice", () => {
   it("sends the claimant's contacts as ContactInfoInput for a lost notice", async () => {
     mocks.graphqlRequest.mockResolvedValue({
-      claimLostItem: { id: "11", repeated: false, ...unpaid },
+      claimLostItem: { id: CLAIM_ID, repeated: false, ...unpaid },
     })
 
     const result = await claimNotice("lost", "7", contact)
 
-    expect(result).toEqual({ ok: true, repeated: false, ...unpaid })
+    expect(result).toEqual({ ok: true, repeated: false, claimId: CLAIM_ID, ...unpaid })
     expect(mocks.graphqlRequest).toHaveBeenCalledWith(
       ClaimLostItemMutation,
       { id: "7", contact },
-      { revalidate: false },
+      { cache: "no-store" },
     )
   })
 
   it("uses the found mutation for a found notice and passes the repeat and payment state through", async () => {
     mocks.graphqlRequest.mockResolvedValue({
-      claimFoundItem: { id: "12", repeated: true, ...paidUp },
+      claimFoundItem: { id: OTHER_CLAIM_ID, repeated: true, ...paidUp },
     })
 
     const result = await claimNotice("found", "8", contact)
 
-    expect(result).toEqual({ ok: true, repeated: true, ...paidUp })
+    expect(result).toEqual({ ok: true, repeated: true, claimId: OTHER_CLAIM_ID, ...paidUp })
     expect(mocks.graphqlRequest).toHaveBeenCalledWith(
       ClaimFoundItemMutation,
       expect.objectContaining({ id: "8" }),
-      { revalidate: false },
+      { cache: "no-store" },
     )
   })
 
   it("sends no messengers as null rather than an empty list", async () => {
     mocks.graphqlRequest.mockResolvedValue({
-      claimLostItem: { id: "11", repeated: false, ...unpaid },
+      claimLostItem: { id: CLAIM_ID, repeated: false, ...unpaid },
     })
 
     await claimNotice("lost", "7", { ...contact, socialMedias: [] })
@@ -110,30 +113,30 @@ describe("claimNotice", () => {
     })
   })
 
-  it("remembers the token for 30 days in a cookie the claim card reads", async () => {
+  it("remembers the claim id for 30 days in a cookie the claim card reads", async () => {
     mocks.graphqlRequest.mockResolvedValue({
-      claimLostItem: { id: "11", repeated: false, ...unpaid },
+      claimLostItem: { id: CLAIM_ID, repeated: false, ...unpaid },
     })
 
     await claimNotice("lost", "7", contact)
 
     expect(mocks.setCookie).toHaveBeenCalledWith(
       "DERECHI_CLAIM_lost_7",
-      TOKEN,
+      CLAIM_ID,
       expect.objectContaining({ maxAge: 30 * 24 * 3600, path: "/", httpOnly: false }),
     )
   })
 
   it("sets the cookie for a repeat too, so the button stays hidden", async () => {
     mocks.graphqlRequest.mockResolvedValue({
-      claimFoundItem: { id: "12", repeated: true, ...paidUp },
+      claimFoundItem: { id: OTHER_CLAIM_ID, repeated: true, ...paidUp },
     })
 
     await claimNotice("found", "8", contact)
 
     expect(mocks.setCookie).toHaveBeenCalledWith(
       "DERECHI_CLAIM_found_8",
-      OTHER_TOKEN,
+      OTHER_CLAIM_ID,
       expect.anything(),
     )
   })
@@ -190,75 +193,87 @@ describe("claimNotice", () => {
 })
 
 describe("claimStatus", () => {
-  it("asks the API about the token and reports the payment state", async () => {
+  it("asks the API about the claim on a lost notice and reports how far the unlock got", async () => {
     mocks.graphqlRequest.mockResolvedValue({
-      claim: { id: "11", checkoutUrl: CHECKOUT, paid: true, contactsSent: false },
+      lostItemClaim: { id: CLAIM_ID, checkoutUrl: CHECKOUT, paid: true, contactsSent: false },
     })
 
-    expect(await claimStatus(TOKEN)).toEqual({
+    expect(await claimStatus("lost", "7", CLAIM_ID)).toEqual({
       ok: true,
       checkoutUrl: CHECKOUT,
       paid: true,
       contactsSent: false,
     })
     expect(mocks.graphqlRequest).toHaveBeenCalledWith(
-      ClaimByTokenQuery,
-      { token: TOKEN },
-      { revalidate: false },
+      LostItemClaimQuery,
+      { itemId: "7", id: CLAIM_ID },
+      { cache: "no-store" },
     )
   })
 
-  it("reports no checkout yet as null", async () => {
+  it("uses the found query for a found notice and reports no checkout yet as null", async () => {
     mocks.graphqlRequest.mockResolvedValue({
-      claim: { id: "11", checkoutUrl: null, paid: false, contactsSent: false },
+      foundItemClaim: { id: CLAIM_ID, checkoutUrl: null, paid: false, contactsSent: false },
     })
 
-    expect(await claimStatus(TOKEN)).toEqual({
+    expect(await claimStatus("found", "8", CLAIM_ID)).toEqual({
       ok: true,
       checkoutUrl: null,
       paid: false,
       contactsSent: false,
     })
+    expect(mocks.graphqlRequest).toHaveBeenCalledWith(
+      FoundItemClaimQuery,
+      { itemId: "8", id: CLAIM_ID },
+      { cache: "no-store" },
+    )
   })
 
-  it("answers an unknown token with ok: false", async () => {
-    mocks.graphqlRequest.mockResolvedValue({ claim: null })
+  it("answers a claim that is not on that notice with ok: false", async () => {
+    mocks.graphqlRequest.mockResolvedValue({ lostItemClaim: null })
 
-    expect(await claimStatus(TOKEN)).toEqual({ ok: false })
+    expect(await claimStatus("lost", "7", CLAIM_ID)).toEqual({ ok: false })
   })
 
   it.each([
-    ["the old cookie value", "1"],
-    ["an old payment code", "DR-7K3M9Q"],
-    ["an upper-case token", TOKEN.toUpperCase()],
-    ["a short token", TOKEN.slice(0, -1)],
-    ["a token inside other text", `${TOKEN}; Path=/`],
-    ["an empty string", ""],
-  ])("rejects %s before calling the API", async (_, value) => {
-    expect(await claimStatus(value)).toEqual({ ok: false })
+    ["the old cookie value", "lost", "7", "1x"],
+    ["an old token", "lost", "7", OLD_TOKEN],
+    ["an old payment code", "lost", "7", "DR-7K3M9Q"],
+    ["an id inside other text", "lost", "7", `${CLAIM_ID}; Path=/`],
+    ["an empty claim id", "lost", "7", ""],
+    ["an unknown kind", "archived", "7", CLAIM_ID],
+    ["an item id that would break the cookie name", "lost", "7; Path=/", CLAIM_ID],
+  ])("rejects %s before calling the API", async (_, kind, itemId, claimId) => {
+    // biome-ignore lint/suspicious/noExplicitAny: a server action receives whatever the client posts
+    expect(await claimStatus(kind as any, itemId, claimId)).toEqual({ ok: false })
     expect(mocks.graphqlRequest).not.toHaveBeenCalled()
   })
 
-  it("rejects a value that is not a string", async () => {
+  it("rejects a claim id that is not a string", async () => {
     // biome-ignore lint/suspicious/noExplicitAny: a server action receives whatever the client posts
-    expect(await claimStatus(42 as any)).toEqual({ ok: false })
+    expect(await claimStatus("lost", "7", 11 as any)).toEqual({ ok: false })
     expect(mocks.graphqlRequest).not.toHaveBeenCalled()
   })
 
   it("reports a broken API as ok: false", async () => {
     mocks.graphqlRequest.mockRejectedValue(new Error("connection refused"))
 
-    expect(await claimStatus(TOKEN)).toEqual({ ok: false })
+    expect(await claimStatus("lost", "7", CLAIM_ID)).toEqual({ ok: false })
   })
 })
 
 describe("unlockClaim", () => {
-  it("prepares the checkout on Fourthwall and returns its link", async () => {
+  it("prepares the checkout on Fourthwall for a lost notice and returns its link", async () => {
     mocks.graphqlRequest.mockResolvedValue({
-      unlockClaim: { id: "11", checkoutUrl: CHECKOUT, paid: false, contactsSent: false },
+      unlockLostItemClaim: {
+        id: CLAIM_ID,
+        checkoutUrl: CHECKOUT,
+        paid: false,
+        contactsSent: false,
+      },
     })
 
-    expect(await unlockClaim(TOKEN)).toEqual({
+    expect(await unlockClaim("lost", "7", CLAIM_ID)).toEqual({
       ok: true,
       checkoutUrl: CHECKOUT,
       paid: false,
@@ -266,9 +281,29 @@ describe("unlockClaim", () => {
     })
     expect(mocks.passesBotCheck).toHaveBeenCalled()
     expect(mocks.graphqlRequest).toHaveBeenCalledWith(
-      UnlockClaimMutation,
-      { token: TOKEN },
-      { revalidate: false },
+      UnlockLostItemClaimMutation,
+      { itemId: "7", id: CLAIM_ID },
+      { cache: "no-store" },
+    )
+  })
+
+  it("uses the found mutation for a found notice", async () => {
+    mocks.graphqlRequest.mockResolvedValue({
+      unlockFoundItemClaim: {
+        id: CLAIM_ID,
+        checkoutUrl: CHECKOUT,
+        paid: false,
+        contactsSent: false,
+      },
+    })
+
+    expect(await unlockClaim("found", "8", CLAIM_ID)).toEqual(
+      expect.objectContaining({ ok: true, checkoutUrl: CHECKOUT }),
+    )
+    expect(mocks.graphqlRequest).toHaveBeenCalledWith(
+      UnlockFoundItemClaimMutation,
+      { itemId: "8", id: CLAIM_ID },
+      { cache: "no-store" },
     )
   })
 
@@ -279,43 +314,49 @@ describe("unlockClaim", () => {
       ]),
     )
 
-    expect(await unlockClaim(TOKEN)).toEqual({ ok: false, reason: "unavailable" })
+    expect(await unlockClaim("lost", "7", CLAIM_ID)).toEqual({ ok: false, reason: "unavailable" })
   })
 
-  it("reports an unknown token as notFound", async () => {
+  it("reports a claim that is not on that notice as notFound", async () => {
     mocks.graphqlRequest.mockRejectedValue(notFound())
 
-    expect(await unlockClaim(TOKEN)).toEqual({ ok: false, reason: "notFound" })
+    expect(await unlockClaim("lost", "7", CLAIM_ID)).toEqual({ ok: false, reason: "notFound" })
   })
 
   it("reports any other failure as failed", async () => {
     mocks.graphqlRequest.mockRejectedValue(new Error("connection refused"))
 
-    expect(await unlockClaim(TOKEN)).toEqual({ ok: false, reason: "failed" })
+    expect(await unlockClaim("lost", "7", CLAIM_ID)).toEqual({ ok: false, reason: "failed" })
   })
 
   it("treats a missing checkout link in the answer as a failure", async () => {
     mocks.graphqlRequest.mockResolvedValue({
-      unlockClaim: { id: "11", checkoutUrl: null, paid: false, contactsSent: false },
+      unlockLostItemClaim: { id: CLAIM_ID, checkoutUrl: null, paid: false, contactsSent: false },
     })
 
-    expect(await unlockClaim(TOKEN)).toEqual({ ok: false, reason: "failed" })
+    expect(await unlockClaim("lost", "7", CLAIM_ID)).toEqual({ ok: false, reason: "failed" })
   })
 
   it("stops a bot before the API", async () => {
     mocks.passesBotCheck.mockResolvedValue(false)
 
-    expect(await unlockClaim(TOKEN)).toEqual({ ok: false, reason: "captcha" })
+    expect(await unlockClaim("lost", "7", CLAIM_ID)).toEqual({ ok: false, reason: "captcha" })
     expect(mocks.graphqlRequest).not.toHaveBeenCalled()
   })
 
   it.each([
-    ["the old cookie value", "1"],
-    ["an old payment code", "DR-7K3M9Q"],
-    ["a token inside other text", `${TOKEN}; Path=/`],
-    ["an empty string", ""],
-  ])("rejects %s before the bot check and the API", async (_, value) => {
-    expect(await unlockClaim(value)).toEqual({ ok: false, reason: "validation" })
+    ["an old token", "lost", "7", OLD_TOKEN],
+    ["an old payment code", "lost", "7", "DR-7K3M9Q"],
+    ["an id inside other text", "lost", "7", `${CLAIM_ID}; Path=/`],
+    ["an empty claim id", "lost", "7", ""],
+    ["an unknown kind", "archived", "7", CLAIM_ID],
+    ["an empty item id", "lost", "", CLAIM_ID],
+  ])("rejects %s before the bot check and the API", async (_, kind, itemId, claimId) => {
+    // biome-ignore lint/suspicious/noExplicitAny: a server action receives whatever the client posts
+    expect(await unlockClaim(kind as any, itemId, claimId)).toEqual({
+      ok: false,
+      reason: "validation",
+    })
     expect(mocks.passesBotCheck).not.toHaveBeenCalled()
     expect(mocks.graphqlRequest).not.toHaveBeenCalled()
   })
@@ -331,7 +372,7 @@ describe("confirmReturn", () => {
     expect(mocks.graphqlRequest).toHaveBeenCalledWith(
       ConfirmReturnMutation,
       { token },
-      { revalidate: false },
+      { cache: "no-store" },
     )
     expect(mocks.revalidateTag).toHaveBeenCalledWith("items:lost", "max")
     expect(mocks.revalidateTag).toHaveBeenCalledWith("items:found", "max")

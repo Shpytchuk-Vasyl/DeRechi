@@ -26,10 +26,7 @@ export class GraphQLRequestError extends Error {
   }
 }
 
-type RequestOptions = {
-  revalidate?: number | false
-  tags?: string[]
-}
+type RequestOptions = { revalidate?: number; tags?: string[] } | { cache: "no-store" }
 
 export async function graphqlRequest<TResult, TVariables>(
   document: TypedDocumentString<TResult, TVariables>,
@@ -43,7 +40,9 @@ export async function graphqlRequest<TResult, TVariables>(
       Accept: "application/graphql-response+json, application/json",
     },
     body: JSON.stringify({ query: document.toString(), variables }),
-    next: { revalidate: options.revalidate, tags: options.tags },
+    ...("cache" in options
+      ? { cache: options.cache }
+      : { next: { revalidate: options.revalidate, tags: options.tags } }),
   })
 
   if (!response.ok) {

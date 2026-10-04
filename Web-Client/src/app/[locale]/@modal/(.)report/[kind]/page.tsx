@@ -4,7 +4,6 @@ import ReportForm from "@/screens/report/report-form"
 
 type Props = { params: Promise<{ locale: string; kind: string }> }
 
-// The layout has already rejected an unknown kind, so the cast only narrows the type.
 export default async function ReportModalRoute({ params }: Props) {
   const { kind } = await params
   const categories = await fetchCategories()

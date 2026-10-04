@@ -124,11 +124,11 @@ that notice's tag.
 
 After a claim, the "done" state offers the author's phone number (only the number, not the
 email) for about $1 paid on Fourthwall (`ClaimUnlock` in
-`src/screens/found_lost/claim-unlock.tsx`). Nothing on the site ever shows the number: the
+`src/screens/found_lost/claim/claim-unlock.tsx`). Nothing on the site ever shows the number: the
 Fourthwall webhook marks the claim paid, and Worker sends the number to the claimant by email
 and SMS.
 
-- Opening the dialog calls `unlockClaim(token)` (`src/app/actions/claim.ts`, behind the same
+- Opening the dialog calls `unlockClaim(kind, itemId, claimId)` (`src/app/actions/claim.ts`, behind the same
   BotID check as the claim itself). Client-API creates a hidden digital product on Fourthwall
   for this claim and answers with its `checkoutUrl`
   (`https://derechi-shop.fourthwall.com/cart/checkout?products=<variantId>:1`); the dialog
@@ -136,11 +136,12 @@ and SMS.
   and cards are available. A `PAYMENT_UNAVAILABLE` error (Fourthwall rate-limits product
   creation) reads as "try again in a minute" with a retry button; any other failure gets a
   generic retry. There is no code to type and no environment variable on this side.
-- The claim cookie holds the token instead of `1`, for 30 days, so a returning claimant sees
-  the button and the payment state; `ClaimCard` reads it with `readClaimCookie` and asks
-  `claimStatus(token)` on mount, which also returns the `checkoutUrl` once it exists. Old
-  cookies holding `1` or a `DR-` payment code still mean "already responded" and simply show
-  no unlock block.
+- The claim cookie holds the claim id, for 30 days, so a returning claimant sees the button
+  and how far the unlock got (`PhoneUnlock`); `useClaim` reads it with `readClaimCookie` and asks
+  `claimStatus(kind, itemId, claimId)` on mount, which also returns the `checkoutUrl` once it
+  exists. The claim token never reaches the site: it lives only in the reminder links for
+  `confirmReturn`. Old cookies holding `1`, a `DR-` payment code or a token still mean "already
+  responded" and simply show no unlock block.
 - While the dialog is open, it polls `claimStatus` every 20 s until the number is sent, and
   gives up after 15 minutes; reopening the dialog starts a new window. The webhook is the only
   source of truth, so there is no "I paid" button.
