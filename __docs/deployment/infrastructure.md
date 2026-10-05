@@ -18,7 +18,7 @@ The supporting services started by `docker compose up -d`. All of them publish t
 One container, two databases:
 
 - `derechi` is the application database shared by every service. Its schema is owned by `DB-Postgres` and applied with Liquibase; see [database](../architecture/database.md).
-- `keycloak` is created by `docker/postgres/initdb/01-keycloak.sql` on the first start of an empty volume and is managed entirely by Keycloak.
+- `keycloak` is created by `docker/postgres/initdb/01-keycloak.sh` (as `POSTGRES_USER`) on the first start of an empty volume and is managed entirely by Keycloak.
 
 The image is a custom build of `postgis/postgis:17-3.5` with the Ukrainian hunspell dictionary and stop-word list, needed by the `ukrainian` full-text search configuration that `Worker` uses for ranking; see [docker-image](docker-image.md).
 
@@ -28,14 +28,18 @@ docker exec -it derechi-postgres psql -U derechi -d derechi
 
 ## RabbitMQ
 
-The topology is not declared by the applications. It is loaded from `docker/rabbitmq/definitions.json` through `docker/rabbitmq/rabbitmq.conf` (`definitions.import_backend = local_filesystem`):
+The topology is not declared by the applications. The one-shot `rabbitmq-init` container imports `docker/rabbitmq/definitions.json` over the management API (`POST /api/definitions`) after every start of the broker, and the services wait for it to finish:
 
 | Exchange (topic) | Queue (quorum) | Binding | Dead letter |
 |---|---|---|---|
 | `derechi.items` | `worker.items` | `item.*.created` | `derechi.items.dlx` -> `worker.items.dlq` |
 | `derechi.notifications` | `notification.events` | `notification.#` | `derechi.notifications.dlx` -> `notification.events.dlq` |
 
-A new queue or binding is a change to `definitions.json` and takes effect on the next container start with a fresh volume (or by importing the file through the management UI). The applications only publish to exchanges and listen on queues by name; see [messaging](../architecture/messaging.md) and [add-an-event](../extending/add-an-event.md).
+A new queue or binding is a change to `definitions.json` and takes effect on the next `docker compose up`. The import only adds and updates: a removed or narrowed binding stays until it is deleted in the UI, and a queue whose arguments changed makes the import fail (`docker compose logs rabbitmq-init`).
+
+`definitions.json` holds no users. The broker's only user is `RABBITMQ_USER` / `RABBITMQ_PASSWORD`, created by the image on the first start of an empty volume. That is why the import does not happen at boot through `rabbitmq.conf`: when definitions are imported at boot, RabbitMQ skips creating the default user, so the password could not come from the environment.
+
+ The applications only publish to exchanges and listen on queues by name; see [messaging](../architecture/messaging.md) and [add-an-event](../extending/add-an-event.md).
 
 Port 15692 serves Prometheus metrics (`prometheus.return_per_object_metrics = true`).
 

@@ -23,18 +23,30 @@ The services file uses YAML anchors to avoid repeating the same environment bloc
 | Anchor | Provides |
 |---|---|
 | `x-service-base` | `build` context and `Dockerfile`, `restart: unless-stopped`, `depends_on: discovery` |
-| `x-eureka` | `EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery:8761/eureka` |
-| `x-postgres` | `SPRING_DATASOURCE_USERNAME` / `PASSWORD` |
-| `x-rabbitmq` | `SPRING_RABBITMQ_HOST/PORT/USERNAME/PASSWORD` |
-| `x-jvm` | `JAVA_OPTS` with a 256 MB heap and SerialGC |
+| `x-eureka` | `EUREKA_URL` (`http://discovery:8761/eureka`) |
+| `x-postgres` | `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` |
+| `x-rabbitmq` | `RABBITMQ_HOST`, `RABBITMQ_PORT`, `RABBITMQ_USER`, `RABBITMQ_PASSWORD` |
+| `x-jvm` | `JAVA_OPTS`, by default a 256 MB heap and SerialGC |
 
-A service merges what it needs: `environment: { <<: [*jvm, *eureka, *postgres, *rabbitmq], SPRING_DATASOURCE_URL: ... }`. A new service copies one of the existing blocks and adds its own build `args: MODULE: <Name>`.
+A service merges what it needs: `environment: { <<: [*jvm, *eureka, *postgres, *rabbitmq], ... }`. A new service copies one of the existing blocks and adds its own build `args: MODULE: <Name>`.
+
+## Environment files
+
+Every value that differs between environments is a `${NAME:-default}` variable in both files, and the default is the local value. Without an env file compose runs the local stack; with one it runs that environment:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.services.yml up -d --build                       # local defaults
+docker compose --env-file env.local -f docker-compose.yml -f docker-compose.services.yml up -d --build  # local, with personal keys
+docker compose --env-file env.prod  -f docker-compose.yml -f docker-compose.services.yml up -d --build  # production
+```
+
+`env.local`, `env.test` and `env.prod` are git-ignored. The variables are listed in [environment-variables](environment-variables.md); addresses in them are as the containers see each other (`postgres`, not `localhost`). The env file only feeds the `${...}` in the compose files; each container gets exactly the variables its `environment:` lists, not the whole file.
 
 The `x-jvm` limits exist so the whole stack fits on a laptop. They are **not** production settings; a real deployment sets `JAVA_OPTS` per service from the outside.
 
 ## Dependencies and health
 
-Infrastructure services declare `healthcheck`s (`pg_isready`, `rabbitmq-diagnostics ping`, `mc ready`, Mailpit `readyz`). Services use `depends_on` with `condition: service_healthy` for PostgreSQL, RabbitMQ and Mailpit, `service_completed_successfully` for `minio-init` (Admin-API needs the bucket to exist), and plain `service_started` for `discovery` (it has no healthcheck; Eureka clients retry registration by themselves).
+Infrastructure services declare `healthcheck`s (`pg_isready`, `rabbitmq-diagnostics ping`, `mc ready`, Mailpit `readyz`). Services use `depends_on` with `condition: service_healthy` for PostgreSQL and Mailpit, `service_completed_successfully` for `rabbitmq-init` (the queues must exist before a listener starts; it waits for RabbitMQ to be healthy itself) and for `minio-init` (Admin-API needs the bucket to exist), and plain `service_started` for `discovery` (it has no healthcheck; Eureka clients retry registration by themselves).
 
 Keycloak depends on `postgres` only; it creates its own schema in the `keycloak` database on first start.
 

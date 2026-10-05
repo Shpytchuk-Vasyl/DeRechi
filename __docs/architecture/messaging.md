@@ -6,10 +6,10 @@ and everything else goes through a queue.
 
 ## Topology
 
-The exchanges, queues and bindings are not declared by the applications. They are loaded
-from `docker/rabbitmq/definitions.json` when the broker starts, so the broker is the source
-of truth and a service that starts before the broker has finished importing simply retries
-its connection. Changing the topology means editing that file and recreating the container.
+The exchanges, queues and bindings are not declared by the applications. They come from
+`docker/rabbitmq/definitions.json`, which the one-shot `rabbitmq-init` container imports over
+the management API after every broker start; the services in compose wait for it to finish.
+Changing the topology means editing that file and running `docker compose up -d` again.
 
 | Exchange (topic) | Queue | Binding key | Dead-letter exchange | DLQ |
 |---|---|---|---|---|
@@ -108,11 +108,11 @@ hands NotifyHub `<event key>:<CHANNEL>`, NotifyHub keeps a one-hour window
 
 ## Local development
 
-`docker compose up -d rabbitmq` is enough; the definitions file is mounted read-only into
-the container. The import is additive and happens on an empty volume only: a new queue or
-binding needs `docker compose down -v rabbitmq && docker compose up -d rabbitmq`, and a binding
-that was *narrowed* (the items DLQ went from `#` to `item.*.created`) keeps its old pattern on
-an existing volume until the volume is recreated. Services connect to `localhost:5672` from `application.yaml`, and the
-container override sets `SPRING_RABBITMQ_HOST=rabbitmq`. There is no RabbitMQ in the test
+`docker compose up -d rabbitmq rabbitmq-init` is enough. The import runs on every `up` and is
+additive: a new queue or binding appears on an existing volume, but a binding that was
+*narrowed* (the items DLQ went from `#` to `item.*.created`) keeps its old pattern until it is
+deleted in the UI or the volume is recreated, and a changed queue argument makes the import
+fail. Services connect to `${RABBITMQ_HOST:localhost}:5672` from `application.yaml`, and the
+container override sets `RABBITMQ_HOST=rabbitmq`. There is no RabbitMQ in the test
 suite: the aspect and the sender are tested with a mocked template, see
 [../conventions/testing.md](../conventions/testing.md).

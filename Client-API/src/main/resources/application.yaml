@@ -7,9 +7,9 @@ spring:
       enabled: true
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/derechi
-    username: derechi
-    password: derechi
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:derechi}
+    username: ${POSTGRES_USER:derechi}
+    password: ${POSTGRES_PASSWORD:derechi}
 
   jpa:
     open-in-view: false
@@ -17,10 +17,10 @@ spring:
       ddl-auto: none
 
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: derechi
-    password: derechi
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:derechi}
+    password: ${RABBITMQ_PASSWORD:derechi}
 
   graphql:
     schema:
@@ -45,7 +45,7 @@ management:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
   instance:
     prefer-ip-address: true
 

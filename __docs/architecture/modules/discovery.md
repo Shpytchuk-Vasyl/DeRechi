@@ -27,8 +27,8 @@ evicting instances, and the gateway would keep routing to services that are no l
 there. In a stable production cluster the setting would be reconsidered.
 
 Clients point at it with `eureka.client.service-url.defaultZone`, which is
-`http://localhost:8761/eureka` in every `application.yaml` and
-`EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery:8761/eureka` in Compose. Clients
+`${EUREKA_URL:http://localhost:8761/eureka}` in every `application.yaml` and
+`EUREKA_URL=http://discovery:8761/eureka` in Compose. Clients
 register with `prefer-ip-address: true` so that container hostnames do not leak into the
 registry.
 

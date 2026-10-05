@@ -41,10 +41,11 @@ a staging host, tags). Where something does not exist in the repository yet, it 
 1. **Keycloak realm.** If roles, clients or users changed, apply them first. The realm JSON is
    imported only on first start, so on an existing environment the change is made in the
    console or by re-import. See [Keycloak realm changes](keycloak-realm-changes.md).
-2. **RabbitMQ topology.** `definitions.json` is loaded only when the broker starts with an empty
-   volume. A new exchange, queue or binding on a running broker is created by hand in the
-   management UI or with `rabbitmqadmin`, matching the file. Do this before the consumer that
-   needs it is deployed, otherwise its `@RabbitListener` fails to start.
+2. **RabbitMQ topology.** `rabbitmq-init` imports `definitions.json` over the management API on
+   every `up`, and the services wait for it, so a new exchange, queue or binding reaches a
+   running broker with the deploy. The import only adds and updates: removing or narrowing a
+   binding is still done by hand in the management UI, and a changed queue argument makes the
+   import fail, after which the services do not start.
 3. **Database.** `./mvnw -pl DB-Postgres liquibase:update` against the environment's database.
 4. **Build images** for the services that changed (or all of them; the reactor build is cached):
 

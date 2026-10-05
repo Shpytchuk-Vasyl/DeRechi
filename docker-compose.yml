@@ -1,5 +1,7 @@
 #
-#   docker compose up
+#   docker compose up -d                          # local values: the defaults below
+#   docker compose --env-file env.prod up -d      # another environment: env.local, env.test, env.prod
+#
 #
 name: derechi
 
@@ -10,15 +12,15 @@ services:
     image: derechi/postgis:17-3.5-uk
     container_name: derechi-postgres
     environment:
-      POSTGRES_USER: derechi
-      POSTGRES_PASSWORD: derechi
-      POSTGRES_DB: derechi
+      POSTGRES_USER: ${POSTGRES_USER:-derechi}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-derechi}
+      POSTGRES_DB: ${POSTGRES_DB:-derechi}
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U derechi"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -27,9 +29,9 @@ services:
     image: dpage/pgadmin4:9
     container_name: derechi-pgadmin
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@derechi.local
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@derechi.local}
       PGADMIN_CONFIG_ALLOW_SPECIAL_EMAIL_DOMAINS: "['local']"
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
       PGADMIN_CONFIG_SERVER_MODE: "False"
       PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
       PGADMIN_SERVER_JSON_FILE: /pgadmin4/servers.json
@@ -47,15 +49,14 @@ services:
     image: rabbitmq:4.3.5-management
     container_name: derechi-rabbitmq
     environment:
-      RABBITMQ_DEFAULT_USER: derechi
-      RABBITMQ_DEFAULT_PASS: derechi
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-derechi}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-derechi}
     ports:
       - "5672:5672"     # AMQP
       - "15672:15672"   # Management UI -> http://localhost:15672
       - "15692:15692"   # Prometheus -> http://localhost:15692/metrics
     volumes:
       - ./docker/rabbitmq/rabbitmq.conf:/etc/rabbitmq/conf.d/20-derechi.conf:ro
-      - ./docker/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
       - rabbitdata:/var/lib/rabbitmq
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
@@ -63,23 +64,44 @@ services:
       timeout: 10s
       retries: 5
 
+  rabbitmq-init:
+    image: curlimages/curl:8.16.0
+    container_name: derechi-rabbitmq-init
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RABBITMQ_HOST: ${RABBITMQ_HOST:-rabbitmq}
+      RABBITMQ_USER: ${RABBITMQ_USER:-derechi}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-derechi}
+    volumes:
+      - ./docker/rabbitmq/definitions.json:/definitions.json:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        curl -sS --fail-with-body --retry 5 --retry-all-errors --retry-delay 2
+        -u "$$RABBITMQ_USER:$$RABBITMQ_PASSWORD"
+        -H 'Content-Type: application/json' -X POST --data @/definitions.json
+        "http://$$RABBITMQ_HOST:15672/api/definitions"
+        && echo 'rabbitmq topology ready'
+
   keycloak:
     image: quay.io/keycloak/keycloak:26.4
     container_name: derechi-keycloak
     command: ["start-dev", "--import-realm"]
     environment:
-      KC_BOOTSTRAP_ADMIN_USERNAME: admin
-      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
-      KC_DB_USERNAME: derechi
-      KC_DB_PASSWORD: derechi
+      KC_DB_URL: jdbc:postgresql://${POSTGRES_HOST:-postgres}:${POSTGRES_PORT:-5432}/keycloak
+      KC_DB_USERNAME: ${POSTGRES_USER:-derechi}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-derechi}
       KC_HEALTH_ENABLED: "true"
       KC_METRICS_ENABLED: "true"
       MALLOC_ARENA_MAX: "2"
-      JAVA_OPTS_APPEND: "-Xms64m -Xmx256m -XX:MaxMetaspaceSize=192m -XX:ReservedCodeCacheSize=64m -XX:MaxDirectMemorySize=64m -XX:-UseG1GC -XX:+UseSerialGC"
+      JAVA_OPTS_APPEND: ${KEYCLOAK_JAVA_OPTS:--Xms64m -Xmx256m -XX:MaxMetaspaceSize=192m -XX:ReservedCodeCacheSize=64m -XX:MaxDirectMemorySize=64m -XX:-UseG1GC -XX:+UseSerialGC}
     ports:
-      - "8180:8080"     # Console -> http://localhost:8180  (admin / admin)
+      - "8180:8080"     # Console -> http://localhost:8180  (KEYCLOAK_ADMIN, admin / admin locally)
     volumes:
       - ./docker/keycloak/realms:/opt/keycloak/data/import:ro
     depends_on:
@@ -93,6 +115,7 @@ services:
       - --config.file=/etc/prometheus/prometheus.yml
       - --storage.tsdb.retention.time=15d
       - --web.enable-lifecycle
+      - --web.enable-remote-write-receiver
     ports:
       - "9090:9090"     # http://localhost:9090
     volumes:
@@ -105,11 +128,11 @@ services:
     image: grafana/grafana:13.2.1
     container_name: derechi-grafana
     environment:
-      GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
       GF_USERS_ALLOW_SIGN_UP: "false"
     ports:
-      - "3000:3000"     # http://localhost:3000  (admin / admin)
+      - "3000:3000"     # http://localhost:3000  (admin / admin locally)
     volumes:
       - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
       - grafanadata:/var/lib/grafana
@@ -121,12 +144,12 @@ services:
     container_name: derechi-minio
     command: server /data --console-address ":9001"
     environment:
-      MINIO_ROOT_USER: derechi
-      MINIO_ROOT_PASSWORD: derechi123
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-derechi}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-derechi123}
       MINIO_PROMETHEUS_AUTH_TYPE: public
     ports:
       - "9000:9000"     # S3 API
-      - "9001:9001"     # Console -> http://localhost:9001  (derechi / derechi123)
+      - "9001:9001"     # Console -> http://localhost:9001  (derechi / derechi123 locally)
     volumes:
       - miniodata:/data
     healthcheck:
@@ -141,13 +164,17 @@ services:
     depends_on:
       minio:
         condition: service_healthy
-    entrypoint: >
-      /bin/sh -c "
-      mc alias set local http://minio:9000 derechi derechi123 &&
-      mc mb --ignore-existing local/derechi-files &&
-      mc anonymous set download local/derechi-files &&
-      echo 'buckets ready'
-      "
+    environment:
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:-http://minio:9000}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-derechi}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-derechi123}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        mc alias set local "$$MINIO_ENDPOINT" "$$MINIO_ACCESS_KEY" "$$MINIO_SECRET_KEY" &&
+        mc mb --ignore-existing local/derechi-files &&
+        mc anonymous set download local/derechi-files &&
+        echo 'buckets ready'
 
   mailpit:
     image: axllent/mailpit:v1.28
@@ -166,6 +193,24 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  # Load tests, only on demand:  docker compose run --rm k6
+  # Options and profiles: load-tests/README.md
+  k6:
+    image: grafana/k6:2.3.0
+    profiles: [load]
+    working_dir: /scripts
+    volumes:
+      - ./load-tests:/scripts
+    environment:
+      BASE_URL: http://host.docker.internal:8080
+      PROFILE: smoke
+      K6_OUT: experimental-prometheus-rw
+      K6_PROMETHEUS_RW_SERVER_URL: http://prometheus:9090/api/v1/write
+      K6_PROMETHEUS_RW_TREND_STATS: p(95),p(99),avg,max
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: run client-api.js
 
 volumes:
   pgdata:

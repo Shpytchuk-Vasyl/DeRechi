@@ -97,7 +97,8 @@ derechi:
 
 bound to `CountriesProperties`, which derives each country's currency from the JDK and
 refuses to start on an unknown code. In Compose the datasource, RabbitMQ and Eureka are
-overridden with `SPRING_DATASOURCE_URL`, `SPRING_RABBITMQ_HOST` and friends.
+set through `POSTGRES_*`, `RABBITMQ_*` and `EUREKA_URL`; see
+[environment variables](../../deployment/environment-variables.md).
 
 ## Tests
 

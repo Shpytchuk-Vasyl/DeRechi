@@ -28,7 +28,7 @@ Each module has its own copy of `EventType` and `EventTypeScanner`; they are del
 
 2. **Event class, consumer side.** `Worker/src/main/java/org/shpytchuk/worker/event/ItemArchivedEvent.java` with the same id and the same property names. The existing consumer-side events are mutable classes with Lombok (`@Getter @Setter @NoArgsConstructor`); a record works too as long as the property names match.
 
-3. **Broker topology.** `docker/rabbitmq/definitions.json` is loaded by the broker on first start. Decide whether the event fits an existing exchange (`derechi.items` for item lifecycle, `derechi.notifications` for anything that ends in a message to a person) or needs a new one. For a new consumer, add:
+3. **Broker topology.** `docker/rabbitmq/definitions.json` is imported into the broker by `rabbitmq-init` on every `docker compose up`. Decide whether the event fits an existing exchange (`derechi.items` for item lifecycle, `derechi.notifications` for anything that ends in a message to a person) or needs a new one. For a new consumer, add:
 
    - a quorum queue with `x-dead-letter-exchange` pointing at the matching `.dlx`;
    - its `.dlq` queue bound to the dead-letter exchange with `#`;

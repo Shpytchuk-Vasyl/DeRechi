@@ -9,7 +9,7 @@ nothing. If that ever changes, this page is where to start the discussion.
 
 Keycloak is the exception. It manages its own schema with its own migrations, so it lives in
 a separate database, `keycloak`, inside the same PostgreSQL container. The database is
-created by `docker/postgres/initdb/01-keycloak.sql` on the container's first start. The rule
+created by `docker/postgres/initdb/01-keycloak.sh` on the container's first start. The rule
 "the schema is owned by DB-Postgres" does not apply to it.
 
 ## Who owns the schema
@@ -87,7 +87,7 @@ reset a development database, drop and recreate it; the commands are in
 
 | Who | How | Config |
 |---|---|---|
-| `Client-API`, `Admin-API`, `Worker` | Hikari pool, JPA | `spring.datasource.*`, overridden in containers by `SPRING_DATASOURCE_URL` / `_USERNAME` / `_PASSWORD` |
+| `Client-API`, `Admin-API`, `Worker` | Hikari pool, JPA | `spring.datasource.*` from `POSTGRES_HOST` / `_PORT` / `_DB` / `_USER` / `_PASSWORD`, `localhost` and `derechi` by default |
 | `DB-Postgres` | JPA with `ddl-auto: validate` + Liquibase at startup | `src/main/resources/application.yaml` for Spring, `liquibase.properties` for the Maven plugin |
 | Keycloak | its own JDBC pool | `KC_DB_URL=jdbc:postgresql://postgres:5432/keycloak` |
 | `Notification`, `Getaway`, `Discovery` | no database | |

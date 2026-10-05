@@ -57,7 +57,7 @@ are allowed, all headers, the usual methods, one-hour max age.
 | `MINIO_BUCKET` | `derechi-files` | bucket name used in both file routes |
 | `MINIO_MAX_UPLOAD` | `5MB` | body cap on the presigned PUT |
 | `WEB_ORIGIN_PATTERNS` | localhost and LAN patterns | CORS allow list |
-| `EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE` | `http://localhost:8761/eureka` | registry |
+| `EUREKA_URL` | `http://localhost:8761/eureka` | registry |
 
 In Compose the gateway waits for `discovery` to start and for `minio` to be healthy.
 

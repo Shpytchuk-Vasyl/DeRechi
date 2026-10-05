@@ -4,27 +4,10 @@
   "product_name": "RabbitMQ",
   "product_version": "4.3.5",
   "vhosts": [
-    { "name": "/" }
-  ],
-  "users": [
     {
-      "name": "derechi",
-      "password_hash": "kI3GCqBcICMgkfrqLFEms6BesC5SI44UeRVXehAxAU8xh/R4",
-      "hashing_algorithm": "rabbit_password_hashing_sha256",
-      "tags": ["administrator"],
-      "limits": {}
+      "name": "/"
     }
   ],
-  "permissions": [
-    {
-      "user": "derechi",
-      "vhost": "/",
-      "configure": ".*",
-      "write": ".*",
-      "read": ".*"
-    }
-  ],
-  "topic_permissions": [],
   "parameters": [],
   "global_parameters": [],
   "policies": [],

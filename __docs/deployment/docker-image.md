@@ -60,7 +60,7 @@ By hand:
 
 ```bash
 docker build --build-arg MODULE=Admin-API -t derechi/admin-api .
-docker run --rm -p 8083:8083 -e SPRING_DATASOURCE_URL=... derechi/admin-api
+docker run --rm -p 8083:8083 -e POSTGRES_HOST=... -e POSTGRES_PASSWORD=... derechi/admin-api
 ```
 
 The build context is the repository root. `.dockerignore` keeps `**/target/`, `.git/`, `.idea/`, `docker/`, the compose files and the `Dockerfile` itself out of it. `Web-Client/` is not excluded yet, so its `node_modules/` is sent to the daemon on every build; adding `Web-Client/` to `.dockerignore` would make the context noticeably smaller.
@@ -72,6 +72,6 @@ The build context is the repository root. `.dockerignore` keeps `**/target/`, `.
 1. A small Alpine stage downloads the Ukrainian hunspell dictionary from the `dict_uk` project (version pinned by `DICT_UK_VERSION=6.8.5`) and renames the files to `uk_ua.dict` / `uk_ua.affix`, the names PostgreSQL's ispell template expects.
 2. The final stage is `postgis/postgis:17-3.5` with those files and `ukrainian.stop` copied into `tsearch_data/`, plus `initdb/` copied into `docker-entrypoint-initdb.d/`.
 
-`initdb/01-keycloak.sql` creates the `keycloak` database on the first start of an empty volume. Migration `001` in `DB-Postgres` then creates the `ukrainian` text-search configuration on top of the dictionary, which is why the stock `postgis/postgis` image cannot be used directly for a full database and why the test harness skips that changeset.
+`initdb/01-keycloak.sh` creates the `keycloak` database on the first start of an empty volume. Migration `001` in `DB-Postgres` then creates the `ukrainian` text-search configuration on top of the dictionary, which is why the stock `postgis/postgis` image cannot be used directly for a full database and why the test harness skips that changeset.
 
 The image is tagged `derechi/postgis:17-3.5-uk`. A commented line in the Dockerfile points to `imresamu/postgis` for macOS on Apple silicon, where the official image has no arm64 build.

@@ -37,7 +37,7 @@ Jackson is the `tools.jackson` 3.x line. The RabbitMQ converters are
 
 The compose file builds `derechi/postgis:17-3.5-uk` from `postgis/postgis:17-3.5`. The
 Dockerfile downloads the Ukrainian hunspell dictionary from `brown-uk/dict_uk`, copies it and
-`ukrainian.stop` into `tsearch_data`, and drops `initdb/01-keycloak.sql` into the init
+`ukrainian.stop` into `tsearch_data`, and drops `initdb/01-keycloak.sh` into the init
 directory so the `keycloak` database exists on first start. Migration 001 then creates the
 `ukrainian` text search configuration on top of that dictionary. Tests use the stock
 `postgis/postgis:17-3.5` image and skip the Ukrainian configuration, see

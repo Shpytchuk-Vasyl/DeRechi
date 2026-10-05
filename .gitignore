@@ -43,3 +43,10 @@ build/
 
 ### MCP ###
 .mcp.json
+
+### Load tests ###
+/load-tests/results/
+
+### Environments: credentials, never committed ###
+/env.test
+/env.prod

@@ -1,19 +1,26 @@
 # Configuration
 
-Each module has exactly one `src/main/resources/application.yaml`. It describes the **developer's machine**: everything points at `localhost`, infrastructure runs in Docker, services run in IDEA. Containers get the same file and override the few values that differ through environment variables. The full list of those variables is in [environment-variables](../deployment/environment-variables.md).
+Each module has exactly one `src/main/resources/application.yaml`. Its defaults describe the **developer's machine**: everything points at `localhost`, infrastructure runs in Docker, services run in IDEA. Every value that differs between environments is a placeholder, and containers set the variables. The full list of those variables is in [environment-variables](../deployment/environment-variables.md).
 
 ## Rule 1: `application.yaml` is the dev profile
 
-Keep `localhost:5432`, `localhost:5672`, `localhost:8761`, `localhost:8180` and `localhost:9000` in the YAML. Do not change them to container names to "make Docker work"; `docker-compose.services.yml` already overrides them:
+Keep `localhost` as the default of every address in the YAML. Do not change the defaults to container names to "make Docker work"; `docker-compose.services.yml` sets the variables:
 
 ```yaml
-environment:
-  SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/derechi
-  SPRING_RABBITMQ_HOST: rabbitmq
-  EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://discovery:8761/eureka
+# application.yaml, in every module that needs a database
+spring:
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:derechi}
+    username: ${POSTGRES_USER:derechi}
+    password: ${POSTGRES_PASSWORD:derechi}
+
+# docker-compose.services.yml
+x-postgres: &postgres
+  POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-derechi}
 ```
 
-Spring's relaxed binding maps `SPRING_DATASOURCE_URL` to `spring.datasource.url`, so any Spring property can be overridden this way without touching the YAML. Values that are not Spring properties (`KEYCLOAK_URI`, `MINIO_ENDPOINT`, `NOTIFY_EMAIL_HOST`) are referenced explicitly with a placeholder.
+PostgreSQL, RabbitMQ and Eureka use the same variable names in every module (`POSTGRES_*`, `RABBITMQ_*`, `EUREKA_URL`), and the PostgreSQL and RabbitMQ containers are started with the same ones, so a credential is set in one place for both sides. Relaxed binding still works on top (`SPRING_DATASOURCE_URL` beats the YAML), but compose does not use it: set the variable, not the property.
 
 ## Rule 2: placeholders carry the dev default
 
@@ -31,7 +38,11 @@ notify:
 
 The default is what IDEA uses; compose sets the variable. Never leave a placeholder without a default unless the application genuinely cannot start without it, because every developer would then have to set it.
 
-Existing placeholders: `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`, `MINIO_ENDPOINT`, `MINIO_PUBLIC_URL`, `GOOGLE_MAPS_API_KEY`, `KEYCLOAK_URI`, `KEYCLOAK_PUBLIC_URI` (Admin-API); `KEYCLOAK_URI`, `MINIO_URI`, `MINIO_BUCKET`, `MINIO_MAX_UPLOAD`, `WEB_ORIGIN_PATTERNS` (Getaway); `NOTIFY_EMAIL_HOST`, `NOTIFY_EMAIL_PORT`, `NOTIFY_EMAIL_USERNAME`, `NOTIFY_EMAIL_PASSWORD` (Notification).
+The two syntaxes differ by one character. Spring puts the default after a colon, `${NAME:default}`; compose after a colon and a dash, `${NAME:-default}`. Written the compose way in a YAML file, `${NAME:-x}` gives the default `-x`.
+
+In compose, the default of a variable is the **container** view of the local stack (`postgres`, `rabbitmq`, `discovery`), and it must equal the YAML default wherever the two views agree. Never give compose an empty default for a value the YAML defaults to something else: an empty string is a value, and it replaces the YAML default. When a variable must reach the container only if it is set, list it without a value (`GOOGLE_MAPS_API_KEY:` in `admin-api`).
+
+The placeholders of each module are listed in [environment-variables](../deployment/environment-variables.md).
 
 ## Rule 3: profiles only when a placeholder is not enough
 
@@ -65,7 +76,9 @@ A new service exposes `/actuator/prometheus` (it gets actuator and the Prometheu
 
 ## Rule 7: no secrets in the repository
 
-Dev credentials for local Docker containers (`derechi`/`derechi`, `admin`/`admin`) are fine in YAML and compose; they never leave the developer's machine. Anything that is a real credential for an external service goes into an environment variable without a committed default.
+Dev credentials for local Docker containers (`derechi`/`derechi`, `admin`/`admin`) are fine as defaults in YAML and compose; they never leave the developer's machine. Anything that is a real credential for an external service goes into an environment variable without a committed default.
+
+The values of an environment live in one file at the repository root, read by compose with `--env-file`: `env.local`, `env.test`, `env.prod`. All three are git-ignored, because they hold that environment's credentials; the variable list they follow is in [environment-variables](../deployment/environment-variables.md).
 
 Known issue: `Admin-API/src/main/resources/application.yaml` ships a Google Maps API key as the default of `GOOGLE_MAPS_API_KEY`. It should be rotated and the default removed so the key is supplied only through the environment. Until that is done, do not copy the pattern.
 

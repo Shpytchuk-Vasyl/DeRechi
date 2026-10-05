@@ -153,5 +153,5 @@ docker compose up -d
 ./mvnw -pl DB-Postgres liquibase:update
 ```
 
-`down -v` is the only way to get `definitions.json` and the realm JSON re-imported, since
-both load only into an empty volume.
+`down -v` is the only way to get the realm JSON re-imported, since it loads only into an
+empty volume. `definitions.json` is imported again on every `up` by `rabbitmq-init`.

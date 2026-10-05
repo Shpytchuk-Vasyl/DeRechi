@@ -19,7 +19,7 @@ Maven itself is not required; use the wrapper in the repository root (`./mvnw` o
 docker compose up -d
 ```
 
-This builds the custom PostGIS image on first run (it downloads the Ukrainian hunspell dictionary), then starts PostgreSQL, RabbitMQ, Keycloak, MinIO (plus the `minio-init` job that creates the `derechi-files` bucket), Mailpit, pgAdmin, Prometheus and Grafana. Wait until `docker compose ps` shows `healthy` for postgres, rabbitmq, minio and mailpit. Keycloak takes the longest; it is ready when `http://localhost:8180` answers.
+This builds the custom PostGIS image on first run (it downloads the Ukrainian hunspell dictionary), then starts PostgreSQL, RabbitMQ, Keycloak, MinIO (plus the `minio-init` job that creates the `derechi-files` bucket and the `rabbitmq-init` job that imports the queues), Mailpit, pgAdmin, Prometheus and Grafana. Wait until `docker compose ps` shows `healthy` for postgres, rabbitmq, minio and mailpit. Keycloak takes the longest; it is ready when `http://localhost:8180` answers.
 
 ## 2. Create the schema
 
@@ -87,6 +87,12 @@ It calls `Client-API` through the Gateway (`GRAPHQL_URL`) and loads images from 
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.services.yml up -d --build
+```
+
+With personal keys (the Fourthwall API user, a Google Maps key) in `env.local`, pass it to compose:
+
+```bash
+docker compose --env-file env.local -f docker-compose.yml -f docker-compose.services.yml up -d --build
 ```
 
 Builds all service images and runs them in the same project. Use it to verify a change in a production-like topology (container names, no `localhost`); for daily work it is slower than running from IDEA. Details in [docker-compose](docker-compose.md).

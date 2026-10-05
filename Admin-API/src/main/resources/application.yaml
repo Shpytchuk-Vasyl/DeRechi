@@ -7,9 +7,9 @@ spring:
       enabled: true
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/derechi
-    username: derechi
-    password: derechi
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:derechi}
+    username: ${POSTGRES_USER:derechi}
+    password: ${POSTGRES_PASSWORD:derechi}
     hikari:
       connection-timeout: 30000
 
@@ -64,10 +64,10 @@ spring:
         path-style-access-enabled: true
 
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: derechi
-    password: derechi
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:derechi}
+    password: ${RABBITMQ_PASSWORD:derechi}
 
   thymeleaf:
     cache: true
@@ -125,7 +125,7 @@ management:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
   instance:
     prefer-ip-address: true
 
@@ -139,7 +139,7 @@ spring:
       client:
         provider:
           keycloak:
-            issuer-uri: http://localhost:8180/realms/derechi
+            issuer-uri: ${KEYCLOAK_PUBLIC_URI:http://localhost:8180}/realms/derechi
 
 ---
 spring:

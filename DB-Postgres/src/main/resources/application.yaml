@@ -3,9 +3,9 @@ spring:
     name: DB-Postgres
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/derechi
-    username: derechi
-    password: derechi
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:derechi}
+    username: ${POSTGRES_USER:derechi}
+    password: ${POSTGRES_PASSWORD:derechi}
 
   jpa:
     open-in-view: false

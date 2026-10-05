@@ -7,10 +7,10 @@ spring:
       enabled: true
 
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: derechi
-    password: derechi
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:derechi}
+    password: ${RABBITMQ_PASSWORD:derechi}
     listener:
       simple:
         default-requeue-rejected: false
@@ -37,7 +37,7 @@ notify:
       port: ${NOTIFY_EMAIL_PORT:1025}
       username: ${NOTIFY_EMAIL_USERNAME:}
       password: ${NOTIFY_EMAIL_PASSWORD:}
-      from: no-reply@derechi.local
+      from: ${NOTIFY_EMAIL_FROM:no-reply@derechi.local}
       from-name: DeRechi
       tls: false
 
@@ -56,6 +56,6 @@ management:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
   instance:
     prefer-ip-address: true

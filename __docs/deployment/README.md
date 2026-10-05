@@ -5,7 +5,7 @@ DeRechi runs in two modes. In **development mode** only the infrastructure (Post
 - [Local development](local-development.md) - prerequisites, first start, start order, URLs and dev users.
 - [Docker Compose](docker-compose.md) - the two compose files, why the second is an override, anchors, volumes, resetting data.
 - [Docker image](docker-image.md) - the shared two-stage `Dockerfile`, the `MODULE` build argument, the custom PostGIS image.
-- [Environment variables](environment-variables.md) - every variable a container reads, per service.
+- [Environment variables](environment-variables.md) - every variable a container reads, per service, and the `env.local` / `env.test` / `env.prod` files.
 - [Infrastructure](infrastructure.md) - ports, credentials and consoles of the supporting services.
 - [Keycloak](keycloak.md) - the realm file, clients, dev users, exporting changes.
 - [Monitoring](monitoring.md) - Prometheus scrape configs, Grafana, actuator endpoints.

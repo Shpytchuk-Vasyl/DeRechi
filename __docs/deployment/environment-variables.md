@@ -1,18 +1,71 @@
 # Environment variables
 
-Everything a container reads from its environment, per service. Two kinds exist:
+Every value that differs between environments is a variable. Each one has two defaults, because
+there are two places a service can run:
 
-- **Spring properties** mapped through relaxed binding (`SPRING_DATASOURCE_URL` is `spring.datasource.url`). Any Spring property can be set this way; the table lists the ones compose actually sets.
-- **Placeholders** referenced explicitly in `application.yaml` as `${NAME:default}`. The default is the dev value used when running from IDEA.
+- **YAML default** (`${NAME:default}` in `application.yaml`): what a service started from IDEA
+  uses. Addresses are `localhost`.
+- **Compose default** (`${NAME:-default}` in the compose files): what a container gets when no
+  env file is passed. Addresses are container names inside the compose network (`postgres`,
+  `rabbitmq`, `discovery`).
 
-Values in the "Compose" column are what `docker-compose.services.yml` sets in full mode. See [configuration](../conventions/configuration.md) for the rules behind this layout.
+Both defaults are the local values, so `docker compose up` and IDEA work without any file. The
+values of another environment come from an env file at the repository root:
 
-## Shared by every service
+| File | For | Committed |
+|---|---|---|
+| `env.local` | the local stack, with personal keys (Fourthwall API user) | no |
+| `env.test` | the test environment | no |
+| `env.prod` | production | no |
 
-| Variable | Default (IDEA) | Compose | Purpose |
-|---|---|---|---|
-| `JAVA_OPTS` | empty | `-Xms64m -Xmx256m ... -XX:+UseSerialGC` | JVM flags, from the `x-jvm` anchor; local-only sizing |
-| `EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE` | `http://localhost:8761/eureka` | `http://discovery:8761/eureka` | registry address (not set for Discovery itself) |
+```bash
+docker compose --env-file env.prod -f docker-compose.yml -f docker-compose.services.yml up -d --build
+```
+
+All three are git-ignored because they hold credentials, and all three list the same variables,
+the ones on this page. `env.test` and `env.prod` were created with random secrets; every
+`CHANGE_ME` in them (public addresses, SMTP, Fourthwall API user, Google Maps key) has to be
+filled in before the first start. The env file only feeds the `${...}` in the compose files;
+each container receives the variables its `environment:` lists, not the whole file. Services
+started from IDEA do not read these files.
+
+See [configuration](../conventions/configuration.md) for the rules behind this layout.
+
+## Set once, on an empty volume
+
+Some containers read their credentials only when their volume is initialised. Changing the
+variable later changes what the **services** send, not what the container accepts, and the two
+stop matching:
+
+| Variable | Read on | To change it on an existing volume |
+|---|---|---|
+| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` | first start of `pgdata` | `ALTER USER ... PASSWORD ...` in `psql`, then the env file |
+| `RABBITMQ_USER`, `RABBITMQ_PASSWORD` | first start of `rabbitdata` | `rabbitmqctl change_password`, then the env file |
+| `KEYCLOAK_ADMIN`, `KEYCLOAK_ADMIN_PASSWORD` | first start of Keycloak's database | in the Keycloak console |
+| `GRAFANA_ADMIN_USER`, `GRAFANA_ADMIN_PASSWORD` | first start of `grafanadata` | in Grafana |
+| `PGADMIN_DEFAULT_EMAIL`, `PGADMIN_DEFAULT_PASSWORD` | first start of `pgadmindata` | in pgAdmin |
+
+`MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` are read on every start. pgAdmin's
+`docker/pgadmin/servers.json` and `pgpass` carry the local `derechi` credentials; pgAdmin is a
+local tool.
+
+## Shared by the services
+
+| Variable | YAML default | Compose default | Read by | Purpose |
+|---|---|---|---|---|
+| `POSTGRES_HOST` | `localhost` | `postgres` | Client-API, Admin-API, Worker, DB-Postgres, Keycloak | database host |
+| `POSTGRES_PORT` | `5432` | `5432` | same | database port inside the network |
+| `POSTGRES_DB` | `derechi` | `derechi` | same, and the `postgres` container | application database |
+| `POSTGRES_USER` / `POSTGRES_PASSWORD` | `derechi` / `derechi` | same | same, and the `postgres` container | database credentials |
+| `RABBITMQ_HOST` | `localhost` | `rabbitmq` | Client-API, Admin-API, Worker, Notification, `rabbitmq-init` | broker host |
+| `RABBITMQ_PORT` | `5672` | `5672` | the services | AMQP port |
+| `RABBITMQ_USER` / `RABBITMQ_PASSWORD` | `derechi` / `derechi` | same | the services, `rabbitmq-init`, and the `rabbitmq` container | broker credentials |
+| `EUREKA_URL` | `http://localhost:8761/eureka` | `http://discovery:8761/eureka` | every service except Discovery | registry address |
+| `JAVA_OPTS` | empty | `-Xms64m -Xmx256m ... -XX:+UseSerialGC` | every service | JVM flags; the default is laptop sizing |
+
+`spring.datasource.*`, `spring.rabbitmq.*` and `eureka.client.service-url.defaultZone` are
+built from these in every `application.yaml`. Spring's relaxed binding still applies on top
+(`SPRING_DATASOURCE_URL` would beat the YAML), but nothing sets those any more.
 
 ## Discovery
 
@@ -20,76 +73,75 @@ Only `JAVA_OPTS`. Port 8761.
 
 ## Getaway
 
-| Variable | Default | Compose | Purpose |
+| Variable | YAML default | Compose default | Purpose |
 |---|---|---|---|
 | `KEYCLOAK_URI` | `http://localhost:8180` | `http://keycloak:8080` | target of the `keycloak` route (`/realms/**`, `/resources/**`) |
 | `MINIO_URI` | `http://localhost:9000` | `http://minio:9000` | target of the `files` (GET) and `files-upload` (PUT) routes |
 | `MINIO_BUCKET` | `derechi-files` | not set | bucket segment in the upload path and the `/files/**` rewrite |
 | `MINIO_MAX_UPLOAD` | `5MB` | not set | `RequestSize` filter on presigned uploads |
-| `WEB_ORIGIN_PATTERNS` | `http://localhost:[*],http://127.0.0.1:[*],http://192.168.*:[*],http://10.*:[*]` | not set | CORS `allowed-origin-patterns`; set it to the real web origin outside a LAN |
+| `WEB_ORIGIN_PATTERNS` | `http://localhost:[*],http://127.0.0.1:[*],http://192.168.*:[*],http://10.*:[*]` | same | CORS `allowed-origin-patterns`; the web client's real origin outside a LAN |
 
 ## Client-API
 
-| Variable | Default | Compose | Purpose |
+| Variable | YAML default | Compose default | Purpose |
 |---|---|---|---|
-| `SPRING_DATASOURCE_URL` | `jdbc:postgresql://localhost:5432/derechi` | `jdbc:postgresql://postgres:5432/derechi` | shared database |
-| `SPRING_DATASOURCE_USERNAME` / `SPRING_DATASOURCE_PASSWORD` | `derechi` / `derechi` | same | from the `x-postgres` anchor |
-| `SPRING_RABBITMQ_HOST` / `SPRING_RABBITMQ_PORT` | `localhost` / `5672` | `rabbitmq` / `5672` | from the `x-rabbitmq` anchor |
-| `SPRING_RABBITMQ_USERNAME` / `SPRING_RABBITMQ_PASSWORD` | `derechi` / `derechi` | same | |
-| `FOURTHWALL_SHOP_URL` | `https://derechi-shop.fourthwall.com` | `${FOURTHWALL_SHOP_URL:-https://derechi-shop.fourthwall.com}` | the shop whose checkout the unlock dialog opens |
-| `FOURTHWALL_API_USERNAME` / `FOURTHWALL_API_PASSWORD` | `dev-user` / `dev-password` | `${FOURTHWALL_API_USERNAME:-dev-user}` / `${FOURTHWALL_API_PASSWORD:-dev-password}` | the API user from Settings, For developers, Open API (basic auth); creates the per-response products. Real values never go into the repository |
-| `FOURTHWALL_WEBHOOK_SECRET` | `dev-secret` | `${FOURTHWALL_WEBHOOK_SECRET:-dev-secret}` | the secret of the `ORDER_PLACED` webhook; every webhook body is signed with it (`X-Fourthwall-Hmac-SHA256`) |
+| `POSTGRES_*`, `RABBITMQ_*`, `EUREKA_URL` | see above | see above | |
+| `FOURTHWALL_SHOP_URL` | `https://derechi-shop.fourthwall.com` | same | the shop whose checkout the unlock dialog opens |
+| `FOURTHWALL_API_USERNAME` / `FOURTHWALL_API_PASSWORD` | `dev-user` / `dev-password` | same | the API user from Settings, For developers, Open API (basic auth); creates the per-response products. The real values live in `env.local` / `env.prod`, never in the repository |
+| `FOURTHWALL_WEBHOOK_SECRET` | `dev-secret` | same | the secret of the `ORDER_PLACED` webhook; every webhook body is signed with it (`X-Fourthwall-Hmac-SHA256`). On a server it must equal the secret set in Fourthwall |
 
-Supported countries are not an environment variable; they are `derechi.countries.supported` in the YAML and must match Admin-API's list.
+Supported countries are not an environment variable; they are `derechi.countries.supported` in
+the YAML and must match Admin-API's list.
 
 ## Admin-API
 
-| Variable | Default | Compose | Purpose |
+| Variable | YAML default | Compose default | Purpose |
 |---|---|---|---|
-| `SPRING_DATASOURCE_*`, `SPRING_RABBITMQ_*` | as for Client-API | as for Client-API | |
-| `SPRING_PROFILES_ACTIVE` | none (`!docker` branch of the YAML applies) | `docker` | switches Keycloak from a single `issuer-uri` to split URIs |
-| `KEYCLOAK_URI` | `http://keycloak:8080` (only read under the `docker` profile) | `http://keycloak:8080` | token, JWKS and user-info endpoints, reached from inside the Docker network |
-| `KEYCLOAK_PUBLIC_URI` | `http://localhost:8180` | `${KEYCLOAK_PUBLIC_URI:-http://localhost:8180}` from the host environment | authorization endpoint the **browser** is redirected to |
-| `MINIO_ENDPOINT` | `http://localhost:9000` | `http://minio:9000` | S3 endpoint used to upload images |
-| `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` | `derechi` / `derechi123` | not set (defaults) | S3 credentials |
-| `MINIO_PUBLIC_URL` | `http://localhost:9000/derechi-files` | `${MINIO_PUBLIC_URL:-http://localhost:8080/files}` from the host environment | base of image URLs rendered in the admin UI; in full mode they go through the Gateway's `/files` route |
-| `GOOGLE_MAPS_API_KEY` | a committed dev key (known issue, see [configuration](../conventions/configuration.md#rule-7-no-secrets-in-the-repository)) | not set | Google Places widget in the item form |
-
-`KEYCLOAK_PUBLIC_URI` and `MINIO_PUBLIC_URL` are read from the **host** shell when compose starts, so to expose the stack on another machine run for example:
-
-```bash
-KEYCLOAK_PUBLIC_URI=http://192.168.1.10:8180 MINIO_PUBLIC_URL=http://192.168.1.10:8080/files \
-docker compose -f docker-compose.yml -f docker-compose.services.yml up -d
-```
+| `POSTGRES_*`, `RABBITMQ_*`, `EUREKA_URL` | see above | see above | |
+| `SPRING_PROFILES_ACTIVE` | none (`!docker` branch of the YAML) | `docker` (fixed, not a variable) | switches Keycloak from a single `issuer-uri` to split URIs |
+| `KEYCLOAK_URI` | `http://keycloak:8080` (read only under `docker`) | `http://keycloak:8080` | token, JWKS and user-info endpoints, reached from inside the network |
+| `KEYCLOAK_PUBLIC_URI` | `http://localhost:8180` | same | the address browsers reach Keycloak at: the authorization endpoint under `docker`, the issuer otherwise; also Keycloak's `KC_HOSTNAME` in full mode |
+| `MINIO_ENDPOINT` | `http://localhost:9000` | `http://minio:9000` | S3 endpoint used to upload images; also `minio-init`'s target |
+| `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` | `derechi` / `derechi123` | same | S3 credentials, and the `minio` container's root user |
+| `MINIO_PUBLIC_URL` | `http://localhost:9000/derechi-files` | `http://localhost:8080/files` | base of image URLs rendered in the admin UI; in full mode they go through the Gateway's `/files` route |
+| `GOOGLE_MAPS_API_KEY` | a committed dev key (known issue, see [configuration](../conventions/configuration.md#rule-7-no-secrets-in-the-repository)) | passed on only when the env file sets it | Google Places widget in the item form |
 
 ## Worker
 
-| Variable | Default | Compose | Purpose |
+| Variable | YAML default | Compose default | Purpose |
 |---|---|---|---|
-| `SPRING_DATASOURCE_*`, `SPRING_RABBITMQ_*` | as for Client-API | as for Client-API | |
+| `POSTGRES_*`, `RABBITMQ_*`, `EUREKA_URL` | see above | see above | |
+| `DERECHI_SITE_URL` | `http://localhost:3000` | same | public address of the web client, used for the links in claim messages |
 
-The queue names `worker.items`, `worker.claims` and `worker.archive` are `derechi.items.queue`, `derechi.claims.queue` and `derechi.archive.queue` in the YAML, not environment variables. `DERECHI_SITE_URL` (default `http://localhost:3000`) is the public address of the web client, used for the links in claim messages.
+The queue names `worker.items`, `worker.claims` and `worker.archive` are `derechi.items.queue`,
+`derechi.claims.queue` and `derechi.archive.queue` in the YAML, not environment variables.
 
 ## Notification
 
-| Variable | Default | Compose | Purpose |
+| Variable | YAML default | Compose default | Purpose |
 |---|---|---|---|
-| `SPRING_RABBITMQ_*` | as for Client-API | as for Client-API | no database access |
+| `RABBITMQ_*`, `EUREKA_URL` | see above | see above | no database access |
 | `NOTIFY_EMAIL_HOST` | `localhost` | `mailpit` | SMTP host for the e-mail channel |
-| `NOTIFY_EMAIL_PORT` | `1025` | not set | SMTP port |
-| `NOTIFY_EMAIL_USERNAME` / `NOTIFY_EMAIL_PASSWORD` | empty | not set | SMTP auth; Mailpit accepts anything |
+| `NOTIFY_EMAIL_PORT` | `1025` | `1025` | SMTP port |
+| `NOTIFY_EMAIL_USERNAME` / `NOTIFY_EMAIL_PASSWORD` | empty | empty | SMTP auth; Mailpit accepts anything |
+| `NOTIFY_EMAIL_FROM` | `no-reply@derechi.local` | same | sender address |
 
-The presence of `notify.channels.email.host` is what enables the channel in NotifyHub, so `NOTIFY_EMAIL_HOST` must not be set to an empty string; an empty value counts as "configured" and fails validation at startup. Other channels (Telegram bot token, SMS provider) are added as new placeholders when they are enabled; see [add-a-notification-channel](../extending/add-a-notification-channel.md).
+The presence of `notify.channels.email.host` is what enables the channel in NotifyHub, so
+`NOTIFY_EMAIL_HOST` must not be set to an empty string; an empty value counts as "configured"
+and fails validation at startup. Other channels (Telegram bot token, SMS provider) are added as
+new placeholders when they are enabled; see
+[add-a-notification-channel](../extending/add-a-notification-channel.md).
 
 ## Infrastructure containers
 
-Set in `docker-compose.yml`, not meant to be changed per environment without also changing the service defaults above:
-
-| Container | Variables |
+| Container | Reads |
 |---|---|
-| postgres | `POSTGRES_USER=derechi`, `POSTGRES_PASSWORD=derechi`, `POSTGRES_DB=derechi` |
-| rabbitmq | `RABBITMQ_DEFAULT_USER=derechi`, `RABBITMQ_DEFAULT_PASS=derechi` |
-| keycloak | `KC_BOOTSTRAP_ADMIN_USERNAME/PASSWORD=admin`, `KC_DB=postgres`, `KC_DB_URL=jdbc:postgresql://postgres:5432/keycloak`, `KC_DB_USERNAME/PASSWORD=derechi`, `KC_HEALTH_ENABLED`, `KC_METRICS_ENABLED`; full mode adds `KC_HOSTNAME=http://localhost:8180`, `KC_HOSTNAME_BACKCHANNEL_DYNAMIC=true` |
-| minio | `MINIO_ROOT_USER=derechi`, `MINIO_ROOT_PASSWORD=derechi123`, `MINIO_PROMETHEUS_AUTH_TYPE=public` |
-| grafana | `GF_SECURITY_ADMIN_USER/PASSWORD=admin`, `GF_USERS_ALLOW_SIGN_UP=false` |
-| mailpit | `MP_MAX_MESSAGES=500`, `MP_SMTP_AUTH_ACCEPT_ANY=true`, `MP_SMTP_AUTH_ALLOW_INSECURE=true` |
+| postgres | `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`; `initdb/01-keycloak.sh` creates the `keycloak` database owned by `POSTGRES_USER` |
+| rabbitmq | `RABBITMQ_USER`, `RABBITMQ_PASSWORD` as `RABBITMQ_DEFAULT_USER` / `_PASS` |
+| rabbitmq-init | `RABBITMQ_HOST`, `RABBITMQ_USER`, `RABBITMQ_PASSWORD`; imports `docker/rabbitmq/definitions.json` |
+| keycloak | `KEYCLOAK_ADMIN`, `KEYCLOAK_ADMIN_PASSWORD`, `KEYCLOAK_JAVA_OPTS`, and `POSTGRES_HOST` / `_PORT` / `_USER` / `_PASSWORD` for its `keycloak` database; full mode adds `KEYCLOAK_PUBLIC_URI` as `KC_HOSTNAME` |
+| minio | `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY` as the root user |
+| minio-init | `MINIO_ENDPOINT`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY` |
+| grafana | `GRAFANA_ADMIN_USER`, `GRAFANA_ADMIN_PASSWORD` |
+| pgadmin | `PGADMIN_DEFAULT_EMAIL`, `PGADMIN_DEFAULT_PASSWORD` |
+| mailpit | nothing environment-specific |

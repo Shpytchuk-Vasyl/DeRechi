@@ -171,8 +171,9 @@ prints the subject and channel at `DEBUG`.
 ### `@RabbitListener` fails: queue does not exist
 
 The queues are not declared by the services; they come from `docker/rabbitmq/definitions.json`,
-which RabbitMQ loads only into an empty volume. A new queue on a running broker has to be
-created by hand in the UI, or run `docker compose down -v` locally.
+which `rabbitmq-init` imports on every `docker compose up`. Run `docker compose up -d` (or
+`docker compose run --rm rabbitmq-init`). If the import itself fails,
+`docker compose logs rabbitmq-init` names the queue whose arguments no longer match.
 
 ## Gateway, discovery and monitoring
 

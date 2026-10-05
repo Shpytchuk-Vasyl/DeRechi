@@ -1,5 +1,9 @@
 #
 #   docker compose -f docker-compose.yml -f docker-compose.services.yml up -d --build
+#   docker compose --env-file env.prod -f docker-compose.yml -f docker-compose.services.yml up -d --build
+#
+# The defaults are the local values. Addresses are as the containers see each other inside
+# the compose network (postgres, rabbitmq, discovery), not localhost.
 #
 name: derechi
 
@@ -13,26 +17,28 @@ x-service-base: &service-base
       condition: service_started
 
 x-eureka: &eureka
-  EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://discovery:8761/eureka
+  EUREKA_URL: ${EUREKA_URL:-http://discovery:8761/eureka}
 
 x-postgres: &postgres
-  SPRING_DATASOURCE_USERNAME: derechi
-  SPRING_DATASOURCE_PASSWORD: derechi
+  POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
+  POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+  POSTGRES_DB: ${POSTGRES_DB:-derechi}
+  POSTGRES_USER: ${POSTGRES_USER:-derechi}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-derechi}
 
 x-rabbitmq: &rabbitmq
-  SPRING_RABBITMQ_HOST: rabbitmq
-  SPRING_RABBITMQ_PORT: 5672
-  SPRING_RABBITMQ_USERNAME: derechi
-  SPRING_RABBITMQ_PASSWORD: derechi
+  RABBITMQ_HOST: ${RABBITMQ_HOST:-rabbitmq}
+  RABBITMQ_PORT: ${RABBITMQ_PORT:-5672}
+  RABBITMQ_USER: ${RABBITMQ_USER:-derechi}
+  RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-derechi}
 
 x-jvm: &jvm
-#  only for local development
   JAVA_OPTS: >-
-    -Xms64m -Xmx256m
-    -XX:MaxMetaspaceSize=128m
+    ${JAVA_OPTS:--Xms64m -Xmx256m
+    -XX:MaxMetaspaceSize=192m
     -XX:ReservedCodeCacheSize=34m
     -XX:MaxDirectMemorySize=34m
-    -XX:-UseG1GC -XX:+UseSerialGC
+    -XX:-UseG1GC -XX:+UseSerialGC}
 
 services:
 
@@ -41,18 +47,19 @@ services:
       - --config.file=/etc/prometheus/prometheus-full.yml
       - --storage.tsdb.retention.time=15d
       - --web.enable-lifecycle
+      - --web.enable-remote-write-receiver
 
   keycloak:
     environment:
-      KC_BOOTSTRAP_ADMIN_USERNAME: admin
-      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
-      KC_DB_USERNAME: derechi
-      KC_DB_PASSWORD: derechi
+      KC_DB_URL: jdbc:postgresql://${POSTGRES_HOST:-postgres}:${POSTGRES_PORT:-5432}/keycloak
+      KC_DB_USERNAME: ${POSTGRES_USER:-derechi}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-derechi}
       KC_HEALTH_ENABLED: "true"
       KC_METRICS_ENABLED: "true"
-      KC_HOSTNAME: http://localhost:8180
+      KC_HOSTNAME: ${KEYCLOAK_PUBLIC_URI:-http://localhost:8180}
       KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
 
   discovery:
@@ -85,8 +92,9 @@ services:
         condition: service_healthy
     environment:
       <<: [*jvm, *eureka]
-      KEYCLOAK_URI: http://keycloak:8080
-      MINIO_URI: http://minio:9000
+      KEYCLOAK_URI: ${KEYCLOAK_URI:-http://keycloak:8080}
+      MINIO_URI: ${MINIO_URI:-http://minio:9000}
+      WEB_ORIGIN_PATTERNS: ${WEB_ORIGIN_PATTERNS:-http://localhost:[*],http://127.0.0.1:[*],http://192.168.*:[*],http://10.*:[*]}
 
   client-api:
     <<: *service-base
@@ -100,7 +108,6 @@ services:
       - "8082:8082"
     environment:
       <<: [*jvm, *eureka, *postgres, *rabbitmq]
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/derechi
       FOURTHWALL_SHOP_URL: ${FOURTHWALL_SHOP_URL:-https://derechi-shop.fourthwall.com}
       FOURTHWALL_API_USERNAME: ${FOURTHWALL_API_USERNAME:-dev-user}
       FOURTHWALL_API_PASSWORD: ${FOURTHWALL_API_PASSWORD:-dev-password}
@@ -110,8 +117,8 @@ services:
         condition: service_started
       postgres:
         condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
+      rabbitmq-init:
+        condition: service_completed_successfully
 
   admin-api:
     <<: *service-base
@@ -125,19 +132,21 @@ services:
       - "8083:8083"
     environment:
       <<: [*jvm, *eureka, *postgres, *rabbitmq]
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/derechi
       SPRING_PROFILES_ACTIVE: docker
-      KEYCLOAK_URI: http://keycloak:8080
+      KEYCLOAK_URI: ${KEYCLOAK_URI:-http://keycloak:8080}
       KEYCLOAK_PUBLIC_URI: ${KEYCLOAK_PUBLIC_URI:-http://localhost:8180}
-      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:-http://minio:9000}
       MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL:-http://localhost:8080/files}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-derechi}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-derechi123}
+      GOOGLE_MAPS_API_KEY:
     depends_on:
       discovery:
         condition: service_started
       postgres:
         condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
+      rabbitmq-init:
+        condition: service_completed_successfully
       minio-init:
         condition: service_completed_successfully
 
@@ -153,15 +162,14 @@ services:
       - "8085:8085"
     environment:
       <<: [*jvm, *eureka, *postgres, *rabbitmq]
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/derechi
-      DERECHI_SITE_URL: http://localhost:3000
+      DERECHI_SITE_URL: ${DERECHI_SITE_URL:-http://localhost:3000}
     depends_on:
       discovery:
         condition: service_started
       postgres:
         condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
+      rabbitmq-init:
+        condition: service_completed_successfully
 
   notification:
     <<: *service-base
@@ -175,11 +183,15 @@ services:
       - "8084:8084"
     environment:
       <<: [*jvm, *eureka, *rabbitmq]
-      NOTIFY_EMAIL_HOST: mailpit
+      NOTIFY_EMAIL_HOST: ${NOTIFY_EMAIL_HOST:-mailpit}
+      NOTIFY_EMAIL_PORT: ${NOTIFY_EMAIL_PORT:-1025}
+      NOTIFY_EMAIL_USERNAME: ${NOTIFY_EMAIL_USERNAME:-}
+      NOTIFY_EMAIL_PASSWORD: ${NOTIFY_EMAIL_PASSWORD:-}
+      NOTIFY_EMAIL_FROM: ${NOTIFY_EMAIL_FROM:-no-reply@derechi.local}
     depends_on:
       discovery:
         condition: service_started
-      rabbitmq:
-        condition: service_healthy
+      rabbitmq-init:
+        condition: service_completed_successfully
       mailpit:
         condition: service_healthy

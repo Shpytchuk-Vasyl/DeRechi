@@ -21,7 +21,7 @@ This is the Keycloak 26 syntax (`--users realm_file` puts the users into the sam
 
 ## Database
 
-Keycloak manages its own schema and lives in the separate `keycloak` database of the same PostgreSQL container (`KC_DB_URL=jdbc:postgresql://postgres:5432/keycloak`, created by `docker/postgres/initdb/01-keycloak.sql`). The rule that only `DB-Postgres` changes the schema does not apply to it; Keycloak migrates itself on upgrade.
+Keycloak manages its own schema and lives in the separate `keycloak` database of the same PostgreSQL container (`KC_DB_URL=jdbc:postgresql://postgres:5432/keycloak`, created by `docker/postgres/initdb/01-keycloak.sh`). The rule that only `DB-Postgres` changes the schema does not apply to it; Keycloak migrates itself on upgrade.
 
 ## Clients
 
