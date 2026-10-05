@@ -169,8 +169,10 @@ page falls back to the first jurisdiction and warns in the server log.
 `/terms` and `/privacy` read the viewer's country (cookie, then geo header) on the server, so
 only those two pages are dynamic. `?country=XX` overrides it: the consent line in the notice
 form links to the version for the country of the place being reported, since that is the
-market the notice is posted in. The texts are drafts for a lawyer, like the `[OPERATOR NAME]`
-placeholders they already contain.
+market the notice is posted in. The texts are drafts for a lawyer; the operator and contact
+email they name come from `LEGAL_CONTACT` in `src/content/legal/types.ts`. The privacy policy
+still carries two placeholders, `[EMAIL AND SMS PROVIDER, HOSTING: TO BE ADDED]` and
+`[SIMILAR FINDS NOTIFICATIONS: TO BE DESCRIBED]`, to be written once those are settled.
 
 ## Uploads
 

@@ -56,6 +56,8 @@ derechi:
     fallback: UA
   claims:
     exchange: derechi.items
+    unlock-limit: 1
+    unlock-window: P7D
   fourthwall:
     api-url: https://api.fourthwall.com/open-api/v1.0
     shop-url: ${FOURTHWALL_SHOP_URL:https://derechi-shop.fourthwall.com}

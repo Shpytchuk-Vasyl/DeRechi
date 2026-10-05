@@ -87,7 +87,7 @@ export function NoticeCard({ title, place, date, compensation, media }: NoticeCa
         ) : null}
       </div>
 
-      <Stack gap={1} className="p-3 text-start sm:p-4">
+      <Stack gap={1} className="p-3 pb-5 text-start sm:p-4 sm:pb-5">
         <Heading className="line-clamp-2 max-sm:text-base" level={3}>
           {title}
         </Heading>

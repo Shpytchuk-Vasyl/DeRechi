@@ -108,7 +108,7 @@ export default function ClaimUnlock({ unlock, onChange }: Props) {
     }
   }
 
-  const status = paid ? (
+  const paidStatus = (
     <div className="flex items-start gap-3.5">
       <Blob icon={<CircleCheck />} tone="mint" size="sm" />
       <div>
@@ -120,16 +120,18 @@ export default function ClaimUnlock({ unlock, onChange }: Props) {
         ) : null}
       </div>
     </div>
-  ) : (
-    <Button onClick={() => onOpenChange(true)}>
-      <Phone className="size-4" aria-hidden />
-      {t("button")}
-    </Button>
   )
 
   return (
     <div className={paid ? "mt-5 -ml-14.5" : "mt-5"}>
-      {status}
+      {paid ? (
+        paidStatus
+      ) : (
+        <Button onClick={() => onOpenChange(true)}>
+          <Phone className="size-4" aria-hidden />
+          {t("button")}
+        </Button>
+      )}
 
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent size="md">
@@ -138,7 +140,9 @@ export default function ClaimUnlock({ unlock, onChange }: Props) {
             <DialogDescription>{t("text")}</DialogDescription>
           </DialogHeader>
           <DialogBody className="flex flex-col gap-5" aria-live="polite">
-            {paid ?? (
+            {paid ? (
+              paidStatus
+            ) : (
               <>
                 <Text muted className="block leading-relaxed">
                   {t("support")}

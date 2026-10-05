@@ -34,6 +34,6 @@ export type Jurisdiction = {
 }
 
 export const LEGAL_CONTACT = {
-  operator: "[OPERATOR NAME]",
-  email: "[CONTACT EMAIL]",
+  operator: "DeRechi",
+  email: "derechi.support@gmail.com",
 }

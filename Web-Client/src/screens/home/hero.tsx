@@ -1,3 +1,4 @@
+import { Gift } from "lucide-react"
 import { getTranslations } from "next-intl/server"
 import { Card } from "@/components/pouf/card"
 import { Stack } from "@/components/pouf/layout"
@@ -35,9 +36,9 @@ export default async function HomeHero(props: React.ComponentProps<typeof Card>)
             <SafetyNote>
               {t.rich("safetyNote", { link: (chunks) => <SafetyLink>{chunks}</SafetyLink> })}
             </SafetyNote>
-            <Text size="sm" muted>
+            <SafetyNote icon={Gift} iconClassName="text-lost">
               {t("rewardNote")}
-            </Text>
+            </SafetyNote>
           </Stack>
         </Stack>
 

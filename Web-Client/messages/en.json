@@ -21,9 +21,9 @@
   },
   "home": {
     "heroTitle": "Lost it? Someone may have found it",
-    "heroText": "A board of lost and found notices. Describe what you lost, or look through what has been handed in. Free, and without an account.",
-    "rewardNote": "Whoever finds an item is entitled to a reward for returning it; the exact rule depends on the country.",
-    "safetyNote": "Contacts stay hidden and we never see your card. <link>How we protect you</link>",
+    "heroText": "A board of lost and found notices. Describe what you lost, or look through what has been handed in.",
+    "rewardNote": "Returning an item is a good deed, and sometimes it comes with a reward.",
+    "safetyNote": "Your contacts are hidden from strangers. <link>How we protect you</link>",
     "scrollCue": "How it works",
     "searchTitle": "Check whether it has already been found",
     "searchWhat": "What",
@@ -45,30 +45,26 @@
     "recentFoundError": "The latest found notices could not be loaded.",
     "recentLostError": "The latest lost notices could not be loaded.",
     "foundTitle": "Found something that isn't yours?",
-    "foundText": "Return it to its owner and let them thank you. Posting takes a minute, and your number stays partly hidden on the notice.",
-    "foundPoint1": "Posting is free",
-    "foundPoint2": "A finder may claim a reward",
-    "foundPoint3": "Contacts are shown only in part",
+    "foundText": "Post a notice about what you found. It's simple, and it lets the owner get their item back.",
+    "foundPoint1": "A minute to post",
+    "foundPoint2": "Your contacts are shown only in part",
+    "foundPoint3": "We'll text you as soon as someone recognises their item",
     "lostTitle": "Lost something of your own?",
-    "lostText": "Describe the item, mark the place and the date, and whoever picked something up there will see it.",
-    "lostPoint1": "A minute to post",
-    "lostPoint2": "No account needed",
-    "lostPoint3": "You can name a reward",
+    "lostText": "Post a notice about what you lost. Describe the item in general terms and add a photo if you have one.",
+    "lostPoint1": "Coming soon: we'll look for similar finds for you",
+    "lostPoint2": "A reward helps get your item back sooner",
+    "lostPoint3": "Your contacts are shown only in part",
     "benefitsTitle": "Why DeRechi",
-    "benefit1Title": "Free",
-    "benefit1Text": "Posting a notice and searching the board cost nothing.",
-    "benefit2Title": "No account",
-    "benefit2Text": "No sign-up, no password: just a way to reach you.",
-    "benefit3Title": "Contacts protected",
-    "benefit3Text": "The phone and email on a notice are partly hidden. Only someone who responded gets the full number, and nobody gets the email.",
-    "benefit4Title": "Five languages",
-    "benefit4Text": "Ukrainian, English, Polish, German and French.",
-    "benefit5Title": "Moderated",
-    "benefit5Text": "Notices go live at once. A moderator steps in only when needed, to fix or remove what does not belong here.",
-    "benefit6Title": "No ads",
-    "benefit6Text": "No banners anywhere, only notices written by people.",
-    "benefit7Title": "Safe payment",
-    "benefit7Text": "Only the payment provider sees your card. One person can get an author's number at most once a week, so contacts can't be collected in bulk.",
+    "benefit1Title": "Direct contact",
+    "benefit1Text": "Whoever responds leaves their contacts, and we pass them to the author of the notice by SMS or email.",
+    "benefit2Title": "Contacts protected",
+    "benefit2Text": "On a notice, the number is only partly visible and the email not at all. Only someone who responded gets the full number.",
+    "benefit3Title": "Spam protection",
+    "benefit3Text": "One person can get an author's number at most once a week, so your contacts don't end up on spam lists.",
+    "benefit4Title": "Moderated",
+    "benefit4Text": "Notices go live at once. A moderator reviews them and removes what does not belong here.",
+    "benefit5Title": "No account",
+    "benefit5Text": "No account or password needed: a way to reach you is enough.",
     "faqTitle": "Questions that come up",
     "faqQ1": "How do I contact the person who found it?",
     "faqA1": "Contacts on a notice are shown in part, to keep spam away. Press “It's mine, send my contacts” on the notice: we pass your phone and email to the finder by email and SMS, and they get back to you. The same works the other way round on a lost notice.",
@@ -192,14 +188,13 @@
     "doneFinder": "We passed your contacts to the finder. They'll get in touch.",
     "doneOwner": "We passed your contacts to the owner. They'll get in touch.",
     "repeated": "You already responded to this notice; the author has your contacts.",
-    "doneSafety": "Never pay in advance, and meet in a busy place. <link>Safety tips</link>",
     "orPost": "Or post your own notice:",
     "unlock": {
       "button": "Get the author's phone number",
       "title": "The author's phone number",
       "text": "We'll send the author's phone number by SMS and email to the contacts you gave in your response.",
       "support": "Your $1 payment helps keep DeRechi free for everyone. You can pay with Apple Pay, Google Pay or a bank card.",
-      "safety": "Only the payment provider sees your card details; we never receive them. We never send payment links by SMS or messenger.",
+      "safety": "We never send payment links by SMS or messenger.",
       "pay": "Continue to payment",
       "preparing": "Preparing the payment…",
       "unavailable": "Payments are busy right now. Try again in a minute.",
@@ -244,10 +239,6 @@
         "title": "Only the author sees your response",
         "text": "The contacts you leave in a response go only to the notice's author, by email and SMS. They never appear anywhere on the site."
       },
-      "card": {
-        "title": "Your card details never reach us",
-        "text": "Payments are taken by Fourthwall on its own page. We neither see nor store your card or wallet."
-      },
       "limit": {
         "title": "Numbers can't be collected in bulk",
         "text": "One person can get an author's number at most once a week, so your contacts don't end up on spam or scam-call lists."
@@ -265,42 +256,33 @@
         "text": "Contacts from responses are deleted after a year. Once the item is back, the notice goes to the archive and disappears from the site."
       }
     },
-    "tipsTitle": "How to return an item safely",
-    "tipsAllTitle": "For everyone",
-    "tipsLostTitle": "If you lost something",
-    "tipsFoundTitle": "If you found something",
-    "tips": {
-      "payOnSite": {
-        "title": "Pay only on the site",
-        "text": "The only payment on DeRechi is $1 for an author's number, made with the button on the notice page. We never send payment links by SMS, messenger or email."
+    "rulesTitle": "How to avoid scammers",
+    "rules": {
+      "prepay": {
+        "title": "Don't pay until the item is in your hands",
+        "text": "A scammer asks for money upfront “for delivery”, “for storage” or as a reward, then disappears. Pay only when you meet."
       },
       "codes": {
-        "title": "Never share codes",
-        "text": "Never tell anyone your SMS codes, CVV or PIN, even if the caller says they are from a bank, the police or DeRechi."
-      },
-      "meet": {
-        "title": "Meet in a busy place",
-        "text": "Choose daytime and a busy place: a café, a shopping centre or the entrance of a police station. You can bring someone along."
-      },
-      "noPrepay": {
-        "title": "Don't pay in advance",
-        "text": "Not for delivery and not as a reward until the item is in your hands. A reward is handed over at the meeting."
-      },
-      "proof": {
-        "title": "Ask for proof",
-        "text": "Someone who really found your item can easily send a photo of it next to a note with today's date, or describe a detail that isn't in the notice."
+        "title": "You don't need codes to receive money",
+        "text": "A card or account number is enough to send you a reward. Anyone asking for an SMS code, CVV, PIN, or to “follow a link to receive the payment” wants to drain your card."
       },
       "verify": {
-        "title": "Check it's the owner",
-        "text": "Ask them to describe what isn't visible in the photo: what's in the wallet, the keyring on the keys, the phone's lock screen."
+        "title": "Don't hand over or collect an item on trust",
+        "text": "Ask for a detail that isn't in the notice. And whoever really found your item can easily show a photo of it next to a note with today's date."
+      },
+      "meet": {
+        "title": "Meet in public, not at home",
+        "text": "Don't share your home address or invite anyone over. Better in daytime, at a café, a shopping centre or outside a police station."
       },
       "documents": {
-        "title": "Documents and cards need extra care",
-        "text": "Don't send photos of documents or cards. Return a bank card to its bank, and documents to the police or a lost-property office if the owner doesn't respond."
+        "title": "Don't send photos of documents or cards",
+        "text": "They are used to take out loans and break into accounts. Hand a found card to the bank and documents to the police."
+      },
+      "report": {
+        "title": "Spotted a scammer? Tell us",
+        "text": "Send the link to the notice to {email} and we'll take it down. Keep the messages: you'll need them for a police report."
       }
-    },
-    "troubleTitle": "If something goes wrong",
-    "troubleText": "If someone asks you to pay outside the site or you suspect fraud, contact the police and write to us at {email}: we'll take the suspicious notice down."
+    }
   },
   "category": {
     "DOCUMENTS": "Documents",

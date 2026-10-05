@@ -1,10 +1,20 @@
 import { cn } from "cn"
-import { ShieldCheck } from "lucide-react"
+import { type LucideIcon, ShieldCheck } from "lucide-react"
 import type { ReactNode } from "react"
 import { Link } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
 
-export function SafetyNote({ children, className }: { children: ReactNode; className?: string }) {
+export function SafetyNote({
+  children,
+  className,
+  icon: Icon = ShieldCheck,
+  iconClassName = "text-found",
+}: {
+  children: ReactNode
+  className?: string
+  icon?: LucideIcon
+  iconClassName?: string
+}) {
   return (
     <p
       className={cn(
@@ -12,7 +22,7 @@ export function SafetyNote({ children, className }: { children: ReactNode; class
         className,
       )}
     >
-      <ShieldCheck className="mt-0.5 size-4 flex-none text-mint" aria-hidden />
+      <Icon className={cn("mt-0.5 size-4 flex-none", iconClassName)} aria-hidden />
       <span>{children}</span>
     </p>
   )
@@ -28,7 +38,7 @@ export function SafetyLink({
   return (
     <Link
       href={paths.safety}
-      className="font-bold underline"
+      className="whitespace-nowrap font-bold underline"
       {...(newTab ? { target: "_blank", rel: "noopener" } : {})}
     >
       {children}

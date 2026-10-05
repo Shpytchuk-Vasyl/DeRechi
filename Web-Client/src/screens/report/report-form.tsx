@@ -154,7 +154,6 @@ export default function ReportForm({ kind, categories, maxUploadBytes, compact =
       >
         {compact ? null : <Tour id="report" />}
 
-        {/* Full page: the form sits on its own clay card; in the dialog the dialog is the card. */}
         <Shell className={cx("flex h-fit flex-col gap-5", compact && "min-h-0 flex-1")}>
           <StepIndicator
             steps={STEPS.map((it) => t(`steps.${it.label}`))}

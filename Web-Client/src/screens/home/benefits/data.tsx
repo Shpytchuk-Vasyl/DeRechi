@@ -1,15 +1,12 @@
-import { cx } from "class-variance-authority"
 import {
   ArrowRight,
-  Coins,
-  CreditCard,
+  CalendarClock,
   EyeOff,
-  Globe,
   KeyRound,
-  Lock,
-  Megaphone,
-  MegaphoneOff,
+  Mail,
+  MessageSquare,
   Phone,
+  Send,
   ShieldCheck,
   User,
   UserRoundX,
@@ -17,7 +14,6 @@ import {
 import { getTranslations } from "next-intl/server"
 import type { AutoTab } from "@/components/auto-tabs"
 import { Badge } from "@/components/pouf/media"
-import { SampleAmount } from "@/screens/home/sample-reward"
 
 export type Benefit = AutoTab
 
@@ -25,12 +21,11 @@ export async function getBenefits(): Promise<Benefit[]> {
   const t = await getTranslations("home")
 
   const claims: (Pick<Benefit, "icon" | "tone" | "panel"> & { number: number })[] = [
-    { number: 1, icon: <Coins />, tone: "yellow", panel: <FreePanel /> },
-    { number: 3, icon: <EyeOff />, tone: "pink", panel: <HiddenContactsPanel /> },
-    { number: 7, icon: <CreditCard />, tone: "mint", panel: <SafePaymentPanel /> },
-    { number: 2, icon: <UserRoundX />, tone: "blue", panel: <NoAccountPanel /> },
+    { number: 1, icon: <Send />, tone: "mint", panel: <DirectContactPanel /> },
+    { number: 2, icon: <EyeOff />, tone: "pink", panel: <HiddenContactsPanel /> },
+    { number: 3, icon: <CalendarClock />, tone: "yellow", panel: <WeeklyLimitPanel /> },
     {
-      number: 5,
+      number: 4,
       icon: <ShieldCheck />,
       tone: "purple",
       panel: (
@@ -40,8 +35,7 @@ export async function getBenefits(): Promise<Benefit[]> {
         />
       ),
     },
-    { number: 6, icon: <MegaphoneOff />, tone: "orange", panel: <NoAdsPanel /> },
-    { number: 4, icon: <Globe />, tone: "blue", panel: <LanguagesPanel /> },
+    { number: 5, icon: <UserRoundX />, tone: "blue", panel: <NoAccountPanel /> },
   ]
 
   return claims.map(({ number, ...claim }) => ({
@@ -52,11 +46,24 @@ export async function getBenefits(): Promise<Benefit[]> {
   }))
 }
 
-function FreePanel() {
+function DirectContactPanel() {
   return (
-    <span className="font-black text-6xl tracking-tight">
-      <SampleAmount amount={0} />
-    </span>
+    <div className="flex items-center gap-3 text-ink">
+      <span className="cushion-field grid size-14 flex-none place-items-center rounded-pill bg-bg">
+        <User className="size-6" aria-hidden />
+      </span>
+      <ArrowRight className="size-5 flex-none" aria-hidden />
+      <div className="flex w-36 flex-col gap-2">
+        <MockField>
+          <MessageSquare className="size-4 text-muted-foreground" aria-hidden />
+          <span className="h-2 w-16 rounded-pill bg-border" />
+        </MockField>
+        <MockField>
+          <Mail className="size-4 text-muted-foreground" aria-hidden />
+          <span className="h-2 w-20 rounded-pill bg-border" />
+        </MockField>
+      </div>
+    </div>
   )
 }
 
@@ -86,32 +93,11 @@ function HiddenContactsPanel() {
   )
 }
 
-function SafePaymentPanel() {
+function WeeklyLimitPanel() {
   return (
-    <div className="cushion-field flex items-center gap-2 rounded-control bg-bg px-4 py-2.5 font-black text-ink">
-      <CreditCard className="size-4" aria-hidden />
-      <span className="text-muted-foreground tabular-nums tracking-[2px]">•••• ••••</span>
-      <Lock className="size-4 text-mint" aria-hidden />
-    </div>
-  )
-}
-
-const LANGUAGE_CHIPS = [
-  { code: "EN", tilt: "-rotate-6" },
-  { code: "УК", tilt: "rotate-3" },
-  { code: "PL", tilt: "-rotate-2" },
-  { code: "DE", tilt: "rotate-6" },
-  { code: "FR", tilt: "-rotate-3" },
-]
-
-function LanguagesPanel() {
-  return (
-    <div className="flex flex-wrap justify-center gap-2">
-      {LANGUAGE_CHIPS.map((chip, index) => (
-        <span key={chip.code} className={cx("rounded-pill shadow-ink/20 shadow-md", chip.tilt)}>
-          <Badge tone={index % 2 ? "mint" : "blue"}>{chip.code}</Badge>
-        </span>
-      ))}
+    <div className="flex items-center gap-3 font-black text-ink">
+      <CalendarClock className="size-12" aria-hidden />
+      <span className="text-6xl tracking-tight">1×</span>
     </div>
   )
 }
@@ -122,15 +108,6 @@ function ModeratedPanel({ published, moderated }: { published: string; moderated
       <Badge tone="up">{published}</Badge>
       <ArrowRight className="size-5 text-ink" aria-hidden />
       <Badge tone="info">{moderated}</Badge>
-    </div>
-  )
-}
-
-function NoAdsPanel() {
-  return (
-    <div className="relative grid h-20 w-44 place-items-center rounded-control border-2 border-purple/40 border-dashed text-muted-foreground">
-      <Megaphone className="size-7" aria-hidden />
-      <Strike />
     </div>
   )
 }

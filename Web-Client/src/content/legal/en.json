@@ -2,12 +2,12 @@
   "updated": "Last updated",
   "terms": {
     "title": "Terms of use",
-    "summary": "The rules DeRechi runs by: a board of lost and found notices that is free to use, funded by the optional $1 payment for a notice author's phone number. By posting a notice you agree to them.",
+    "summary": "The rules for using DeRechi, a board of lost and found notices. By posting a notice or responding to someone else's, you agree to them.",
     "sections": [
       {
         "heading": "1. What DeRechi is",
         "body": [
-          "DeRechi helps people who lost something and people who found something find each other. Posting and browsing notices is free, needs no registration and shows no ads; the only paid step is getting a notice author's phone number for $1, which is how the service is funded (see section 4). The site is run by {operator}.",
+          "DeRechi helps people who lost something and people who found something find each other. Posting and browsing notices is free, needs no registration and shows no ads. The site is run by {operator}.",
           "We don't keep items, don't act as a go-between in handing them over and take no commission. The owner and the finder arrange the return themselves."
         ]
       },
@@ -43,53 +43,60 @@
       {
         "heading": "4. Contacts",
         "body": [
-          "Your phone and email are only partly visible on a notice, to keep you safe from spam. Your full phone number is sent only to someone who has responded to your notice and paid for it (see below); your email is never sent to anyone.",
-          "Anyone who recognises the item can send the notice's author their own contacts through the site. We pass them on by email and SMS and never show them publicly. By sending your contacts you confirm that they are your own and that you contact the author about this item only.",
-          "Getting the author's phone number is a paid feature that costs $1. You pay on a Fourthwall checkout page that opens in a new tab; your card or wallet details go to Fourthwall, never to us. Once Fourthwall confirms the payment to us, we send the author's phone number by SMS and email to the contacts you gave in your response. The author's email is not sent. One person can get an author's phone number at most once a week. The payment is not refunded once the phone number has been sent."
+          "Your phone and email are only partly visible on a notice, to keep you safe from spam. Your full phone number goes only to someone who has responded to your notice (see section 5); your email is never passed on to anyone.",
+          "Anyone who recognises the item can send the notice's author their own contacts through the site. We pass them on by email and SMS and never show them publicly. By sending your contacts you confirm that they are your own and that you contact the author about this item only."
         ]
       },
       {
-        "heading": "5. Rights to content",
+        "heading": "5. The author's phone number",
+        "body": [
+          "A notice author's phone number is provided only to a person who has responded to that notice and left their own contacts. We pass those contacts to the author before the number is sent. The author therefore already has the contacts of everyone who may receive their number, and people who have not left their contacts cannot receive it.",
+          "Getting the number costs $1; it is the only paid feature of DeRechi and the way the service is funded. You pay on a Fourthwall checkout page that opens in a new tab; your card or wallet details go to Fourthwall, never to us. Once Fourthwall confirms the payment, we send the number by SMS and email to the contacts you gave in your response. The author's email is not sent.",
+          "One person can get an author's number at most once a week. The payment is not refunded once the number has been sent."
+        ]
+      },
+      {
+        "heading": "6. Rights to content",
         "body": [
           "The text and photo of your notice remain yours. By publishing them you let us show them on the site free of charge for as long as the notice is published.",
           "The DeRechi name, the site's design and its code belong to the operator."
         ]
       },
       {
-        "heading": "6. Finds and rewards",
+        "heading": "7. Finds and rewards",
         "body": [
           "{findersLaw}",
           "A reward stated in a notice is the author's offer. DeRechi doesn't guarantee it is paid and takes no part in any payment."
         ]
       },
       {
-        "heading": "7. Safety",
+        "heading": "8. Safety",
         "body": [
-          "Before handing an item over, ask the owner to describe details the photo doesn't show. Meet in busy places.",
-          "Never pay in advance to someone who says they found your thing, and never give anyone your card details or SMS codes. The only payment on DeRechi is $1 for an author's phone number, made on Fourthwall's checkout page; DeRechi never asks for card details, SMS codes or any other payment, and anyone who does is a scammer. In case of fraud, contact the police and let us know at {email}.",
+          "Tips on returning an item safely and avoiding scammers are collected on the Safety page. Never pay in advance to someone who says they found your item, and never give anyone your card details or SMS codes. In case of fraud, contact the police and let us know at {email}.",
           "DeRechi doesn't verify users' identity and isn't responsible for what they do when they meet."
         ]
       },
       {
-        "heading": "8. Changing and removing notices",
+        "heading": "9. Changing and removing notices",
         "body": [
-          "You can't edit a notice yourself yet. Once the item is back, close the notice with the link in the message we send after someone responds to it, or write to {email}. To correct a notice, also write to {email}.",
+          "You can't edit a notice yourself yet: to correct it, write to {email}.",
+          "After someone responds, we send the author and the respondent a reminder with a link to close the notice once the item is back. If nobody confirms the return, the notice is archived a week after the last response. You can also close a notice by writing to {email}.",
           "We may remove a notice that breaks these terms or the law, or strip personal data from it, without warning. To report a breach in someone else's notice, also write to {email}."
         ]
       },
       {
-        "heading": "9. Liability",
+        "heading": "10. Liability",
         "body": [
           "The service is provided “as is”. We don't guarantee that an item will be found and aren't responsible for the accuracy of notices: their authors are.",
           "We aren't responsible for interruptions, technical failures or loss of data caused by circumstances beyond our control."
         ]
       },
       {
-        "heading": "10. Disputes",
+        "heading": "11. Disputes",
         "body": ["{governingLaw}"]
       },
       {
-        "heading": "11. Changes to these terms",
+        "heading": "12. Changes to these terms",
         "body": [
           "We may update these terms. The date of the latest version is shown at the top of the page. By using the site after a change you accept the new version.",
           "Send questions about these terms to {email}."
@@ -144,7 +151,8 @@
             "to pass your contacts to the author of the notice you responded to and, once you have paid, to send you the author's phone number;",
             "to match a payment to your response and keep a record of the payments we receive;",
             "to remind both sides to close the notice once the item is back;",
-            "to protect the site from spam and abuse."
+            "to protect the site from spam and abuse;",
+            "[SIMILAR FINDS NOTIFICATIONS: TO BE DESCRIBED]"
           ],
           "The legal basis is your consent, which you give by posting a notice or by responding to one. Payment details are processed to fulfil the order you place on Fourthwall, that is, to send you the author's phone number."
         ]
@@ -160,9 +168,10 @@
         "heading": "6. Third-party services",
         "body": [
           [
-            "Google Maps Platform: address suggestions and looking up an address from coordinates in the notice form; what you type into the place field, and the coordinates, are sent to Google;",
+            "Google Maps Platform: the map, address suggestions and looking up an address from coordinates in the notice form; what you type into the place field, and the coordinates, are sent to Google;",
             "Vercel BotID: checks that the form is sent by a person, not a bot;",
-            "Fourthwall: takes the payment; your card or wallet details are processed by Fourthwall and its payment providers, and we receive the payer's email, name, amount and order number to match the payment to your response;"
+            "Fourthwall: takes the payment; your card or wallet details are processed by Fourthwall and its payment providers, and we receive the payer's email, name, amount and order number to match the payment to your response;",
+            "[EMAIL AND SMS PROVIDER, HOSTING: TO BE ADDED]"
           ],
           "These services process data under their own privacy policies, including in other countries. We don't sell your data or pass it to advertisers."
         ]
@@ -174,7 +183,8 @@
           [
             "the DERECHI_LOCALE cookie: remembers your language for a year;",
             "the DERECHI_COUNTRY cookie: remembers your country for a year, to show the right currency and legal texts;",
-            "DERECHI_CLAIM_* cookies: remember for 30 days that you have responded to a notice, together with that response's number, so the site can show whether the payment has arrived."
+            "DERECHI_CLAIM_* cookies: remember for 30 days that you have responded to a notice, together with that response's number, so the site can show whether the payment has arrived;",
+            "your browser's local storage: remembers which site tips you have already seen and the score of the mascot game; it holds no personal data."
           ],
           "There are no analytics or advertising cookies on the site."
         ]
@@ -182,7 +192,7 @@
       {
         "heading": "8. How long we keep data",
         "body": [
-          "A notice is kept until it is taken down. After that it moves to an archive and is no longer shown on the site.",
+          "A notice is kept until it is taken down. After that it moves to an archive and is no longer shown on the site. It is kept in the archive for one year and then deleted together with the author's contacts.",
           "Contacts sent in response to a notice are kept for one year from the response, whether the notice is still published or archived; after that they are deleted. A notice with responses is closed when either side confirms that the item is back, or about a week after the last response.",
           "The details of a Fourthwall order (email, name, amount, order number) are kept as a record of the payment we received; when the response it was matched to is deleted, the link to it is removed, and the record stays without any connection to a notice."
         ]

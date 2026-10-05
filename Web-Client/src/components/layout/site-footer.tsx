@@ -23,7 +23,6 @@ export async function SiteFooter() {
             links: [
               { label: t("lost"), href: paths.list("lost") },
               { label: t("found"), href: paths.list("found") },
-              { label: t("safety"), href: paths.safety },
             ],
           },
           {
@@ -31,6 +30,7 @@ export async function SiteFooter() {
             links: [
               { label: t("terms"), href: paths.terms },
               { label: t("privacy"), href: paths.privacy },
+              { label: t("safety"), href: paths.safety },
             ],
           },
         ]}

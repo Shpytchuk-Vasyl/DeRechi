@@ -21,9 +21,9 @@
   },
   "home": {
     "heroTitle": "Perdu ? Quelqu’un l’a peut-être trouvé",
-    "heroText": "Un tableau d'objets perdus et trouvés. Décrivez votre perte ou parcourez ce qui a été rapporté, gratuitement et sans compte.",
-    "rewardNote": "Celui qui trouve un objet a droit à une récompense pour l’avoir rendu ; la règle exacte dépend du pays.",
-    "safetyNote": "Vos coordonnées restent masquées et nous ne voyons jamais votre carte. <link>Comment nous vous protégeons</link>",
+    "heroText": "Un tableau d'objets perdus et trouvés. Décrivez votre perte ou parcourez ce qui a été rapporté.",
+    "rewardNote": "Rendre un objet est une bonne action, parfois même récompensée.",
+    "safetyNote": "Vos coordonnées sont masquées aux inconnus. <link>Comment nous vous protégeons</link>",
     "scrollCue": "Comment ça marche",
     "searchTitle": "Vérifiez s'il a déjà été trouvé",
     "searchWhat": "Quoi",
@@ -45,30 +45,26 @@
     "recentFoundError": "Impossible de charger les derniers objets trouvés.",
     "recentLostError": "Impossible de charger les derniers objets perdus.",
     "foundTitle": "Vous avez trouvé un objet qui n'est pas à vous ?",
-    "foundText": "Rendez-le à son propriétaire et laissez-vous remercier. Publier prend une minute, et votre numéro reste partiellement masqué sur l'annonce.",
-    "foundPoint1": "Publication gratuite",
-    "foundPoint2": "Droit à une récompense",
-    "foundPoint3": "Coordonnées affichées en partie",
+    "foundText": "Publiez une annonce pour votre trouvaille. C'est simple, et le propriétaire pourra récupérer son objet.",
+    "foundPoint1": "Publié en une minute",
+    "foundPoint2": "Vos coordonnées ne sont visibles qu'en partie",
+    "foundPoint3": "Nous vous enverrons un SMS dès que quelqu'un reconnaîtra son objet",
     "lostTitle": "Vous avez perdu le vôtre ?",
-    "lostText": "Décrivez l'objet, indiquez le lieu et la date, et celui qui a ramassé quelque chose là-bas le verra.",
-    "lostPoint1": "Une minute pour publier",
-    "lostPoint2": "Sans compte",
-    "lostPoint3": "Vous pouvez annoncer une récompense",
+    "lostText": "Publiez une annonce de perte. Décrivez l'objet dans les grandes lignes et ajoutez une photo si vous en avez une.",
+    "lostPoint1": "Bientôt : nous chercherons pour vous les trouvailles similaires",
+    "lostPoint2": "Une récompense aide à récupérer l'objet plus vite",
+    "lostPoint3": "Vos coordonnées ne sont visibles qu'en partie",
     "benefitsTitle": "Pourquoi DeRechi",
-    "benefit1Title": "Gratuit",
-    "benefit1Text": "Publier une annonce et parcourir le tableau ne coûtent rien.",
-    "benefit2Title": "Sans compte",
-    "benefit2Text": "Ni inscription ni mot de passe : juste un moyen de vous joindre.",
-    "benefit3Title": "Coordonnées protégées",
-    "benefit3Text": "Le téléphone et l’e-mail d’une annonce sont en partie masqués. Seule la personne qui a répondu obtient le numéro complet, et l’e-mail n’est envoyé à personne.",
-    "benefit4Title": "Cinq langues",
-    "benefit4Text": "Ukrainien, anglais, polonais, allemand et français.",
-    "benefit5Title": "Modération",
-    "benefit5Text": "Une annonce est publiée immédiatement. Un modérateur n'intervient qu'en cas de besoin, pour corriger ou retirer ce qui n'a pas sa place ici.",
-    "benefit6Title": "Sans publicité",
-    "benefit6Text": "Aucune bannière, seulement des annonces écrites par des gens.",
-    "benefit7Title": "Paiement sûr",
-    "benefit7Text": "Seul le prestataire de paiement voit votre carte. Une même personne ne peut obtenir un numéro qu’une fois par semaine : impossible de collecter les coordonnées en masse.",
+    "benefit1Title": "Contact direct",
+    "benefit1Text": "La personne qui répond laisse ses coordonnées, et nous les transmettons à l'auteur de l'annonce par SMS ou e-mail.",
+    "benefit2Title": "Coordonnées protégées",
+    "benefit2Text": "Sur l'annonce, le numéro n'est visible qu'en partie et l'e-mail pas du tout. Seule la personne qui a répondu reçoit le numéro complet.",
+    "benefit3Title": "Protection contre le spam",
+    "benefit3Text": "Une même personne peut obtenir le numéro d'un auteur au plus une fois par semaine : vos coordonnées ne finiront pas dans des listes de spam.",
+    "benefit4Title": "Modération",
+    "benefit4Text": "L'annonce paraît tout de suite. Un modérateur la vérifie et retire ce qui n'a pas sa place ici.",
+    "benefit5Title": "Sans compte",
+    "benefit5Text": "Ni compte ni mot de passe : un contact suffit.",
     "faqTitle": "Questions fréquentes",
     "faqQ1": "Comment contacter la personne qui l'a trouvé ?",
     "faqA1": "Les coordonnées d'une annonce sont en partie masquées pour vous protéger du spam. Appuyez sur « C'est à moi, envoyer mes coordonnées » dans l'annonce : nous transmettons votre téléphone et votre e-mail à la personne qui l'a trouvé, par e-mail et SMS, et elle vous recontacte. Sur une annonce de perte, cela fonctionne de la même façon dans l'autre sens.",
@@ -192,14 +188,13 @@
     "doneFinder": "Nous avons transmis vos coordonnées à la personne qui l'a trouvé. Elle vous contactera.",
     "doneOwner": "Nous avons transmis vos coordonnées à la personne qui l'a perdu. Elle vous contactera.",
     "repeated": "Vous avez déjà répondu à cette annonce : son auteur a vos coordonnées.",
-    "doneSafety": "Ne payez jamais d’avance et donnez rendez-vous dans un lieu fréquenté. <link>Conseils de sécurité</link>",
     "orPost": "Ou publiez votre propre annonce :",
     "unlock": {
       "button": "Obtenir le numéro de l'auteur de l'annonce",
       "title": "Le numéro de téléphone de l'auteur de l'annonce",
       "text": "Nous enverrons le numéro de téléphone de l'auteur par SMS et par e-mail aux coordonnées que vous avez données dans votre réponse.",
       "support": "Votre paiement de 1 $ aide DeRechi à rester gratuit pour tous. Vous pouvez payer avec Apple Pay, Google Pay ou une carte bancaire.",
-      "safety": "Seul le prestataire de paiement voit les données de votre carte ; nous ne les recevons jamais. Nous n’envoyons jamais de lien de paiement par SMS ni par messagerie.",
+      "safety": "Nous n’envoyons jamais de lien de paiement par SMS ni par messagerie.",
       "pay": "Passer au paiement",
       "preparing": "Préparation du paiement…",
       "unavailable": "Les paiements sont saturés pour le moment. Réessayez dans une minute.",
@@ -244,10 +239,6 @@
         "title": "Seul l’auteur voit votre réponse",
         "text": "Les coordonnées laissées dans une réponse ne sont transmises qu’à l’auteur de l’annonce, par e-mail et SMS. Elles n’apparaissent nulle part sur le site."
       },
-      "card": {
-        "title": "Vos données bancaires ne nous parviennent jamais",
-        "text": "Le paiement est encaissé par Fourthwall sur sa propre page. Nous ne voyons ni ne conservons votre carte ou votre portefeuille."
-      },
       "limit": {
         "title": "Impossible de collecter les numéros en masse",
         "text": "Une même personne ne peut obtenir le numéro d’un auteur qu’une fois par semaine : vos coordonnées ne finissent pas dans des listes de spam ou d’appels frauduleux."
@@ -265,42 +256,33 @@
         "text": "Les coordonnées des réponses sont supprimées au bout d’un an. Une fois l’objet rendu, l’annonce passe aux archives et disparaît du site."
       }
     },
-    "tipsTitle": "Rendre un objet en toute sécurité",
-    "tipsAllTitle": "Pour tous",
-    "tipsLostTitle": "Si vous avez perdu un objet",
-    "tipsFoundTitle": "Si vous avez trouvé un objet",
-    "tips": {
-      "payOnSite": {
-        "title": "Ne payez que sur le site",
-        "text": "Le seul paiement sur DeRechi est de 1 $ pour le numéro d’un auteur, via le bouton de la page de l’annonce. Nous n’envoyons jamais de lien de paiement par SMS, messagerie ou e-mail."
+    "rulesTitle": "Comment éviter les arnaques",
+    "rules": {
+      "prepay": {
+        "title": "Ne payez rien avant d'avoir l'objet en main",
+        "text": "L'escroc demande de l'argent d'avance « pour la livraison », « pour la garde » ou comme récompense, puis disparaît. Ne payez qu'au moment de la rencontre."
       },
       "codes": {
-        "title": "Ne communiquez aucun code",
-        "text": "Ne donnez à personne vos codes reçus par SMS, votre cryptogramme ni votre code PIN, même si l’appelant se présente comme votre banque, la police ou DeRechi."
-      },
-      "meet": {
-        "title": "Rendez-vous dans un lieu fréquenté",
-        "text": "Choisissez la journée et un lieu animé : un café, un centre commercial ou l’entrée d’un commissariat. Vous pouvez venir avec quelqu’un."
-      },
-      "noPrepay": {
-        "title": "Ne payez pas d’avance",
-        "text": "Ni pour la livraison ni comme récompense tant que l’objet n’est pas entre vos mains. La récompense se remet lors du rendez-vous."
-      },
-      "proof": {
-        "title": "Demandez une preuve",
-        "text": "Une personne qui a vraiment trouvé votre objet peut facilement en envoyer une photo à côté d’un papier portant la date du jour, ou décrire un détail absent de l’annonce."
+        "title": "Pour recevoir de l'argent, aucun code n'est nécessaire",
+        "text": "Un numéro de carte ou un IBAN suffit pour vous verser une récompense. Celui qui demande un code reçu par SMS, le CVV, le code PIN ou de « cliquer sur un lien pour recevoir le paiement » veut vider votre compte."
       },
       "verify": {
-        "title": "Vérifiez qu’il s’agit du propriétaire",
-        "text": "Demandez de décrire ce qui ne se voit pas sur la photo : le contenu du portefeuille, le porte-clés, l’écran de verrouillage du téléphone."
+        "title": "Ne remettez ni ne récupérez un objet sur parole",
+        "text": "Demandez un détail absent de l'annonce. Et celui qui a vraiment trouvé votre objet pourra sans peine en montrer une photo à côté d'un papier daté du jour."
+      },
+      "meet": {
+        "title": "Rencontrez-vous en public, pas chez vous",
+        "text": "Ne donnez pas votre adresse et n'invitez personne chez vous. Préférez la journée, un café, un centre commercial ou l'entrée d'un commissariat."
       },
       "documents": {
-        "title": "Documents et cartes : prudence",
-        "text": "N’envoyez pas de photos de documents ni de cartes. Rendez une carte bancaire à sa banque, et les documents à la police ou au service des objets trouvés si le propriétaire ne se manifeste pas."
+        "title": "N'envoyez pas de photos de papiers ni de cartes",
+        "text": "Elles servent à souscrire des crédits et à pirater des comptes. Rapportez une carte trouvée à la banque et des papiers à la police."
+      },
+      "report": {
+        "title": "Vous repérez un escroc ? Écrivez-nous",
+        "text": "Envoyez le lien de l'annonce à {email} et nous la retirerons. Gardez les échanges : ils serviront pour porter plainte."
       }
-    },
-    "troubleTitle": "Si quelque chose tourne mal",
-    "troubleText": "Si l’on vous demande de payer en dehors du site ou si vous soupçonnez une escroquerie, adressez-vous à la police et écrivez-nous à {email} : nous retirerons l’annonce suspecte."
+    }
   },
   "category": {
     "DOCUMENTS": "Documents",

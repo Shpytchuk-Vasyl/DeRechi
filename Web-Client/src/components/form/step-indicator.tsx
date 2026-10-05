@@ -77,7 +77,7 @@ function Step({
         <Text
           muted={state === "upcoming"}
           size="md"
-          className={active ? "inline" : "hidden md:inline"}
+          className={active ? "inline" : "hidden"}
         >
           {label}
         </Text>

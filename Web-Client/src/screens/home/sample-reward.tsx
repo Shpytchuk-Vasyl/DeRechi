@@ -11,10 +11,3 @@ export function SampleReward({ amount }: { amount: number }) {
 
   return t("reward", { amount: formatMoney(format, { amount, currency }) })
 }
-
-export function SampleAmount({ amount }: { amount: number }) {
-  const { currency } = useCountry()
-  const format = useFormatter()
-
-  return formatMoney(format, { amount, currency })
-}

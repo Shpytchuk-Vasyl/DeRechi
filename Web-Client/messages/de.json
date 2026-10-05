@@ -21,9 +21,9 @@
   },
   "home": {
     "heroTitle": "Verloren? Vielleicht hat es schon jemand gefunden",
-    "heroText": "Ein Brett für verlorene und gefundene Sachen. Beschreibe deinen Verlust oder sieh durch, was abgegeben wurde: kostenlos und ohne Konto.",
-    "rewardNote": "Wer etwas findet, hat Anspruch auf einen Finderlohn für die Rückgabe; die genaue Regel hängt vom Land ab.",
-    "safetyNote": "Kontakte bleiben verborgen, und deine Kartendaten sehen wir nie. <link>So schützen wir dich</link>",
+    "heroText": "Ein Brett für verlorene und gefundene Sachen. Beschreibe deinen Verlust oder sieh durch, was abgegeben wurde.",
+    "rewardNote": "Etwas zurückzugeben ist eine gute Tat, und manchmal gibt es sogar Finderlohn.",
+    "safetyNote": "Deine Kontaktdaten sind vor Fremden verborgen. <link>So schützen wir dich</link>",
     "scrollCue": "So funktioniert es",
     "searchTitle": "Sieh nach, ob es schon gefunden wurde",
     "searchWhat": "Was",
@@ -45,30 +45,26 @@
     "recentFoundError": "Die neuesten Fundmeldungen konnten nicht geladen werden.",
     "recentLostError": "Die neuesten Verlustmeldungen konnten nicht geladen werden.",
     "foundTitle": "Etwas gefunden, das dir nicht gehört?",
-    "foundText": "Gib es zurück und lass dich dafür bedanken. Die Meldung dauert eine Minute, und deine Nummer bleibt auf ihr teilweise verdeckt.",
-    "foundPoint1": "Meldung kostenlos",
-    "foundPoint2": "Anspruch auf Finderlohn",
-    "foundPoint3": "Kontakte nur teilweise sichtbar",
+    "foundText": "Veröffentliche eine Fundmeldung. Das ist einfach, und der Besitzer kann seine Sache zurückbekommen.",
+    "foundPoint1": "In einer Minute veröffentlicht",
+    "foundPoint2": "Deine Kontaktdaten sind nur teilweise sichtbar",
+    "foundPoint3": "Wir schicken dir eine SMS, sobald jemand seine Sache erkennt",
     "lostTitle": "Etwas Eigenes verloren?",
-    "lostText": "Beschreibe die Sache, setze Ort und Datum, und wer dort etwas aufgehoben hat, sieht es.",
-    "lostPoint1": "Eine Minute zum Melden",
-    "lostPoint2": "Ohne Konto",
-    "lostPoint3": "Finderlohn kann dabeistehen",
+    "lostText": "Veröffentliche eine Verlustmeldung. Beschreibe die Sache in groben Zügen und füge ein Foto hinzu, falls du eins hast.",
+    "lostPoint1": "Bald: Wir suchen ähnliche Funde für dich heraus",
+    "lostPoint2": "Ein Finderlohn hilft, die Sache schneller zurückzubekommen",
+    "lostPoint3": "Deine Kontaktdaten sind nur teilweise sichtbar",
     "benefitsTitle": "Warum DeRechi",
-    "benefit1Title": "Kostenlos",
-    "benefit1Text": "Eine Meldung aufzugeben und das Brett zu durchsuchen kostet nichts.",
-    "benefit2Title": "Ohne Konto",
-    "benefit2Text": "Keine Anmeldung, kein Passwort: nur ein Weg, dich zu erreichen.",
-    "benefit3Title": "Kontakte geschützt",
-    "benefit3Text": "Telefonnummer und E-Mail in der Anzeige sind teilweise verborgen. Die volle Nummer bekommt nur, wer geantwortet hat, die E-Mail niemand.",
-    "benefit4Title": "Fünf Sprachen",
-    "benefit4Text": "Ukrainisch, Englisch, Polnisch, Deutsch und Französisch.",
-    "benefit5Title": "Moderiert",
-    "benefit5Text": "Eine Anzeige erscheint sofort. Ein Moderator greift nur bei Bedarf ein und korrigiert oder entfernt, was hier nicht hingehört.",
-    "benefit6Title": "Keine Werbung",
-    "benefit6Text": "Keine Banner, nur Meldungen von Menschen.",
-    "benefit7Title": "Sicher bezahlen",
-    "benefit7Text": "Deine Kartendaten sieht nur der Zahlungsanbieter. Eine Person kann höchstens einmal pro Woche eine Nummer erhalten, damit Kontakte nicht massenhaft gesammelt werden.",
+    "benefit1Title": "Direkter Kontakt",
+    "benefit1Text": "Wer sich meldet, hinterlässt seine Kontaktdaten, und wir leiten sie per SMS oder E-Mail an den Verfasser der Meldung weiter.",
+    "benefit2Title": "Kontakte geschützt",
+    "benefit2Text": "In der Meldung ist die Nummer nur teilweise sichtbar, die E-Mail gar nicht. Die volle Nummer bekommt nur, wer sich gemeldet hat.",
+    "benefit3Title": "Schutz vor Spam",
+    "benefit3Text": "Eine Person kann die Nummer eines Verfassers höchstens einmal pro Woche erhalten, damit deine Kontaktdaten nicht in Spam-Listen landen.",
+    "benefit4Title": "Moderiert",
+    "benefit4Text": "Die Meldung erscheint sofort. Ein Moderator prüft sie und entfernt, was hier nichts zu suchen hat.",
+    "benefit5Title": "Ohne Konto",
+    "benefit5Text": "Kein Konto und kein Passwort nötig: Ein Kontakt genügt.",
     "faqTitle": "Häufige Fragen",
     "faqQ1": "Wie erreiche ich die Person, die es gefunden hat?",
     "faqA1": "Die Kontaktdaten in einer Anzeige sind zum Schutz vor Spam nur teilweise sichtbar. Tippen Sie in der Anzeige auf „Gehört mir, Kontaktdaten senden“: Wir geben Ihre Telefonnummer und E-Mail per E-Mail und SMS an die Person weiter, die es gefunden hat, und sie meldet sich bei Ihnen. Bei einer Verlustanzeige funktioniert es genauso in die andere Richtung.",
@@ -192,14 +188,13 @@
     "doneFinder": "Wir haben deine Kontaktdaten an die Person weitergegeben, die die Sache gefunden hat. Sie meldet sich bei dir.",
     "doneOwner": "Wir haben deine Kontaktdaten an die Person weitergegeben, der die Sache gehört. Sie meldet sich bei dir.",
     "repeated": "Du hast auf diese Meldung schon geantwortet; deine Kontaktdaten sind bereits angekommen.",
-    "doneSafety": "Zahle nie im Voraus und triff dich an einem belebten Ort. <link>Sicherheitstipps</link>",
     "orPost": "Oder gib selbst eine Meldung auf:",
     "unlock": {
       "button": "Telefonnummer der Person hinter der Meldung bekommen",
       "title": "Telefonnummer der Person hinter der Meldung",
       "text": "Die Telefonnummer schicken wir per SMS und E-Mail an die Kontaktdaten aus deiner Antwort.",
       "support": "Mit deiner Zahlung von 1 $ hilfst du, DeRechi für alle kostenlos zu halten. Bezahlen kannst du mit Apple Pay, Google Pay oder Bankkarte.",
-      "safety": "Deine Kartendaten sieht nur der Zahlungsanbieter, wir erhalten sie nie. Zahlungslinks per SMS oder Messenger verschicken wir nie.",
+      "safety": "Zahlungslinks per SMS oder Messenger verschicken wir nie.",
       "pay": "Weiter zur Zahlung",
       "preparing": "Zahlung wird vorbereitet…",
       "unavailable": "Die Zahlungen sind gerade überlastet. Versuche es in einer Minute noch einmal.",
@@ -244,10 +239,6 @@
         "title": "Deine Antwort sieht nur der Verfasser",
         "text": "Die Kontaktdaten aus deiner Antwort geben wir nur an den Verfasser der Anzeige weiter, per E-Mail und SMS. Auf der Website erscheinen sie nirgends."
       },
-      "card": {
-        "title": "Deine Kartendaten erreichen uns nie",
-        "text": "Die Zahlung nimmt Fourthwall auf seiner eigenen Seite entgegen. Wir sehen und speichern weder Karte noch Wallet."
-      },
       "limit": {
         "title": "Nummern lassen sich nicht massenhaft sammeln",
         "text": "Eine Person kann die Nummer eines Verfassers höchstens einmal pro Woche erhalten. So landen deine Kontaktdaten nicht in Spam- oder Betrugslisten."
@@ -265,42 +256,33 @@
         "text": "Kontaktdaten aus Antworten löschen wir nach einem Jahr. Ist der Gegenstand zurück, wandert die Anzeige ins Archiv und verschwindet von der Website."
       }
     },
-    "tipsTitle": "So gibst du einen Gegenstand sicher zurück",
-    "tipsAllTitle": "Für alle",
-    "tipsLostTitle": "Wenn du etwas verloren hast",
-    "tipsFoundTitle": "Wenn du etwas gefunden hast",
-    "tips": {
-      "payOnSite": {
-        "title": "Bezahle nur auf der Website",
-        "text": "Die einzige Zahlung auf DeRechi sind 1 $ für die Nummer eines Verfassers, per Button auf der Seite der Anzeige. Zahlungslinks per SMS, Messenger oder E-Mail verschicken wir nie."
+    "rulesTitle": "So fällst du nicht auf Betrüger herein",
+    "rules": {
+      "prepay": {
+        "title": "Zahle nichts, bevor du die Sache in der Hand hast",
+        "text": "Betrüger verlangen Geld im Voraus „für den Versand“, „für die Aufbewahrung“ oder als Finderlohn und verschwinden dann. Bezahlt wird erst beim Treffen."
       },
       "codes": {
-        "title": "Gib keine Codes weiter",
-        "text": "Nenne niemandem SMS-Codes, CVV oder PIN – auch nicht, wenn sich der Anrufer als Bank, Polizei oder DeRechi ausgibt."
-      },
-      "meet": {
-        "title": "Triff dich an einem belebten Ort",
-        "text": "Wähle eine Tageszeit und einen belebten Ort: ein Café, ein Einkaufszentrum oder den Eingang einer Polizeiwache. Du kannst jemanden mitnehmen."
-      },
-      "noPrepay": {
-        "title": "Zahle nicht im Voraus",
-        "text": "Weder für den Versand noch als Finderlohn, solange du den Gegenstand nicht in den Händen hältst. Der Finderlohn wird beim Treffen übergeben."
-      },
-      "proof": {
-        "title": "Bitte um einen Beweis",
-        "text": "Wer deinen Gegenstand wirklich gefunden hat, kann leicht ein Foto davon neben einem Zettel mit dem heutigen Datum schicken oder ein Detail beschreiben, das nicht in der Anzeige steht."
+        "title": "Um Geld zu bekommen, brauchst du keine Codes",
+        "text": "Für eine Überweisung reicht deine IBAN oder Kartennummer. Wer nach einem SMS-Code, CVV oder PIN fragt oder dich bittet, „über einen Link die Zahlung zu empfangen“, will dein Konto leerräumen."
       },
       "verify": {
-        "title": "Prüfe, ob es der Eigentümer ist",
-        "text": "Bitte darum, zu beschreiben, was auf dem Foto nicht zu sehen ist: den Inhalt der Geldbörse, den Schlüsselanhänger, den Sperrbildschirm des Handys."
+        "title": "Keine Übergabe auf bloßes Wort",
+        "text": "Frag nach einem Merkmal, das nicht in der Meldung steht. Und wer deine Sache wirklich gefunden hat, kann problemlos ein Foto davon mit einem Zettel mit dem heutigen Datum zeigen."
+      },
+      "meet": {
+        "title": "Triff dich in der Öffentlichkeit, nicht zu Hause",
+        "text": "Nenne nicht deine Wohnadresse und lade niemanden zu dir ein. Besser tagsüber in einem Café, einem Einkaufszentrum oder vor einer Polizeiwache."
       },
       "documents": {
-        "title": "Vorsicht bei Dokumenten und Karten",
-        "text": "Schicke keine Fotos von Dokumenten oder Karten. Eine Bankkarte gibst du der Bank zurück, Dokumente der Polizei oder dem Fundbüro, wenn sich der Eigentümer nicht meldet."
+        "title": "Schicke keine Fotos von Ausweisen und Karten",
+        "text": "Damit werden Kredite aufgenommen und Konten gehackt. Eine gefundene Karte gibst du bei der Bank ab, Dokumente bei der Polizei."
+      },
+      "report": {
+        "title": "Betrüger entdeckt? Schreib uns",
+        "text": "Schick den Link zur Meldung an {email}, und wir nehmen sie offline. Heb den Chatverlauf auf, du brauchst ihn für die Anzeige bei der Polizei."
       }
-    },
-    "troubleTitle": "Wenn etwas schiefgeht",
-    "troubleText": "Wenn jemand eine Zahlung außerhalb der Website verlangt oder du Betrug vermutest, wende dich an die Polizei und schreib uns an {email}: Wir nehmen die verdächtige Anzeige herunter."
+    }
   },
   "category": {
     "DOCUMENTS": "Dokumente",
