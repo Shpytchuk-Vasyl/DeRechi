@@ -1,10 +1,10 @@
 "use server"
 
-import { revalidateTag } from "next/cache"
 import type { ItemKind } from "@/api/items"
 import { graphqlRequest } from "@/graphql/client"
 import { CreateFoundItemMutation, CreateLostItemMutation } from "@/graphql/documents"
 import { passesBotCheck } from "@/lib/bot-check"
+import { CACHE_TAG, invalidate, NO_STORE } from "@/lib/cache"
 import { reportSchema, toItemInput } from "@/schema/report-schema"
 
 export type ReportResult =
@@ -26,13 +26,13 @@ export async function createNotice(kind: ItemKind, values: unknown): Promise<Rep
   try {
     const created =
       kind === "lost"
-        ? (await graphqlRequest(CreateLostItemMutation, { input }, { cache: "no-store" }))
-            .createLostItem
-        : (await graphqlRequest(CreateFoundItemMutation, { input }, { cache: "no-store" }))
-            .createFoundItem
+        ? (await graphqlRequest(CreateLostItemMutation, { input }, NO_STORE)).createLostItem
+        : (await graphqlRequest(CreateFoundItemMutation, { input }, NO_STORE)).createFoundItem
 
-    revalidateTag(`items:${kind}`, "max")
-    revalidateTag("places", "max")
+    invalidate(CACHE_TAG.items(kind), CACHE_TAG.places)
+    if (kind === "found") {
+      invalidate(CACHE_TAG.stats)
+    }
     return { ok: true, id: created.id }
   } catch (e) {
     console.log(e)

@@ -64,6 +64,14 @@ type Claim {
     contactsSent: Boolean!
 }
 
+"Figures for the home page; days start at midnight UTC"
+type Stats {
+    "Found items archived over the last 7 days, today included"
+    returnedThisWeek: Int!
+    "Found items whose date is today"
+    foundToday: Int!
+}
+
 "Lost Item Notice."
 type LostItem {
     id: ID!
@@ -156,6 +164,9 @@ type Query {
     categories: [Category!]!
 
     countries: [Country!]!
+
+    "Figures for the home page. The web client caches them for 5 minutes."
+    stats: Stats!
 
     "Places sorted by name; `name` is a case-insensitive substring"
     places(name: String, first: Int, after: String): PlaceConnection!

@@ -100,7 +100,7 @@ Use JSpecify `org.jspecify.annotations.Nullable` and `NonNull` on record compone
 Entities live in `DB-Postgres` for migrations and are **copied** into each service that needs them (`org.shpytchuk.adminapi.entity`, `...clientapi.entity`, `...worker.entity`). No module depends on `DB-Postgres`. That means:
 
 - A mapping change is made in `DB-Postgres` first, then mirrored in every copy. Table and column names, nullability, lengths and `@JdbcTypeCode` must stay identical; tests run with `ddl-auto: validate` against the real changelog and will fail on drift, but only in the modules that have such tests.
-- A service copy may omit fields and relations it does not read (`Notification` has no entities at all), but it must not rename or retype anything it keeps. `Worker` carries the history and claim entities because it archives notices.
+- A service copy may omit fields and relations it does not read (`Notification` has no entities at all), but it must not rename or retype anything it keeps. `Worker` carries the history and claim entities because it archives notices; `Client-API` carries `FoundItemHistory` only to count it for `stats`.
 - `ContactInfo.SocialMediaEnum` is stored as an ordinal array (`smallint[]`). Enum constants may only be **appended**; reordering or inserting changes the meaning of every stored row.
 
 ## Constants

@@ -1,29 +1,19 @@
 import "server-only"
 import { graphqlRequest } from "@/graphql/client"
 import { StatsQuery } from "@/graphql/documents"
+import { CACHE } from "@/lib/cache"
 
 export type Stats = {
   returnedThisWeek: number
   foundToday: number
 }
 
-const STATS_REVALIDATE = 300
-
-const MOCK_STATS: Stats | null = { returnedThisWeek: 37, foundToday: 12 }
-
 export async function fetchStats(): Promise<Stats | null> {
-  if (MOCK_STATS) {
-    return MOCK_STATS
-  }
-
   try {
-    const { stats } = await graphqlRequest(
-      StatsQuery,
-      {},
-      { revalidate: STATS_REVALIDATE, tags: ["stats"] },
-    )
+    const { stats } = await graphqlRequest(StatsQuery, {}, CACHE.stats())
     return stats
-  } catch {
+  } catch (error) {
+    console.error("stats query failed, hiding the figures", error)
     return null
   }
 }

@@ -8,6 +8,7 @@ import {
   LostItemsQuery,
 } from "@/graphql/documents"
 import type { ItemFilterInput, ItemSort } from "@/graphql/generated/graphql"
+import { CACHE, type CachePolicy } from "@/lib/cache"
 import type { Money } from "@/lib/intl/country"
 
 export type ItemKind = "lost" | "found"
@@ -46,10 +47,6 @@ export type ItemPage = {
 
 export const PAGE_SIZE = 15
 
-const LIST_REVALIDATE = 60
-const DETAIL_REVALIDATE = 3600
-const CATEGORY_REVALIDATE = 3600
-
 export type ItemQuery = {
   filter?: ItemFilterInput
   sort?: ItemSort
@@ -57,7 +54,11 @@ export type ItemQuery = {
   after?: string | null
 }
 
-export async function fetchItems(kind: ItemKind, query: ItemQuery = {}): Promise<ItemPage> {
+export async function fetchItems(
+  kind: ItemKind,
+  query: ItemQuery = {},
+  cache: CachePolicy = CACHE.items(kind),
+): Promise<ItemPage> {
   const variables = {
     filter: query.filter ?? null,
     sort: query.sort ?? "DATE_DESC",
@@ -65,12 +66,10 @@ export async function fetchItems(kind: ItemKind, query: ItemQuery = {}): Promise
     after: query.after ?? null,
   }
 
-  const options = { revalidate: LIST_REVALIDATE, tags: [`items:${kind}`] }
-
   const connection =
     kind === "lost"
-      ? (await graphqlRequest(LostItemsQuery, variables, options)).lostItems
-      : (await graphqlRequest(FoundItemsQuery, variables, options)).foundItems
+      ? (await graphqlRequest(LostItemsQuery, variables, cache)).lostItems
+      : (await graphqlRequest(FoundItemsQuery, variables, cache)).foundItems
 
   return {
     items: connection.edges.map((edge) => edge.node),
@@ -80,7 +79,7 @@ export async function fetchItems(kind: ItemKind, query: ItemQuery = {}): Promise
 }
 
 export async function fetchItem(kind: ItemKind, id: string): Promise<ItemDetail | null> {
-  const options = { revalidate: DETAIL_REVALIDATE, tags: [`item:${kind}:${id}`] }
+  const options = CACHE.item(kind, id)
 
   try {
     const item =
@@ -98,10 +97,6 @@ export async function fetchItem(kind: ItemKind, id: string): Promise<ItemDetail 
 }
 
 export async function fetchCategories(): Promise<Category[]> {
-  const { categories } = await graphqlRequest(
-    CategoriesQuery,
-    {},
-    { revalidate: CATEGORY_REVALIDATE, tags: ["categories"] },
-  )
+  const { categories } = await graphqlRequest(CategoriesQuery, {}, CACHE.categories())
   return categories
 }

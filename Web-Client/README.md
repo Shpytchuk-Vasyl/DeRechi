@@ -35,6 +35,25 @@ MinIO), which is why that origin is in `next.config.ts`'s `remotePatterns`.
 Spring for GraphQL registers at runtime and therefore keeps out of the schema file. No
 running server is needed, so a schema change shows up as a diff here.
 
+## Caching
+
+Every GraphQL read in `src/api/` is a `fetch` cached by Next, and all the numbers live in
+`src/lib/cache.ts`:
+
+- `CACHE_TTL`: four tiers, `minute` (lists, place suggestions), `fiveMinutes` (home page
+  `stats`), `hour` (one notice, categories, countries) and `day` (the sitemap, OG fonts).
+  Pick the tier by how stale the data may get, not per call site.
+- `CACHE_TAG` and `CACHE`: the tag and the policy (`{ revalidate, tags }`) of each read,
+  passed straight to `graphqlRequest`.
+- `invalidate(...tags)`: what server actions call after a write; it is `revalidateTag(tag, "max")`,
+  so the next visitor still gets the old response while the fresh one loads.
+- `NO_STORE`: mutations and per-visitor reads (claim status).
+
+Two things Next does not make obvious. A fetch with a shorter `revalidate` shortens the whole
+route, which is why the sitemap reads the lists through `CACHE.sitemapItems` (a day) and not
+`CACHE.items` (a minute). And route segment config such as `export const revalidate` has to be
+a literal, so `sitemap.ts` repeats `86400` with a comment instead of importing `CACHE_TTL.day`.
+
 ## Tests
 
 Vitest, colocated as `<name>.test.ts`, no browser and no running backend:

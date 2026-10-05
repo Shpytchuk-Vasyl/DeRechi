@@ -11,6 +11,7 @@ A notice is a public post about a thing somebody lost or found. There are two ki
 | Read one notice | `lostItem(id)`, `foundItem(id)` | `null` when missing |
 | Browse notices | `lostItems(filter, sort, first, after)`, `foundItems(...)` | Relay-style connection, see [Search and filtering](search-and-filtering.md) |
 | Edit or delete | not available | the mutations exist in the schema file but are commented out |
+| See how busy the site is | `stats { returnedThisWeek foundToday }` | two figures on the home page, see below |
 
 The Web-Client consumes exactly this API; it has no private endpoints of its own.
 
@@ -58,6 +59,17 @@ Anything else falls through to the default `INTERNAL_ERROR`.
 
 The aspect has `@Order(0)`, so it sits outside the transaction interceptor and fires only after the insert has committed; a failing `create` publishes nothing (`ItemEventAspectTest.doesNotPublishWhenCreateThrows`). The flip side: if RabbitMQ is unreachable at that moment the row is already committed but the publish throws and the mutation returns an error. There is no outbox, so such a notice simply never gets matched.
 
+## Home page figures
+
+`stats` is answered by `FoundItemStatisticsController` → `FoundItemStatisticsService` with two counts over found notices only:
+
+| Field | What is counted | Window |
+|---|---|---|
+| `returnedThisWeek` | rows in `found_item_history` by `archived_at` | the last 7 days, today included, from midnight UTC; a rolling window, so the figure does not drop to zero every Monday |
+| `foundToday` | rows in `found_item` by `date` | today in UTC |
+
+The Web-Client caches the answer for five minutes under the `stats` tag and drops the tag when a found notice is posted; it hides a figure that is zero.
+
 ## Storage
 
 One row in `lost_item` or `found_item`, one `contact_info` row per notice, one `place` row keyed by the Google place id. The schema is owned by `DB-Postgres`, see [Database](../architecture/database.md). Entities are copied into each service; keep the copies identical when you touch them (see [Add a GraphQL field](../extending/add-a-graphql-field.md)).
@@ -67,6 +79,8 @@ One row in `lost_item` or `found_item`, one `contact_info` row per notice, one `
 - No update or delete for the public. The code is there in `ItemService` and the schema, commented out, waiting for an authentication story on `Client-API`.
 - No ownership: a notice is not tied to a Keycloak user, so "my notices" cannot be built yet.
 - Phone masking assumes a five-digit visible prefix, which fits Ukrainian numbers best.
+- The home page figures are approximate. "Returned" counts every archived found notice, including those archived a week after the last claim without a confirmation or archived by staff; counting claims with `confirmed_at` would be exact. "Found today" reads the date the finder entered, not when the notice was posted: there is no `created_at` column.
+- Days in `stats` start at midnight UTC, which is 02:00 or 03:00 in Kyiv.
 
 ## Where to look
 
@@ -74,6 +88,7 @@ One row in `lost_item` or `found_item`, one `contact_info` row per notice, one `
 - `Client-API/src/main/java/org/shpytchuk/clientapi/service/ItemService.java`, `lost/LostItemService.java`, `found/FoundItemService.java`
 - `Client-API/src/main/java/org/shpytchuk/clientapi/controller/LostItemController.java`, `FoundItemController.java`
 - `Client-API/src/main/java/org/shpytchuk/clientapi/util/ContactMasker.java`
-- Tests: `LostItemControllerTests`, `FoundItemControllerTests`, `ItemServiceTests`, `ContactMaskerTest`, `WithinDaysLocalDateValidatorTest`
+- `Client-API/src/main/java/org/shpytchuk/clientapi/controller/FoundItemStatisticsController.java`, `service/found/FoundItemStatisticsService.java`
+- Tests: `LostItemControllerTests`, `FoundItemControllerTests`, `ItemServiceTests`, `ContactMaskerTest`, `WithinDaysLocalDateValidatorTest`, `FoundItemStatisticsControllerTests`, `FoundItemStatisticsServiceTest`
 
 Extending: [Add a GraphQL field](../extending/add-a-graphql-field.md), [Add a category](../extending/add-a-category.md), [Add a social network](../extending/add-a-social-network.md).

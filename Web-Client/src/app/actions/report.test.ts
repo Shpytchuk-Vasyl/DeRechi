@@ -63,6 +63,15 @@ describe("createNotice", () => {
 
     expect(mocks.revalidateTag).toHaveBeenCalledWith("items:lost", "max")
     expect(mocks.revalidateTag).toHaveBeenCalledWith("places", "max")
+    expect(mocks.revalidateTag).not.toHaveBeenCalledWith("stats", "max")
+  })
+
+  it("refreshes the home page figures after a new find", async () => {
+    mocks.graphqlRequest.mockResolvedValue({ createFoundItem: { id: "32" } })
+
+    await createNotice("found", notice)
+
+    expect(mocks.revalidateTag).toHaveBeenCalledWith("stats", "max")
   })
 
   it("rejects a found notice without a photo before calling the API", async () => {

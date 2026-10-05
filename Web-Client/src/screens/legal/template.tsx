@@ -52,7 +52,7 @@ function Block({ block, slots }: { block: LegalBlock; slots: JurisdictionTexts }
     )
   }
   return (
-    <Text size="sm" muted>
+    <Text size="sm" muted className="block">
       {fill(block, slots)}
     </Text>
   )

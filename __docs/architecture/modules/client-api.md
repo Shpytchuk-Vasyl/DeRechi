@@ -27,6 +27,7 @@ web-client change too, see [web-client.md](web-client.md).
 | `categories` | `ReferenceController` | all `thing_category` rows |
 | `countries` | `ReferenceController` | supported countries with their currency, from `CountriesProperties` |
 | `places(name, first, after)` | `ReferenceController` | case-insensitive substring on `name`, sorted by name |
+| `stats` | `FoundItemStatisticsController` | home page figures: found notices archived over the last 7 days and found notices dated today, both in UTC, see [../../features/notices.md](../../features/notices.md#home-page-figures) |
 
 The `Date` scalar comes from `graphql-java-extended-scalars`, registered in `GraphQlConfig`.
 
@@ -78,6 +79,11 @@ reused across notices) and the item in one transaction.
 an `ItemCreatedEvent` to `derechi.items` with `item.lost.created` or `item.found.created`.
 See [../messaging.md](../messaging.md) for why it is an aspect.
 
+`FoundItemStatisticsService` (`service/found/`) answers `stats` with two counts:
+`FoundItemHistoryRepository.countByArchivedAtGreaterThanEqual` from midnight UTC six days ago
+and `FoundItemRepository.countByDate` for today in UTC. `FoundItemHistory` is copied into
+this module for that query only; nothing here writes history, archiving stays in `Worker`.
+
 `ClaimService` (per kind) and `ReturnService` record responses to a notice; `ClaimEventAspect`
 publishes a `ClaimEvent` with `item.<kind>.claimed` / `item.<kind>.returned` after `claim(..)` or
 `confirm(..)` returns a non-repeated result, the same `@AfterReturning` + `@Order(0)` pattern as
@@ -106,12 +112,12 @@ set through `POSTGRES_*` and `RABBITMQ_*`; see
 |---|---|---|
 | `support/AbstractPostgresTests` | Testcontainers `postgis/postgis:17-3.5`, started once per JVM, `@Testcontainers(disabledWithoutDocker = true)` | applies the `DB-Postgres` changelog from disk, stubs the `ukrainian` text search config as a copy of `simple`, truncates all tables before each test |
 | `repository/AbstractRepositoryTests` | `@DataJpaTest` with `ddl-auto=validate` and the real database | repository and specification tests in `repository/thing` and `repository/detail` |
-| `controller/AbstractGraphQlTests` | `@SpringBootTest` + `@AutoConfigureGraphQlTester`, `RabbitTemplate` mocked | end-to-end GraphQL tests with seeded categories: items, claims, and `ReferenceControllerTests` for categories, countries and places |
+| `controller/AbstractGraphQlTests` | `@SpringBootTest` + `@AutoConfigureGraphQlTester`, `RabbitTemplate` mocked | end-to-end GraphQL tests with seeded categories: items, claims, `ReferenceControllerTests` for categories, countries and places, `FoundItemStatisticsControllerTests` for `stats` |
 | `support/Fixtures` | static builders for `Place`, `ContactInfo`, items | shared test data |
 
 Unit tests without a container cover the aspect (`ItemEventAspectTest`, Mockito), the
-masker, `ItemSort`, `EventTypeScanner`, `CountriesProperties`, the `@WithinDays` validator
-and the mapper. `ReferenceControllerSliceTests` is a `@GraphQlTest` slice with a mocked
+masker, `ItemSort`, `EventTypeScanner`, `CountriesProperties`, the `@WithinDays` validator,
+the mapper and the statistics window (`FoundItemStatisticsServiceTest`). `ReferenceControllerSliceTests` is a `@GraphQlTest` slice with a mocked
 repository.
 
 ```bash

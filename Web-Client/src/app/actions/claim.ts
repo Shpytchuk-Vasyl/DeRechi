@@ -1,6 +1,5 @@
 "use server"
 
-import { revalidateTag } from "next/cache"
 import { cookies } from "next/headers"
 import type { ItemKind } from "@/api/items"
 import { GraphQLRequestError, graphqlRequest } from "@/graphql/client"
@@ -14,6 +13,7 @@ import {
   UnlockLostItemClaimMutation,
 } from "@/graphql/documents"
 import { passesBotCheck } from "@/lib/bot-check"
+import { CACHE_TAG, invalidate, NO_STORE } from "@/lib/cache"
 import { CLAIM_COOKIE_MAX_AGE, claimCookieName } from "@/lib/claim-cookie"
 import { CLAIM_ID, claimSchema, toContactInput } from "@/schema/claim-schema"
 
@@ -62,10 +62,8 @@ export async function claimNotice(
   try {
     const claim =
       kind === "lost"
-        ? (await graphqlRequest(ClaimLostItemMutation, variables, { cache: "no-store" }))
-            .claimLostItem
-        : (await graphqlRequest(ClaimFoundItemMutation, variables, { cache: "no-store" }))
-            .claimFoundItem
+        ? (await graphqlRequest(ClaimLostItemMutation, variables, NO_STORE)).claimLostItem
+        : (await graphqlRequest(ClaimFoundItemMutation, variables, NO_STORE)).claimFoundItem
 
     const store = await cookies()
     store.set(claimCookieName(kind, id), claim.id, {
@@ -84,8 +82,7 @@ export async function claimNotice(
     }
   } catch (error) {
     if (error instanceof GraphQLRequestError && error.isNotFound) {
-      revalidateTag(`item:${kind}:${id}`, "max")
-      revalidateTag(`items:${kind}`, "max")
+      invalidate(CACHE_TAG.item(kind, id), CACHE_TAG.items(kind))
       return { ok: false, reason: "notFound" }
     }
     console.error("Claim failed", error)
@@ -107,9 +104,8 @@ export async function claimStatus(
   try {
     const claim =
       kind === "lost"
-        ? (await graphqlRequest(LostItemClaimQuery, variables, { cache: "no-store" })).lostItemClaim
-        : (await graphqlRequest(FoundItemClaimQuery, variables, { cache: "no-store" }))
-            .foundItemClaim
+        ? (await graphqlRequest(LostItemClaimQuery, variables, NO_STORE)).lostItemClaim
+        : (await graphqlRequest(FoundItemClaimQuery, variables, NO_STORE)).foundItemClaim
     return claim
       ? {
           ok: true,
@@ -142,9 +138,9 @@ export async function unlockClaim(
   try {
     const claim =
       kind === "lost"
-        ? (await graphqlRequest(UnlockLostItemClaimMutation, variables, { cache: "no-store" }))
+        ? (await graphqlRequest(UnlockLostItemClaimMutation, variables, NO_STORE))
             .unlockLostItemClaim
-        : (await graphqlRequest(UnlockFoundItemClaimMutation, variables, { cache: "no-store" }))
+        : (await graphqlRequest(UnlockFoundItemClaimMutation, variables, NO_STORE))
             .unlockFoundItemClaim
     if (!claim.checkoutUrl) {
       return { ok: false, reason: "failed" }
@@ -173,7 +169,7 @@ export async function confirmReturn(token: string): Promise<ConfirmResult> {
   }
 
   try {
-    await graphqlRequest(ConfirmReturnMutation, { token }, { cache: "no-store" })
+    await graphqlRequest(ConfirmReturnMutation, { token }, NO_STORE)
   } catch (error) {
     if (error instanceof GraphQLRequestError && error.isNotFound) {
       return { ok: false, reason: "notFound" }
@@ -182,9 +178,7 @@ export async function confirmReturn(token: string): Promise<ConfirmResult> {
     return { ok: false, reason: "failed" }
   }
 
-  for (const kind of KINDS) {
-    revalidateTag(`items:${kind}`, "max")
-  }
+  invalidate(...KINDS.map(CACHE_TAG.items))
   return { ok: true }
 }
 

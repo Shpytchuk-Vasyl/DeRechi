@@ -2,10 +2,12 @@ import type { MetadataRoute } from "next"
 import { fetchItems, type ItemKind } from "@/api/items"
 import { paths } from "@/i18n/paths"
 import { routing } from "@/i18n/routing"
+import { CACHE } from "@/lib/cache"
 import { toIsoDate } from "@/lib/intl/dates"
 import { absoluteUrl, isStale, SITEMAP_KINDS as KINDS, sitemapIds } from "@/lib/seo"
 
-export const revalidate = 36000
+// CACHE_TTL.day: segment config has to be a literal, an imported constant is ignored.
+export const revalidate = 86400
 
 const PAGE_SIZE = 100
 
@@ -61,7 +63,11 @@ async function itemEntries(kind: ItemKind, back: number): Promise<MetadataRoute.
   let after: string | null | undefined
 
   while (items.length < MAX_URLS) {
-    const page = await fetchItems(kind, { filter, first: PAGE_SIZE, after })
+    const page = await fetchItems(
+      kind,
+      { filter, first: PAGE_SIZE, after },
+      CACHE.sitemapItems(kind),
+    )
     items.push(...page.items)
 
     if (!page.hasNextPage || !page.endCursor) {

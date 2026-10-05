@@ -2,6 +2,7 @@ import { ImageResponse } from "next/og"
 import { hasLocale } from "next-intl"
 import { getTranslations } from "next-intl/server"
 import { routing } from "@/i18n/routing"
+import { CACHE_TTL } from "@/lib/cache"
 
 export const alt = "DeRechi"
 export const size = { width: 1200, height: 630 }
@@ -11,13 +12,13 @@ async function nunito(text: string): Promise<ArrayBuffer | null> {
   try {
     const css = await fetch(
       `https://fonts.googleapis.com/css2?family=Nunito:wght@800&text=${encodeURIComponent(text)}`,
-      { headers: { "User-Agent": "Mozilla/5.0" }, next: { revalidate: 86_400 } },
+      { headers: { "User-Agent": "Mozilla/5.0" }, next: { revalidate: CACHE_TTL.day } },
     ).then((response) => response.text())
 
     const url = css.match(/src: url\((https:[^)]+)\)/)?.[1]
     if (!url) return null
 
-    return await fetch(url, { next: { revalidate: 86_400 } }).then((response) =>
+    return await fetch(url, { next: { revalidate: CACHE_TTL.day } }).then((response) =>
       response.arrayBuffer(),
     )
   } catch {

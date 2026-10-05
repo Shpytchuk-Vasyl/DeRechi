@@ -38,7 +38,7 @@ Read [Notices](../features/notices.md) and [Search and filtering](../features/se
 
 6. **Filter or sort?** A new filter goes into `input/ItemFilterInput.java` and `ThingSpecifications.byFilter` through `SpecificationBuilder`; a new sort option into the `ItemSort` enum and its `toSort`. Both are enums or records, so the schema and the Java side must list the same names.
 
-7. **Controllers.** `LostItemController` and `FoundItemController` only forward to the services with `@QueryMapping`, `@MutationMapping` and `@Argument`; a new top-level query or mutation gets its method there. Argument names must equal the schema argument names.
+7. **Controllers.** Controllers only forward to a service with `@QueryMapping`, `@MutationMapping` and `@Argument`. An operation on notices of one kind goes to `LostItemController` / `FoundItemController`; anything else gets its own controller next to them, as `ClaimController` (claims), `ReferenceController` (categories, countries, places) and `FoundItemStatisticsController` (`stats`) do. Argument names must equal the schema argument names.
 
 8. **Manual check.** Start `Client-API` and open GraphiQL at `http://localhost:8082/graphiql` (or through the Gateway at `http://localhost:8080/graphiql`). The schema printer is on, so `http://localhost:8082/graphql/schema` shows what the server actually loaded.
 

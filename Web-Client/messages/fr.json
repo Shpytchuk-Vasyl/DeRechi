@@ -21,11 +21,11 @@
   },
   "home": {
     "heroTitle": "Perdu ? Quelqu’un l’a peut-être trouvé",
-    "heroText": "Un tableau d'objets perdus et trouvés. Décrivez votre perte ou parcourez ce qui a été rapporté.",
+    "heroText": "Un tableau d’objets perdus et trouvés. Décrivez votre perte ou parcourez ce qui a été rapporté.",
     "rewardNote": "Rendre un objet est une bonne action, parfois même récompensée.",
     "safetyNote": "Vos coordonnées sont masquées aux inconnus. <link>Comment nous vous protégeons</link>",
     "scrollCue": "Comment ça marche",
-    "searchTitle": "Vérifiez s'il a déjà été trouvé",
+    "searchTitle": "Vérifiez s’il a déjà été trouvé",
     "searchWhat": "Quoi",
     "searchWhatPlaceholder": "Portefeuille, clés, sac à dos…",
     "searchHintDesktop": "Appuyez sur <kbd>Entrée</kbd> pour lancer la recherche",
@@ -44,37 +44,37 @@
     "seeAllLost": "Voir tous les objets perdus",
     "recentFoundError": "Impossible de charger les derniers objets trouvés.",
     "recentLostError": "Impossible de charger les derniers objets perdus.",
-    "foundTitle": "Vous avez trouvé un objet qui n'est pas à vous ?",
-    "foundText": "Publiez une annonce pour votre trouvaille. C'est simple, et le propriétaire pourra récupérer son objet.",
+    "foundTitle": "Vous avez trouvé un objet qui n’est pas à vous ?",
+    "foundText": "Publiez une annonce pour votre trouvaille. C’est simple, et le propriétaire pourra récupérer son objet.",
     "foundPoint1": "Publié en une minute",
-    "foundPoint2": "Vos coordonnées ne sont visibles qu'en partie",
-    "foundPoint3": "Nous vous enverrons un SMS dès que quelqu'un reconnaîtra son objet",
+    "foundPoint2": "Vos coordonnées ne sont visibles qu’en partie",
+    "foundPoint3": "Nous vous enverrons un SMS dès que quelqu’un reconnaîtra son objet",
     "lostTitle": "Vous avez perdu le vôtre ?",
-    "lostText": "Publiez une annonce de perte. Décrivez l'objet dans les grandes lignes et ajoutez une photo si vous en avez une.",
+    "lostText": "Publiez une annonce de perte. Décrivez l’objet dans les grandes lignes et ajoutez une photo si vous en avez une.",
     "lostPoint1": "Bientôt : nous chercherons pour vous les trouvailles similaires",
-    "lostPoint2": "Une récompense aide à récupérer l'objet plus vite",
-    "lostPoint3": "Vos coordonnées ne sont visibles qu'en partie",
+    "lostPoint2": "Une récompense aide à récupérer l’objet plus vite",
+    "lostPoint3": "Vos coordonnées ne sont visibles qu’en partie",
     "benefitsTitle": "Pourquoi DeRechi",
     "benefit1Title": "Contact direct",
-    "benefit1Text": "La personne qui répond laisse ses coordonnées, et nous les transmettons à l'auteur de l'annonce par SMS ou e-mail.",
+    "benefit1Text": "La personne qui répond laisse ses coordonnées, et nous les transmettons à l’auteur de l’annonce par SMS ou e-mail.",
     "benefit2Title": "Coordonnées protégées",
-    "benefit2Text": "Sur l'annonce, le numéro n'est visible qu'en partie et l'e-mail pas du tout. Seule la personne qui a répondu reçoit le numéro complet.",
+    "benefit2Text": "Sur l’annonce, le numéro n’est visible qu’en partie et l’e-mail pas du tout. Seule la personne qui a répondu reçoit le numéro complet.",
     "benefit3Title": "Protection contre le spam",
-    "benefit3Text": "Une même personne peut obtenir le numéro d'un auteur au plus une fois par semaine : vos coordonnées ne finiront pas dans des listes de spam.",
+    "benefit3Text": "Une même personne peut obtenir le numéro d’un auteur au plus une fois par semaine : vos coordonnées ne finiront pas dans des listes de spam.",
     "benefit4Title": "Modération",
-    "benefit4Text": "L'annonce paraît tout de suite. Un modérateur la vérifie et retire ce qui n'a pas sa place ici.",
+    "benefit4Text": "L’annonce paraît tout de suite. Un modérateur la vérifie et retire ce qui n’a pas sa place ici.",
     "benefit5Title": "Sans compte",
     "benefit5Text": "Ni compte ni mot de passe : un contact suffit.",
     "faqTitle": "Questions fréquentes",
-    "faqQ1": "Comment contacter la personne qui l'a trouvé ?",
-    "faqA1": "Les coordonnées d'une annonce sont en partie masquées pour vous protéger du spam. Appuyez sur « C'est à moi, envoyer mes coordonnées » dans l'annonce : nous transmettons votre téléphone et votre e-mail à la personne qui l'a trouvé, par e-mail et SMS, et elle vous recontacte. Sur une annonce de perte, cela fonctionne de la même façon dans l'autre sens.",
-    "faqQ2": "Comment être sûr de rendre l'objet à son vrai propriétaire ?",
-    "faqA2": "Ne montrez pas tous les signes distinctifs dans l'annonce. Demandez au propriétaire de décrire ce que la photo ne montre pas : ce qu'il y a dans le portefeuille, quel porte-clés est accroché aux clés, ce qu'affiche l'écran de verrouillage du téléphone. Donnez-vous rendez-vous dans un lieu fréquenté.",
-    "faqQ3": "J'ai trouvé des papiers d'identité. Que faire ?",
-    "faqA3": "Publiez une annonce, mais ne photographiez pas les pages contenant des données personnelles et n'indiquez pas le numéro du document : le type de document et, si besoin, le nom du propriétaire suffisent. Si personne ne se manifeste, vous pouvez remettre les papiers à la police.",
-    "faqQ4": "Puis-je garder ce que j'ai trouvé ou demander une récompense ?",
+    "faqQ1": "Comment contacter la personne qui l’a trouvé ?",
+    "faqA1": "Les coordonnées d’une annonce sont en partie masquées pour vous protéger du spam. Appuyez sur « C’est à moi, envoyer mes coordonnées » dans l’annonce : nous transmettons votre téléphone et votre e-mail à la personne qui l’a trouvé, par e-mail et SMS, et elle vous recontacte. Sur une annonce de perte, cela fonctionne de la même façon dans l’autre sens.",
+    "faqQ2": "Comment être sûr de rendre l’objet à son vrai propriétaire ?",
+    "faqA2": "Ne montrez pas tous les signes distinctifs dans l’annonce. Demandez au propriétaire de décrire ce que la photo ne montre pas : ce qu’il y a dans le portefeuille, quel porte-clés est accroché aux clés, ce qu’affiche l’écran de verrouillage du téléphone. Donnez-vous rendez-vous dans un lieu fréquenté.",
+    "faqQ3": "J’ai trouvé des papiers d’identité. Que faire ?",
+    "faqA3": "Publiez une annonce, mais ne photographiez pas les pages contenant des données personnelles et n’indiquez pas le numéro du document : le type de document et, si besoin, le nom du propriétaire suffisent. Si personne ne se manifeste, vous pouvez remettre les papiers à la police.",
+    "faqQ4": "Puis-je garder ce que j’ai trouvé ou demander une récompense ?",
     "faqQ5": "Comment retrouver plus vite mon objet dans la liste ?",
-    "faqA5": "Choisissez la catégorie et les dates auxquelles vous l'avez perdu : ce sont les dates qui réduisent le plus la liste. Côté objets trouvés, activez « Près de moi » pour voir ce qui a été trouvé dans un rayon de 10 km autour de vous. Cherchez avec des mots simples : la recherche porte sur les titres et les descriptions.",
+    "faqA5": "Choisissez la catégorie et les dates auxquelles vous l’avez perdu : ce sont les dates qui réduisent le plus la liste. Côté objets trouvés, activez « Près de moi » pour voir ce qui a été trouvé dans un rayon de 10 km autour de vous. Cherchez avec des mots simples : la recherche porte sur les titres et les descriptions.",
     "ctaReturnedLabel": "{count, plural, one {objet rendu à son propriétaire cette semaine} other {objets rendus à leurs propriétaires cette semaine}}",
     "ctaTodayLabel": "{count, plural, one {trouvaille publiée aujourd’hui} other {trouvailles publiées aujourd’hui}}",
     "sample": {
@@ -83,7 +83,7 @@
         "place": "Parc Chevtchenko, Kyiv"
       },
       "student": {
-        "title": "Carte d'étudiant",
+        "title": "Carte d’étudiant",
         "place": "Gare, Lviv"
       },
       "wallet": {
@@ -107,16 +107,16 @@
     },
     "benefitsKit": {
       "statusPublished": "Publiée",
-      "statusModerated": "Sous l'œil d'un modérateur"
+      "statusModerated": "Sous l’œil d’un modérateur"
     }
   },
   "list": {
     "lostTitle": "Objets perdus",
     "foundTitle": "Objets trouvés",
-    "lostDescription": "Annonces de personnes qui ont perdu quelque chose. Si vous avez trouvé l'un de ces objets, signalez-le : on vous attend.",
-    "foundDescription": "Des objets ramassés que l'on souhaite rendre. Retrouvez le vôtre puis prenez contact.",
+    "lostDescription": "Annonces de personnes qui ont perdu quelque chose. Si vous avez trouvé l’un de ces objets, signalez-le : on vous attend.",
+    "foundDescription": "Des objets ramassés que l’on souhaite rendre. Retrouvez le vôtre puis prenez contact.",
     "search": "Recherche",
-    "searchHint": "Recherche dans le titre de l'annonce",
+    "searchHint": "Recherche dans le titre de l’annonce",
     "category": "Catégorie",
     "allCategories": "Toutes les catégories",
     "apply": "Appliquer",
@@ -128,24 +128,24 @@
     "showingSome": "{shown, plural, one {# annonce} other {# annonces}}",
     "showMore": "Afficher plus",
     "loading": "Chargement…",
-    "empty": "Rien ne correspond à ces filtres pour l'instant",
+    "empty": "Rien ne correspond à ces filtres pour l’instant",
     "emptyHint": "Essayez une plage de dates plus large, ou retirez le filtre de lieu.",
     "emptyAction": "Réinitialiser les filtres",
     "emptyFound": "Rien n’a encore été rapporté",
-    "emptyFoundHint": "Vous avez perdu quelque chose ? Publiez une annonce pour que la personne qui l'a trouvé reconnaisse votre objet.",
+    "emptyFoundHint": "Vous avez perdu quelque chose ? Publiez une annonce pour que la personne qui l’a trouvé reconnaisse votre objet.",
     "emptyLost": "Personne n’a encore signalé de perte",
     "emptyLostHint": "Vous avez trouvé quelque chose ? Publiez une annonce pour que le propriétaire puisse vous retrouver.",
     "dateRange": "Dates",
-    "anyDate": "N'importe quand",
+    "anyDate": "N’importe quand",
     "nearby": "Près de moi",
     "nearbyLocating": "Localisation en cours…",
-    "nearbyDenied": "Sans votre position, nous ne pouvons pas afficher les objets trouvés près de vous, et c'est pourtant le moyen le plus rapide de retrouver le vôtre. Vous pouvez l'autoriser dans les paramètres du site : l'icône à gauche de l'adresse dans le navigateur.",
+    "nearbyDenied": "Sans votre position, nous ne pouvons pas afficher les objets trouvés près de vous, et c’est pourtant le moyen le plus rapide de retrouver le vôtre. Vous pouvez l’autoriser dans les paramètres du site : l’icône à gauche de l’adresse dans le navigateur.",
     "nearbyUnavailable": "Impossible de déterminer où vous êtes pour le moment. Réessayez dans un instant.",
     "nearbyDismiss": "Fermer"
   },
   "sort": {
-    "DATE_DESC": "Plus récents d'abord",
-    "DATE_ASC": "Plus anciens d'abord",
+    "DATE_DESC": "Plus récents d’abord",
+    "DATE_ASC": "Plus anciens d’abord",
     "TITLE_ASC": "Titre A–Z",
     "TITLE_DESC": "Titre Z–A"
   },
@@ -158,17 +158,17 @@
     "place": "Lieu",
     "category": "Catégorie",
     "description": "Description",
-    "noDescription": "Aucune description n'a été laissée.",
+    "noDescription": "Aucune description n’a été laissée.",
     "openInMaps": "Ouvrir dans Google Maps",
     "contactTitle": "Contacter le propriétaire",
     "contactFinderTitle": "Contacter la personne qui a trouvé",
     "phone": "Téléphone",
     "email": "E-mail",
-    "maskedNote": "Les contacts sont partiellement masqués pour éviter le spam. Pour joindre la personne qui a publié l'annonce, envoyez-lui vos coordonnées ci-dessous.",
+    "maskedNote": "Les contacts sont partiellement masqués pour éviter le spam. Pour joindre la personne qui a publié l’annonce, envoyez-lui vos coordonnées ci-dessous.",
     "didYouFind": "Vous avez trouvé cet objet ?",
-    "didYouFindText": "Envoyez vos coordonnées : nous les transmettons à la personne qui l'a perdu, par e-mail et SMS. Elles ne sont jamais affichées publiquement.",
-    "isItYours": "C'est le vôtre ?",
-    "isItYoursText": "Envoyez vos coordonnées : nous les transmettons à la personne qui l'a trouvé, par e-mail et SMS. Elles ne sont jamais affichées publiquement.",
+    "didYouFindText": "Envoyez vos coordonnées : nous les transmettons à la personne qui l’a perdu, par e-mail et SMS. Elles ne sont jamais affichées publiquement.",
+    "isItYours": "C’est le vôtre ?",
+    "isItYoursText": "Envoyez vos coordonnées : nous les transmettons à la personne qui l’a trouvé, par e-mail et SMS. Elles ne sont jamais affichées publiquement.",
     "photoOf": "Photo : {title}",
     "openPhoto": "Ouvrir la photo en plein écran",
     "closePhoto": "Fermer",
@@ -177,22 +177,22 @@
     "metaSummary": "{category} · {place} · {date}"
   },
   "claim": {
-    "sendMine": "C'est à moi, envoyer mes coordonnées",
-    "sendFound": "Je l'ai trouvé, envoyer mes coordonnées",
+    "sendMine": "C’est à moi, envoyer mes coordonnées",
+    "sendFound": "Je l’ai trouvé, envoyer mes coordonnées",
     "submit": "Envoyer mes coordonnées",
     "submitting": "Envoi…",
     "cancel": "Annuler",
     "consent": "En envoyant, vous acceptez les <terms>conditions d’utilisation</terms> et la <privacy>politique de confidentialité</privacy>, et confirmez que ces coordonnées sont bien les vôtres.",
     "safetyNote": "Seul l’auteur de l’annonce recevra vos coordonnées. <link>Comment nous vous protégeons</link>",
     "doneTitle": "Coordonnées envoyées",
-    "doneFinder": "Nous avons transmis vos coordonnées à la personne qui l'a trouvé. Elle vous contactera.",
-    "doneOwner": "Nous avons transmis vos coordonnées à la personne qui l'a perdu. Elle vous contactera.",
+    "doneFinder": "Nous avons transmis vos coordonnées à la personne qui l’a trouvé. Elle vous contactera.",
+    "doneOwner": "Nous avons transmis vos coordonnées à la personne qui l’a perdu. Elle vous contactera.",
     "repeated": "Vous avez déjà répondu à cette annonce : son auteur a vos coordonnées.",
     "orPost": "Ou publiez votre propre annonce :",
     "unlock": {
-      "button": "Obtenir le numéro de l'auteur de l'annonce",
-      "title": "Le numéro de téléphone de l'auteur de l'annonce",
-      "text": "Nous enverrons le numéro de téléphone de l'auteur par SMS et par e-mail aux coordonnées que vous avez données dans votre réponse.",
+      "button": "Obtenir le numéro de l’auteur de l’annonce",
+      "title": "Le numéro de téléphone de l’auteur de l’annonce",
+      "text": "Nous enverrons le numéro de téléphone de l’auteur par SMS et par e-mail aux coordonnées que vous avez données dans votre réponse.",
       "support": "Votre paiement de 1 $ aide DeRechi à rester gratuit pour tous. Vous pouvez payer avec Apple Pay, Google Pay ou une carte bancaire.",
       "safety": "Nous n’envoyons jamais de lien de paiement par SMS ni par messagerie.",
       "pay": "Passer au paiement",
@@ -209,19 +209,19 @@
       "sent": "Le numéro de téléphone a été envoyé à votre e-mail et à votre téléphone."
     },
     "confirm": {
-      "title": "L'objet est-il revenu à son propriétaire ?",
-      "text": "Confirmer ferme l'annonce pour tout le monde : elle disparaît du tableau et passe aux archives.",
-      "button": "Oui, fermer l'annonce",
-      "doneTitle": "Merci, l'annonce est fermée",
-      "doneText": "Elle n'apparaît plus sur le tableau. Nous sommes ravis que l'objet ait retrouvé son chemin.",
-      "invalidTitle": "Ce lien n'est plus valide",
-      "invalidText": "L'annonce est peut-être déjà fermée. Vous n'avez rien d'autre à faire.",
-      "home": "Aller à l'accueil"
+      "title": "L’objet est-il revenu à son propriétaire ?",
+      "text": "Confirmer ferme l’annonce pour tout le monde : elle disparaît du tableau et passe aux archives.",
+      "button": "Oui, fermer l’annonce",
+      "doneTitle": "Merci, l’annonce est fermée",
+      "doneText": "Elle n’apparaît plus sur le tableau. Nous sommes ravis que l’objet ait retrouvé son chemin.",
+      "invalidTitle": "Ce lien n’est plus valide",
+      "invalidText": "L’annonce est peut-être déjà fermée. Vous n’avez rien d’autre à faire.",
+      "home": "Aller à l’accueil"
     },
     "error": {
       "notFound": "Cette annonce est déjà fermée.",
-      "failed": "Ça n'a pas fonctionné. Réessayez dans un instant.",
-      "captcha": "La vérification anti-spam n'est pas passée. Réessayez.",
+      "failed": "Ça n’a pas fonctionné. Réessayez dans un instant.",
+      "captcha": "La vérification anti-spam n’est pas passée. Réessayez.",
       "validation": "Certains champs sont encore à corriger."
     }
   },
@@ -259,28 +259,28 @@
     "rulesTitle": "Comment éviter les arnaques",
     "rules": {
       "prepay": {
-        "title": "Ne payez rien avant d'avoir l'objet en main",
-        "text": "L'escroc demande de l'argent d'avance « pour la livraison », « pour la garde » ou comme récompense, puis disparaît. Ne payez qu'au moment de la rencontre."
+        "title": "Ne payez rien avant d’avoir l’objet en main",
+        "text": "L’escroc demande de l’argent d’avance « pour la livraison », « pour la garde » ou comme récompense, puis disparaît. Ne payez qu’au moment de la rencontre."
       },
       "codes": {
-        "title": "Pour recevoir de l'argent, aucun code n'est nécessaire",
+        "title": "Pour recevoir de l’argent, aucun code n’est nécessaire",
         "text": "Un numéro de carte ou un IBAN suffit pour vous verser une récompense. Celui qui demande un code reçu par SMS, le CVV, le code PIN ou de « cliquer sur un lien pour recevoir le paiement » veut vider votre compte."
       },
       "verify": {
         "title": "Ne remettez ni ne récupérez un objet sur parole",
-        "text": "Demandez un détail absent de l'annonce. Et celui qui a vraiment trouvé votre objet pourra sans peine en montrer une photo à côté d'un papier daté du jour."
+        "text": "Demandez un détail absent de l’annonce. Et celui qui a vraiment trouvé votre objet pourra sans peine en montrer une photo à côté d’un papier daté du jour."
       },
       "meet": {
         "title": "Rencontrez-vous en public, pas chez vous",
-        "text": "Ne donnez pas votre adresse et n'invitez personne chez vous. Préférez la journée, un café, un centre commercial ou l'entrée d'un commissariat."
+        "text": "Ne donnez pas votre adresse et n’invitez personne chez vous. Préférez la journée, un café, un centre commercial ou l’entrée d’un commissariat."
       },
       "documents": {
-        "title": "N'envoyez pas de photos de papiers ni de cartes",
+        "title": "N’envoyez pas de photos de papiers ni de cartes",
         "text": "Elles servent à souscrire des crédits et à pirater des comptes. Rapportez une carte trouvée à la banque et des papiers à la police."
       },
       "report": {
         "title": "Vous repérez un escroc ? Écrivez-nous",
-        "text": "Envoyez le lien de l'annonce à {email} et nous la retirerons. Gardez les échanges : ils serviront pour porter plainte."
+        "text": "Envoyez le lien de l’annonce à {email} et nous la retirerons. Gardez les échanges : ils serviront pour porter plainte."
       }
     }
   },
@@ -296,32 +296,32 @@
     "OTHER": "Autre"
   },
   "error": {
-    "notFoundTitle": "Cette page n'existe pas",
-    "notFoundText": "L'annonce a peut-être été archivée une fois l'objet rendu.",
-    "notFoundJoke": "Même les pages se perdent parfois. Quelqu'un a peut-être déjà trouvé celle-ci.",
+    "notFoundTitle": "Cette page n’existe pas",
+    "notFoundText": "L’annonce a peut-être été archivée une fois l’objet rendu.",
+    "notFoundJoke": "Même les pages se perdent parfois. Quelqu’un a peut-être déjà trouvé celle-ci.",
     "notFoundHint": "Passez le curseur sur les chiffres et regardez-les brûler.",
     "browseFound": "Voir les objets trouvés",
     "genericTitle": "Un problème est survenu",
-    "genericText": "La requête n'est pas passée. Réessayez dans un instant.",
+    "genericText": "La requête n’est pas passée. Réessayez dans un instant.",
     "retry": "Réessayer",
-    "home": "Aller à l'accueil"
+    "home": "Aller à l’accueil"
   },
   "upload": {
     "label": "Déposez une image ici, ou choisissez un fichier",
-    "hint": "JPEG, PNG, WebP ou GIF, jusqu'à {size} Mo.",
+    "hint": "JPEG, PNG, WebP ou GIF, jusqu’à {size} Mo.",
     "choose": "Choisir un fichier",
     "uploading": "Envoi…",
     "uploaded": "Photo envoyée",
     "remove": "Retirer la photo",
     "preview": "Photo sélectionnée",
-    "unsupportedType": "Ce type de fichier n'est pas pris en charge.",
+    "unsupportedType": "Ce type de fichier n’est pas pris en charge.",
     "tooLarge": "Le fichier est trop volumineux.",
-    "failed": "L'envoi n'a pas abouti. Réessayez."
+    "failed": "L’envoi n’a pas abouti. Réessayez."
   },
   "form": {
     "pageTitleLost": "Signaler un objet perdu",
     "pageTitleFound": "Signaler un objet trouvé",
-    "pageDescription": "Sans compte. Plus vous donnez de détails, plus l'objet est facile à reconnaître.",
+    "pageDescription": "Sans compte. Plus vous donnez de détails, plus l’objet est facile à reconnaître.",
     "steps": {
       "details": "L’objet",
       "whereWhen": "Photo, date et lieu",
@@ -331,8 +331,8 @@
     "next": "Suivant",
     "back": "Retour",
     "draftRestored": "Votre brouillon est de retour : ce que vous aviez saisi a été conservé.",
-    "titleLost": "Qu'avez-vous perdu ?",
-    "titleFound": "Qu'avez-vous trouvé ?",
+    "titleLost": "Qu’avez-vous perdu ?",
+    "titleFound": "Qu’avez-vous trouvé ?",
     "category": "Catégorie",
     "categoryPlaceholder": "Choisissez une catégorie",
     "dateLost": "Date de la perte",
@@ -350,28 +350,28 @@
     "placeHintLost": "Indiquez le dernier endroit dont vous êtes sûr : c’est là qu’on le cherchera.",
     "placeHintFound": "Indiquez l’endroit où vous l’avez ramassé.",
     "placeLocate": "Utiliser ma position",
-    "placeLocating": "Recherche de l'adresse…",
-    "placeLocateDenied": "L'accès à la position est bloqué. Saisissez l'adresse ou autorisez l'accès dans les paramètres du site.",
-    "placeLocateFailed": "Impossible de trouver l'adresse automatiquement : saisissez-la.",
+    "placeLocating": "Recherche de l’adresse…",
+    "placeLocateDenied": "L’accès à la position est bloqué. Saisissez l’adresse ou autorisez l’accès dans les paramètres du site.",
+    "placeLocateFailed": "Impossible de trouver l’adresse automatiquement : saisissez-la.",
     "placeSearching": "Recherche…",
-    "placeNoResults": "Aucune annonce n'utilise encore ce lieu, nous le placerons là où vous êtes.",
+    "placeNoResults": "Aucune annonce n’utilise encore ce lieu, nous le placerons là où vous êtes.",
     "placeAddHere": "Ajouter « {name} » ici, où je suis",
     "placeAddHereHint": "Si aucun des lieux ci-dessus ne convient.",
     "placeAddDenied": "Pour ajouter un nouveau lieu, nous avons besoin de votre position : autorisez-la dans les paramètres du site ou choisissez un lieu dans la liste.",
     "placeAddFailed": "Impossible de déterminer où vous êtes. Réessayez ou choisissez un lieu dans la liste.",
     "placeManual": "Les suggestions Google sont désactivées : nous cherchons parmi les lieux déjà utilisés dans les annonces.",
-    "placeUnavailable": "Les suggestions Google n'ont pas pu être chargées : nous cherchons parmi les lieux déjà utilisés dans les annonces.",
+    "placeUnavailable": "Les suggestions Google n’ont pas pu être chargées : nous cherchons parmi les lieux déjà utilisés dans les annonces.",
     "phone": "Téléphone",
     "email": "E-mail",
     "messengers": "Messageries sur ce numéro",
-    "messengersHint": "Nous les transmettons pour qu'on vous joigne comme vous préférez.",
-    "publish": "Publier l'annonce",
+    "messengersHint": "Nous les transmettons pour qu’on vous joigne comme vous préférez.",
+    "publish": "Publier l’annonce",
     "publishing": "Publication…",
     "cancel": "Annuler",
     "consent": "En publiant, vous acceptez les <terms>conditions d’utilisation</terms> et la <privacy>politique de confidentialité</privacy>, y compris que vos coordonnées partiellement masquées figurent sur l’annonce.",
     "previewTitle": "Aperçu",
     "previewEmpty": "Votre titre apparaîtra ici",
-    "previewNoPlace": "Aucun lieu choisi pour l'instant",
+    "previewNoPlace": "Aucun lieu choisi pour l’instant",
     "tipsTitle": "Conseils",
     "lostTip1": "Nommez l’objet simplement : « Portefeuille noir », pas « J’ai perdu mon portefeuille, aidez-moi !!! ».",
     "lostTip2": "Indiquez le dernier endroit dont vous êtes sûr.",
@@ -386,8 +386,8 @@
     },
     "error": {
       "required": "Ce champ est obligatoire.",
-      "tooLong": "C'est trop long.",
-      "invalid": "Cette valeur n'est pas valide.",
+      "tooLong": "C’est trop long.",
+      "invalid": "Cette valeur n’est pas valide.",
       "future": "La date ne peut pas être dans le futur.",
       "tooOld": "Les annonces ne sont acceptées que pour les 30 derniers jours.",
       "rewardMax": "La récompense ne peut pas dépasser 99 999 UAH.",
@@ -397,8 +397,8 @@
       "phoneFormat": "Utilisez le format international, par exemple +380671234567.",
       "emailFormat": "Cette adresse e-mail semble incorrecte.",
       "validation": "Certains champs sont encore à corriger.",
-      "captcha": "La vérification anti-spam n'est pas passée. Réessayez.",
-      "failed": "L'annonce n'a pas pu être publiée. Réessayez dans un instant."
+      "captcha": "La vérification anti-spam n’est pas passée. Réessayez.",
+      "failed": "L’annonce n’a pas pu être publiée. Réessayez dans un instant."
     },
     "pickDate": "Choisissez une date"
   },
@@ -410,11 +410,11 @@
     "home": {
       "report": {
         "title": "Commencez par votre côté",
-        "text": "Vous avez perdu un objet ou ramassé celui de quelqu'un ? Les deux prennent une minute et ne demandent aucun compte."
+        "text": "Vous avez perdu un objet ou ramassé celui de quelqu’un ? Les deux prennent une minute et ne demandent aucun compte."
       },
       "search": {
         "title": "Regardez avant de publier",
-        "text": "Cherchez par le nom de l'objet et la période approximative. Ce que vous choisissez se retrouve dans l'adresse : la recherche peut être gardée ou envoyée."
+        "text": "Cherchez par le nom de l’objet et la période approximative. Ce que vous choisissez se retrouve dans l’adresse : la recherche peut être gardée ou envoyée."
       },
       "recent": {
         "title": "Les dernières trouvailles",
@@ -422,13 +422,13 @@
       },
       "language": {
         "title": "Cinq langues",
-        "text": "Ukrainien, anglais, polonais, allemand et français. Votre choix est retenu et vaut aussi pour l'interface d'administration."
+        "text": "Ukrainien, anglais, polonais, allemand et français. Votre choix est retenu et vaut aussi pour l’interface d’administration."
       }
     },
     "report": {
       "details": {
-        "title": "Nommez l'objet simplement",
-        "text": "Un nom court et ordinaire fonctionne le mieux : les rayures, l'usure et le contenu vont dans la description."
+        "title": "Nommez l’objet simplement",
+        "text": "Un nom court et ordinaire fonctionne le mieux : les rayures, l’usure et le contenu vont dans la description."
       },
       "photo": {
         "title": "La photo fait le plus gros",
@@ -440,7 +440,7 @@
       },
       "contacts": {
         "title": "Qui voit vos coordonnées",
-        "text": "Vos coordonnées ne s'affichent qu'en partie. La personne qui reconnaît l'objet vous envoie les siennes depuis l'annonce, et vous les recevez par e-mail et SMS."
+        "text": "Vos coordonnées ne s’affichent qu’en partie. La personne qui reconnaît l’objet vous envoie les siennes depuis l’annonce, et vous les recevez par e-mail et SMS."
       }
     }
   },

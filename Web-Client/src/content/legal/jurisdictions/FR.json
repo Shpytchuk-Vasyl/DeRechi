@@ -7,7 +7,7 @@
       "governingLaw": "These terms are governed by the law of France. We first offer to settle any dispute by writing to {email}; if that fails, it goes to court under French law.",
       "dataLaw": "This policy follows the General Data Protection Regulation (GDPR) and the French Data Protection Act (loi Informatique et Libertés).",
       "rightsBasis": "Under Articles 15–21 of the GDPR you have the right to:",
-      "complaintRight": "complain to the CNIL (Commission nationale de l'informatique et des libertés)."
+      "complaintRight": "complain to the CNIL (Commission nationale de l’informatique et des libertés)."
     },
     "uk": {
       "findersLaw": "За французьким правом знайдену річ треба здати до мерії або поліції за місцем знахідки (objets trouvés); залишити її собі можна лише якщо ніхто не заявив про неї протягом установленого законом строку (Цивільний кодекс, ст. 2276). Законної винагороди за знахідку у Франції немає: вона на розсуд власника.",
@@ -28,7 +28,7 @@
       "governingLaw": "Auf diese Bedingungen ist französisches Recht anwendbar. Streitfragen schlagen wir vor, zunächst im Schriftverkehr unter {email} zu klären; gelingt keine Einigung, entscheidet ein Gericht nach französischem Recht.",
       "dataLaw": "Die Erklärung entspricht der Datenschutz-Grundverordnung (DSGVO) und dem französischen Datenschutzgesetz (loi Informatique et Libertés).",
       "rightsBasis": "Gemäß Artikel 15–21 DSGVO haben Sie das Recht:",
-      "complaintRight": "sich bei der CNIL (Commission nationale de l'informatique et des libertés) zu beschweren."
+      "complaintRight": "sich bei der CNIL (Commission nationale de l’informatique et des libertés) zu beschweren."
     },
     "fr": {
       "findersLaw": "En droit français, un objet trouvé doit être remis à la mairie ou à la police du lieu de la découverte (service des objets trouvés) ; la personne qui l’a trouvé ne peut le conserver que si personne ne le réclame dans le délai légal (Code civil, art. 2276). La loi ne prévoit pas de récompense obligatoire : elle reste à la discrétion du propriétaire.",

@@ -39,6 +39,10 @@ in `Web-Client/README.md`; the gateway side is in [../file-storage.md](../file-s
 - **Claims**: the notice page posts `claimLostItem` / `claimFoundItem` from a server action and
   `/{locale}/claims/{token}` is the page behind the reminder links (`confirmReturn`); the
   backend's `DERECHI_SITE_URL` must point at this client for those links to work.
+- **New query**: every GraphQL read in `src/api/` takes its TTL and cache tag from
+  `src/lib/cache.ts` (`CACHE`), and server actions drop tags through `invalidate` there.
+  Pick a TTL tier by how stale the data may get and add a policy rather than a number at the
+  call site. `stats` is cached for five minutes and refreshed when a found notice is posted.
 - **New country or currency**: the client reads `countries { code currency }` from the
   API; nothing is hard-coded on its side.
 - **Gateway CORS or routes**: `WEB_ORIGIN_PATTERNS` must include the origin the browser
