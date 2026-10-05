@@ -167,8 +167,9 @@ the claims **and their contact infos** (`deleteClaims`, next to `deleteMatches`)
 A responder never sees the author's contacts for free; the author decides whom to call back.
 After responding, the notice page offers "Get the author's phone number": a small dialog explains
 that the number will be sent by SMS and email to the contacts the responder gave, that this is how
-the service is funded (about $1), and shows a "Pay on Fourthwall" button that opens the checkout in
-a new tab. Only the phone number is sent; the author's email and messengers stay private. The
+the $1 payment keeps the service free, and shows a "Continue to payment" button that opens the
+Fourthwall checkout in a new tab. A claimant can open one checkout a week (`UNLOCK_LIMIT`); the
+dialog then says when the next one is possible instead of offering a retry. Only the phone number is sent; the author's email and messengers stay private. The
 dialog polls the claim status every 20 seconds and switches to "payment received" and then "sent to
 your email and phone".
 
@@ -191,6 +192,19 @@ The flow:
    minute per shop, so a 429, a 5xx or a timeout surfaces as the GraphQL error
    `PAYMENT_UNAVAILABLE` and the dialog offers to try again. The product is kept after the payment
    on purpose: it is the shop's record of the sale.
+
+   One claimant opens at most `derechi.claims.unlock-limit` checkouts (1) per
+   `derechi.claims.unlock-window` (P7D), so buying authors' numbers in bulk does not pay. The
+   claimant is the phone **or** the email (case-insensitive) of the claim, over both claim tables
+   and archived claims too. Every checkout counts, paid or not, which also keeps one claimant from
+   using up the Fourthwall product limit. Before the product is created, `ClaimService.reserveCheckout` stamps
+   the claim's `payment_requested_at`, after `ClaimUnlockLimiter` has counted the claimant's stamps
+   inside the window (`ClaimRepository.findPaymentRequestedSince`, once per claim table); a claim
+   that is stamped already is not counted again, and a failed Fourthwall call clears the stamp.
+   There is no lock: two unlocks by one claimant on different claims at the same moment can both
+   pass the count. Over the limit the mutation fails with the GraphQL error
+   `UNLOCK_LIMIT`, `extensions.retryAfter` holding the ISO-8601 instant when the next checkout is
+   allowed. A claim that already has its checkout keeps getting it back, limit or not.
 2. Fourthwall posts `ORDER_PLACED` to `POST /api/client/webhooks/fourthwall` (through the gateway's
    `/api/client/**` route). `FourthwallWebhookController` checks `X-Fourthwall-Hmac-SHA256`
    (HMAC-SHA256 of the raw body, base64, key `derechi.fourthwall.webhook-secret`), answers 401

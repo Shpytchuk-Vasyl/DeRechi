@@ -52,6 +52,9 @@ public abstract class Claim<T extends Thing> {
     private String paymentVariantId;
 
     @Column
+    private Instant paymentRequestedAt;
+
+    @Column
     private Instant paidAt;
 
     @Column

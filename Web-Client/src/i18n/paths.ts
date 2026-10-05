@@ -5,6 +5,7 @@ export const paths = {
   prize: "/prize",
   terms: "/terms",
   privacy: "/privacy",
+  safety: "/safety",
 
   list: (kind: ItemKind) => `/${kind}` as const,
   item: (kind: ItemKind, id: string) => `/${kind}/${id}` as const,

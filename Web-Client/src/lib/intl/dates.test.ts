@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { formatNoticeDate, fromIsoDate, toIsoDate } from "./dates"
+import { formatNoticeDate, fromIsoDate, fromIsoInstant, toIsoDate } from "./dates"
 
 describe("ISO dates", () => {
   it("reads a date as a local calendar day, not as UTC midnight", () => {
@@ -17,6 +17,24 @@ describe("ISO dates", () => {
 
   it.each([undefined, null, "", "2026-02-30", "01.09.2026"])("gives no date for %s", (value) => {
     expect(fromIsoDate(value)).toBeUndefined()
+  })
+})
+
+describe("fromIsoInstant", () => {
+  it("reads an instant from the API as that point in time", () => {
+    expect(fromIsoInstant("2026-10-12T09:30:00Z")?.toISOString()).toBe("2026-10-12T09:30:00.000Z")
+  })
+
+  it("accepts a Java Instant with nanoseconds", () => {
+    expect(fromIsoInstant("2026-10-12T09:30:00.123456789Z")?.toISOString()).toBe(
+      "2026-10-12T09:30:00.123Z",
+    )
+  })
+
+  it("gives nothing for a missing or broken value", () => {
+    expect(fromIsoInstant(null)).toBeUndefined()
+    expect(fromIsoInstant("")).toBeUndefined()
+    expect(fromIsoInstant("next week")).toBeUndefined()
   })
 })
 

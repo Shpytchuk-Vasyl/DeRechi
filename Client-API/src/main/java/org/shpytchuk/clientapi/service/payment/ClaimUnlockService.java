@@ -38,10 +38,17 @@ public class ClaimUnlockService {
         if (claim.paid() || claim.paymentVariantId() != null) {
             return claim;
         }
-        FourthwallProduct product = fourthwall.createDigitalProduct(
-                properties.productName().formatted(kind + "-" + claim.id()),
-                properties.productDescription(),
-                properties.price());
+        service.reserveCheckout(claim.id());
+        FourthwallProduct product;
+        try {
+            product = fourthwall.createDigitalProduct(
+                    properties.productName().formatted(kind + "-" + claim.id()),
+                    properties.productDescription(),
+                    properties.price());
+        } catch (RuntimeException e) {
+            service.releaseCheckout(claim.id());
+            throw e;
+        }
         ClaimDto attached = service.attachProduct(claim.id(), product);
         if (!product.variantId().equals(attached.paymentVariantId())) {
             log.warn("Fourthwall product {} is orphaned: {} claim {} already had variant {}",

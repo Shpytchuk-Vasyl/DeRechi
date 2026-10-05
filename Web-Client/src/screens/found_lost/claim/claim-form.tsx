@@ -5,6 +5,7 @@ import { ContactFields } from "@/components/form/contact-fields"
 import { LegalLink } from "@/components/form/legal-link"
 import { Button } from "@/components/pouf/Button"
 import { ErrorNote } from "@/components/pouf/feedback"
+import { SafetyLink, SafetyNote } from "@/components/safety/safety-note"
 import { paths } from "@/i18n/paths"
 import type { ClaimValues } from "@/schema/claim-schema"
 import { useClaimItem } from "./claim-item"
@@ -41,6 +42,10 @@ export default function ClaimForm({ failure, onSubmit, onCancel }: Props) {
           privacy: legal(paths.privacy),
         })}
       </p>
+
+      <SafetyNote>
+        {tc.rich("safetyNote", { link: (chunks) => <SafetyLink newTab>{chunks}</SafetyLink> })}
+      </SafetyNote>
 
       {failure ? <ErrorNote>{failure}</ErrorNote> : null}
 

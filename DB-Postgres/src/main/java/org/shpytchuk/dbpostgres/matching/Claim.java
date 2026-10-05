@@ -44,6 +44,9 @@ public abstract class Claim {
     private String paymentVariantId;
 
     @Column
+    private Instant paymentRequestedAt;
+
+    @Column
     private Instant paidAt;
 
     @Column

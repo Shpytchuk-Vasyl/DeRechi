@@ -14,6 +14,7 @@
     "language": "Język",
     "terms": "Regulamin",
     "privacy": "Prywatność",
+    "safety": "Bezpieczeństwo",
     "tour": "Pokaż, jak to działa",
     "footerNotices": "Ogłoszenia",
     "footerDocuments": "Dokumenty"
@@ -22,6 +23,7 @@
     "heroTitle": "Zgubione? Ktoś mógł to znaleźć",
     "heroText": "Tablica rzeczy zgubionych i znalezionych. Opisz swoją zgubę albo przejrzyj znaleziska: za darmo i bez konta.",
     "rewardNote": "Znalazcy przysługuje wynagrodzenie za zwrot rzeczy; dokładne zasady zależą od kraju.",
+    "safetyNote": "Kontakty są ukryte, a danych Twojej karty nie widzimy. <link>Jak Cię chronimy</link>",
     "scrollCue": "Jak to działa",
     "searchTitle": "Sprawdź, czy rzecz już się znalazła",
     "searchWhat": "Czego szukasz",
@@ -57,14 +59,16 @@
     "benefit1Text": "Dodanie ogłoszenia i przeszukiwanie tablicy nic nie kosztują.",
     "benefit2Title": "Bez konta",
     "benefit2Text": "Bez rejestracji i hasła: wystarczy kontakt do Ciebie.",
-    "benefit3Title": "Ukryte kontakty",
-    "benefit3Text": "Telefon i e-mail pokazujemy częściowo, żeby chronić Cię przed spamem.",
+    "benefit3Title": "Kontakty pod ochroną",
+    "benefit3Text": "Telefon i e-mail w ogłoszeniu są częściowo ukryte. Pełny numer dostaje tylko osoba, która odpowiedziała, a e-maila — nikt.",
     "benefit4Title": "Pięć języków",
     "benefit4Text": "Ukraiński, angielski, polski, niemiecki i francuski.",
     "benefit5Title": "Moderacja",
     "benefit5Text": "Ogłoszenie pojawia się od razu. Moderator wkracza tylko w razie potrzeby: poprawia lub usuwa to, co tu nie pasuje.",
     "benefit6Title": "Bez reklam",
     "benefit6Text": "Żadnych banerów, tylko ogłoszenia ludzi.",
+    "benefit7Title": "Bezpieczna płatność",
+    "benefit7Text": "Dane karty widzi tylko operator płatności. Jedna osoba może uzyskać numer autora najwyżej raz w tygodniu, więc kontaktów nie da się zebrać hurtowo.",
     "faqTitle": "Częste pytania",
     "faqQ1": "Jak skontaktować się z osobą, która znalazła rzecz?",
     "faqA1": "Kontakty w ogłoszeniu są pokazane częściowo, żeby chronić Cię przed spamem. Kliknij w ogłoszeniu „To moje, wyślij moje dane”: przekażemy Twój telefon i e-mail osobie, która znalazła rzecz, mailem i SMS-em, a ona się z Tobą skontaktuje. W ogłoszeniu o zgubie działa to tak samo w drugą stronę.",
@@ -183,20 +187,25 @@
     "submitting": "Wysyłanie…",
     "cancel": "Anuluj",
     "consent": "Wysyłając, akceptujesz <terms>warunki korzystania</terms> i <privacy>politykę prywatności</privacy> oraz potwierdzasz, że to Twoje własne dane kontaktowe.",
+    "safetyNote": "Twoje dane kontaktowe otrzyma tylko autor ogłoszenia. <link>Jak Cię chronimy</link>",
     "doneTitle": "Dane wysłane",
     "doneFinder": "Przekazaliśmy Twoje dane znalazcy. Ta osoba się z Tobą skontaktuje.",
     "doneOwner": "Przekazaliśmy Twoje dane właścicielowi. Ta osoba się z Tobą skontaktuje.",
     "repeated": "To ogłoszenie ma już Twoją odpowiedź: autor ma Twoje dane.",
+    "doneSafety": "Nie płać z góry i umawiaj się w miejscu, gdzie jest dużo ludzi. <link>Porady bezpieczeństwa</link>",
     "orPost": "Albo dodaj własne ogłoszenie:",
     "unlock": {
       "button": "Uzyskaj numer autora ogłoszenia",
       "title": "Numer telefonu autora ogłoszenia",
       "text": "Numer telefonu autora wyślemy SMS-em i e-mailem na dane z Twojej odpowiedzi.",
       "support": "Twoja płatność w wysokości 1 $ pomaga, by DeRechi pozostał bezpłatny dla wszystkich. Możesz zapłacić przez Apple Pay, Google Pay lub kartą płatniczą.",
+      "safety": "Dane karty widzi tylko operator płatności — my ich nie otrzymujemy. Nigdy nie wysyłamy linków do płatności SMS-em ani przez komunikatory.",
       "pay": "Przejdź do płatności",
       "preparing": "Przygotowujemy płatność…",
       "unavailable": "Płatności są teraz przeciążone. Spróbuj ponownie za minutę.",
       "failed": "Nie udało się przygotować płatności. Spróbuj ponownie.",
+      "limited": "Numer autora można uzyskać raz w tygodniu, a w tym tygodniu ten limit jest już wykorzystany. Spróbuj później.",
+      "limitedUntil": "Numer autora można uzyskać raz w tygodniu. Spróbuj ponownie {date}.",
       "retry": "Spróbuj ponownie",
       "timing": "Zwykle trwa to kilka minut od płatności.",
       "waiting": "To okno odświeża się samo; można je też zamknąć, numer i tak dotrze.",
@@ -220,6 +229,78 @@
       "captcha": "Weryfikacja antyspamowa nie powiodła się. Spróbuj ponownie.",
       "validation": "Niektóre pola wymagają poprawy."
     }
+  },
+  "safety": {
+    "title": "Bezpieczeństwo",
+    "metaDescription": "Jak DeRechi chroni Twoje dane kontaktowe i płatności oraz jak bezpiecznie oddać zgubioną rzecz.",
+    "intro": "DeRechi łączy nieznajomych, dlatego dbamy, by Twoje dane kontaktowe nie trafiły w niepowołane ręce, i podpowiadamy, jak nie dać się oszukać.",
+    "protectTitle": "Jak DeRechi Cię chroni",
+    "protect": {
+      "contacts": {
+        "title": "Kontakty nie są publikowane",
+        "text": "W ogłoszeniu telefon i e-mail widać tylko częściowo. Pełny numer dostaje wyłącznie osoba, która odpowiedziała na ogłoszenie i za niego zapłaciła, a e-maila — nikt."
+      },
+      "replies": {
+        "title": "Odpowiedź widzi tylko autor",
+        "text": "Dane kontaktowe z Twojej odpowiedzi przekazujemy wyłącznie autorowi ogłoszenia, e-mailem i SMS-em. Nigdzie na stronie się nie pojawiają."
+      },
+      "card": {
+        "title": "Dane karty do nas nie trafiają",
+        "text": "Płatność przyjmuje Fourthwall na własnej stronie. Nie widzimy ani nie przechowujemy danych karty ani portfela."
+      },
+      "limit": {
+        "title": "Numerów nie da się zebrać hurtowo",
+        "text": "Jedna osoba może uzyskać numer autora najwyżej raz w tygodniu, więc Twoje dane nie trafią do baz spamerów ani oszustów telefonicznych."
+      },
+      "accounts": {
+        "title": "Brak haseł, które mogą wyciec",
+        "text": "W DeRechi nie ma kont, więc nie ma też haseł, które można ukraść lub odgadnąć."
+      },
+      "moderation": {
+        "title": "Weryfikacja i moderacja",
+        "text": "Formularze sprawdzają, czy wysyła je człowiek, a nie bot. Moderator usuwa ogłoszenia, które łamią zasady lub ujawniają cudze dane."
+      },
+      "retention": {
+        "title": "Dane nie są przechowywane wiecznie",
+        "text": "Dane kontaktowe z odpowiedzi usuwamy po roku. Gdy rzecz wróci do właściciela, ogłoszenie trafia do archiwum i znika ze strony."
+      }
+    },
+    "tipsTitle": "Jak bezpiecznie oddać rzecz",
+    "tipsAllTitle": "Dla wszystkich",
+    "tipsLostTitle": "Jeśli szukasz swojej rzeczy",
+    "tipsFoundTitle": "Jeśli masz cudzą rzecz",
+    "tips": {
+      "payOnSite": {
+        "title": "Płać tylko na stronie",
+        "text": "Jedyną płatnością w DeRechi jest 1 $ za numer autora, przyciskiem na stronie ogłoszenia. Nigdy nie wysyłamy linków do płatności SMS-em, przez komunikatory ani e-mailem."
+      },
+      "codes": {
+        "title": "Nie podawaj kodów",
+        "text": "Nikomu nie podawaj kodów z SMS-ów, CVV ani PIN-u, nawet jeśli dzwoniący podaje się za bank, policję lub DeRechi."
+      },
+      "meet": {
+        "title": "Spotykaj się w ruchliwym miejscu",
+        "text": "Wybierz porę dnia i miejsce, gdzie jest dużo ludzi: kawiarnię, galerię handlową lub wejście na komisariat. Możesz przyjść z kimś."
+      },
+      "noPrepay": {
+        "title": "Nie płać z góry",
+        "text": "Ani za dostawę, ani jako znaleźne, dopóki rzecz nie jest w Twoich rękach. Znaleźne przekazuje się przy spotkaniu."
+      },
+      "proof": {
+        "title": "Poproś o dowód",
+        "text": "Ktoś, kto naprawdę znalazł Twoją rzecz, bez trudu wyśle jej zdjęcie z kartką z dzisiejszą datą albo opisze szczegół, którego nie ma w ogłoszeniu."
+      },
+      "verify": {
+        "title": "Sprawdź, czy to właściciel",
+        "text": "Poproś o opisanie tego, czego nie widać na zdjęciu: zawartości portfela, breloka przy kluczach, tapety na ekranie blokady telefonu."
+      },
+      "documents": {
+        "title": "Dokumenty i karty wymagają ostrożności",
+        "text": "Nie wysyłaj zdjęć dokumentów ani kart. Kartę bankową zwróć do banku, a dokumenty, jeśli właściciel się nie odezwie, oddaj na policję lub do biura rzeczy znalezionych."
+      }
+    },
+    "troubleTitle": "Jeśli coś poszło nie tak",
+    "troubleText": "Jeśli ktoś prosi o zapłatę poza stroną albo podejrzewasz oszustwo, zgłoś się na policję i napisz do nas na {email}: usuniemy podejrzane ogłoszenie."
   },
   "category": {
     "DOCUMENTS": "Dokumenty",

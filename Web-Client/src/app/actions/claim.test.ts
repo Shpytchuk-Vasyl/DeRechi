@@ -13,7 +13,7 @@ const mocks = vi.hoisted(() => {
   class GraphQLRequestError extends Error {
     constructor(
       message: string,
-      readonly errors: { extensions?: { classification?: string } }[],
+      readonly errors: { extensions?: { classification?: string; retryAfter?: string } }[],
     ) {
       super(message)
     }
@@ -24,6 +24,11 @@ const mocks = vi.hoisted(() => {
 
     get isPaymentUnavailable(): boolean {
       return this.errors.some((error) => error.extensions?.classification === "PAYMENT_UNAVAILABLE")
+    }
+
+    get unlockLimit(): { retryAfter: string | null } | null {
+      const error = this.errors.find((it) => it.extensions?.classification === "UNLOCK_LIMIT")
+      return error ? { retryAfter: error.extensions?.retryAfter ?? null } : null
     }
   }
 
@@ -315,6 +320,36 @@ describe("unlockClaim", () => {
     )
 
     expect(await unlockClaim("lost", "7", CLAIM_ID)).toEqual({ ok: false, reason: "unavailable" })
+  })
+
+  it("tells the claimant when they can get a number again after the weekly limit", async () => {
+    mocks.graphqlRequest.mockRejectedValue(
+      new mocks.GraphQLRequestError("Unlock limit reached", [
+        {
+          extensions: { classification: "UNLOCK_LIMIT", retryAfter: "2026-10-12T09:30:00Z" },
+        },
+      ]),
+    )
+
+    expect(await unlockClaim("lost", "7", CLAIM_ID)).toEqual({
+      ok: false,
+      reason: "limited",
+      retryAfter: "2026-10-12T09:30:00Z",
+    })
+  })
+
+  it("reports the weekly limit without a date when the API gives none", async () => {
+    mocks.graphqlRequest.mockRejectedValue(
+      new mocks.GraphQLRequestError("Unlock limit reached", [
+        { extensions: { classification: "UNLOCK_LIMIT" } },
+      ]),
+    )
+
+    expect(await unlockClaim("lost", "7", CLAIM_ID)).toEqual({
+      ok: false,
+      reason: "limited",
+      retryAfter: null,
+    })
   })
 
   it("reports a claim that is not on that notice as notFound", async () => {

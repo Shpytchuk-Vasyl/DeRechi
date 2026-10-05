@@ -2,9 +2,11 @@ import { cx } from "class-variance-authority"
 import {
   ArrowRight,
   Coins,
+  CreditCard,
   EyeOff,
   Globe,
   KeyRound,
+  Lock,
   Megaphone,
   MegaphoneOff,
   Phone,
@@ -22,12 +24,13 @@ export type Benefit = AutoTab
 export async function getBenefits(): Promise<Benefit[]> {
   const t = await getTranslations("home")
 
-  const claims: Pick<Benefit, "icon" | "tone" | "panel">[] = [
-    { icon: <Coins />, tone: "yellow", panel: <FreePanel /> },
-    { icon: <UserRoundX />, tone: "blue", panel: <NoAccountPanel /> },
-    { icon: <EyeOff />, tone: "pink", panel: <HiddenContactsPanel /> },
-    { icon: <Globe />, tone: "mint", panel: <LanguagesPanel /> },
+  const claims: (Pick<Benefit, "icon" | "tone" | "panel"> & { number: number })[] = [
+    { number: 1, icon: <Coins />, tone: "yellow", panel: <FreePanel /> },
+    { number: 3, icon: <EyeOff />, tone: "pink", panel: <HiddenContactsPanel /> },
+    { number: 7, icon: <CreditCard />, tone: "mint", panel: <SafePaymentPanel /> },
+    { number: 2, icon: <UserRoundX />, tone: "blue", panel: <NoAccountPanel /> },
     {
+      number: 5,
       icon: <ShieldCheck />,
       tone: "purple",
       panel: (
@@ -37,18 +40,16 @@ export async function getBenefits(): Promise<Benefit[]> {
         />
       ),
     },
-    { icon: <MegaphoneOff />, tone: "orange", panel: <NoAdsPanel /> },
+    { number: 6, icon: <MegaphoneOff />, tone: "orange", panel: <NoAdsPanel /> },
+    { number: 4, icon: <Globe />, tone: "blue", panel: <LanguagesPanel /> },
   ]
 
-  return claims.map((claim, index) => {
-    const number = index + 1
-    return {
-      id: number,
-      title: t(`benefit${number}Title`),
-      text: t(`benefit${number}Text`),
-      ...claim,
-    }
-  })
+  return claims.map(({ number, ...claim }) => ({
+    id: number,
+    title: t(`benefit${number}Title`),
+    text: t(`benefit${number}Text`),
+    ...claim,
+  }))
 }
 
 function FreePanel() {
@@ -81,6 +82,16 @@ function HiddenContactsPanel() {
       <Phone className="size-4" aria-hidden />
       <span className="tabular-nums">+38067*****45</span>
       <EyeOff className="size-4 text-muted-foreground" aria-hidden />
+    </div>
+  )
+}
+
+function SafePaymentPanel() {
+  return (
+    <div className="cushion-field flex items-center gap-2 rounded-control bg-bg px-4 py-2.5 font-black text-ink">
+      <CreditCard className="size-4" aria-hidden />
+      <span className="text-muted-foreground tabular-nums tracking-[2px]">•••• ••••</span>
+      <Lock className="size-4 text-mint" aria-hidden />
     </div>
   )
 }

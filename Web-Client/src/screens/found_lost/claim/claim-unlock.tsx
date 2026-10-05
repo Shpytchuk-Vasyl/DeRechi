@@ -1,5 +1,5 @@
 import { CircleCheck, ExternalLink, Phone } from "lucide-react"
-import { useTranslations } from "next-intl"
+import { useFormatter, useTranslations } from "next-intl"
 import { useCallback, useEffect, useState } from "react"
 import { claimStatus, unlockClaim } from "@/app/actions/claim"
 import { Button } from "@/components/pouf/Button"
@@ -15,6 +15,8 @@ import { ErrorNote } from "@/components/pouf/feedback"
 import { LinkButton } from "@/components/pouf/link-button"
 import { Blob } from "@/components/pouf/media"
 import { Text } from "@/components/pouf/text"
+import { SafetyNote } from "@/components/safety/safety-note"
+import { fromIsoInstant } from "@/lib/intl/dates"
 import { useClaimItem } from "./claim-item"
 
 export type PhoneUnlock = {
@@ -31,7 +33,10 @@ type Props = {
   onChange: (update: PhoneUnlockUpdate) => void
 }
 
-type Failure = "unavailable" | "failed" | null
+type Failure =
+  | { reason: "unavailable" | "failed" }
+  | { reason: "limited"; retryAfter: Date | undefined }
+  | null
 
 const POLL_EVERY_MS = 20_000
 const POLL_FOR_MS = 15 * 60_000
@@ -39,6 +44,7 @@ const POLL_FOR_MS = 15 * 60_000
 export default function ClaimUnlock({ unlock, onChange }: Props) {
   const { kind, itemId } = useClaimItem()
   const t = useTranslations("claim.unlock")
+  const format = useFormatter()
   const [open, setOpen] = useState(false)
   const [timedOut, setTimedOut] = useState(false)
   const [preparing, setPreparing] = useState(false)
@@ -61,7 +67,11 @@ export default function ClaimUnlock({ unlock, onChange }: Props) {
       })
       return
     }
-    setFailure(result.reason === "unavailable" ? "unavailable" : "failed")
+    setFailure(
+      result.reason === "limited"
+        ? { reason: "limited", retryAfter: fromIsoInstant(result.retryAfter) }
+        : { reason: result.reason === "unavailable" ? "unavailable" : "failed" },
+    )
   }, [kind, itemId, claimId, onChange])
 
   useEffect(() => {
@@ -110,16 +120,16 @@ export default function ClaimUnlock({ unlock, onChange }: Props) {
         ) : null}
       </div>
     </div>
-  ) : null
+  ) : (
+    <Button onClick={() => onOpenChange(true)}>
+      <Phone className="size-4" aria-hidden />
+      {t("button")}
+    </Button>
+  )
 
   return (
-    <div className="mt-5">
-      {status ?? (
-        <Button onClick={() => onOpenChange(true)}>
-          <Phone className="size-4" aria-hidden />
-          {t("button")}
-        </Button>
-      )}
+    <div className={paid ? "mt-5 -ml-14.5" : "mt-5"}>
+      {status}
 
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent size="md">
@@ -128,20 +138,32 @@ export default function ClaimUnlock({ unlock, onChange }: Props) {
             <DialogDescription>{t("text")}</DialogDescription>
           </DialogHeader>
           <DialogBody className="flex flex-col gap-5" aria-live="polite">
-            {status ?? (
+            {paid ?? (
               <>
                 <Text muted className="block leading-relaxed">
                   {t("support")}
                 </Text>
+                <SafetyNote>{t("safety")}</SafetyNote>
 
                 {checkoutUrl ? (
                   <LinkButton href={checkoutUrl} target="_blank" block>
                     <ExternalLink className="size-4" aria-hidden />
                     {t("pay")}
                   </LinkButton>
+                ) : failure?.reason === "limited" ? (
+                  <ErrorNote>
+                    {failure.retryAfter
+                      ? t("limitedUntil", {
+                          date: format.dateTime(failure.retryAfter, {
+                            dateStyle: "long",
+                            timeStyle: "short",
+                          }),
+                        })
+                      : t("limited")}
+                  </ErrorNote>
                 ) : failure ? (
                   <>
-                    <ErrorNote>{t(failure)}</ErrorNote>
+                    <ErrorNote>{t(failure.reason)}</ErrorNote>
                     <Button variant="quiet" onClick={prepare} loading={preparing}>
                       {t("retry")}
                     </Button>

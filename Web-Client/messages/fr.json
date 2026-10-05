@@ -14,6 +14,7 @@
     "language": "Langue",
     "terms": "Conditions",
     "privacy": "Confidentialité",
+    "safety": "Sécurité",
     "tour": "Faites-moi visiter",
     "footerNotices": "Annonces",
     "footerDocuments": "Documents"
@@ -22,6 +23,7 @@
     "heroTitle": "Perdu ? Quelqu’un l’a peut-être trouvé",
     "heroText": "Un tableau d'objets perdus et trouvés. Décrivez votre perte ou parcourez ce qui a été rapporté, gratuitement et sans compte.",
     "rewardNote": "Celui qui trouve un objet a droit à une récompense pour l’avoir rendu ; la règle exacte dépend du pays.",
+    "safetyNote": "Vos coordonnées restent masquées et nous ne voyons jamais votre carte. <link>Comment nous vous protégeons</link>",
     "scrollCue": "Comment ça marche",
     "searchTitle": "Vérifiez s'il a déjà été trouvé",
     "searchWhat": "Quoi",
@@ -57,14 +59,16 @@
     "benefit1Text": "Publier une annonce et parcourir le tableau ne coûtent rien.",
     "benefit2Title": "Sans compte",
     "benefit2Text": "Ni inscription ni mot de passe : juste un moyen de vous joindre.",
-    "benefit3Title": "Coordonnées masquées",
-    "benefit3Text": "Téléphone et e-mail ne s'affichent qu'en partie, pour vous épargner le spam.",
+    "benefit3Title": "Coordonnées protégées",
+    "benefit3Text": "Le téléphone et l’e-mail d’une annonce sont en partie masqués. Seule la personne qui a répondu obtient le numéro complet, et l’e-mail n’est envoyé à personne.",
     "benefit4Title": "Cinq langues",
     "benefit4Text": "Ukrainien, anglais, polonais, allemand et français.",
     "benefit5Title": "Modération",
     "benefit5Text": "Une annonce est publiée immédiatement. Un modérateur n'intervient qu'en cas de besoin, pour corriger ou retirer ce qui n'a pas sa place ici.",
     "benefit6Title": "Sans publicité",
     "benefit6Text": "Aucune bannière, seulement des annonces écrites par des gens.",
+    "benefit7Title": "Paiement sûr",
+    "benefit7Text": "Seul le prestataire de paiement voit votre carte. Une même personne ne peut obtenir un numéro qu’une fois par semaine : impossible de collecter les coordonnées en masse.",
     "faqTitle": "Questions fréquentes",
     "faqQ1": "Comment contacter la personne qui l'a trouvé ?",
     "faqA1": "Les coordonnées d'une annonce sont en partie masquées pour vous protéger du spam. Appuyez sur « C'est à moi, envoyer mes coordonnées » dans l'annonce : nous transmettons votre téléphone et votre e-mail à la personne qui l'a trouvé, par e-mail et SMS, et elle vous recontacte. Sur une annonce de perte, cela fonctionne de la même façon dans l'autre sens.",
@@ -183,20 +187,25 @@
     "submitting": "Envoi…",
     "cancel": "Annuler",
     "consent": "En envoyant, vous acceptez les <terms>conditions d’utilisation</terms> et la <privacy>politique de confidentialité</privacy>, et confirmez que ces coordonnées sont bien les vôtres.",
+    "safetyNote": "Seul l’auteur de l’annonce recevra vos coordonnées. <link>Comment nous vous protégeons</link>",
     "doneTitle": "Coordonnées envoyées",
     "doneFinder": "Nous avons transmis vos coordonnées à la personne qui l'a trouvé. Elle vous contactera.",
     "doneOwner": "Nous avons transmis vos coordonnées à la personne qui l'a perdu. Elle vous contactera.",
     "repeated": "Vous avez déjà répondu à cette annonce : son auteur a vos coordonnées.",
+    "doneSafety": "Ne payez jamais d’avance et donnez rendez-vous dans un lieu fréquenté. <link>Conseils de sécurité</link>",
     "orPost": "Ou publiez votre propre annonce :",
     "unlock": {
       "button": "Obtenir le numéro de l'auteur de l'annonce",
       "title": "Le numéro de téléphone de l'auteur de l'annonce",
       "text": "Nous enverrons le numéro de téléphone de l'auteur par SMS et par e-mail aux coordonnées que vous avez données dans votre réponse.",
       "support": "Votre paiement de 1 $ aide DeRechi à rester gratuit pour tous. Vous pouvez payer avec Apple Pay, Google Pay ou une carte bancaire.",
+      "safety": "Seul le prestataire de paiement voit les données de votre carte ; nous ne les recevons jamais. Nous n’envoyons jamais de lien de paiement par SMS ni par messagerie.",
       "pay": "Passer au paiement",
       "preparing": "Préparation du paiement…",
       "unavailable": "Les paiements sont saturés pour le moment. Réessayez dans une minute.",
       "failed": "Impossible de préparer le paiement. Réessayez.",
+      "limited": "Vous pouvez obtenir le numéro d’un auteur une fois par semaine, et vous l’avez déjà fait cette semaine. Réessayez plus tard.",
+      "limitedUntil": "Vous pouvez obtenir le numéro d’un auteur une fois par semaine. Réessayez à partir du {date}.",
       "retry": "Réessayer",
       "timing": "Cela prend généralement quelques minutes après le paiement.",
       "waiting": "Cette fenêtre se met à jour toute seule ; vous pouvez aussi la fermer, le numéro arrivera quand même.",
@@ -220,6 +229,78 @@
       "captcha": "La vérification anti-spam n'est pas passée. Réessayez.",
       "validation": "Certains champs sont encore à corriger."
     }
+  },
+  "safety": {
+    "title": "Sécurité",
+    "metaDescription": "Comment DeRechi protège vos coordonnées et vos paiements, et comment rendre un objet perdu en toute sécurité.",
+    "intro": "DeRechi met en relation des inconnus : nous veillons donc à ce que vos coordonnées ne tombent pas entre de mauvaises mains, et nous vous aidons à éviter les escrocs.",
+    "protectTitle": "Comment DeRechi vous protège",
+    "protect": {
+      "contacts": {
+        "title": "Vos coordonnées ne sont pas publiées",
+        "text": "Sur une annonce, le téléphone et l’e-mail ne sont visibles qu’en partie. Seule la personne qui a répondu à l’annonce et payé obtient le numéro complet, et l’e-mail n’est envoyé à personne."
+      },
+      "replies": {
+        "title": "Seul l’auteur voit votre réponse",
+        "text": "Les coordonnées laissées dans une réponse ne sont transmises qu’à l’auteur de l’annonce, par e-mail et SMS. Elles n’apparaissent nulle part sur le site."
+      },
+      "card": {
+        "title": "Vos données bancaires ne nous parviennent jamais",
+        "text": "Le paiement est encaissé par Fourthwall sur sa propre page. Nous ne voyons ni ne conservons votre carte ou votre portefeuille."
+      },
+      "limit": {
+        "title": "Impossible de collecter les numéros en masse",
+        "text": "Une même personne ne peut obtenir le numéro d’un auteur qu’une fois par semaine : vos coordonnées ne finissent pas dans des listes de spam ou d’appels frauduleux."
+      },
+      "accounts": {
+        "title": "Aucun mot de passe à voler",
+        "text": "DeRechi n’a pas de comptes, donc pas de mots de passe à dérober ou à deviner."
+      },
+      "moderation": {
+        "title": "Contrôle et modération",
+        "text": "Les formulaires vérifient qu’ils sont envoyés par une personne et non par un robot. Un modérateur retire les annonces qui enfreignent les règles ou exposent les données d’autrui."
+      },
+      "retention": {
+        "title": "Des données qui ne sont pas gardées indéfiniment",
+        "text": "Les coordonnées des réponses sont supprimées au bout d’un an. Une fois l’objet rendu, l’annonce passe aux archives et disparaît du site."
+      }
+    },
+    "tipsTitle": "Rendre un objet en toute sécurité",
+    "tipsAllTitle": "Pour tous",
+    "tipsLostTitle": "Si vous avez perdu un objet",
+    "tipsFoundTitle": "Si vous avez trouvé un objet",
+    "tips": {
+      "payOnSite": {
+        "title": "Ne payez que sur le site",
+        "text": "Le seul paiement sur DeRechi est de 1 $ pour le numéro d’un auteur, via le bouton de la page de l’annonce. Nous n’envoyons jamais de lien de paiement par SMS, messagerie ou e-mail."
+      },
+      "codes": {
+        "title": "Ne communiquez aucun code",
+        "text": "Ne donnez à personne vos codes reçus par SMS, votre cryptogramme ni votre code PIN, même si l’appelant se présente comme votre banque, la police ou DeRechi."
+      },
+      "meet": {
+        "title": "Rendez-vous dans un lieu fréquenté",
+        "text": "Choisissez la journée et un lieu animé : un café, un centre commercial ou l’entrée d’un commissariat. Vous pouvez venir avec quelqu’un."
+      },
+      "noPrepay": {
+        "title": "Ne payez pas d’avance",
+        "text": "Ni pour la livraison ni comme récompense tant que l’objet n’est pas entre vos mains. La récompense se remet lors du rendez-vous."
+      },
+      "proof": {
+        "title": "Demandez une preuve",
+        "text": "Une personne qui a vraiment trouvé votre objet peut facilement en envoyer une photo à côté d’un papier portant la date du jour, ou décrire un détail absent de l’annonce."
+      },
+      "verify": {
+        "title": "Vérifiez qu’il s’agit du propriétaire",
+        "text": "Demandez de décrire ce qui ne se voit pas sur la photo : le contenu du portefeuille, le porte-clés, l’écran de verrouillage du téléphone."
+      },
+      "documents": {
+        "title": "Documents et cartes : prudence",
+        "text": "N’envoyez pas de photos de documents ni de cartes. Rendez une carte bancaire à sa banque, et les documents à la police ou au service des objets trouvés si le propriétaire ne se manifeste pas."
+      }
+    },
+    "troubleTitle": "Si quelque chose tourne mal",
+    "troubleText": "Si l’on vous demande de payer en dehors du site ou si vous soupçonnez une escroquerie, adressez-vous à la police et écrivez-nous à {email} : nous retirerons l’annonce suspecte."
   },
   "category": {
     "DOCUMENTS": "Documents",

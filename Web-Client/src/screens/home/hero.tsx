@@ -3,6 +3,7 @@ import { Card } from "@/components/pouf/card"
 import { Stack } from "@/components/pouf/layout"
 import { LinkButton } from "@/components/pouf/link-button"
 import { Heading, Text } from "@/components/pouf/text"
+import { SafetyLink, SafetyNote } from "@/components/safety/safety-note"
 import { paths } from "@/i18n/paths"
 import HeroScene from "@/screens/home/hero-scene"
 
@@ -30,9 +31,14 @@ export default async function HomeHero(props: React.ComponentProps<typeof Card>)
             </LinkButton>
           </div>
 
-          <Text size="sm" muted>
-            {t("rewardNote")}
-          </Text>
+          <Stack gap={1}>
+            <SafetyNote>
+              {t.rich("safetyNote", { link: (chunks) => <SafetyLink>{chunks}</SafetyLink> })}
+            </SafetyNote>
+            <Text size="sm" muted>
+              {t("rewardNote")}
+            </Text>
+          </Stack>
         </Stack>
 
         <div className="hidden lg:block">

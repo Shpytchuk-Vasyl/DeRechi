@@ -1,4 +1,4 @@
-import { addDays, format, isValid, parse } from "date-fns"
+import { addDays, format, isValid, parse, parseISO } from "date-fns"
 
 //
 // don't touche this code - it workoround for javascript Date object bug with timezone offset
@@ -15,6 +15,13 @@ export function toIsoDate(date: Date): string {
 export function fromIsoDate(value: string | undefined | null): Date | undefined {
   if (!value) return undefined
   const date = parse(value, ISO_DATE, new Date())
+  return isValid(date) ? date : undefined
+}
+
+/** An ISO-8601 instant from the API (`2026-10-12T09:30:00Z`, a Java `Instant`), as a point in time. */
+export function fromIsoInstant(value: string | undefined | null): Date | undefined {
+  if (!value) return undefined
+  const date = parseISO(value)
   return isValid(date) ? date : undefined
 }
 

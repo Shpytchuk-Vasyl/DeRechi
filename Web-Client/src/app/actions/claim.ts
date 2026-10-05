@@ -34,6 +34,7 @@ export type ClaimStatus =
 
 export type UnlockResult =
   | { ok: true; checkoutUrl: string; paid: boolean; contactsSent: boolean }
+  | { ok: false; reason: "limited"; retryAfter: string | null }
   | { ok: false; reason: "validation" | "captcha" | "notFound" | "unavailable" | "failed" }
 
 export type ConfirmResult = { ok: true } | { ok: false; reason: "notFound" | "failed" }
@@ -158,6 +159,8 @@ export async function unlockClaim(
     if (error instanceof GraphQLRequestError) {
       if (error.isNotFound) return { ok: false, reason: "notFound" }
       if (error.isPaymentUnavailable) return { ok: false, reason: "unavailable" }
+      const limit = error.unlockLimit
+      if (limit) return { ok: false, reason: "limited", retryAfter: limit.retryAfter }
     }
     console.error("Preparing the payment failed", error)
     return { ok: false, reason: "failed" }

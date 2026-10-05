@@ -14,6 +14,7 @@
     "language": "Language",
     "terms": "Terms",
     "privacy": "Privacy",
+    "safety": "Safety",
     "tour": "Show me around",
     "footerNotices": "Notices",
     "footerDocuments": "Documents"
@@ -22,6 +23,7 @@
     "heroTitle": "Lost it? Someone may have found it",
     "heroText": "A board of lost and found notices. Describe what you lost, or look through what has been handed in. Free, and without an account.",
     "rewardNote": "Whoever finds an item is entitled to a reward for returning it; the exact rule depends on the country.",
+    "safetyNote": "Contacts stay hidden and we never see your card. <link>How we protect you</link>",
     "scrollCue": "How it works",
     "searchTitle": "Check whether it has already been found",
     "searchWhat": "What",
@@ -57,14 +59,16 @@
     "benefit1Text": "Posting a notice and searching the board cost nothing.",
     "benefit2Title": "No account",
     "benefit2Text": "No sign-up, no password: just a way to reach you.",
-    "benefit3Title": "Contacts hidden",
-    "benefit3Text": "Phone and email are shown in part, to keep spam away from you.",
+    "benefit3Title": "Contacts protected",
+    "benefit3Text": "The phone and email on a notice are partly hidden. Only someone who responded gets the full number, and nobody gets the email.",
     "benefit4Title": "Five languages",
     "benefit4Text": "Ukrainian, English, Polish, German and French.",
     "benefit5Title": "Moderated",
     "benefit5Text": "Notices go live at once. A moderator steps in only when needed, to fix or remove what does not belong here.",
     "benefit6Title": "No ads",
     "benefit6Text": "No banners anywhere, only notices written by people.",
+    "benefit7Title": "Safe payment",
+    "benefit7Text": "Only the payment provider sees your card. One person can get an author's number at most once a week, so contacts can't be collected in bulk.",
     "faqTitle": "Questions that come up",
     "faqQ1": "How do I contact the person who found it?",
     "faqA1": "Contacts on a notice are shown in part, to keep spam away. Press “It's mine, send my contacts” on the notice: we pass your phone and email to the finder by email and SMS, and they get back to you. The same works the other way round on a lost notice.",
@@ -183,20 +187,25 @@
     "submitting": "Sending…",
     "cancel": "Cancel",
     "consent": "By sending you agree to the <terms>terms of use</terms> and the <privacy>privacy policy</privacy>, and confirm that these contacts are your own.",
+    "safetyNote": "Only the notice's author will get your contacts. <link>How we protect you</link>",
     "doneTitle": "Contacts sent",
     "doneFinder": "We passed your contacts to the finder. They'll get in touch.",
     "doneOwner": "We passed your contacts to the owner. They'll get in touch.",
     "repeated": "You already responded to this notice; the author has your contacts.",
+    "doneSafety": "Never pay in advance, and meet in a busy place. <link>Safety tips</link>",
     "orPost": "Or post your own notice:",
     "unlock": {
       "button": "Get the author's phone number",
       "title": "The author's phone number",
       "text": "We'll send the author's phone number by SMS and email to the contacts you gave in your response.",
       "support": "Your $1 payment helps keep DeRechi free for everyone. You can pay with Apple Pay, Google Pay or a bank card.",
+      "safety": "Only the payment provider sees your card details; we never receive them. We never send payment links by SMS or messenger.",
       "pay": "Continue to payment",
       "preparing": "Preparing the payment…",
       "unavailable": "Payments are busy right now. Try again in a minute.",
       "failed": "Couldn't prepare the payment. Try again.",
+      "limited": "You can get an author's number once a week, and you have already done so this week. Please try again later.",
+      "limitedUntil": "You can get an author's number once a week. You can try again on {date}.",
       "retry": "Try again",
       "timing": "It usually takes a few minutes after the payment.",
       "waiting": "This window updates by itself; you can also close it, the number will arrive anyway.",
@@ -220,6 +229,78 @@
       "captcha": "The anti-spam check did not pass. Try again.",
       "validation": "Some fields still need fixing."
     }
+  },
+  "safety": {
+    "title": "Safety",
+    "metaDescription": "How DeRechi protects your contacts and payments, and how to return a lost item safely.",
+    "intro": "DeRechi brings strangers together, so we make sure your contacts don't end up in the wrong hands, and we show you how to steer clear of scammers.",
+    "protectTitle": "How DeRechi protects you",
+    "protect": {
+      "contacts": {
+        "title": "Contacts are not published",
+        "text": "A notice shows its phone and email only in part. Only someone who responded to the notice and paid gets the full number, and nobody gets the email."
+      },
+      "replies": {
+        "title": "Only the author sees your response",
+        "text": "The contacts you leave in a response go only to the notice's author, by email and SMS. They never appear anywhere on the site."
+      },
+      "card": {
+        "title": "Your card details never reach us",
+        "text": "Payments are taken by Fourthwall on its own page. We neither see nor store your card or wallet."
+      },
+      "limit": {
+        "title": "Numbers can't be collected in bulk",
+        "text": "One person can get an author's number at most once a week, so your contacts don't end up on spam or scam-call lists."
+      },
+      "accounts": {
+        "title": "No passwords to leak",
+        "text": "DeRechi has no accounts, so there are no passwords to steal or guess."
+      },
+      "moderation": {
+        "title": "Checks and moderation",
+        "text": "Forms check that a person, not a bot, is sending them. A moderator removes notices that break the rules or expose someone else's data."
+      },
+      "retention": {
+        "title": "Data isn't kept forever",
+        "text": "Contacts from responses are deleted after a year. Once the item is back, the notice goes to the archive and disappears from the site."
+      }
+    },
+    "tipsTitle": "How to return an item safely",
+    "tipsAllTitle": "For everyone",
+    "tipsLostTitle": "If you lost something",
+    "tipsFoundTitle": "If you found something",
+    "tips": {
+      "payOnSite": {
+        "title": "Pay only on the site",
+        "text": "The only payment on DeRechi is $1 for an author's number, made with the button on the notice page. We never send payment links by SMS, messenger or email."
+      },
+      "codes": {
+        "title": "Never share codes",
+        "text": "Never tell anyone your SMS codes, CVV or PIN, even if the caller says they are from a bank, the police or DeRechi."
+      },
+      "meet": {
+        "title": "Meet in a busy place",
+        "text": "Choose daytime and a busy place: a café, a shopping centre or the entrance of a police station. You can bring someone along."
+      },
+      "noPrepay": {
+        "title": "Don't pay in advance",
+        "text": "Not for delivery and not as a reward until the item is in your hands. A reward is handed over at the meeting."
+      },
+      "proof": {
+        "title": "Ask for proof",
+        "text": "Someone who really found your item can easily send a photo of it next to a note with today's date, or describe a detail that isn't in the notice."
+      },
+      "verify": {
+        "title": "Check it's the owner",
+        "text": "Ask them to describe what isn't visible in the photo: what's in the wallet, the keyring on the keys, the phone's lock screen."
+      },
+      "documents": {
+        "title": "Documents and cards need extra care",
+        "text": "Don't send photos of documents or cards. Return a bank card to its bank, and documents to the police or a lost-property office if the owner doesn't respond."
+      }
+    },
+    "troubleTitle": "If something goes wrong",
+    "troubleText": "If someone asks you to pay outside the site or you suspect fraud, contact the police and write to us at {email}: we'll take the suspicious notice down."
   },
   "category": {
     "DOCUMENTS": "Documents",

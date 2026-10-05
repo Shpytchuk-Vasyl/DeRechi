@@ -9,10 +9,12 @@ import graphql.ErrorClassification;
 import org.shpytchuk.clientapi.exeption.NotFoundException;
 import org.shpytchuk.clientapi.exeption.PaymentErrorType;
 import org.shpytchuk.clientapi.exeption.PaymentUnavailableException;
+import org.shpytchuk.clientapi.exeption.UnlockLimitException;
 import org.springframework.graphql.execution.DataFetcherExceptionResolverAdapter;
 import org.springframework.graphql.execution.ErrorType;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -23,6 +25,11 @@ public class GraphQlExceptionResolver extends DataFetcherExceptionResolverAdapte
         return switch (ex) {
             case NotFoundException e -> error(ErrorType.NOT_FOUND, e.getMessage(), env);
             case PaymentUnavailableException e -> error(PaymentErrorType.PAYMENT_UNAVAILABLE, e.getMessage(), env);
+            case UnlockLimitException e -> GraphqlErrorBuilder.newError(env)
+                    .errorType(PaymentErrorType.UNLOCK_LIMIT)
+                    .message(e.getMessage())
+                    .extensions(Map.of("retryAfter", e.getRetryAfter().toString()))
+                    .build();
             case ConstraintViolationException e -> error(ErrorType.BAD_REQUEST, describe(e), env);
             case IllegalArgumentException e -> error(ErrorType.BAD_REQUEST, e.getMessage(), env);
             default -> null;

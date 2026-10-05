@@ -1,10 +1,11 @@
 package org.shpytchuk.clientapi.service;
 
 import lombok.AllArgsConstructor;
+import org.shpytchuk.clientapi.client.FourthwallProduct;
 import org.shpytchuk.clientapi.dto.ClaimDto;
+import org.shpytchuk.clientapi.entity.Claim;
 import org.shpytchuk.clientapi.entity.detail.ContactInfo;
 import org.shpytchuk.clientapi.entity.detail.ContactInfo.SocialMediaEnum;
-import org.shpytchuk.clientapi.entity.Claim;
 import org.shpytchuk.clientapi.entity.thing.Thing;
 import org.shpytchuk.clientapi.exeption.NotFoundException;
 import org.shpytchuk.clientapi.input.ContactInfoInput;
@@ -12,7 +13,7 @@ import org.shpytchuk.clientapi.mapper.ClaimMapper;
 import org.shpytchuk.clientapi.repository.ClaimRepository;
 import org.shpytchuk.clientapi.repository.detail.ContactInfoRepository;
 import org.shpytchuk.clientapi.repository.thing.ThingRepository;
-import org.shpytchuk.clientapi.client.FourthwallProduct;
+import org.shpytchuk.clientapi.service.payment.ClaimUnlockLimiter;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
@@ -27,6 +28,7 @@ public abstract class ClaimService<T extends Thing, C extends Claim<T>> {
     private final ThingRepository<T> itemRepository;
     private final ClaimRepository<C> claimRepository;
     private final ContactInfoRepository contactInfoRepository;
+    private final ClaimUnlockLimiter unlockLimiter;
     private final Supplier<C> factory;
     private final String entityName;
 
@@ -89,11 +91,36 @@ public abstract class ClaimService<T extends Thing, C extends Claim<T>> {
     }
 
     @Transactional
+    public void reserveCheckout(Long claimId) {
+        C claim = claimRepository.findWithContactInfoById(claimId)
+                .orElseThrow(() -> new NotFoundException(claimEntityName(), claimId));
+        if (claim.getPaymentRequestedAt() != null) {
+            return;
+        }
+        unlockLimiter.check(claim.getContactInfo());
+        claim.setPaymentRequestedAt(Instant.now());
+        claimRepository.save(claim);
+    }
+
+    @Transactional
+    public void releaseCheckout(Long claimId) {
+        claimRepository.findById(claimId)
+                .filter(claim -> claim.getPaymentVariantId() == null)
+                .ifPresent(claim -> {
+                    claim.setPaymentRequestedAt(null);
+                    claimRepository.save(claim);
+                });
+    }
+
+    @Transactional
     public ClaimDto attachProduct(Long claimId, FourthwallProduct product) {
         C claim = claimRepository.findById(claimId).orElseThrow(() -> new NotFoundException(claimEntityName(), claimId));
         if (claim.getPaymentVariantId() == null) {
             claim.setPaymentProductId(product.productId());
             claim.setPaymentVariantId(product.variantId());
+            if (claim.getPaymentRequestedAt() == null) {
+                claim.setPaymentRequestedAt(Instant.now());
+            }
             claimRepository.save(claim);
         }
         return ClaimMapper.toDto(claim, false);

@@ -31,6 +31,7 @@ function pageEntries(): MetadataRoute.Sitemap {
     paths.list("found"),
     paths.report("lost"),
     paths.report("found"),
+    paths.safety,
   ].map((path) => ({
     url: absoluteUrl(routing.defaultLocale, path),
     changeFrequency: path === "" ? "daily" : "hourly",

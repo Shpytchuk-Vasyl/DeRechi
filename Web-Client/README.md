@@ -134,8 +134,9 @@ and SMS.
   (`https://derechi-shop.fourthwall.com/cart/checkout?products=<variantId>:1`); the dialog
   shows it as a "Continue to payment" link that opens in a new tab, where Apple Pay, Google Pay
   and cards are available. A `PAYMENT_UNAVAILABLE` error (Fourthwall rate-limits product
-  creation) reads as "try again in a minute" with a retry button; any other failure gets a
-  generic retry. There is no code to type and no environment variable on this side.
+  creation) reads as "try again in a minute" with a retry button; `UNLOCK_LIMIT` (one checkout
+  per claimant a week, by phone or email) shows the date from `extensions.retryAfter` and no
+  retry button; any other failure gets a generic retry. There is no code to type and no environment variable on this side.
 - The claim cookie holds the claim id, for 30 days, so a returning claimant sees the button
   and how far the unlock got (`PhoneUnlock`); `useClaim` reads it with `readClaimCookie` and asks
   `claimStatus(kind, itemId, claimId)` on mount, which also returns the `checkoutUrl` once it

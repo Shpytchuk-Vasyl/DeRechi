@@ -14,6 +14,7 @@ import org.shpytchuk.clientapi.service.lost.LostClaimService;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
@@ -138,7 +139,7 @@ class ClaimEventAspectTest {
 
     private <T> T proxy(T target) {
         AspectJProxyFactory factory = new AspectJProxyFactory(target);
-        factory.addAspect(new ClaimEventAspect(rabbitTemplate, new ClaimsProperties(EXCHANGE)));
+        factory.addAspect(new ClaimEventAspect(rabbitTemplate, new ClaimsProperties(EXCHANGE, 1, Duration.ofDays(7))));
         return factory.getProxy();
     }
 }

@@ -5,7 +5,7 @@ import type { TypedDocumentString } from "./generated/graphql"
 type GraphQLError = {
   message: string
   path?: (string | number)[]
-  extensions?: { classification?: string }
+  extensions?: { classification?: string; retryAfter?: string }
 }
 
 export class GraphQLRequestError extends Error {
@@ -23,6 +23,11 @@ export class GraphQLRequestError extends Error {
 
   get isPaymentUnavailable(): boolean {
     return this.errors.some((error) => error.extensions?.classification === "PAYMENT_UNAVAILABLE")
+  }
+
+  get unlockLimit(): { retryAfter: string | null } | null {
+    const error = this.errors.find((it) => it.extensions?.classification === "UNLOCK_LIMIT")
+    return error ? { retryAfter: error.extensions?.retryAfter ?? null } : null
   }
 }
 

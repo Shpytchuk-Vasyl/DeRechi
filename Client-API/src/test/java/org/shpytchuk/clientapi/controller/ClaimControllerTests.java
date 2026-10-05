@@ -30,12 +30,15 @@ import org.springframework.graphql.test.tester.GraphQlTester;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -93,7 +96,9 @@ class ClaimControllerTests extends AbstractGraphQlTests {
 
     private static final String TOKEN_FORMAT = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
     private static final FourthwallProduct PRODUCT = new FourthwallProduct("prod-1", "var-1");
+    private static final FourthwallProduct OTHER_PRODUCT = new FourthwallProduct("prod-2", "var-2");
     private static final String CHECKOUT = "https://derechi-shop.fourthwall.com/cart/checkout?products=var-1:1";
+    private static final String CHECKOUT_2 = "https://derechi-shop.fourthwall.com/cart/checkout?products=var-2:1";
 
     @MockitoBean
     private FourthwallClient fourthwall;
@@ -457,7 +462,127 @@ class ClaimControllerTests extends AbstractGraphQlTests {
 
         expectError(unlockLost(itemId, claimId), PaymentErrorType.PAYMENT_UNAVAILABLE, "429");
 
-        assertThat(lostClaimRepository.findById(claimId).orElseThrow().getPaymentVariantId()).isNull();
+        LostItemClaim stored = lostClaimRepository.findById(claimId).orElseThrow();
+        assertThat(stored.getPaymentVariantId()).isNull();
+        assertThat(stored.getPaymentRequestedAt()).isNull();
+    }
+
+    @Test
+    void aFailedCheckoutDoesNotCountTowardsTheLimit() {
+        Long itemId = lostItem("ChIJrynok").getId();
+        Long claimId = claimLostId(itemId, claimant(PHONE, EMAIL));
+        when(fourthwall.createDigitalProduct(any(), any(), any()))
+                .thenThrow(new PaymentUnavailableException("Fourthwall answered 429: Too many requests"))
+                .thenReturn(PRODUCT);
+
+        expectError(unlockLost(itemId, claimId), PaymentErrorType.PAYMENT_UNAVAILABLE, "429");
+
+        unlockLost(itemId, claimId).path("unlockLostItemClaim.checkoutUrl").entity(String.class).isEqualTo(CHECKOUT);
+    }
+
+    @Test
+    void stampsTheCheckoutRequest() {
+        Long itemId = lostItem("ChIJrynok").getId();
+        Long claimId = claimLostId(itemId, claimant(PHONE, EMAIL));
+        when(fourthwall.createDigitalProduct(any(), any(), any())).thenReturn(PRODUCT);
+        Instant before = Instant.now();
+
+        unlockLost(itemId, claimId);
+
+        assertThat(lostClaimRepository.findById(claimId).orElseThrow().getPaymentRequestedAt()).isAfterOrEqualTo(before);
+    }
+
+    @Test
+    void letsAClaimantOpenOneCheckoutAWeekAcrossLostAndFound() {
+        Long lostItemId = lostItem("ChIJrynok").getId();
+        Long lostClaimId = claimLostId(lostItemId, claimant(PHONE, EMAIL));
+        Long foundItemId = foundItem("ChIJopera").getId();
+        Long foundClaimId = claimFoundId(foundItemId, claimant(PHONE, EMAIL));
+        when(fourthwall.createDigitalProduct(any(), any(), any())).thenReturn(PRODUCT, OTHER_PRODUCT);
+
+        unlockLost(lostItemId, lostClaimId);
+        Instant requested = lostClaimRepository.findById(lostClaimId).orElseThrow().getPaymentRequestedAt();
+
+        expectUnlockLimit(unlockFound(foundItemId, foundClaimId), requested.plus(Duration.ofDays(7)));
+
+        verify(fourthwall, times(1)).createDigitalProduct(any(), any(), any());
+        FoundItemClaim blocked = foundClaimRepository.findById(foundClaimId).orElseThrow();
+        assertThat(blocked.getPaymentVariantId()).isNull();
+        assertThat(blocked.getPaymentRequestedAt()).isNull();
+    }
+
+    @Test
+    void recognisesTheClaimantByThePhoneAlone() {
+        Long first = lostItem("ChIJrynok").getId();
+        Long second = lostItem("ChIJopera").getId();
+        Long firstClaim = claimLostId(first, claimant(PHONE, EMAIL));
+        Long secondClaim = claimLostId(second, claimant(PHONE, "someone.else@example.com"));
+        when(fourthwall.createDigitalProduct(any(), any(), any())).thenReturn(PRODUCT, OTHER_PRODUCT);
+
+        unlockLost(first, firstClaim).path("unlockLostItemClaim.checkoutUrl").entity(String.class).isEqualTo(CHECKOUT);
+
+        expectError(unlockLost(second, secondClaim), PaymentErrorType.UNLOCK_LIMIT, "Unlock limit");
+        verify(fourthwall, times(1)).createDigitalProduct(any(), any(), any());
+    }
+
+    @Test
+    void recognisesTheClaimantByTheEmailInAnyCase() {
+        Long first = lostItem("ChIJrynok").getId();
+        Long second = lostItem("ChIJopera").getId();
+        Long firstClaim = claimLostId(first, claimant(PHONE, EMAIL));
+        Long secondClaim = claimLostId(second, claimant("+48509876543", EMAIL.toUpperCase()));
+        when(fourthwall.createDigitalProduct(any(), any(), any())).thenReturn(PRODUCT, OTHER_PRODUCT);
+
+        unlockLost(first, firstClaim);
+
+        expectError(unlockLost(second, secondClaim), PaymentErrorType.UNLOCK_LIMIT, "Unlock limit");
+        verify(fourthwall, times(1)).createDigitalProduct(any(), any(), any());
+    }
+
+    @Test
+    void doesNotLimitAnotherClaimant() {
+        Long first = lostItem("ChIJrynok").getId();
+        Long second = lostItem("ChIJopera").getId();
+        Long firstClaim = claimLostId(first, claimant(PHONE, EMAIL));
+        Long secondClaim = claimLostId(second, claimant("+48509876543", "someone.else@example.com"));
+        when(fourthwall.createDigitalProduct(any(), any(), any())).thenReturn(PRODUCT, OTHER_PRODUCT);
+
+        unlockLost(first, firstClaim);
+
+        unlockLost(second, secondClaim).path("unlockLostItemClaim.checkoutUrl").entity(String.class)
+                .isEqualTo(CHECKOUT_2);
+    }
+
+    @Test
+    void letsTheClaimantUnlockAgainOnceTheWeekHasPassed() {
+        Long first = lostItem("ChIJrynok").getId();
+        Long second = lostItem("ChIJopera").getId();
+        Long firstClaim = claimLostId(first, claimant(PHONE, EMAIL));
+        Long secondClaim = claimLostId(second, claimant(PHONE, EMAIL));
+        when(fourthwall.createDigitalProduct(any(), any(), any())).thenReturn(PRODUCT, OTHER_PRODUCT);
+
+        unlockLost(first, firstClaim);
+        LostItemClaim earlier = lostClaimRepository.findById(firstClaim).orElseThrow();
+        earlier.setPaymentRequestedAt(Instant.now().minus(Duration.ofDays(7)).minusSeconds(60));
+        lostClaimRepository.save(earlier);
+
+        unlockLost(second, secondClaim).path("unlockLostItemClaim.checkoutUrl").entity(String.class)
+                .isEqualTo(CHECKOUT_2);
+    }
+
+    @Test
+    void keepsReturningTheCheckoutAlreadyOpenedForTheClaim() {
+        Long first = lostItem("ChIJrynok").getId();
+        Long second = lostItem("ChIJopera").getId();
+        Long firstClaim = claimLostId(first, claimant(PHONE, EMAIL));
+        Long secondClaim = claimLostId(second, claimant(PHONE, EMAIL));
+        when(fourthwall.createDigitalProduct(any(), any(), any())).thenReturn(PRODUCT, OTHER_PRODUCT);
+
+        unlockLost(first, firstClaim);
+        expectError(unlockLost(second, secondClaim), PaymentErrorType.UNLOCK_LIMIT, "Unlock limit");
+
+        unlockLost(first, firstClaim).path("unlockLostItemClaim.checkoutUrl").entity(String.class).isEqualTo(CHECKOUT);
+        verify(fourthwall, times(1)).createDigitalProduct(any(), any(), any());
     }
 
     @Test
@@ -504,6 +629,15 @@ class ClaimControllerTests extends AbstractGraphQlTests {
             assertThat(errors).hasSize(1);
             assertThat(errors.getFirst().getErrorType()).isEqualTo(type);
             assertThat(errors.getFirst().getMessage()).contains(message);
+        });
+    }
+
+    private static void expectUnlockLimit(GraphQlTester.Response response, Instant retryAfter) {
+        response.errors().satisfy(errors -> {
+            assertThat(errors).hasSize(1);
+            assertThat(errors.getFirst().getErrorType()).isEqualTo(PaymentErrorType.UNLOCK_LIMIT);
+            assertThat(Instant.parse((String) errors.getFirst().getExtensions().get("retryAfter")))
+                    .isCloseTo(retryAfter, within(1, ChronoUnit.MILLIS));
         });
     }
 
