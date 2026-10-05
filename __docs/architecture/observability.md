@@ -10,9 +10,8 @@ in each `application.yaml`; `Getaway` adds `gateway`). Health shows details
 exposing a service publicly.
 
 Prometheus v3.14.0 runs as a container with a 15-day retention and `--web.enable-lifecycle`
-(so `curl -X POST localhost:9090/-/reload` picks up a config change). It also runs with
-`--web.enable-remote-write-receiver`, so k6 load tests can push their metrics into it
-(`k6_*` series, see [load testing](../developer-guide/load-testing.md)). There are two
+(so `curl -X POST localhost:9090/-/reload` picks up a config change). Load-test metrics go to
+the separate Prometheus of the test stack, see [stack tests](../developer-guide/stack-tests.md). There are two
 configurations in `docker/prometheus/`, and which one is active depends on how the services
 run:
 

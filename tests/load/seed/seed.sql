@@ -1,11 +1,5 @@
--- Seeds the local database with notices for load tests.
---
---   docker exec -i derechi-postgres psql -U derechi -d derechi -v ON_ERROR_STOP=1 -v items=50000 < load-tests/seed/seed.sql
---
--- `items` is the number of lost AND of found notices (50000 -> 100000 rows), places are items / 5.
--- Every seeded row is marked so cleanup.sql can find it: place ids start with `load-`, contact
--- emails end with `@load.test`. The rows go straight into the tables, so no ItemCreatedEvent is
--- published and the Worker does not match them; notices created by the load test itself are.
+-- `items` lost and `items` found notices on items / 5 places. Rows are marked for cleanup.sql:
+-- place ids start with `load-`, contact emails end with `@load.test`.
 
 \if :{?items}
 \else
@@ -47,7 +41,7 @@ FROM (VALUES ('Київ', 50.4501, 30.5234, 'UA', 8),
              ('Lyon', 45.7640, 4.8357, 'FR', 1)) AS v(name, lat, lon, country_code, weight)
          CROSS JOIN LATERAL generate_series(1, v.weight);
 
--- The same words as load-tests/lib/data.js, so searches there find something.
+-- The same words as lib/data.js.
 CREATE TEMP TABLE load_vocab ON COMMIT DROP AS
 SELECT row_number() OVER () AS n, v.category_key, v.noun
 FROM (VALUES ('DOCUMENTS', 'паспорт'),
@@ -89,7 +83,6 @@ SELECT 'load-seed-' || g,
 FROM generate_series(1, :places) AS g
          JOIN load_city c ON c.n = 1 + g % (SELECT count(*) FROM load_city);
 
--- One row per notice: its vocabulary word, place and the bits that vary.
 CREATE TEMP TABLE load_pick ON COMMIT DROP AS
 SELECT g,
        kind,

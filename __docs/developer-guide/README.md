@@ -9,7 +9,7 @@ order you will need them; the one to read end to end is
 - [Branches and commits](branches-and-commits.md): naming, commit messages, what not to commit.
 - [Pull requests](pull-requests.md): the PR template, size, draft PRs, merging.
 - [Testing locally](testing-locally.md): running the test suites and checking things by hand.
-- [Load testing](load-testing.md): k6 against Client-API, test data, reading the results.
+- [Stack tests](stack-tests.md): integration and load tests on an isolated stack, one command, the report.
 - [Troubleshooting](troubleshooting.md): the errors everybody hits once, with fixes.
 
 ## The loop in ten lines

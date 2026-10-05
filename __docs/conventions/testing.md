@@ -23,7 +23,7 @@ Tests are JUnit 5 with AssertJ and Spring Boot's test starters. Database-backed 
 
 **Infrastructure tests** (`*IT`): need something running outside the JVM that Testcontainers does not provide. `ImageStorageIT` talks to the MinIO from `docker compose` and is guarded by `@EnabledIf("minioIsUp")`, so it is skipped when the container is not there.
 
-**Load tests**: k6 scripts in `load-tests/`, outside Maven, run by hand against the compose stack. See [load testing](../developer-guide/load-testing.md).
+**Stack tests**: integration (`tests/integration`, JUnit `*IT` against running services) and load (`tests/load`, k6), outside the Maven reactor, run with `tests/run.sh` on an isolated compose stack. See [stack tests](../developer-guide/stack-tests.md).
 
 **Message contract tests**: `RabbitConfigTest` in `Admin-API`, `Worker` and `Notification`. The modules share no event classes, only the `@EventType` id in the `__TypeId__` header; each test pins the ids its module writes or reads through the real `RabbitConfig` converter, so renaming an id on one side fails that side's build.
 

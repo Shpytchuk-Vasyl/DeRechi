@@ -1,5 +1,4 @@
-// Random inputs that look like what visitors send. The cities and words mirror seed/seed.sql,
-// so most searches and radius filters find something in a seeded database.
+// Cities and words mirror seed/seed.sql.
 
 import exec from 'k6/execution';
 
@@ -29,8 +28,6 @@ const NOUNS = [
     ['OTHER', 'парасолька'], ['OTHER', 'окуляри'],
 ];
 
-// What people type into the search box: mostly words that exist, sometimes one that does not,
-// which makes the database read every row before it can answer "nothing".
 const SEARCH_HITS = ['гаманець', 'ключі', 'паспорт', 'телефон', 'собака', 'рюкзак', 'навушники',
     'кіт', 'сумка', 'окуляри', 'метро', 'парку', 'Київ', 'чорний'];
 const SEARCH_MISSES = ['велосипед', 'скрипка', 'дрон'];
@@ -40,7 +37,6 @@ const SORTS = ['DATE_ASC', 'TITLE_ASC', 'TITLE_DESC'];
 export const pick = (list) => list[Math.floor(Math.random() * list.length)];
 const chance = (p) => Math.random() < p;
 
-// One random filter and the label it is reported under (the `filter` tag).
 export function randomFilter(categoryIds) {
     const r = Math.random();
     if (r < 0.35) {
@@ -68,7 +64,6 @@ export function listVariables(filter) {
     const r = Math.random();
     return {
         filter,
-        // DATE_DESC is the schema default, the frontend sends nothing for it.
         sort: chance(0.7) ? undefined : pick(SORTS),
         first: r < 0.8 ? 20 : r < 0.95 ? 50 : 100,
     };
@@ -79,7 +74,6 @@ function near() {
     return { lat: city.lat, lon: city.lon, radiusKm: pick([5, 10, 20, 50, 100]) };
 }
 
-// What a visitor types into the place field of the form, one keystroke group at a time.
 export function placePrefixes() {
     const name = pick(CITIES).name;
     return [2, 3, 5].filter((n) => n <= name.length).map((n) => name.slice(0, n));
@@ -92,10 +86,9 @@ export function itemInput(kind, categoryIdsByKey) {
     return {
         title: `${capitalize(noun)} ${pick(['біля метро', 'у парку', 'в автобусі', 'на вокзалі'])}`,
         description: chance(0.8) ? `Навантажувальний тест. Колір: ${pick(['чорний', 'сірий', 'синій'])}.` : null,
-        // Never today: the server checks the date against its own clock, which may be behind ours.
+        // Never today: the server's clock may be behind ours.
         date: daysAgo(1 + Math.floor(Math.random() * 27)),
         compensation: chance(0.5) ? { amount: pick([200, 500, 1000]) } : null,
-        // Found notices require a photo; nothing downloads it.
         image: kind === 'found' || chance(0.3) ? 'http://localhost:8080/files/load/seed.jpg' : null,
         categoryId: categoryIdsByKey[categoryKey],
         // `load-` marks the row for seed/cleanup.sql.
@@ -114,7 +107,6 @@ export function claimantContact() {
     return contact('claimant', uniqueId());
 }
 
-// `.test` is reserved and never delivers, so a misdirected run cannot email anybody real.
 function contact(role, id) {
     return {
         phone: `+38063${String(Math.floor(Math.random() * 1e7)).padStart(7, '0')}`,
@@ -123,7 +115,6 @@ function contact(role, id) {
     };
 }
 
-// Unique across VUs, iterations and runs.
 function uniqueId() {
     return `${Date.now().toString(36)}-${exec.vu.idInTest}-${exec.vu.iterationInScenario}`;
 }

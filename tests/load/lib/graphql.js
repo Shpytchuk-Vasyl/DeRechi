@@ -3,19 +3,15 @@ import { check } from 'k6';
 import { Counter, Rate } from 'k6/metrics';
 import { GRAPHQL_URL } from './config.js';
 
-// Spring for GraphQL answers HTTP 200 with an `errors` array when an operation fails, so
-// http_req_failed alone would report a run where every request failed as clean.
+// A failed operation still answers HTTP 200, with an `errors` array.
 const graphqlErrors = new Rate('graphql_errors');
 const graphqlErrorsByClass = new Counter('graphql_errors_by_class');
 
 const PARAMS = { headers: { 'Content-Type': 'application/json' } };
 
-// Each VU logs the first few failures it sees, enough to tell what broke without flooding.
 const MAX_LOGGED = 3;
 let logged = 0;
 
-// Sends one operation and returns its `data`, or null when it failed.
-// `op` is { name, field, query } from queries.js; `tags` are added to every metric of the request.
 export function gql(op, variables, tags = {}) {
     const kind = op.query.trim().startsWith('mutation') ? 'write' : 'read';
     const allTags = { op: op.name, kind, ...tags };
@@ -26,7 +22,6 @@ export function gql(op, variables, tags = {}) {
     try {
         body = res.json();
     } catch (e) {
-        // A gateway error page or an empty body; reported below.
     }
     const errors = body && Array.isArray(body.errors) ? body.errors : null;
     const failed = res.status !== 200 || !body || errors !== null;

@@ -1,8 +1,5 @@
-// The operations the web client sends, copied from Web-Client/src/graphql/documents.ts with the
-// same operation names, so the load is shaped like real traffic. Keep them in sync when the
-// frontend's documents change. Left out on purpose: Stats (not served by Client-API yet),
-// UnlockLostItemClaim / UnlockFoundItemClaim (each call creates a real product on Fourthwall)
-// and ConfirmReturn (needs a token that only arrives by email).
+// Copied from Web-Client/src/graphql/documents.ts. Unlock* are left out: each call creates a
+// real product on Fourthwall.
 
 const LIST_NODE = `
   id

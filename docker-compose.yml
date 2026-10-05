@@ -115,7 +115,6 @@ services:
       - --config.file=/etc/prometheus/prometheus.yml
       - --storage.tsdb.retention.time=15d
       - --web.enable-lifecycle
-      - --web.enable-remote-write-receiver
     ports:
       - "9090:9090"     # http://localhost:9090
     volumes:
@@ -193,24 +192,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  # Load tests, only on demand:  docker compose run --rm k6
-  # Options and profiles: load-tests/README.md
-  k6:
-    image: grafana/k6:2.3.0
-    profiles: [load]
-    working_dir: /scripts
-    volumes:
-      - ./load-tests:/scripts
-    environment:
-      BASE_URL: http://host.docker.internal:8080
-      PROFILE: smoke
-      K6_OUT: experimental-prometheus-rw
-      K6_PROMETHEUS_RW_SERVER_URL: http://prometheus:9090/api/v1/write
-      K6_PROMETHEUS_RW_TREND_STATS: p(95),p(99),avg,max
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    command: run client-api.js
 
 volumes:
   pgdata:

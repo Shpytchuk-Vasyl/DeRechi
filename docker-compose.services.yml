@@ -41,7 +41,6 @@ services:
       - --config.file=/etc/prometheus/prometheus-full.yml
       - --storage.tsdb.retention.time=15d
       - --web.enable-lifecycle
-      - --web.enable-remote-write-receiver
 
   keycloak:
     environment:
