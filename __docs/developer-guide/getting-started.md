@@ -53,16 +53,14 @@ Then build everything once to make sure the toolchain is right:
 
 ## 3. Start the services
 
-`Discovery` (Eureka) goes first; the others register with it on start-up and fail noisily if
-it is not there. After that, order does not matter.
+Order does not matter.
 
-From IDEA, run the `*Application` classes: `DiscoveryApplication`, then
+From IDEA, run the `*Application` classes:
 `GetawayApplication`, `ClientApiApplication`, `AdminApiApplication`,
 `WorkerApplication`, `NotificationApplication`. From a terminal, one module per
 window:
 
 ```bash
-./mvnw -pl Discovery spring-boot:run
 ./mvnw -pl Getaway spring-boot:run
 ./mvnw -pl Client-API spring-boot:run
 ./mvnw -pl Admin-API spring-boot:run
@@ -70,14 +68,14 @@ window:
 ./mvnw -pl Notification spring-boot:run
 ```
 
-The `Launcher` module starts `Discovery`, `Getaway`, `Client-API`, `Admin-API` and
+The `Launcher` module starts `Getaway`, `Client-API`, `Admin-API` and
 `Worker` as separate contexts in one JVM, which is lighter on a laptop. It is
 currently commented out in the root `pom.xml` `<modules>` list; uncomment it locally if you
 want it, but do not commit that, and note it starts neither `Notification` nor anything in
 Docker. See [architecture/modules/launcher.md](../architecture/modules/launcher.md).
 
-Ports: Discovery 8761, Getaway 8080, Client-API 8082, Admin-API 8083, Notification 8084,
-Worker 8085. `http://localhost:8761` shows who has registered.
+Ports: Getaway 8080, Client-API 8082, Admin-API 8083, Notification 8084, Worker 8085.
+Each answers `/actuator/health`.
 
 The alternative, everything in containers, is one command and is covered in
 [deployment/local-development.md](../deployment/local-development.md):

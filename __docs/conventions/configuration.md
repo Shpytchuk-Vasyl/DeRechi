@@ -20,7 +20,7 @@ x-postgres: &postgres
   POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-derechi}
 ```
 
-PostgreSQL, RabbitMQ and Eureka use the same variable names in every module (`POSTGRES_*`, `RABBITMQ_*`, `EUREKA_URL`), and the PostgreSQL and RabbitMQ containers are started with the same ones, so a credential is set in one place for both sides. Relaxed binding still works on top (`SPRING_DATASOURCE_URL` beats the YAML), but compose does not use it: set the variable, not the property.
+PostgreSQL and RabbitMQ use the same variable names in every module (`POSTGRES_*`, `RABBITMQ_*`), and the PostgreSQL and RabbitMQ containers are started with the same ones, so a credential is set in one place for both sides. Relaxed binding still works on top (`SPRING_DATASOURCE_URL` beats the YAML), but compose does not use it: set the variable, not the property.
 
 ## Rule 2: placeholders carry the dev default
 
@@ -40,7 +40,7 @@ The default is what IDEA uses; compose sets the variable. Never leave a placehol
 
 The two syntaxes differ by one character. Spring puts the default after a colon, `${NAME:default}`; compose after a colon and a dash, `${NAME:-default}`. Written the compose way in a YAML file, `${NAME:-x}` gives the default `-x`.
 
-In compose, the default of a variable is the **container** view of the local stack (`postgres`, `rabbitmq`, `discovery`), and it must equal the YAML default wherever the two views agree. Never give compose an empty default for a value the YAML defaults to something else: an empty string is a value, and it replaces the YAML default. When a variable must reach the container only if it is set, list it without a value (`GOOGLE_MAPS_API_KEY:` in `admin-api`).
+In compose, the default of a variable is the **container** view of the local stack (`postgres`, `rabbitmq`, `client-api`), and it must equal the YAML default wherever the two views agree. Never give compose an empty default for a value the YAML defaults to something else: an empty string is a value, and it replaces the YAML default. When a variable must reach the container only if it is set, list it without a value (`GOOGLE_MAPS_API_KEY:` in `admin-api`).
 
 The placeholders of each module are listed in [environment-variables](../deployment/environment-variables.md).
 
@@ -66,9 +66,9 @@ Application-specific settings live under the `derechi` prefix and are bound to a
 
 `derechi.countries` is declared in both `Admin-API` and `Client-API` and must list the same countries; see [add-a-country](../extending/add-a-country.md).
 
-## Rule 5: the Gateway knows service names, not ports
+## Rule 5: Gateway routes are variables
 
-Routes in `Getaway/src/main/resources/application.yaml` use `lb://CLIENT-API` and resolve the instance through Eureka. Never put `localhost:8082` into a route. The two exceptions are things that are not Eureka clients: Keycloak (`${KEYCLOAK_URI}`) and MinIO (`${MINIO_URI}`), which are addressed directly.
+Every route in `Getaway/src/main/resources/application.yaml` targets a placeholder whose default is the local address: `${CLIENT_API_URI:http://localhost:8082}`, `${KEYCLOAK_URI:http://localhost:8180}`, `${MINIO_URI:http://localhost:9000}`. Compose sets the container addresses. Never write a bare `localhost:<port>` into a route; a new route gets its own `*_URI` variable. There is no service registry (Eureka was removed): on one compose host Docker's DNS resolves the container name, and several instances of a service would sit behind one load-balanced address.
 
 ## Rule 6: every service is scraped
 
@@ -86,7 +86,6 @@ Known issue: `Admin-API/src/main/resources/application.yaml` ships a Google Maps
 
 | Module | Port | Notable settings |
 |---|---|---|
-| Discovery | 8761 | `register-with-eureka: false`, `enable-self-preservation: false` (dev instances come and go) |
 | Getaway | 8080 | routes, global CORS from `WEB_ORIGIN_PATTERNS`, `files` and `files-upload` routes to MinIO |
 | Client-API | 8082 | GraphQL schema location, GraphiQL enabled, `derechi.countries` |
 | Admin-API | 8083 | OIDC client `derechi-admin`, Caffeine cache `categories`, static resource content hashing, multipart 5 MB, S3 client for MinIO, `derechi.*` |

@@ -162,7 +162,7 @@ SMTP host (Mailpit locally).
 
 ### Notify clicked, nothing in Mailpit
 
-In order: is `Notification` running and registered in Eureka; is the message on
+In order: is `Notification` running (its `/actuator/health`); is the message on
 `notification.events` or in its DLQ; does the lost item's contact have an email (the
 `EMAIL` and `ALL` channels need it, `PHONE` and the messengers do not); was the same match
 notified within the last hour (NotifyHub deduplicates by key and TTL). The `Notification` log
@@ -175,14 +175,14 @@ which `rabbitmq-init` imports on every `docker compose up`. Run `docker compose 
 `docker compose run --rm rabbitmq-init`). If the import itself fails,
 `docker compose logs rabbitmq-init` names the queue whose arguments no longer match.
 
-## Gateway, discovery and monitoring
+## Gateway and monitoring
 
-### Gateway returns 503 for `/graphql`
+### Gateway returns 5xx for `/graphql`
 
-`Client-API` is not registered in Eureka yet, or `Discovery` was started after the service
-and the registration is still pending. Check `http://localhost:8761`. Routes use `lb://` names,
-so the service must be registered; the Keycloak route is the one exception and uses a direct
-URI.
+The gateway forwards to `CLIENT_API_URI` as is. Either `Client-API` is not up yet (check
+`http://localhost:8082/actuator/health`), or the gateway got the wrong address:
+`/actuator/gateway/routes` on the gateway shows the target it resolved. From IDEA the default
+is `http://localhost:8082`; in compose it is `http://client-api:8082`.
 
 ### Prometheus shows a service target down although it is running
 

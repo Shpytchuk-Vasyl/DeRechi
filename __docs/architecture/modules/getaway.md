@@ -11,8 +11,8 @@ and `spring.application.name` all use that spelling, and so does the Dockerfile.
 | | |
 |---|---|
 | Port | 8080 |
-| Dependencies | `spring-cloud-starter-gateway-server-webflux`, `spring-cloud-starter-netflix-eureka-client`, `spring-cloud-starter-circuitbreaker-reactor-resilience4j` |
-| Needs | `Discovery` for `lb://` routes; Keycloak and MinIO reachable at the configured URIs |
+| Dependencies | `spring-cloud-starter-gateway-server-webflux`, `spring-cloud-starter-circuitbreaker-reactor-resilience4j` |
+| Needs | Client-API, Keycloak and MinIO reachable at the configured URIs |
 | Code | `GetawayApplication` and `application.yaml`; no Java beyond the main class |
 
 ## Routes
@@ -23,14 +23,15 @@ Defined in `Getaway/src/main/resources/application.yaml` under
 | Id | Match | Target | Filters |
 |---|---|---|---|
 | `keycloak` | `/realms/**`, `/resources/**` | `${KEYCLOAK_URI:http://localhost:8180}` | none |
-| `client-api` | `/graphql/**`, `/graphiql/**`, `/api/client/**` | `lb://CLIENT-API` | none |
+| `client-api` | `/graphql/**`, `/graphiql/**`, `/api/client/**` | `${CLIENT_API_URI:http://localhost:8082}` | none |
 | `files-upload` | `PUT /${MINIO_BUCKET:derechi-files}/**` | `${MINIO_URI:http://localhost:9000}` | `PreserveHostHeader`, `DedupeResponseHeader` on the CORS headers, `RequestSize` `${MINIO_MAX_UPLOAD:5MB}` |
 | `files` | `GET /files/**` | `${MINIO_URI:http://localhost:9000}` | `RewritePath` `/files/(?<key>.*)` to `/derechi-files/${key}`, `AddResponseHeader Cache-Control: public, max-age=31536000, immutable` |
 
-Keycloak is a direct `uri:` because it does not register with Eureka. MinIO likewise.
-Only `Client-API` is load-balanced through the registry, and that is the pattern for any
-future service: `lb://<SPRING-APPLICATION-NAME>` (upper case, as Eureka stores it), never a
-hard-coded neighbour port.
+Every route is a direct `uri:` from a variable whose default is the local address; compose
+sets the container address (`http://client-api:8082`). There is no service registry: on one
+compose host the container name is resolved by Docker's DNS, and running several
+`Client-API` instances would put a load balancer (or a Kubernetes Service) behind that one
+address rather than bring a registry back.
 
 `Admin-API` is intentionally not routed here. It is a server-rendered application with its
 own session and OIDC redirect URIs registered for `localhost:8083`; putting it behind the
@@ -57,9 +58,9 @@ are allowed, all headers, the usual methods, one-hour max age.
 | `MINIO_BUCKET` | `derechi-files` | bucket name used in both file routes |
 | `MINIO_MAX_UPLOAD` | `5MB` | body cap on the presigned PUT |
 | `WEB_ORIGIN_PATTERNS` | localhost and LAN patterns | CORS allow list |
-| `EUREKA_URL` | `http://localhost:8761/eureka` | registry |
+| `CLIENT_API_URI` | `http://localhost:8082` | target of the `client-api` route |
 
-In Compose the gateway waits for `discovery` to start and for `minio` to be healthy.
+In Compose the gateway waits for `minio` to be healthy.
 
 ## Actuator
 

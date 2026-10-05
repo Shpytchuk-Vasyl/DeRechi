@@ -90,7 +90,7 @@ reset a development database, drop and recreate it; the commands are in
 | `Client-API`, `Admin-API`, `Worker` | Hikari pool, JPA | `spring.datasource.*` from `POSTGRES_HOST` / `_PORT` / `_DB` / `_USER` / `_PASSWORD`, `localhost` and `derechi` by default |
 | `DB-Postgres` | JPA with `ddl-auto: validate` + Liquibase at startup | `src/main/resources/application.yaml` for Spring, `liquibase.properties` for the Maven plugin |
 | Keycloak | its own JDBC pool | `KC_DB_URL=jdbc:postgresql://postgres:5432/keycloak` |
-| `Notification`, `Getaway`, `Discovery` | no database | |
+| `Notification`, `Getaway` | no database | |
 
 Development credentials are `derechi` / `derechi` on `localhost:5432`.
 

@@ -111,7 +111,7 @@ default profile) a single `issuer-uri: http://localhost:8180/realms/derechi` is 
 
 ## Gateway and Keycloak
 
-Keycloak does not register with Eureka, so the gateway route to it is a direct `uri:`
+The gateway route to Keycloak is a direct `uri:`
 (`KEYCLOAK_URI`, default `http://localhost:8180`), matching `/realms/**` and
 `/resources/**`. That exposes the realm's OIDC endpoints and login theme assets under the
 gateway's origin for the web client. See [modules/getaway.md](modules/getaway.md).

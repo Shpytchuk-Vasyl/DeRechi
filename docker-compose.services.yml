@@ -3,7 +3,7 @@
 #   docker compose --env-file env.prod -f docker-compose.yml -f docker-compose.services.yml up -d --build
 #
 # The defaults are the local values. Addresses are as the containers see each other inside
-# the compose network (postgres, rabbitmq, discovery), not localhost.
+# the compose network (postgres, rabbitmq, client-api), not localhost.
 #
 name: derechi
 
@@ -12,12 +12,6 @@ x-service-base: &service-base
     context: .
     dockerfile: Dockerfile
   restart: unless-stopped
-  depends_on:
-    discovery:
-      condition: service_started
-
-x-eureka: &eureka
-  EUREKA_URL: ${EUREKA_URL:-http://discovery:8761/eureka}
 
 x-postgres: &postgres
   POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
@@ -62,19 +56,6 @@ services:
       KC_HOSTNAME: ${KEYCLOAK_PUBLIC_URI:-http://localhost:8180}
       KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
 
-  discovery:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        MODULE: Discovery
-    container_name: derechi-discovery
-    restart: unless-stopped
-    ports:
-      - "8761:8761"
-    environment:
-      <<: *jvm
-
   getaway:
     <<: *service-base
     build:
@@ -86,12 +67,11 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      discovery:
-        condition: service_started
       minio:
         condition: service_healthy
     environment:
-      <<: [*jvm, *eureka]
+      <<: *jvm
+      CLIENT_API_URI: ${CLIENT_API_URI:-http://client-api:8082}
       KEYCLOAK_URI: ${KEYCLOAK_URI:-http://keycloak:8080}
       MINIO_URI: ${MINIO_URI:-http://minio:9000}
       WEB_ORIGIN_PATTERNS: ${WEB_ORIGIN_PATTERNS:-http://localhost:[*],http://127.0.0.1:[*],http://192.168.*:[*],http://10.*:[*]}
@@ -107,14 +87,12 @@ services:
     ports:
       - "8082:8082"
     environment:
-      <<: [*jvm, *eureka, *postgres, *rabbitmq]
+      <<: [*jvm, *postgres, *rabbitmq]
       FOURTHWALL_SHOP_URL: ${FOURTHWALL_SHOP_URL:-https://derechi-shop.fourthwall.com}
       FOURTHWALL_API_USERNAME: ${FOURTHWALL_API_USERNAME:-dev-user}
       FOURTHWALL_API_PASSWORD: ${FOURTHWALL_API_PASSWORD:-dev-password}
       FOURTHWALL_WEBHOOK_SECRET: ${FOURTHWALL_WEBHOOK_SECRET:-dev-secret}
     depends_on:
-      discovery:
-        condition: service_started
       postgres:
         condition: service_healthy
       rabbitmq-init:
@@ -131,7 +109,7 @@ services:
     ports:
       - "8083:8083"
     environment:
-      <<: [*jvm, *eureka, *postgres, *rabbitmq]
+      <<: [*jvm, *postgres, *rabbitmq]
       SPRING_PROFILES_ACTIVE: docker
       KEYCLOAK_URI: ${KEYCLOAK_URI:-http://keycloak:8080}
       KEYCLOAK_PUBLIC_URI: ${KEYCLOAK_PUBLIC_URI:-http://localhost:8180}
@@ -141,8 +119,6 @@ services:
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-derechi123}
       GOOGLE_MAPS_API_KEY:
     depends_on:
-      discovery:
-        condition: service_started
       postgres:
         condition: service_healthy
       rabbitmq-init:
@@ -161,11 +137,9 @@ services:
     ports:
       - "8085:8085"
     environment:
-      <<: [*jvm, *eureka, *postgres, *rabbitmq]
+      <<: [*jvm, *postgres, *rabbitmq]
       DERECHI_SITE_URL: ${DERECHI_SITE_URL:-http://localhost:3000}
     depends_on:
-      discovery:
-        condition: service_started
       postgres:
         condition: service_healthy
       rabbitmq-init:
@@ -182,15 +156,13 @@ services:
     ports:
       - "8084:8084"
     environment:
-      <<: [*jvm, *eureka, *rabbitmq]
+      <<: [*jvm, *rabbitmq]
       NOTIFY_EMAIL_HOST: ${NOTIFY_EMAIL_HOST:-mailpit}
       NOTIFY_EMAIL_PORT: ${NOTIFY_EMAIL_PORT:-1025}
       NOTIFY_EMAIL_USERNAME: ${NOTIFY_EMAIL_USERNAME:-}
       NOTIFY_EMAIL_PASSWORD: ${NOTIFY_EMAIL_PASSWORD:-}
       NOTIFY_EMAIL_FROM: ${NOTIFY_EMAIL_FROM:-no-reply@derechi.local}
     depends_on:
-      discovery:
-        condition: service_started
       rabbitmq-init:
         condition: service_completed_successfully
       mailpit:

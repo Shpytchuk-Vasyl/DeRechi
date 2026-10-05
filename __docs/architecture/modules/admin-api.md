@@ -14,7 +14,7 @@ built.
 |---|---|
 | Port | 8083 |
 | Entry point | `http://localhost:8083/admin` (`/` redirects there) |
-| Needs | PostgreSQL, RabbitMQ (to publish notifications), MinIO (uploads), Keycloak (login), Discovery |
+| Needs | PostgreSQL, RabbitMQ (to publish notifications), MinIO (uploads), Keycloak (login) |
 | Stack | Spring MVC, Thymeleaf, Spring Security OAuth2 client, Spring Data JPA + Hibernate Spatial, Spring AMQP, Spring Cloud AWS S3, Caffeine, libphonenumber, Lombok |
 
 ## Controllers
@@ -156,7 +156,7 @@ and [../../features/places.md](../../features/places.md).
 | `spring.cloud.aws.s3.endpoint` | `MINIO_ENDPOINT`, `http://localhost:9000` | `MINIO_ENDPOINT=http://minio:9000` |
 | `spring.security.oauth2.client.provider.keycloak.*` | `issuer-uri` (default profile) | `SPRING_PROFILES_ACTIVE=docker`, `KEYCLOAK_URI`, `KEYCLOAK_PUBLIC_URI` |
 
-Plus the usual datasource, RabbitMQ and Eureka settings. Hikari `connection-timeout`,
+Plus the usual datasource and RabbitMQ settings. Hikari `connection-timeout`,
 the transaction default timeout and the JPA query timeout are all 30 seconds; response
 compression is on for text and JSON.
 

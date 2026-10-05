@@ -16,7 +16,7 @@ business logic (identity, file storage, mail, metrics) is an off-the-shelf conta
   (browser)      │  Next.js     │          │  Spring Cloud GW    │
                  └──────────────┘          └──────┬───────┬──────┘
                        │ presigned PUT            │       │ /realms/**
-                       ▼                      lb://      ▼
+                       ▼                   direct URI ▼
                  ┌──────────────┐          ┌──────────┐ ┌──────────────┐
                  │  MinIO (S3)  │◀─upload──│Client-API│ │ Keycloak     │
                  │  derechi-    │          │  (8082)  │ │ (8180)       │
@@ -44,8 +44,9 @@ business logic (identity, file storage, mail, metrics) is an off-the-shelf conta
                                        ▲                               │
                                        └───────────────────────────────┘
 
-  Discovery (8761, Eureka) registers every service; Prometheus (9090) scrapes
-  /actuator/prometheus on each of them; Grafana (3000) reads Prometheus.
+  Prometheus (9090) scrapes /actuator/prometheus on each service; Grafana (3000)
+  reads Prometheus. There is no service registry: the gateway reaches Client-API at
+  CLIENT_API_URI, and the services talk to each other only through RabbitMQ.
 ```
 
 Two things in the picture are deliberate and worth knowing before reading further:

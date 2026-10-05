@@ -19,9 +19,9 @@ Read [Maven reactor](../architecture/maven-reactor.md), [Maven and modules](../c
    <artifactId>Report-Export</artifactId>
    ```
 
-   Use the Spring Boot 4 starter names (`spring-boot-starter-webmvc`, `spring-boot-starter-data-jpa`, `spring-boot-starter-amqp`, the `-test` twin of each starter you use) plus `spring-cloud-starter-netflix-eureka-client`. Actuator and the Prometheus registry are inherited from the root `<dependencies>`. If you use Lombok, copy the `provided` + `optional` dependency and the `annotationProcessorPaths` block of `maven-compiler-plugin` from `Admin-API/pom.xml`.
+   Use the Spring Boot 4 starter names (`spring-boot-starter-webmvc`, `spring-boot-starter-data-jpa`, `spring-boot-starter-amqp`, the `-test` twin of each starter you use). Actuator and the Prometheus registry are inherited from the root `<dependencies>`. If you use Lombok, copy the `provided` + `optional` dependency and the `annotationProcessorPaths` block of `maven-compiler-plugin` from `Admin-API/pom.xml`.
 
-2. **Register it.** Root `pom.xml`, `<modules>`: add `<module>Report-Export</module>`. Keep the order Discovery first; the list is also the build order hint.
+2. **Register it.** Root `pom.xml`, `<modules>`: add `<module>Report-Export</module>`. Keep `DB-Postgres` first; the list is also the build order hint.
 
 3. **Delete Initializr leftovers** if you generated the skeleton: `mvnw`, `mvnw.cmd`, `.mvn/`, `HELP.md`, `.gitignore`, `.gitattributes` inside the module. One wrapper lives in the root.
 
@@ -41,12 +41,6 @@ Read [Maven reactor](../architecture/maven-reactor.md), [Maven and modules](../c
        web:
          exposure:
            include: health,info,prometheus
-   eureka:
-     client:
-       service-url:
-         defaultZone: http://localhost:8761/eureka
-     instance:
-       prefer-ip-address: true
    ```
 
    Keep `localhost` here; container addresses come from environment variables in compose. Blocking code with virtual threads and `RestClient` is the house style, not WebFlux.
@@ -57,14 +51,14 @@ Read [Maven reactor](../architecture/maven-reactor.md), [Maven and modules](../c
 
 7. **Dockerfile.** Root `Dockerfile`, build stage: add `COPY Report-Export Report-Export` next to the other modules. Without it Maven sees the module in `<modules>` but the directory is missing and the image build fails for **every** service, not just the new one.
 
-8. **Compose.** `docker-compose.services.yml`: a service block using the `service-base` anchor, `build.args.MODULE: Report-Export`, the port mapping, `container_name: derechi-report-export`, and the environment anchors it needs (`*eureka`, `*postgres`, `*rabbitmq`, `*jvm`). Use `depends_on` with health conditions for postgres and rabbitmq like the siblings.
+8. **Compose.** `docker-compose.services.yml`: a service block using the `service-base` anchor, `build.args.MODULE: Report-Export`, the port mapping, `container_name: derechi-report-export`, and the environment anchors it needs (`*postgres`, `*rabbitmq`, `*jvm`). Use `depends_on` with health conditions for postgres and rabbitmq like the siblings.
 
 9. **Prometheus.** Both files, both with the `application` label the Grafana dashboard keys on:
 
    - `docker/prometheus/prometheus.yml`: `host.docker.internal:8086`, `labels: { application: Report-Export }`
    - `docker/prometheus/prometheus-full.yml`: `report-export:8086` (the compose service name), same label
 
-10. **Gateway, if it serves HTTP to the outside.** `Getaway/src/main/resources/application.yaml`: a route with `uri: lb://REPORT-EXPORT` (the Eureka name is the application name upper-cased) and a `Path=` predicate. No ports of other services belong in the Gateway config.
+10. **Gateway, if it serves HTTP to the outside.** `Getaway/src/main/resources/application.yaml`: a route with `uri: ${REPORT_EXPORT_URI:http://localhost:8086}` and a `Path=` predicate; set `REPORT_EXPORT_URI: http://report-export:8086` for `getaway` in compose and add it to the env files and [environment-variables](../deployment/environment-variables.md).
 
 11. **Context test.** `src/test/java/.../ReportExportApplicationTests.java` with `@SpringBootTest` and an empty `contextLoads()`; if the module needs the database, extend it with the Testcontainers base from `Client-API` (`AbstractPostgresTests`) rather than pointing tests at a local server.
 
@@ -88,12 +82,12 @@ Only if the module exposes something through the Gateway that the web client sho
 
 - [ ] Folder, `artifactId` and `<module>` identical, no groupId/version/properties in the module POM
 - [ ] Initializr leftovers deleted
-- [ ] `application.yaml` with name, virtual threads, port, actuator exposure, Eureka
+- [ ] `application.yaml` with name, virtual threads, port, actuator exposure
 - [ ] `ddl-auto: none`, no Liquibase, entity copies if it uses the database
 - [ ] `COPY` line in `Dockerfile`
 - [ ] Service block in `docker-compose.services.yml`
 - [ ] Target in both Prometheus configs with the `application` label
-- [ ] Gateway route via `lb://` if it serves HTTP
+- [ ] Gateway route with its own `*_URI` variable if it serves HTTP
 - [ ] `*ApplicationTests` passes
 - [ ] `./mvnw test-compile` and `docker compose -f docker-compose.yml -f docker-compose.services.yml build` succeed
 - [ ] Module page under `..`

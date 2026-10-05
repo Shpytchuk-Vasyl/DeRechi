@@ -17,9 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @SpringBootTest(properties = {
-        "spring.jpa.hibernate.ddl-auto=validate",
-        "eureka.client.enabled=false",
-        "spring.cloud.discovery.enabled=false"
+        "spring.jpa.hibernate.ddl-auto=validate"
 })
 @AutoConfigureGraphQlTester
 public abstract class AbstractGraphQlTests extends AbstractPostgresTests {

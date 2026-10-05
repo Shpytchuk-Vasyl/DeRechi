@@ -33,10 +33,9 @@ If your JVM's default timezone is `Europe/Kiev`, this fails with `invalid value 
 
 ## 3. Start the services
 
-`Discovery` first, always; everything else registers with it and the Gateway cannot route until the registry is up.
+In any order; the Gateway answers `/graphql` once `Client-API` is up.
 
 ```bash
-./mvnw -pl Discovery spring-boot:run
 ./mvnw -pl Getaway spring-boot:run
 ./mvnw -pl Client-API spring-boot:run
 ./mvnw -pl Admin-API spring-boot:run
@@ -44,9 +43,9 @@ If your JVM's default timezone is `Europe/Kiev`, this fails with `invalid value 
 ./mvnw -pl Notification spring-boot:run
 ```
 
-Start only what you need: `Admin-API` alone is enough for admin UI work (it needs PostgreSQL, Keycloak, MinIO and RabbitMQ from compose, and `Discovery` if you want it registered). `Worker` and `Notification` are only needed when you exercise the event flows.
+Start only what you need: `Admin-API` alone is enough for admin UI work (it needs PostgreSQL, Keycloak, MinIO and RabbitMQ from compose). `Worker` and `Notification` are only needed when you exercise the event flows.
 
-In IDEA, create a Spring Boot run configuration per `*Application` class, or use a compound configuration that starts `Discovery` first. The `Launcher` module exists to start several contexts in one JVM for manual testing but is currently commented out of the reactor; see [launcher](../architecture/modules/launcher.md).
+In IDEA, create a Spring Boot run configuration per `*Application` class, or a compound configuration that starts them together. The `Launcher` module exists to start several contexts in one JVM for manual testing but is currently commented out of the reactor; see [launcher](../architecture/modules/launcher.md).
 
 ## 4. Open things
 
@@ -62,7 +61,6 @@ In IDEA, create a Spring Boot run configuration per `*Application` class, or use
 | MinIO console | `http://localhost:9001` | `derechi` / `derechi123` |
 | Prometheus | `http://localhost:9090` | none |
 | Grafana | `http://localhost:3000` | `admin` / `admin` |
-| Eureka dashboard | `http://localhost:8761` | none |
 
 Dev users in the `derechi` realm:
 

@@ -3,7 +3,6 @@ package org.shpytchuk.launcher;
 import org.shpytchuk.adminapi.AdminApiApplication;
 import org.shpytchuk.worker.WorkerApplication;
 import org.shpytchuk.clientapi.ClientApiApplication;
-//import org.shpytchuk.discovery.DiscoveryApplication;
 import org.shpytchuk.getaway.GetawayApplication;
 import org.springframework.boot.Banner;
 import org.springframework.boot.WebApplicationType;
@@ -12,8 +11,6 @@ import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEven
 import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.env.EnumerablePropertySource;
-import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -29,9 +26,6 @@ import java.util.Locale;
 import java.util.Map;
 
 public final class DeRechiLauncher {
-
-    private static final String DISCOVERY = "Discovery";
-    private static final String LOAD_BALANCER_SCHEME = "lb://";
 
     private static final List<String> SECURITY = List.of(
             "org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration",
@@ -94,8 +88,6 @@ public final class DeRechiLauncher {
             "org.springframework.boot.amqp.autoconfigure.metrics.RabbitMetricsAutoConfiguration");
 
     private static final List<Service> SERVICES = List.of(
-//            new Service(DISCOVERY, DiscoveryApplication.class, WebApplicationType.SERVLET,
-//                    excludes(SECURITY, GRAPHQL, PERSISTENCE, AMQP, GATEWAY)),
             new Service("Getaway", GetawayApplication.class, WebApplicationType.REACTIVE,
                     excludes(SECURITY, GRAPHQL, PERSISTENCE, AMQP)),
             new Service("Client-API", ClientApiApplication.class, WebApplicationType.SERVLET,
@@ -138,7 +130,6 @@ public final class DeRechiLauncher {
 
                 [launcher] JVM:
                   Getaway          http://localhost:8080
-                  Discovery        http://localhost:8761
                   Client-API       http://localhost:8082 (graphiql: /graphiql)
                   Admin-API        http://localhost:8083/admin
                   Worker http://localhost:8085
@@ -150,9 +141,6 @@ public final class DeRechiLauncher {
         defaults.put("spring.config.location", "optional:classpath:derechi-launcher-no-config/");
         defaults.put("spring.main.web-application-type", service.type().name().toLowerCase(Locale.ROOT));
         defaults.put("spring.autoconfigure.exclude", String.join(",", service.excludes()));
-        if (!DISCOVERY.equals(service.name())) {
-            defaults.put("eureka.client.enabled", "false");
-        }
 
         return new SpringApplicationBuilder(service.mainClass())
                 .web(service.type())
@@ -177,37 +165,7 @@ public final class DeRechiLauncher {
         for (Service service : SERVICES) {
             configs.put(service.name(), configOf(service.name()));
         }
-
-        Map<String, String> localUrls = new LinkedHashMap<>();
-        configs.forEach((name, config) ->
-                localUrls.put(name.toUpperCase(Locale.ROOT), "http://localhost:" + config.getProperty("server.port")));
-
-        configs.replaceAll((name, config) -> withoutLoadBalancerUris(config, localUrls));
         return configs;
-    }
-
-    private static PropertySource<?> withoutLoadBalancerUris(PropertySource<?> config, Map<String, String> localUrls) {
-        if (!(config instanceof EnumerablePropertySource<?> enumerable)) {
-            return config;
-        }
-
-        Map<String, Object> rewritten = new LinkedHashMap<>();
-        for (String name : enumerable.getPropertyNames()) {
-            Object value = enumerable.getProperty(name);
-            if (value instanceof String text && text.startsWith(LOAD_BALANCER_SCHEME)) {
-                String rest = text.substring(LOAD_BALANCER_SCHEME.length());
-                int pathAt = rest.indexOf('/');
-                String serviceId = (pathAt < 0 ? rest : rest.substring(0, pathAt)).toUpperCase(Locale.ROOT);
-                String localUrl = localUrls.get(serviceId);
-                if (localUrl == null) {
-                    throw new IllegalStateException(name + "=" + text + " вказує на сервіс поза лаунчером");
-                }
-                value = pathAt < 0 ? localUrl : localUrl + rest.substring(pathAt);
-                System.out.printf("[launcher] %s: %s -> %s%n", enumerable.getName(), text, value);
-            }
-            rewritten.put(name, value);
-        }
-        return new MapPropertySource(enumerable.getName(), rewritten);
     }
 
     private static PropertySource<?> configOf(String applicationName) throws IOException {

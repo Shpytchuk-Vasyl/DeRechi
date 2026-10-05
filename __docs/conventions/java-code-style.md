@@ -36,7 +36,7 @@ public class MatchService { private final LostItemRepository lostItemRepository;
 
 Do not put `@Data`, `@Builder` or `@Value` on anything. `@Data` generates `equals`/`hashCode` over all fields, which is wrong for entities and unnecessary for records.
 
-Lombok is declared with `provided` + `optional` scope and listed in `annotationProcessorPaths` only in `Admin-API`, `Client-API` and `Worker`. Modules without Lombok (`Notification`, `Getaway`, `Discovery`) stay without it.
+Lombok is declared with `provided` + `optional` scope and listed in `annotationProcessorPaths` only in `Admin-API`, `Client-API` and `Worker`. Modules without Lombok (`Notification`, `Getaway`) stay without it.
 
 ## Logging
 

@@ -93,7 +93,7 @@ Never edit an applied changeset. Backfill `NOT NULL` columns.
 
 ## 6. Run it and check by hand
 
-Tests do not exercise Eureka, the gateway, RabbitMQ topology or Keycloak. Start the stack
+Tests do not exercise the gateway, RabbitMQ topology or Keycloak. Start the stack
 ([getting started](getting-started.md)) and check the change where it lives:
 
 | Change | Where to look |

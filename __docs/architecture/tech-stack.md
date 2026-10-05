@@ -10,7 +10,7 @@ those files, the file wins and this page needs a fix.
 |---|---|---|
 | Java | 26 | `<release>26</release>` in the root `maven-compiler-plugin` config |
 | Spring Boot | 4.1.1 | root `<parent>` is `spring-boot-starter-parent` |
-| Spring Cloud | 2025.1.3 | Eureka client/server, Gateway (WebFlux), Resilience4j |
+| Spring Cloud | 2025.1.3 | Gateway (WebFlux), Resilience4j; `Getaway` only |
 | Spring Cloud AWS | 4.1.1 | `spring-cloud-aws-starter-s3`, pointed at MinIO |
 | PostgreSQL | 17 with PostGIS 3.5 | custom image built from `docker/postgres/Dockerfile` |
 | RabbitMQ | 4.3.5 | management plugin on, quorum queues |

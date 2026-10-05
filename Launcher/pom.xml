@@ -10,14 +10,9 @@
     </parent>
     <artifactId>Launcher</artifactId>
     <name>Launcher</name>
-    <description>Запускає Discovery, Getaway, Client-API, Admin-API і Worker в одній JVM (тільки для локальної розробки)</description>
+    <description>Запускає Getaway, Client-API, Admin-API і Worker в одній JVM (тільки для локальної розробки)</description>
 
     <dependencies>
-        <dependency>
-            <groupId>org.shpytchuk</groupId>
-            <artifactId>Discovery</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.shpytchuk</groupId>
             <artifactId>Getaway</artifactId>

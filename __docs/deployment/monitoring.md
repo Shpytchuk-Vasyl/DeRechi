@@ -18,12 +18,12 @@ The override file switches Prometheus to the second config by replacing its `--c
 | Job | Targets | Path |
 |---|---|---|
 | `prometheus` | itself | `/metrics` |
-| `derechi-services` | Discovery 8761, Getaway 8080, Client-API 8082, Admin-API 8083, Worker 8085, Notification 8084 | `/actuator/prometheus` |
+| `derechi-services` | Getaway 8080, Client-API 8082, Admin-API 8083, Worker 8085, Notification 8084 | `/actuator/prometheus` |
 | `keycloak` | `keycloak:9000` | `/metrics` |
 | `minio` | `minio:9000` | `/minio/v2/metrics/cluster` |
 | `rabbitmq` | `rabbitmq:15692` | `/metrics` |
 
-Each service target carries an `application` label (`Discovery`, `Getaway`, `Client-API`, ...). Grafana's community dashboard **4701** ("JVM (Micrometer)") filters on exactly that label, so the label must be present on every new target or the service does not show up in the dropdown.
+Each service target carries an `application` label (`Getaway`, `Client-API`, `Admin-API`, ...). Grafana's community dashboard **4701** ("JVM (Micrometer)") filters on exactly that label, so the label must be present on every new target or the service does not show up in the dropdown.
 
 **A new service must be added to both files**, with its port and `application` label, as part of the same change that adds the module; see [add-a-module](../extending/add-a-module.md). Keycloak, MinIO and RabbitMQ are separate jobs because their metrics paths differ from the actuator one.
 
@@ -42,9 +42,9 @@ management:
       show-details: always
 ```
 
-`Getaway` additionally exposes `gateway` (`/actuator/gateway/routes` lists the resolved routes, useful when a `lb://` route does not resolve). `Admin-API` permits `/actuator/**` without login in its security filter chain; the other modules have no security filter at all. Do not expose `env`, `beans` or `heapdump` without putting authentication in front of them.
+`Getaway` additionally exposes `gateway` (`/actuator/gateway/routes` lists the resolved routes, useful to check which `CLIENT_API_URI` the gateway actually got). `Admin-API` permits `/actuator/**` without login in its security filter chain; the other modules have no security filter at all. Do not expose `env`, `beans` or `heapdump` without putting authentication in front of them.
 
-`/actuator/health` is what you check first when a service "is up but does not work": it reports the database, RabbitMQ, disk and Eureka state with `show-details: always`.
+`/actuator/health` is what you check first when a service "is up but does not work": it reports the database, RabbitMQ and disk state with `show-details: always`.
 
 ## Grafana
 

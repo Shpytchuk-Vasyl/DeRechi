@@ -18,7 +18,7 @@ a staging host, tags). Where something does not exist in the repository yet, it 
 
 - One Docker image per service, built from the root `Dockerfile` with `--build-arg MODULE=...`.
   The build stage compiles the whole reactor once and is cached; the runtime stage copies one
-  module's jar. `docker-compose.services.yml` already does this for `Discovery`, `Getaway`,
+  module's jar. `docker-compose.services.yml` already does this for `Getaway`,
   `Client-API`, `Admin-API`, `Worker` and `Notification`.
 - `DB-Postgres` is not a service and has no image. Its migrations are applied by hand, see
   [database changes](database-changes.md).
@@ -53,9 +53,8 @@ a staging host, tags). Where something does not exist in the repository yet, it 
    docker compose -f docker-compose.yml -f docker-compose.services.yml build
    ```
 
-5. **Deploy `Discovery` first**, wait for it to be healthy, then the rest. Services register in
-   Eureka on start and the gateway routes by `lb://` name, so order among the rest does not
-   matter much, but `Getaway` last avoids routing to instances that are not up yet.
+5. **Deploy the services** in any order. `Getaway` last avoids a few seconds of 5xx on
+   `/graphql` while `Client-API` restarts; nothing else depends on start order.
 6. **Web-Client** is built and started separately with `pnpm build` and `pnpm start`, pointed at
    the gateway through `GRAPHQL_URL` and `NEXT_PUBLIC_FILES_URL`.
 
@@ -67,9 +66,9 @@ docker compose -f docker-compose.yml -f docker-compose.services.yml up -d --buil
 
 ## Smoke checks after deploy
 
-- [ ] Every service answers on `/actuator/health` with `UP` (ports 8761, 8080, 8082, 8083,
+- [ ] Every service answers on `/actuator/health` with `UP` (ports 8080, 8082, 8083,
       8084, 8085).
-- [ ] Eureka at `http://<host>:8761` lists all five services.
+- [ ] `/actuator/gateway/routes` on the gateway shows `client-api` pointing at the right `CLIENT_API_URI`.
 - [ ] Prometheus `Status > Targets` shows every target up, including Keycloak, MinIO and RabbitMQ.
 - [ ] GraphiQL through the gateway (`/graphiql`) runs `categories` and `countries`, and a
       `createLostItem` mutation succeeds.

@@ -9,7 +9,7 @@ has no HTTP API; the only endpoints are actuator's.
 | Port | 8085 (actuator only) |
 | Consumes | queue `worker.items`, bound to `derechi.items` with `item.*.created`; queue `worker.claims`, bound with `item.*.claimed` and `item.*.returned`; queue `worker.archive`, bound with `item.*.archive` |
 | Produces | `NotificationRequestedEvent` on `derechi.notifications` (`notification.claim.*`) |
-| Needs | PostgreSQL, RabbitMQ, Discovery |
+| Needs | PostgreSQL, RabbitMQ |
 | Stack | Spring AMQP, Spring Data JPA, Hibernate Spatial + JTS, optimaize `language-detector`, libphonenumber, Lombok |
 
 ## Flow
@@ -119,7 +119,7 @@ spring:
           max-attempts: 3
 ```
 
-Datasource, RabbitMQ and Eureka as in every service, overridden by environment in Compose.
+Datasource and RabbitMQ as in every service, from `POSTGRES_*` and `RABBITMQ_*`.
 The `RabbitConfig` and `event` package are the same copy-per-module pattern described in
 [../messaging.md](../messaging.md).
 

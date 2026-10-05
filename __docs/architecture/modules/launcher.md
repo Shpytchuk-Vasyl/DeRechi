@@ -16,15 +16,12 @@ Dockerfile's `COPY` list. Read the "Re-enabling" section before switching it on.
    `spring.application.name`, so every context gets exactly its own module's configuration
    and nothing else (`spring.config.location` is pointed at a non-existent directory to stop
    the usual lookup).
-2. Rewrites every `lb://SERVICE` value in those configs to `http://localhost:<that
-   service's port>` and sets `eureka.client.enabled=false`. Inside one JVM there is no need
-   for a registry, and this is also why `Discovery` is commented out of the `SERVICES` list.
-3. Starts, in order, `Getaway` (reactive), `Client-API`, `Admin-API` and `Worker`
+2. Starts, in order, `Getaway` (reactive), `Client-API`, `Admin-API` and `Worker`
    (servlet) with `SpringApplicationBuilder`, each with a list of auto-configurations
    excluded so that one module's classpath does not leak into another's context (security
    into `Client-API`, GraphQL into `Admin-API`, persistence and AMQP into `Getaway`, the
    gateway into everyone else).
-4. Prints the local URLs and closes the contexts in reverse order on shutdown; a context
+3. Prints the local URLs and closes the contexts in reverse order on shutdown; a context
    that fails to start stops the others and exits with 1.
 
 `Notification` is not in the list. It needs its own exclusions worked out before it can
@@ -32,7 +29,7 @@ join.
 
 ## Why it is the odd one out
 
-- It is the **only** module that depends on other service modules (`Discovery`, `Getaway`,
+- It is the **only** module that depends on other service modules (`Getaway`,
   `Client-API`, `Admin-API`, `Worker` are its dependencies). Everything else
   depends only on libraries.
 - All service jars are on one classpath, so auto-configuration has to be excluded by hand

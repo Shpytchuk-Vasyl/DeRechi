@@ -11,9 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
  */
 @SpringBootTest(properties = {
         "spring.jpa.hibernate.ddl-auto=validate",
-        "spring.rabbitmq.listener.simple.auto-startup=false",
-        "eureka.client.enabled=false",
-        "spring.cloud.discovery.enabled=false"
+        "spring.rabbitmq.listener.simple.auto-startup=false"
 })
 class WorkerApplicationTests extends AbstractPostgresTests {
 

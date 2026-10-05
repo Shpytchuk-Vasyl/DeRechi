@@ -61,7 +61,7 @@ To reach the stack from another machine set `KEYCLOAK_PUBLIC_URI` in the host en
 
 ## Gateway route
 
-Keycloak is not a Eureka client, so the Gateway routes `/realms/**` and `/resources/**` to it with a direct `uri: ${KEYCLOAK_URI}` rather than `lb://`. That route exists for the web client's login flow through port 8080; the admin panel talks to port 8180 directly.
+The Gateway routes `/realms/**` and `/resources/**` to Keycloak with a direct `uri: ${KEYCLOAK_URI}`, like every other route. That route exists for the web client's login flow through port 8080; the admin panel talks to port 8180 directly.
 
 ## Metrics and health
 

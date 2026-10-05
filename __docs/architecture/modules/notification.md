@@ -8,7 +8,7 @@ NotifyHub, and this module is the glue between the queue and that library.
 |---|---|
 | Port | 8084 (actuator only) |
 | Consumes | queue `notification.events`, bound to `derechi.notifications` with `notification.#` |
-| Needs | RabbitMQ, an SMTP server (Mailpit in development), Discovery. No database. |
+| Needs | RabbitMQ, an SMTP server (Mailpit in development). No database. |
 | Stack | Spring AMQP, `notify-spring-boot-starter` + `notify-email` (NotifyHub 1.1.0) |
 
 ## NotifyHub

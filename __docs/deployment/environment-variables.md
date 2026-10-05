@@ -7,7 +7,7 @@ there are two places a service can run:
   uses. Addresses are `localhost`.
 - **Compose default** (`${NAME:-default}` in the compose files): what a container gets when no
   env file is passed. Addresses are container names inside the compose network (`postgres`,
-  `rabbitmq`, `discovery`).
+  `rabbitmq`, `client-api`).
 
 Both defaults are the local values, so `docker compose up` and IDEA work without any file. The
 values of another environment come from an env file at the repository root:
@@ -60,21 +60,17 @@ local tool.
 | `RABBITMQ_HOST` | `localhost` | `rabbitmq` | Client-API, Admin-API, Worker, Notification, `rabbitmq-init` | broker host |
 | `RABBITMQ_PORT` | `5672` | `5672` | the services | AMQP port |
 | `RABBITMQ_USER` / `RABBITMQ_PASSWORD` | `derechi` / `derechi` | same | the services, `rabbitmq-init`, and the `rabbitmq` container | broker credentials |
-| `EUREKA_URL` | `http://localhost:8761/eureka` | `http://discovery:8761/eureka` | every service except Discovery | registry address |
 | `JAVA_OPTS` | empty | `-Xms64m -Xmx256m ... -XX:+UseSerialGC` | every service | JVM flags; the default is laptop sizing |
 
-`spring.datasource.*`, `spring.rabbitmq.*` and `eureka.client.service-url.defaultZone` are
+`spring.datasource.*` and `spring.rabbitmq.*` are
 built from these in every `application.yaml`. Spring's relaxed binding still applies on top
 (`SPRING_DATASOURCE_URL` would beat the YAML), but nothing sets those any more.
-
-## Discovery
-
-Only `JAVA_OPTS`. Port 8761.
 
 ## Getaway
 
 | Variable | YAML default | Compose default | Purpose |
 |---|---|---|---|
+| `CLIENT_API_URI` | `http://localhost:8082` | `http://client-api:8082` | target of the `client-api` route (`/graphql/**`, `/graphiql/**`, `/api/client/**`) |
 | `KEYCLOAK_URI` | `http://localhost:8180` | `http://keycloak:8080` | target of the `keycloak` route (`/realms/**`, `/resources/**`) |
 | `MINIO_URI` | `http://localhost:9000` | `http://minio:9000` | target of the `files` (GET) and `files-upload` (PUT) routes |
 | `MINIO_BUCKET` | `derechi-files` | not set | bucket segment in the upload path and the `/files/**` rewrite |
@@ -85,7 +81,7 @@ Only `JAVA_OPTS`. Port 8761.
 
 | Variable | YAML default | Compose default | Purpose |
 |---|---|---|---|
-| `POSTGRES_*`, `RABBITMQ_*`, `EUREKA_URL` | see above | see above | |
+| `POSTGRES_*`, `RABBITMQ_*` | see above | see above | |
 | `FOURTHWALL_SHOP_URL` | `https://derechi-shop.fourthwall.com` | same | the shop whose checkout the unlock dialog opens |
 | `FOURTHWALL_API_USERNAME` / `FOURTHWALL_API_PASSWORD` | `dev-user` / `dev-password` | same | the API user from Settings, For developers, Open API (basic auth); creates the per-response products. The real values live in `env.local` / `env.prod`, never in the repository |
 | `FOURTHWALL_WEBHOOK_SECRET` | `dev-secret` | same | the secret of the `ORDER_PLACED` webhook; every webhook body is signed with it (`X-Fourthwall-Hmac-SHA256`). On a server it must equal the secret set in Fourthwall |
@@ -97,7 +93,7 @@ the YAML and must match Admin-API's list.
 
 | Variable | YAML default | Compose default | Purpose |
 |---|---|---|---|
-| `POSTGRES_*`, `RABBITMQ_*`, `EUREKA_URL` | see above | see above | |
+| `POSTGRES_*`, `RABBITMQ_*` | see above | see above | |
 | `SPRING_PROFILES_ACTIVE` | none (`!docker` branch of the YAML) | `docker` (fixed, not a variable) | switches Keycloak from a single `issuer-uri` to split URIs |
 | `KEYCLOAK_URI` | `http://keycloak:8080` (read only under `docker`) | `http://keycloak:8080` | token, JWKS and user-info endpoints, reached from inside the network |
 | `KEYCLOAK_PUBLIC_URI` | `http://localhost:8180` | same | the address browsers reach Keycloak at: the authorization endpoint under `docker`, the issuer otherwise; also Keycloak's `KC_HOSTNAME` in full mode |
@@ -110,7 +106,7 @@ the YAML and must match Admin-API's list.
 
 | Variable | YAML default | Compose default | Purpose |
 |---|---|---|---|
-| `POSTGRES_*`, `RABBITMQ_*`, `EUREKA_URL` | see above | see above | |
+| `POSTGRES_*`, `RABBITMQ_*` | see above | see above | |
 | `DERECHI_SITE_URL` | `http://localhost:3000` | same | public address of the web client, used for the links in claim messages |
 
 The queue names `worker.items`, `worker.claims` and `worker.archive` are `derechi.items.queue`,
@@ -120,7 +116,7 @@ The queue names `worker.items`, `worker.claims` and `worker.archive` are `derech
 
 | Variable | YAML default | Compose default | Purpose |
 |---|---|---|---|
-| `RABBITMQ_*`, `EUREKA_URL` | see above | see above | no database access |
+| `RABBITMQ_*` | see above | see above | no database access |
 | `NOTIFY_EMAIL_HOST` | `localhost` | `mailpit` | SMTP host for the e-mail channel |
 | `NOTIFY_EMAIL_PORT` | `1025` | `1025` | SMTP port |
 | `NOTIFY_EMAIL_USERNAME` / `NOTIFY_EMAIL_PASSWORD` | empty | empty | SMTP auth; Mailpit accepts anything |

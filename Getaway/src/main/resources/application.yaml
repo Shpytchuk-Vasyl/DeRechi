@@ -21,7 +21,7 @@ spring:
               predicates:
                 - Path=/realms/**,/resources/**
             - id: client-api
-              uri: lb://CLIENT-API
+              uri: ${CLIENT_API_URI:http://localhost:8082}
               predicates:
                 - Path=/graphql/**,/graphiql/**,/api/client/**
 
@@ -54,13 +54,6 @@ spring:
 
 server:
   port: 8080
-
-eureka:
-  client:
-    service-url:
-      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
-  instance:
-    prefer-ip-address: true
 
 management:
   endpoints:

@@ -8,7 +8,7 @@ to it as is.
 |---|---|
 | Port | 8082 |
 | Endpoint | `POST /graphql`; GraphiQL at `/graphiql` (enabled in `application.yaml`); the schema is printed at `/graphql/schema` |
-| Needs | PostgreSQL, RabbitMQ (to publish), Discovery |
+| Needs | PostgreSQL, RabbitMQ (to publish) |
 | Stack | Spring MVC + Spring for GraphQL, Spring Data JPA, Hibernate Spatial, AspectJ, Spring AMQP, Lombok |
 
 ## Schema
@@ -86,7 +86,7 @@ publishes a `ClaimEvent` with `item.<kind>.claimed` / `item.<kind>.returned` aft
 ## Config
 
 `application.yaml`: datasource and RabbitMQ on `localhost`, `ddl-auto: none`,
-`open-in-view: false`, virtual threads on, Eureka at `localhost:8761`, and
+`open-in-view: false`, virtual threads on, and
 
 ```yaml
 derechi:
@@ -96,8 +96,8 @@ derechi:
 ```
 
 bound to `CountriesProperties`, which derives each country's currency from the JDK and
-refuses to start on an unknown code. In Compose the datasource, RabbitMQ and Eureka are
-set through `POSTGRES_*`, `RABBITMQ_*` and `EUREKA_URL`; see
+refuses to start on an unknown code. In Compose the datasource and RabbitMQ are
+set through `POSTGRES_*` and `RABBITMQ_*`; see
 [environment variables](../../deployment/environment-variables.md).
 
 ## Tests
@@ -106,7 +106,7 @@ set through `POSTGRES_*`, `RABBITMQ_*` and `EUREKA_URL`; see
 |---|---|---|
 | `support/AbstractPostgresTests` | Testcontainers `postgis/postgis:17-3.5`, started once per JVM, `@Testcontainers(disabledWithoutDocker = true)` | applies the `DB-Postgres` changelog from disk, stubs the `ukrainian` text search config as a copy of `simple`, truncates all tables before each test |
 | `repository/AbstractRepositoryTests` | `@DataJpaTest` with `ddl-auto=validate` and the real database | repository and specification tests in `repository/thing` and `repository/detail` |
-| `controller/AbstractGraphQlTests` | `@SpringBootTest` + `@AutoConfigureGraphQlTester`, Eureka off, `RabbitTemplate` mocked | end-to-end GraphQL tests with seeded categories: items, claims, and `ReferenceControllerTests` for categories, countries and places |
+| `controller/AbstractGraphQlTests` | `@SpringBootTest` + `@AutoConfigureGraphQlTester`, `RabbitTemplate` mocked | end-to-end GraphQL tests with seeded categories: items, claims, and `ReferenceControllerTests` for categories, countries and places |
 | `support/Fixtures` | static builders for `Place`, `ContactInfo`, items | shared test data |
 
 Unit tests without a container cover the aspect (`ItemEventAspectTest`, Mockito), the

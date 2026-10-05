@@ -13,8 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.graphql.test.tester.GraphQlTester;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-@GraphQlTest(controllers = ReferenceController.class,
-        properties = {"eureka.client.enabled=false", "spring.cloud.discovery.enabled=false"})
+@GraphQlTest(controllers = ReferenceController.class)
 @Import({ReferenceService.class, GraphQlConfig.class})
 @EnableConfigurationProperties(CountriesProperties.class)
 class ReferenceControllerSliceTests {

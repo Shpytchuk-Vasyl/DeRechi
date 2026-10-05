@@ -19,7 +19,7 @@ run:
 | File | Used by | Service targets |
 |---|---|---|
 | `prometheus.yml` | `docker compose up` (infrastructure only, services in the IDE) | `host.docker.internal:<port>`, the container reaches the host |
-| `prometheus-full.yml` | `docker compose -f docker-compose.yml -f docker-compose.services.yml up` | container names, `discovery:8761`, `getaway:8080`, ... |
+| `prometheus-full.yml` | `docker compose -f docker-compose.yml -f docker-compose.services.yml up` | container names, `getaway:8080`, `client-api:8082`, ... |
 
 The services override in `docker-compose.services.yml` swaps the `--config.file` argument;
 that is why the full stack is an override file rather than a second compose project.
@@ -29,7 +29,7 @@ Both files define the same jobs:
 | Job | Targets | Path |
 |---|---|---|
 | `prometheus` | itself | `/metrics` |
-| `derechi-services` | all six Spring services, each with an `application` label (`Discovery`, `Getaway`, `Client-API`, `Admin-API`, `Worker`, `Notification`) | `/actuator/prometheus` |
+| `derechi-services` | all five Spring services, each with an `application` label (`Getaway`, `Client-API`, `Admin-API`, `Worker`, `Notification`) | `/actuator/prometheus` |
 | `keycloak` | `keycloak:9000` (management port, `KC_METRICS_ENABLED=true`) | `/metrics` |
 | `minio` | `minio:9000` | `/minio/v2/metrics/cluster` (public, `MINIO_PROMETHEUS_AUTH_TYPE=public`) |
 | `rabbitmq` | `rabbitmq:15692` | `/metrics` (the `rabbitmq_prometheus` plugin) |
@@ -53,10 +53,9 @@ volume.
 ## Health
 
 `/actuator/health` on each service includes the datasource and RabbitMQ contributors where
-those are on the classpath. Eureka also shows registration state at
-`http://localhost:8761`. Compose health checks exist for PostgreSQL, RabbitMQ, MinIO and
+those are on the classpath. Compose health checks exist for PostgreSQL, RabbitMQ, MinIO and
 Mailpit so dependent containers wait for them; the Spring services have no container
-health check and `depends_on` only waits for `discovery` to start.
+health check.
 
 ## Logging
 

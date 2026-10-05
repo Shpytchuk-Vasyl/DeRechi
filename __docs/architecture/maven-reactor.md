@@ -9,7 +9,6 @@ module pom stays a short list of dependencies and nothing else.
 ```xml
 <modules>
     <module>DB-Postgres</module>
-    <module>Discovery</module>
     <module>Getaway</module>
     <module>Client-API</module>
     <module>Admin-API</module>
