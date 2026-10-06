@@ -4,7 +4,9 @@ Turning on another delivery channel in the `Notification` module. The module its
 
 ## Before you start
 
-Read [Match notifications](../features/match-notifications.md), in particular the known gaps: the consumer sends email when `email` is present and SMS when `phone` is present, regardless of which `NotifyChannel` the admin picked, and the SMS channel is not actually on the classpath. Any new channel inherits that until the event carries a channel flag.
+Read [Match notifications](../features/match-notifications.md), in particular the known gaps: the consumer sends email when `email` is present and SMS when `phone` is present, regardless of which `NotifyChannel` the admin picked. Any new channel inherits that until the event carries a channel flag.
+
+SMS is not a NotifyHub channel here: it is our own `SmsFlyChannel` (a `NotificationChannel` bean named `sms`, see [Notification](../architecture/modules/notification.md#sms-sms-fly)). It is also the template for a provider NotifyHub does not ship: implement `NotificationChannel`, give it the name of the `Channel` constant the sender uses, register it as a bean.
 
 ## How NotifyHub enables a channel
 
@@ -19,7 +21,7 @@ The keys that switch channels on (from the starter's `Notify*AutoConfiguration` 
 |---|---|---|
 | email | `notify.channels.email.host` | `port`, `username`, `password`, `from`, `from-name`, `tls` |
 | telegram | `notify.channels.telegram.bot-token` | `chat-id` (default), `recipients` (map name to chat id) |
-| sms (Twilio) | `notify.channels.sms.account-sid` | `auth-token`, `from-number`; also needs `com.twilio.Twilio` on the classpath |
+| sms (Twilio) | `notify.channels.sms.account-sid` | `auth-token`, `from-number`; also needs `com.twilio.Twilio` on the classpath. **Not used**: the name `sms` is taken by `SmsFlyChannel`, adding Twilio would register a second `sms` |
 | whatsapp (Twilio) | `notify.channels.whatsapp.account-sid` | `auth-token`, `from-number` |
 
 Channel artifacts share the starter's groupId and are named `notify-<channel>`; `notify-email` and `notify-telegram` are already in our Maven cache, check Maven Central for the exact artifact of any other channel. Slack, Teams, Discord, push, webhooks, Google Chat, SendGrid, Mailgun and more follow the same pattern; open `NotifyProperties.Channels` in the starter's sources jar for the full list (`find ~/.m2 -name "notify-spring-boot-starter-*-sources.jar"`).
@@ -71,7 +73,7 @@ Channel artifacts share the starter's groupId and are named `notify-<channel>`; 
 
 ## Migration needed?
 
-Only if the channel needs a recipient we do not store (Telegram chat id). Twilio SMS and WhatsApp address by phone, which we have.
+Only if the channel needs a recipient we do not store (Telegram chat id). SMS and WhatsApp address by phone, which we have.
 
 ## Web-Client impact
 
