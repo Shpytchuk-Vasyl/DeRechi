@@ -26,13 +26,23 @@ spelling and every connection fails otherwise.
 ```bash
 git clone https://github.com/Shpytchuk-Vasyl/DeRechi.git
 cd DeRechi
+```
+
+Before the first start, uncomment the dev users in `docker-compose.yml` (the `keycloak`
+service, the volume line marked "only for development"). The committed file is
+production-safe and starts Keycloak without them. Keep the change local; optionally also swap
+the `start` command for the commented-out `start-dev` one. See
+[deployment/keycloak.md](../deployment/keycloak.md#dev-users).
+
+```bash
 docker compose up -d
 ```
 
 The first run builds our Postgres image (PostGIS plus a Ukrainian full-text dictionary) and
 pulls RabbitMQ, Keycloak, MinIO, Mailpit, pgAdmin, Prometheus, Alertmanager and Grafana.
-Wait until `docker compose ps` shows every service healthy. Keycloak imports the `derechi`
-realm and the dev users on this first start; MinIO's init container creates the
+Wait until `docker compose ps` shows PostgreSQL, RabbitMQ, MinIO and Mailpit `healthy` and
+the rest `running`, and `http://localhost:8180` answers (Keycloak is the slowest). Keycloak imports the `derechi`
+realm (and the dev users, once uncommented) on this first start; MinIO's init container creates the
 `derechi-files` bucket and the application account, then exits.
 
 What is now listening, with credentials, is listed in
@@ -92,8 +102,10 @@ docker compose -f docker-compose.yml -f docker-compose.services.yml up -d --buil
 `admin`. You should see the navigation with Matches, Lost, Found and the archives. The other
 dev users are `moderator@derechi.local` / `moderator`, `viewer@derechi.local` / `viewer` and
 `user@derechi.local` / `user`; the last one has no admin roles and gets a 403, which is
-correct. They come from `docker/keycloak/dev/derechi-users-0.json`, which only the local
-compose file imports; production has none of them. Switch the language with `?lang=uk` (or `pl`, `de`, `fr`, `en`).
+correct. They come from `docker/keycloak/dev/derechi-users-0.json`, which is imported only if you
+uncommented its volume line in step 1; production has none of them. Forgot it? Uncomment the
+line, then `docker compose down -v` (loses local data) and start again: the import only
+runs for a realm that does not exist yet. Switch the language with `?lang=uk` (or `pl`, `de`, `fr`, `en`).
 
 ## 5. Create a lost and a found notice
 

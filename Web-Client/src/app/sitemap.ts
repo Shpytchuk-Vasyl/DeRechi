@@ -6,7 +6,6 @@ import { CACHE } from "@/lib/cache"
 import { toIsoDate } from "@/lib/intl/dates"
 import { absoluteUrl, isStale, SITEMAP_KINDS as KINDS, sitemapIds } from "@/lib/seo"
 
-// CACHE_TTL.day: segment config has to be a literal, an imported constant is ignored.
 export const revalidate = 86400
 
 const PAGE_SIZE = 100

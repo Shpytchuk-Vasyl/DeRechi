@@ -6,10 +6,10 @@ only piece of the system that talks to it today is the admin panel's login.
 ## Keycloak
 
 Keycloak 26.4 runs as a container (`derechi-keycloak`, port 8180 on the host, 8080 inside
-the Compose network). `docker-compose.yml` runs it in `start-dev` mode (plain HTTP, dev
-users imported); the production override `docker-compose.prod.yml` runs `start --import-realm`
-behind a TLS reverse proxy (`KC_HTTP_ENABLED`, `KC_PROXY_HEADERS=xforwarded`) and mounts only
-the realm file. Its data lives in the `keycloak` database of the shared PostgreSQL container,
+the Compose network). `docker-compose.yml` runs it with `start --import-realm` by default,
+ready for a TLS reverse proxy (`KC_HTTP_ENABLED`, `KC_PROXY_HEADERS=xforwarded`), and mounts
+only the realm file; `start-dev` and the dev users are commented-out lines a developer
+uncomments locally. Its data lives in the `keycloak` database of the shared PostgreSQL container,
 see [database.md](database.md).
 
 The realm `derechi` is versioned in `docker/keycloak/realms/derechi-realm.json` and loaded
@@ -37,7 +37,7 @@ Admin console: `http://localhost:8180`, `admin` / `admin`.
 Redirect URIs in the realm file are placeholders: `${DERECHI_ADMIN_URL}/*` for the admin
 panel and `${DERECHI_SITE_URL}/*` for the web client (also used as post-logout redirect
 URIs). `docker-compose.yml` defaults them to `http://localhost:8083` and
-`http://localhost:3000`; the production override requires them to be set. They are read on
+`http://localhost:3000`; production sets them in `env.prod`. They are read on
 the first import only, so changing them later is done in the admin console.
 
 ### Roles

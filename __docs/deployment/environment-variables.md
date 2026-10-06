@@ -19,8 +19,7 @@ values of another environment come from an env file at the repository root:
 | `env.prod` | production | no |
 
 ```bash
-docker compose --env-file env.prod \
-    -f docker-compose.yml -f docker-compose.services.yml -f docker-compose.prod.yml up -d --build
+docker compose --env-file env.prod -f docker-compose.yml -f docker-compose.services.yml up -d --build
 ```
 
 `env.local` is in Git and holds only the local values. `env.test` and `env.prod` are
@@ -31,11 +30,12 @@ filled in before the first start. The env file only feeds the `${...}` in the co
 each container receives the variables its `environment:` lists, not the whole file. Services
 started from IDEA do not read these files.
 
-`docker-compose.prod.yml` turns the secrets into required variables (`${NAME:?}`):
+Compose has no production file and does not check these: every variable falls back to its local
+default when `env.prod` lacks it. Before a release make sure `env.prod` sets at least
 `KEYCLOAK_ADMIN`, `KEYCLOAK_ADMIN_PASSWORD`, `KEYCLOAK_PUBLIC_URI`, `DERECHI_SITE_URL`,
 `DERECHI_ADMIN_URL`, `KEYCLOAK_SERVICES_SECRET`, `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD`,
-`MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY`, `ALERT_EMAIL_TO` and `ALERT_SMTP_HOST`. A missing one
-stops `docker compose` instead of starting with the local default.
+`MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY`, `ALERT_EMAIL_TO`, `ALERT_SMTP_HOST` and
+`ALERT_SMTP_REQUIRE_TLS=true`, besides the database, RabbitMQ and Fourthwall secrets.
 
 See [configuration](../conventions/configuration.md) for the rules behind this layout.
 
@@ -151,10 +151,10 @@ new placeholders when they are enabled; see
 | postgres | `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`; `initdb/01-keycloak.sh` creates the `keycloak` database owned by `POSTGRES_USER` |
 | rabbitmq | `RABBITMQ_USER`, `RABBITMQ_PASSWORD` as `RABBITMQ_DEFAULT_USER` / `_PASS` |
 | rabbitmq-init | `RABBITMQ_HOST`, `RABBITMQ_USER`, `RABBITMQ_PASSWORD`; imports `docker/rabbitmq/definitions.json` |
-| keycloak | `KEYCLOAK_ADMIN`, `KEYCLOAK_ADMIN_PASSWORD`, `KEYCLOAK_JAVA_OPTS`, and `POSTGRES_HOST` / `_PORT` / `_USER` / `_PASSWORD` for its `keycloak` database; `DERECHI_SITE_URL` (`http://localhost:3000`), `DERECHI_ADMIN_URL` (`http://localhost:8083`) and `KEYCLOAK_SERVICES_SECRET` (`dev-secret-change-me`) fill the placeholders of the realm file on import; full mode adds `KEYCLOAK_PUBLIC_URI` as `KC_HOSTNAME`. `docker-compose.prod.yml` makes all of these except the database and JVM ones required |
+| keycloak | `KEYCLOAK_ADMIN`, `KEYCLOAK_ADMIN_PASSWORD`, `KEYCLOAK_JAVA_OPTS`, and `POSTGRES_HOST` / `_PORT` / `_USER` / `_PASSWORD` for its `keycloak` database; `DERECHI_SITE_URL` (`http://localhost:3000`), `DERECHI_ADMIN_URL` (`http://localhost:8083`) and `KEYCLOAK_SERVICES_SECRET` (`dev-secret-change-me`) fill the placeholders of the realm file on import; full mode adds `KEYCLOAK_PUBLIC_URI` as `KC_HOSTNAME` (in both modes) |
 | minio | `MINIO_ROOT_USER`, `MINIO_ROOT_PASSWORD` (`derechi` / `derechi123`) as the root user, also the console login |
 | minio-init | `MINIO_ENDPOINT`, `MINIO_ROOT_USER`, `MINIO_ROOT_PASSWORD`; creates the bucket and the application account `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` with `docker/minio/derechi-app-policy.json` |
-| alertmanager | `ALERT_EMAIL_TO`, `ALERT_SMTP_HOST` (`mailpit:1025`), `ALERT_SMTP_FROM`, `ALERT_SMTP_USERNAME`, `ALERT_SMTP_PASSWORD`, `ALERT_SMTP_REQUIRE_TLS` (`false`, `true` under `docker-compose.prod.yml`); rendered into `docker/alertmanager/alertmanager.yml.tmpl` at start, see [monitoring](monitoring.md#alerts) |
+| alertmanager | `ALERT_EMAIL_TO`, `ALERT_SMTP_HOST` (`mailpit:1025`), `ALERT_SMTP_FROM`, `ALERT_SMTP_USERNAME`, `ALERT_SMTP_PASSWORD`, `ALERT_SMTP_REQUIRE_TLS` (`false`; set `true` in `env.prod`); rendered into `docker/alertmanager/alertmanager.yml.tmpl` at start, see [monitoring](monitoring.md#alerts) |
 | grafana | `GRAFANA_ADMIN_USER`, `GRAFANA_ADMIN_PASSWORD` |
 | pgadmin | `PGADMIN_DEFAULT_EMAIL`, `PGADMIN_DEFAULT_PASSWORD` |
 | mailpit | nothing environment-specific |

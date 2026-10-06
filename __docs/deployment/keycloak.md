@@ -4,11 +4,11 @@ Keycloak is the identity provider for the admin panel and, in future, for the pu
 
 ## The realm file
 
-`docker/keycloak/realms/derechi-realm.json` is mounted into `/opt/keycloak/data/import` and loaded by `--import-realm`: `start-dev` locally (`docker-compose.yml`), `start` in production (`docker-compose.prod.yml`, behind a TLS-terminating reverse proxy with `KC_HTTP_ENABLED=true` and `KC_PROXY_HEADERS=xforwarded`). The file holds **no users**; the dev users are a separate file, see [Dev users](#dev-users). Things to know:
+`docker/keycloak/realms/derechi-realm.json` is mounted into `/opt/keycloak/data/import` and loaded by `--import-realm`. `docker-compose.yml` runs `start` by default, ready for a TLS-terminating reverse proxy (`KC_HTTP_ENABLED=true`, `KC_PROXY_HEADERS=xforwarded`); it also works locally as is. Above it sits a commented-out `start-dev` command: uncomment it locally for dev mode (no hostname checks, no build step, theme caching off) and do not commit it. In production reach Keycloak only through the proxy, never on 8180 directly, because it trusts `X-Forwarded-*`. The file holds **no users**; the dev users are a separate file, see [Dev users](#dev-users). Things to know:
 
 1. **Import happens only when the realm does not exist yet**, that is on the first start with an empty `pgdata` volume. Restarting the container does not re-import. To pick up a changed file: `docker compose down -v` (loses all local data) or delete the realm in the console and restart.
 2. **Changes made in the console do not flow back to the file.** A role, client or user created through the UI lives in the `keycloak` database only. If it should be permanent, export it and commit the file.
-3. **The file has placeholders**, filled from the container's environment on import: `${DERECHI_SITE_URL}` (redirect and post-logout URIs of `derechi-web`), `${DERECHI_ADMIN_URL}` (the same for `derechi-admin`) and `${KEYCLOAK_SERVICES_SECRET}` (the secret of `derechi-services`). Compose passes them with the local defaults `http://localhost:3000`, `http://localhost:8083` and `dev-secret-change-me`; `docker-compose.prod.yml` requires them.
+3. **The file has placeholders**, filled from the container's environment on import: `${DERECHI_SITE_URL}` (redirect and post-logout URIs of `derechi-web`), `${DERECHI_ADMIN_URL}` (the same for `derechi-admin`) and `${KEYCLOAK_SERVICES_SECRET}` (the secret of `derechi-services`). Compose passes them with the local defaults `http://localhost:3000`, `http://localhost:8083` and `dev-secret-change-me`; production sets them in `env.prod`.
 
 ### Exporting
 
@@ -44,7 +44,14 @@ Realm roles: `USER`, `ADMIN`, `ADMIN_VIEWER`, `ADMIN_EDITOR`, `ADMIN_SUPER`. The
 
 ## Dev users
 
-The dev users live in `docker/keycloak/dev/derechi-users-0.json`, next to the realm file in the import directory but mounted only by `docker-compose.yml`. `docker-compose.prod.yml` replaces the volumes with the realm file alone, so production starts without them. Since the import runs only for a realm that does not exist yet, an instance that once imported the dev realm keeps these users until they are deleted by hand.
+The dev users live in `docker/keycloak/dev/derechi-users-0.json`. The volume line that mounts it next to the realm file is **commented out** in `docker-compose.yml`, so a fresh stack (and production) starts without them. Locally, uncomment it before the first start (or before re-importing the realm) and do not commit the change:
+
+```yaml
+      # only for development: the dev users (admin@derechi.local / admin, ...), see __docs/deployment/keycloak.md
+      - ./docker/keycloak/dev/derechi-users-0.json:/opt/keycloak/data/import/derechi-users-0.json:ro
+```
+
+ Since the import runs only for a realm that does not exist yet, an instance that once imported the dev realm keeps these users until they are deleted by hand.
 
 | User | Password | Roles |
 |---|---|---|

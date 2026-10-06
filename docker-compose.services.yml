@@ -12,6 +12,10 @@ x-service-base: &service-base
     context: .
     dockerfile: Dockerfile
   restart: unless-stopped
+  deploy:
+    resources:
+      limits:
+        memory: ${SERVICE_MEMORY:-512m}
 
 x-postgres: &postgres
   POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
@@ -42,19 +46,6 @@ services:
       - --storage.tsdb.retention.time=15d
       - --web.enable-lifecycle
 
-  keycloak:
-    environment:
-      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN:-admin}
-      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
-      KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://${POSTGRES_HOST:-postgres}:${POSTGRES_PORT:-5432}/keycloak
-      KC_DB_USERNAME: ${POSTGRES_USER:-derechi}
-      KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-derechi}
-      KC_HEALTH_ENABLED: "true"
-      KC_METRICS_ENABLED: "true"
-      KC_HOSTNAME: ${KEYCLOAK_PUBLIC_URI:-http://localhost:8180}
-      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
-
   getaway:
     <<: *service-base
     build:
@@ -71,7 +62,6 @@ services:
     environment:
       <<: *jvm
       CLIENT_API_URI: ${CLIENT_API_URI:-http://client-api:8082}
-      KEYCLOAK_URI: ${KEYCLOAK_URI:-http://keycloak:8080}
       MINIO_URI: ${MINIO_URI:-http://minio:9000}
       WEB_ORIGIN_PATTERNS: ${WEB_ORIGIN_PATTERNS:-http://localhost:[*],http://127.0.0.1:[*],http://192.168.*:[*],http://10.*:[*]}
 
@@ -114,8 +104,8 @@ services:
       KEYCLOAK_PUBLIC_URI: ${KEYCLOAK_PUBLIC_URI:-http://localhost:8180}
       MINIO_ENDPOINT: ${MINIO_ENDPOINT:-http://minio:9000}
       MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL:-http://localhost:8080/files}
-      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-derechi}
-      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-derechi123}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-derechi-app}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-derechi-app-secret}
       GOOGLE_MAPS_API_KEY:
     depends_on:
       postgres:

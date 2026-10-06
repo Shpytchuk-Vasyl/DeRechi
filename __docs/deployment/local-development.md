@@ -19,7 +19,7 @@ Maven itself is not required; use the wrapper in the repository root (`./mvnw` o
 docker compose up -d
 ```
 
-This builds the custom PostGIS image on first run (it downloads the Ukrainian hunspell dictionary), then starts PostgreSQL, RabbitMQ, Keycloak, MinIO (plus the `minio-init` job that creates the `derechi-files` bucket and the `rabbitmq-init` job that imports the queues), Mailpit, pgAdmin, Prometheus, Alertmanager and Grafana. Wait until `docker compose ps` shows `healthy` for every long-running container. Keycloak takes the longest; it is ready when it turns `healthy` and `http://localhost:8180` answers.
+This builds the custom PostGIS image on first run (it downloads the Ukrainian hunspell dictionary), then starts PostgreSQL, RabbitMQ, Keycloak, MinIO (plus the `minio-init` job that creates the `derechi-files` bucket and the `rabbitmq-init` job that imports the queues), Mailpit, pgAdmin, Prometheus, Alertmanager and Grafana. Wait until `docker compose ps` shows `healthy` for PostgreSQL, RabbitMQ, MinIO and Mailpit and `running` for the rest. Keycloak takes the longest; it is ready when `http://localhost:8180` answers.
 
 ## 2. Create the schema
 
@@ -65,7 +65,7 @@ In IDEA, create a Spring Boot run configuration per `*Application` class, or a c
 | Alertmanager | `http://localhost:9093` | none |
 | Grafana | `http://localhost:3000` | `admin` / `admin` |
 
-Dev users in the `derechi` realm, imported from `docker/keycloak/dev/derechi-users-0.json` (local compose only, never in production):
+Dev users in the `derechi` realm, imported from `docker/keycloak/dev/derechi-users-0.json`. Its volume line is commented out in `docker-compose.yml`; uncomment it locally before the first start and do not commit it (see [keycloak](keycloak.md#dev-users)):
 
 | User | Password | Realm roles |
 |---|---|---|
@@ -106,4 +106,4 @@ docker compose down          # remove containers, keep volumes
 docker compose down -v       # remove volumes too: database, Keycloak realm state, MinIO objects, queues
 ```
 
-After `down -v` the realm is re-imported from `docker/keycloak/realms/derechi-realm.json` (and the dev users from `docker/keycloak/dev`) on the next start and the schema must be re-created with `liquibase:update`.
+After `down -v` the realm is re-imported from `docker/keycloak/realms/derechi-realm.json` (and the dev users from `docker/keycloak/dev`, if their volume line is uncommented) on the next start and the schema must be re-created with `liquibase:update`.

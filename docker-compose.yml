@@ -5,9 +5,13 @@
 #
 name: derechi
 
+x-infra: &infra
+  restart: unless-stopped
+
 services:
 
   postgres:
+    <<: *infra
     build: ./docker/postgres
     image: derechi/postgis:17-3.5-uk
     container_name: derechi-postgres
@@ -24,8 +28,13 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: ${POSTGRES_MEMORY:-1g}
 
   pgadmin:
+    <<: *infra
     image: dpage/pgadmin4:9
     container_name: derechi-pgadmin
     environment:
@@ -44,8 +53,13 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: ${PGADMIN_MEMORY:-512m}
 
   rabbitmq:
+    <<: *infra
     image: rabbitmq:4.3.5-management
     container_name: derechi-rabbitmq
     environment:
@@ -63,6 +77,10 @@ services:
       interval: 15s
       timeout: 10s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: ${RABBITMQ_MEMORY:-512m}
 
   rabbitmq-init:
     image: curlimages/curl:8.16.0
@@ -86,9 +104,12 @@ services:
         && echo 'rabbitmq topology ready'
 
   keycloak:
+    <<: *infra
     image: quay.io/keycloak/keycloak:26.4
     container_name: derechi-keycloak
-    command: ["start-dev", "--import-realm"]
+    # only for development: see __docs/deployment/keycloak.md
+    # command: ["start-dev", "--import-realm"]
+    command: ["start", "--import-realm"]
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN:-admin}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
@@ -98,23 +119,38 @@ services:
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-derechi}
       KC_HEALTH_ENABLED: "true"
       KC_METRICS_ENABLED: "true"
+      KC_HOSTNAME: ${KEYCLOAK_PUBLIC_URI:-http://localhost:8180}
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY_HEADERS: xforwarded
       MALLOC_ARENA_MAX: "2"
       JAVA_OPTS_APPEND: ${KEYCLOAK_JAVA_OPTS:--Xms64m -Xmx256m -XX:MaxMetaspaceSize=192m -XX:ReservedCodeCacheSize=64m -XX:MaxDirectMemorySize=64m -XX:-UseG1GC -XX:+UseSerialGC}
+      DERECHI_SITE_URL: ${DERECHI_SITE_URL:-http://localhost:3000}
+      DERECHI_ADMIN_URL: ${DERECHI_ADMIN_URL:-http://localhost:8083}
+      KEYCLOAK_SERVICES_SECRET: ${KEYCLOAK_SERVICES_SECRET:-dev-secret-change-me}
     ports:
       - "8180:8080"     # Console -> http://localhost:8180  (KEYCLOAK_ADMIN, admin / admin locally)
     volumes:
-      - ./docker/keycloak/realms:/opt/keycloak/data/import:ro
+      - ./docker/keycloak/realms/derechi-realm.json:/opt/keycloak/data/import/derechi-realm.json:ro
+      # only for development: the dev users (admin@derechi.local / admin, ...), see __docs/deployment/keycloak.md
+      # - ./docker/keycloak/dev/derechi-users-0.json:/opt/keycloak/data/import/derechi-users-0.json:ro
     depends_on:
       postgres:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: ${KEYCLOAK_MEMORY:-768m}
 
   prometheus:
+    <<: *infra
     image: prom/prometheus:v3.14.0
     container_name: derechi-prometheus
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --storage.tsdb.retention.time=15d
       - --web.enable-lifecycle
+      - --web.enable-remote-write-receiver
     ports:
       - "9090:9090"     # http://localhost:9090
     volumes:
@@ -122,8 +158,47 @@ services:
       - prometheusdata:/prometheus
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    depends_on:
+      - alertmanager
+    deploy:
+      resources:
+        limits:
+          memory: ${PROMETHEUS_MEMORY:-512m}
+
+  alertmanager:
+    <<: *infra
+    image: prom/alertmanager:v0.34.1
+    container_name: derechi-alertmanager
+    environment:
+      ALERT_EMAIL_TO: ${ALERT_EMAIL_TO:-alerts@derechi.local}
+      ALERT_SMTP_HOST: ${ALERT_SMTP_HOST:-mailpit:1025}
+      ALERT_SMTP_FROM: ${ALERT_SMTP_FROM:-alertmanager@derechi.local}
+      ALERT_SMTP_USERNAME: ${ALERT_SMTP_USERNAME:-}
+      ALERT_SMTP_PASSWORD: ${ALERT_SMTP_PASSWORD:-}
+      ALERT_SMTP_REQUIRE_TLS: ${ALERT_SMTP_REQUIRE_TLS:-false}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        awk '{
+          while (match($$0, /\$$\{[A-Z_]+\}/)) {
+            name = substr($$0, RSTART + 2, RLENGTH - 3)
+            $$0 = substr($$0, 1, RSTART - 1) ENVIRON[name] substr($$0, RSTART + RLENGTH)
+          }
+          print
+        }' /etc/alertmanager/alertmanager.yml.tmpl > /tmp/alertmanager.yml &&
+        exec /bin/alertmanager --config.file=/tmp/alertmanager.yml --storage.path=/alertmanager
+    ports:
+      - "9093:9093"     # http://localhost:9093
+    volumes:
+      - ./docker/alertmanager/alertmanager.yml.tmpl:/etc/alertmanager/alertmanager.yml.tmpl:ro
+      - alertmanagerdata:/alertmanager
+    deploy:
+      resources:
+        limits:
+          memory: ${ALERTMANAGER_MEMORY:-128m}
 
   grafana:
+    <<: *infra
     image: grafana/grafana:13.2.1
     container_name: derechi-grafana
     environment:
@@ -137,14 +212,19 @@ services:
       - grafanadata:/var/lib/grafana
     depends_on:
       - prometheus
+    deploy:
+      resources:
+        limits:
+          memory: ${GRAFANA_MEMORY:-256m}
 
   minio:
+    <<: *infra
     image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
     container_name: derechi-minio
     command: server /data --console-address ":9001"
     environment:
-      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-derechi}
-      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-derechi123}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-derechi}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-derechi123}
       MINIO_PROMETHEUS_AUTH_TYPE: public
     ports:
       - "9000:9000"     # S3 API
@@ -156,6 +236,10 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: ${MINIO_MEMORY:-512m}
 
   minio-init:
     image: quay.io/minio/mc:RELEASE.2025-08-13T08-35-41Z
@@ -165,17 +249,25 @@ services:
         condition: service_healthy
     environment:
       MINIO_ENDPOINT: ${MINIO_ENDPOINT:-http://minio:9000}
-      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-derechi}
-      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-derechi123}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-derechi}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-derechi123}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-derechi-app}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-derechi-app-secret}
+    volumes:
+      - ./docker/minio/derechi-app-policy.json:/derechi-app-policy.json:ro
     entrypoint: ["/bin/sh", "-c"]
     command:
       - >-
-        mc alias set local "$$MINIO_ENDPOINT" "$$MINIO_ACCESS_KEY" "$$MINIO_SECRET_KEY" &&
+        mc alias set local "$$MINIO_ENDPOINT" "$$MINIO_ROOT_USER" "$$MINIO_ROOT_PASSWORD" &&
         mc mb --ignore-existing local/derechi-files &&
         mc anonymous set download local/derechi-files &&
-        echo 'buckets ready'
+        mc admin policy create local derechi-app /derechi-app-policy.json &&
+        mc admin user add local "$$MINIO_ACCESS_KEY" "$$MINIO_SECRET_KEY" &&
+        { mc admin policy attach local derechi-app --user "$$MINIO_ACCESS_KEY" || true; } &&
+        echo 'buckets and the application account ready'
 
   mailpit:
+    <<: *infra
     image: axllent/mailpit:v1.28
     container_name: derechi-mailpit
     environment:
@@ -192,12 +284,35 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: ${MAILPIT_MEMORY:-128m}
+
+  # Load tests, only on demand:  docker compose run --rm k6
+  # Options and profiles: tests/README.md
+  k6:
+    image: grafana/k6:2.3.0
+    profiles: [load]
+    working_dir: /scripts
+    volumes:
+      - ./tests/load:/scripts
+    environment:
+      BASE_URL: http://host.docker.internal:8080
+      PROFILE: smoke
+      K6_OUT: experimental-prometheus-rw
+      K6_PROMETHEUS_RW_SERVER_URL: http://prometheus:9090/api/v1/write
+      K6_PROMETHEUS_RW_TREND_STATS: p(95),p(99),avg,max
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: run client-api.js
 
 volumes:
   pgdata:
   pgadmindata:
   rabbitdata:
   prometheusdata:
+  alertmanagerdata:
   grafanadata:
   miniodata:
   mailpitdata:

@@ -48,9 +48,9 @@ Port 15692 serves Prometheus metrics (`prometheus.return_per_object_metrics = tr
 
 ## Keycloak
 
-Runs `start-dev --import-realm` locally and reads `docker/keycloak/realms/derechi-realm.json` plus the dev users from `docker/keycloak/dev/derechi-users-0.json` on the first start. `docker-compose.prod.yml` switches it to `start --import-realm` and imports the realm file alone. Health and metrics are enabled; metrics are on the management port 9000 **inside** the container, which is not published. Details and the export procedure are in [keycloak](keycloak.md).
+Runs `start --import-realm` (production mode, plain HTTP inside the network, `KC_PROXY_HEADERS=xforwarded` for the TLS proxy) and reads `docker/keycloak/realms/derechi-realm.json` on the first start. For local work a developer uncomments the `start-dev` command and the volume line with the dev users from `docker/keycloak/dev/derechi-users-0.json`. Health and metrics are enabled; metrics are on the management port 9000 **inside** the container, which is not published. Details and the export procedure are in [keycloak](keycloak.md).
 
-In full mode it also receives `KC_HOSTNAME=http://localhost:8180` and `KC_HOSTNAME_BACKCHANNEL_DYNAMIC=true`.
+`KC_HOSTNAME` is `KEYCLOAK_PUBLIC_URI` (`http://localhost:8180` locally) and `KC_HOSTNAME_BACKCHANNEL_DYNAMIC=true` lets the containers reach it as `keycloak:8080`.
 
 ## MinIO
 

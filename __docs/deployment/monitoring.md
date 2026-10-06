@@ -48,7 +48,7 @@ management:
 
 `show-details: never` keeps the health response to `{"status":"UP"}`. When a service "is up but does not work", read the component state from its log or temporarily from inside the network: `docker compose exec admin-api bash -c 'exec 3<>/dev/tcp/127.0.0.1/9083; printf "GET /actuator/health HTTP/1.0\r\n\r\n" >&3; cat <&3'`.
 
-The containers' own healthchecks read the same endpoint on the management port; see [docker-compose](docker-compose.md#healthchecks-restarts-and-memory).
+The containers have no Docker healthcheck on actuator: nothing waits for a service, and plain Docker does not restart an unhealthy container, so `TargetDown` is what notices a service that stops answering; see [docker-compose](docker-compose.md#healthchecks-restarts-and-memory).
 
 ## Alerts
 
@@ -67,7 +67,7 @@ Alertmanager (`prom/alertmanager`, port 9093) groups by `alertname`, `queue` and
 | `ALERT_SMTP_HOST` | `mailpit:1025` | `host:port` of the SMTP server |
 | `ALERT_SMTP_FROM` | `alertmanager@derechi.local` | sender |
 | `ALERT_SMTP_USERNAME`, `ALERT_SMTP_PASSWORD` | empty | SMTP login; empty means none |
-| `ALERT_SMTP_REQUIRE_TLS` | `false` (`true` in `docker-compose.prod.yml`) | STARTTLS |
+| `ALERT_SMTP_REQUIRE_TLS` | `false` (set `true` in `env.prod`) | STARTTLS |
 
 Alertmanager cannot read environment variables, so the container renders `docker/alertmanager/alertmanager.yml.tmpl` with `awk` at start, replacing every `${VAR}`. Values must not contain a double quote or a backslash. Locally the alerts land in Mailpit (`http://localhost:8025`). In dev mode `TargetDown` fires for every service you did not start in IDEA; that is expected.
 

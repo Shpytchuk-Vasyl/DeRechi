@@ -8,7 +8,7 @@ Every Maven module inherits `spring-boot-starter-actuator` and
 in each `application.yaml`). Actuator listens on a separate management port, the service
 port + 1000 (`MANAGEMENT_PORT`: `Getaway` 9080, `Client-API` 9082, `Admin-API` 9083,
 `Notification` 9084, `Worker` 9085). Compose does not publish those ports and the gateway
-never routes `/actuator`, so only Prometheus and the container health checks reach them.
+never routes `/actuator`, so only Prometheus reaches them.
 Health shows no details (`show-details: never`).
 
 Prometheus v3.14.0 runs as a container with a 15-day retention and `--web.enable-lifecycle`
@@ -68,10 +68,10 @@ volume.
 ## Health
 
 `/actuator/health` on each service includes the datasource and RabbitMQ contributors where
-those are on the classpath. Every long-running container has a Compose health check: PostgreSQL,
-RabbitMQ, MinIO, Mailpit, Keycloak, Prometheus, Alertmanager, Grafana and pgAdmin, and the
-Spring services, which query `/actuator/health` on their management port. Infrastructure
-containers restart `unless-stopped` and have memory limits.
+those are on the classpath. Compose health checks exist only where a `depends_on` waits on
+them (PostgreSQL, RabbitMQ, MinIO, Mailpit); a service or Keycloak that stops answering is
+caught by Prometheus's `TargetDown` alert instead. Long-running containers restart
+`unless-stopped` and have memory limits.
 
 ## Logging
 

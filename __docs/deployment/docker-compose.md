@@ -1,33 +1,31 @@
 # Docker Compose
 
-A base file and two overrides, one project named `derechi`.
+A base file and one override, one project named `derechi`. Production runs the same two files with `--env-file env.prod`; there is no separate production file.
 
 | File | Contains | Command |
 |---|---|---|
 | `docker-compose.yml` | infrastructure only | `docker compose up -d` |
-| `docker-compose.services.yml` | the five Spring services plus overrides for Prometheus and Keycloak | `docker compose -f docker-compose.yml -f docker-compose.services.yml up -d --build` |
-| `docker-compose.prod.yml` | production overrides on top of the other two: Keycloak in `start` mode without dev users, required secrets | `docker compose --env-file env.prod -f docker-compose.yml -f docker-compose.services.yml -f docker-compose.prod.yml up -d --build` |
+| `docker-compose.services.yml` | the five Spring services plus an override for Prometheus | `docker compose -f docker-compose.yml -f docker-compose.services.yml up -d --build` |
 
 ## Why the second file is an override
 
-`docker-compose.services.yml` is not a complete compose file: it has no `postgres`, `rabbitmq` or `minio` definitions, only the services that run on top of them, and it **modifies** two services from the first file:
+`docker-compose.services.yml` is not a complete compose file: it has no `postgres`, `rabbitmq` or `minio` definitions, only the services that run on top of them, and it **modifies** one service from the first file:
 
 - `prometheus` gets a different `command` so it reads `prometheus-full.yml`, where targets are container names, instead of `prometheus.yml`, where targets are `host.docker.internal:<port>`.
-- `keycloak` gets `KC_HOSTNAME` and `KC_HOSTNAME_BACKCHANNEL_DYNAMIC` so that browser redirects use `localhost:8180` while containers talk to `keycloak:8080`; see [keycloak](keycloak.md).
 
 Compose's `include:` directive cannot do this: a service defined in an included file cannot be redefined by the including file, and the attempt fails with `services.prometheus conflicts with imported resource`. Passing both files with `-f` merges them, with the second winning for the keys it sets. Keep it that way; do not duplicate the infrastructure into the second file to make it standalone.
 
-## The production override
+## Production defaults, development by uncommenting
 
-`docker-compose.prod.yml` is the third `-f` and works the same way. It assumes TLS ends at a reverse proxy in front of the host, which forwards `X-Forwarded-*` headers:
+The files are production-safe as committed; what only development wants is commented out in `docker-compose.yml` for a developer to uncomment locally (and not commit):
 
-- `keycloak` runs `start --import-realm` instead of `start-dev`, with `KC_HTTP_ENABLED=true` and `KC_PROXY_HEADERS=xforwarded`, and its `volumes` are replaced (`!override`) by the realm file alone, so the dev users from `docker/keycloak/dev` are not imported; see [keycloak](keycloak.md).
-- The secrets are required (`${NAME:?}`): Keycloak's admin, public URI and realm placeholders, MinIO's root and application accounts, and the Alertmanager recipient and SMTP host. A missing one stops `docker compose` instead of falling back to the local default. The list is in [environment-variables](environment-variables.md).
-- `ALERT_SMTP_REQUIRE_TLS` defaults to `true`.
+- `keycloak` runs `start --import-realm`: hostname checks on (`KC_HOSTNAME` = `KEYCLOAK_PUBLIC_URI`, `KC_HOSTNAME_BACKCHANNEL_DYNAMIC` so containers still reach it as `keycloak:8080`), plain HTTP inside the network (`KC_HTTP_ENABLED`) and `KC_PROXY_HEADERS=xforwarded` for the TLS reverse proxy in front. It works locally as is at `http://localhost:8180`. The `start-dev` command above it is commented out.
+- The dev users file (`docker/keycloak/dev/derechi-users-0.json`) is mounted by a commented-out volume line, so a fresh stack has no users until you uncomment it; see [keycloak](keycloak.md).
+- In production, publish only what the proxy needs; Keycloak's 8180 should be reached through the proxy, not directly, because it trusts the `X-Forwarded-*` headers.
 
-`!override` needs Docker Compose 2.24 or newer; an older one fails to parse the file.
+What production needs beyond that comes from `env.prod`: every secret and public URL listed in [environment-variables](environment-variables.md). Compose does not check that they are set: a missing one silently falls back to the local default, so compare `env.prod` against that list before a release.
 
-It supersedes the old, git-ignored `docker-compose.services-prod.yml`; delete that file if you still have it.
+The old, git-ignored `docker-compose.services-prod.yml` is obsolete; delete it if you still have it.
 
 ## Anchors
 
@@ -36,12 +34,11 @@ The services file uses YAML anchors to avoid repeating the same environment bloc
 | Anchor | Provides |
 |---|---|
 | `x-service-base` | `build` context and `Dockerfile`, `restart: unless-stopped`, memory limit `${SERVICE_MEMORY:-512m}` |
-| `x-healthcheck` | interval, timeout, retries and `start_period` of the service healthchecks; each service adds its own `test` |
 | `x-postgres` | `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` |
 | `x-rabbitmq` | `RABBITMQ_HOST`, `RABBITMQ_PORT`, `RABBITMQ_USER`, `RABBITMQ_PASSWORD` |
 | `x-jvm` | `JAVA_OPTS`, by default a 256 MB heap and SerialGC |
 
-A service merges what it needs: `environment: { <<: [*jvm, *postgres, *rabbitmq], ... }`. A new service copies one of the existing blocks and adds its own build `args: MODULE: <Name>` and healthcheck port.
+A service merges what it needs: `environment: { <<: [*jvm, *postgres, *rabbitmq], ... }`. A new service copies one of the existing blocks and adds its own build `args: MODULE: <Name>`.
 
 The base file has one anchor, `x-infra` (`restart: unless-stopped`), merged into every long-running infrastructure container.
 
@@ -52,7 +49,7 @@ Every value that differs between environments is a `${NAME:-default}` variable i
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.services.yml up -d --build                       # local defaults
 docker compose --env-file env.local -f docker-compose.yml -f docker-compose.services.yml up -d --build  # local, with personal keys
-docker compose --env-file env.prod  -f docker-compose.yml -f docker-compose.services.yml -f docker-compose.prod.yml up -d --build  # production
+docker compose --env-file env.prod  -f docker-compose.yml -f docker-compose.services.yml up -d --build  # production
 ```
 
 `env.local` is committed and holds only dev values; `env.test` and `env.prod` are git-ignored. The variables are listed in [environment-variables](environment-variables.md); addresses in them are as the containers see each other (`postgres`, not `localhost`). The env file only feeds the `${...}` in the compose files; each container gets exactly the variables its `environment:` lists, not the whole file.
@@ -61,7 +58,7 @@ The `x-jvm` limits exist so the whole stack fits on a laptop. They are **not** p
 
 ## Dependencies and health
 
-Every long-running container declares a `healthcheck`; see the next section. Services use `depends_on` with `condition: service_healthy` for PostgreSQL and Mailpit, `service_completed_successfully` for `rabbitmq-init` (the queues must exist before a listener starts; it waits for RabbitMQ to be healthy itself) and for `minio-init` (Admin-API needs the bucket to exist). No service waits for another Spring service.
+Only the containers something waits for declare a `healthcheck`: PostgreSQL, RabbitMQ, MinIO and Mailpit; see the next section. Services use `depends_on` with `condition: service_healthy` for PostgreSQL and Mailpit, `service_completed_successfully` for `rabbitmq-init` (the queues must exist before a listener starts; it waits for RabbitMQ to be healthy itself) and for `minio-init` (Admin-API needs the bucket to exist). No service waits for another Spring service.
 
 Keycloak depends on `postgres` only; it creates its own schema in the `keycloak` database on first start.
 
@@ -69,18 +66,20 @@ Keycloak depends on `postgres` only; it creates its own schema in the `keycloak`
 
 Every long-running container restarts on failure (`restart: unless-stopped`, from `x-infra` and `x-service-base`) and has a memory ceiling (`deploy.resources.limits.memory`), so one leaking container cannot take the host down. The one-shot `rabbitmq-init` and `minio-init` and the on-demand `k6` have neither.
 
-| Container | Healthcheck | Memory limit (variable, default) |
+A healthcheck exists only where a `depends_on: condition: service_healthy` waits on it. Plain Docker (no Swarm) does not restart an `unhealthy` container, so a healthcheck nothing waits for only adds a status to `docker compose ps` and a request every few seconds. Whether a service or Keycloak answers is Prometheus's job: `TargetDown` mails after two minutes, see [monitoring](monitoring.md#alerts). Do not add healthchecks to the Spring services or the monitoring stack unless something starts to depend on them.
+
+| Container | Healthcheck (who waits on it) | Memory limit (variable, default) |
 |---|---|---|
-| postgres | `pg_isready` | `POSTGRES_MEMORY`, 1g |
-| pgadmin | `/misc/ping` | `PGADMIN_MEMORY`, 512m |
-| rabbitmq | `rabbitmq-diagnostics ping` | `RABBITMQ_MEMORY`, 512m |
-| keycloak | `/health/ready` on the management port 9000, over bash `/dev/tcp` (the image has no curl or wget) | `KEYCLOAK_MEMORY`, 768m |
-| prometheus | `/-/healthy` | `PROMETHEUS_MEMORY`, 512m |
-| alertmanager | `/-/healthy` | `ALERTMANAGER_MEMORY`, 128m |
-| grafana | `/api/health` | `GRAFANA_MEMORY`, 256m |
-| minio | `mc ready local` | `MINIO_MEMORY`, 512m |
-| mailpit | `mailpit readyz` | `MAILPIT_MEMORY`, 128m |
-| the five services | `/actuator/health` on the management port (service port + 1000), over bash `/dev/tcp` | `SERVICE_MEMORY`, 512m each |
+| postgres | `pg_isready` (pgAdmin, Keycloak, Client-API, Admin-API, Worker) | `POSTGRES_MEMORY`, 1g |
+| pgadmin | none | `PGADMIN_MEMORY`, 512m |
+| rabbitmq | `rabbitmq-diagnostics ping` (`rabbitmq-init`) | `RABBITMQ_MEMORY`, 512m |
+| keycloak | none | `KEYCLOAK_MEMORY`, 768m |
+| prometheus | none | `PROMETHEUS_MEMORY`, 512m |
+| alertmanager | none | `ALERTMANAGER_MEMORY`, 128m |
+| grafana | none | `GRAFANA_MEMORY`, 256m |
+| minio | `mc ready local` (`minio-init`, Getaway) | `MINIO_MEMORY`, 512m |
+| mailpit | `mailpit readyz` (Notification) | `MAILPIT_MEMORY`, 128m |
+| the five services | none | `SERVICE_MEMORY`, 512m each |
 
 The memory limits and the `x-jvm` heap belong together: a container limit below what the JVM is allowed to take gets the service killed instead of throwing `OutOfMemoryError`.
 
@@ -116,4 +115,4 @@ Rebuilding one service still runs the whole reactor build in the image's build s
 
 Every service and infrastructure component publishes its port on the host in both modes, so the URLs in [local-development](local-development.md) are the same whether a service runs in IDEA or in a container. Because of that, do not start a service in IDEA while its container is running; the port is already taken and the second instance fails to bind.
 
-The services' management ports (9080, 9082 to 9085, actuator) are **not** published: inside the network Prometheus and the healthchecks reach them, from the host only a service run in IDEA answers on `localhost:908x`. Keycloak's management port 9000 is not published either.
+The services' management ports (9080, 9082 to 9085, actuator) are **not** published: inside the network Prometheus reaches them, from the host only a service run in IDEA answers on `localhost:908x`. Keycloak's management port 9000 is not published either.

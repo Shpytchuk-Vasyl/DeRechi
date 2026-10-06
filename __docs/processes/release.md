@@ -27,9 +27,9 @@ a staging host, tags). Where something does not exist in the repository yet, it 
 - Infrastructure configuration that lives in Git and may change with a release:
   `docker/keycloak/realms/derechi-realm.json`, `docker/rabbitmq/definitions.json`,
   `docker/prometheus/*.yml` (scrape configs and `alerts.yml`), `docker/alertmanager/`,
-  `docker/minio/derechi-app-policy.json`, `docker/grafana/provisioning`, and
-  `docker-compose.prod.yml`. `docker/keycloak/dev/` holds the dev users and is local only; it
-  is never part of a production deploy.
+  `docker/minio/derechi-app-policy.json` and `docker/grafana/provisioning`.
+  `docker/keycloak/dev/` holds the dev users and is local only: its volume line and the
+  `start-dev` command stay commented out in `docker-compose.yml` on the production host.
 
 ## Pre-release checklist
 
@@ -53,8 +53,7 @@ a staging host, tags). Where something does not exist in the repository yet, it 
 4. **Build images** for the services that changed (or all of them; the reactor build is cached):
 
    ```bash
-   docker compose --env-file env.prod \
-       -f docker-compose.yml -f docker-compose.services.yml -f docker-compose.prod.yml build
+   docker compose --env-file env.prod -f docker-compose.yml -f docker-compose.services.yml build
    ```
 
 5. **Deploy the services** in any order. `Getaway` last avoids a few seconds of 5xx on
@@ -65,16 +64,15 @@ a staging host, tags). Where something does not exist in the repository yet, it 
 With the compose stack this collapses to one command, which is how we run it today:
 
 ```bash
-docker compose --env-file env.prod \
-    -f docker-compose.yml -f docker-compose.services.yml -f docker-compose.prod.yml up -d --build
+docker compose --env-file env.prod -f docker-compose.yml -f docker-compose.services.yml up -d --build
 ```
 
 ## Smoke checks after deploy
 
 - [ ] Every service reports `UP` on `/actuator/health`. Actuator is on the management ports
-      (9080, 9082, 9083, 9084, 9085), which are internal to the compose network, so check
-      the `healthy` status in `docker compose ps`; the containers' healthchecks read that
-      endpoint.
+      (9080, 9082, 9083, 9084, 9085), which are internal to the compose network, so check it
+      in Prometheus (`up{job="derechi-services"}` is 1 for all five, no `TargetDown` alert) or
+      from inside a container.
 - [ ] `/graphql` through the gateway answers, which proves the `client-api` route points at the
       right `CLIENT_API_URI` (the gateway no longer exposes `/actuator/gateway/routes`).
 - [ ] Prometheus `Status > Targets` shows every target up, including Keycloak, MinIO and RabbitMQ.

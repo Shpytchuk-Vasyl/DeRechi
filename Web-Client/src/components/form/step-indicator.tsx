@@ -74,11 +74,7 @@ function Step({
         className="group flex items-center gap-2 rounded-pill disabled:cursor-default"
       >
         <StepBadge number={number} state={state} />
-        <Text
-          muted={state === "upcoming"}
-          size="md"
-          className={active ? "inline" : "hidden"}
-        >
+        <Text muted={state === "upcoming"} size="md" className={active ? "inline" : "hidden"}>
           {label}
         </Text>
       </button>

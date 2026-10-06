@@ -56,7 +56,7 @@ Read [Maven reactor](../architecture/maven-reactor.md), [Maven and modules](../c
 
 7. **Dockerfile.** Root `Dockerfile`, build stage: add `COPY Report-Export Report-Export` next to the other modules. Without it Maven sees the module in `<modules>` but the directory is missing and the image build fails for **every** service, not just the new one.
 
-8. **Compose.** `docker-compose.services.yml`: a service block using the `service-base` anchor, `build.args.MODULE: Report-Export`, the port mapping, `container_name: derechi-report-export`, and the environment anchors it needs (`*postgres`, `*rabbitmq`, `*jvm`). Add a `healthcheck` with `<<: *healthcheck` and the same `bash /dev/tcp` test as the siblings, pointed at the management port (`127.0.0.1/9086`, `/actuator/health`). The management port is not published. Use `depends_on` with health conditions for postgres and rabbitmq like the siblings.
+8. **Compose.** `docker-compose.services.yml`: a service block using the `service-base` anchor, `build.args.MODULE: Report-Export`, the port mapping, `container_name: derechi-report-export`, and the environment anchors it needs (`*postgres`, `*rabbitmq`, `*jvm`). No `healthcheck`: nothing waits for a service, and Prometheus's `TargetDown` notices one that stops answering. The management port is not published. Use `depends_on` with health conditions for postgres and rabbitmq like the siblings.
 
 9. **Prometheus.** Both files, both with the `application` label the Grafana dashboard keys on, both on the management port:
 
@@ -90,7 +90,7 @@ Only if the module exposes something through the Gateway that the web client sho
 - [ ] `application.yaml` with name, virtual threads, port, management port (port + 1000), actuator exposure, `show-details: never`
 - [ ] `ddl-auto: none`, no Liquibase, entity copies if it uses the database
 - [ ] `COPY` line in `Dockerfile`
-- [ ] Service block in `docker-compose.services.yml` with a healthcheck on the management port
+- [ ] Service block in `docker-compose.services.yml`, management port not published
 - [ ] Target in both Prometheus configs on the management port, with the `application` label
 - [ ] Gateway route with its own `*_URI` variable if it serves HTTP
 - [ ] `*ApplicationTests` passes

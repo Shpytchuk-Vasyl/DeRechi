@@ -14,7 +14,7 @@ those files, the file wins and this page needs a fix.
 | Spring Cloud AWS | 4.1.1 | `spring-cloud-aws-starter-s3`, pointed at MinIO |
 | PostgreSQL | 17 with PostGIS 3.5 | custom image built from `docker/postgres/Dockerfile` |
 | RabbitMQ | 4.3.5 | management plugin on, quorum queues |
-| Keycloak | 26.4 | `start-dev --import-realm` in development, `start --import-realm` in `docker-compose.prod.yml` |
+| Keycloak | 26.4 | `start --import-realm` by default; `start-dev` is a commented-out line for local development |
 | MinIO | RELEASE.2025-09-07 | plus an `mc` init container that creates the bucket and the `derechi-app` application account |
 | Mailpit | 1.28 | SMTP sink with a web UI, development only |
 | Prometheus | v3.14.0 | |
