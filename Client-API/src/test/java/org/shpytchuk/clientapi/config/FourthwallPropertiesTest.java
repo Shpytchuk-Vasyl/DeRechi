@@ -3,6 +3,7 @@ package org.shpytchuk.clientapi.config;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,15 +44,25 @@ class FourthwallPropertiesTest {
 
     @Test
     void refusesToStartWithoutCredentialsOrAPrice() {
-        assertThatThrownBy(() -> new FourthwallProperties("https://api", "https://shop", " ", "pw", "s", BigDecimal.ONE, "n", "d"))
+        assertThatThrownBy(() -> new FourthwallProperties("https://api", "https://shop", " ", "pw", "s", BigDecimal.ONE, "n", "d", Duration.ofSeconds(3), Duration.ofSeconds(10)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("username");
-        assertThatThrownBy(() -> new FourthwallProperties("https://api", "https://shop", "u", "pw", null, BigDecimal.ONE, "n", "d"))
+        assertThatThrownBy(() -> new FourthwallProperties("https://api", "https://shop", "u", "pw", null, BigDecimal.ONE, "n", "d", Duration.ofSeconds(3), Duration.ofSeconds(10)))
                 .hasMessageContaining("webhook-secret");
-        assertThatThrownBy(() -> new FourthwallProperties("https://api", "https://shop", "u", "pw", "s", BigDecimal.ZERO, "n", "d"))
+        assertThatThrownBy(() -> new FourthwallProperties("https://api", "https://shop", "u", "pw", "s", BigDecimal.ZERO, "n", "d", Duration.ofSeconds(3), Duration.ofSeconds(10)))
                 .hasMessageContaining("price");
-        assertThatThrownBy(() -> new FourthwallProperties("https://api", "", "u", "pw", "s", BigDecimal.ONE, "n", "d"))
+        assertThatThrownBy(() -> new FourthwallProperties("https://api", "", "u", "pw", "s", BigDecimal.ONE, "n", "d", Duration.ofSeconds(3), Duration.ofSeconds(10)))
                 .hasMessageContaining("shop-url");
+    }
+
+    @Test
+    void refusesToStartWithoutTimeouts() {
+        assertThatThrownBy(() -> new FourthwallProperties("https://api", "https://shop", "u", "pw", "s", BigDecimal.ONE,
+                "n", "d", null, Duration.ofSeconds(10)))
+                .hasMessageContaining("connect-timeout");
+        assertThatThrownBy(() -> new FourthwallProperties("https://api", "https://shop", "u", "pw", "s", BigDecimal.ONE,
+                "n", "d", Duration.ofSeconds(3), Duration.ZERO))
+                .hasMessageContaining("read-timeout");
     }
 
     @Test
@@ -63,6 +74,6 @@ class FourthwallPropertiesTest {
 
     private static FourthwallProperties properties(String shopUrl) {
         return new FourthwallProperties("https://api.fourthwall.com/open-api/v1.0/", shopUrl, "api-user", "api-password",
-                "webhook-secret-value", BigDecimal.ONE, "Author's phone number (%s)", "Sent after the payment.");
+                "webhook-secret-value", BigDecimal.ONE, "Author's phone number (%s)", "Sent after the payment.", Duration.ofSeconds(3), Duration.ofSeconds(10));
     }
 }

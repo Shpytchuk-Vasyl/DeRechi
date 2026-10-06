@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
+import java.time.Duration;
 import java.util.Base64;
 
 @ConfigurationProperties(prefix = "derechi.fourthwall")
@@ -19,7 +20,9 @@ public record FourthwallProperties(
         String webhookSecret,
         BigDecimal price,
         String productName,
-        String productDescription
+        String productDescription,
+        Duration connectTimeout,
+        Duration readTimeout
 ) {
 
     public static final String SIGNATURE_HEADER = "X-Fourthwall-Hmac-SHA256";
@@ -37,6 +40,8 @@ public record FourthwallProperties(
         if (price == null || price.signum() <= 0) {
             throw new IllegalArgumentException("derechi.fourthwall.price must be positive: " + price);
         }
+        requirePositive(connectTimeout, "connect-timeout");
+        requirePositive(readTimeout, "read-timeout");
     }
 
     public String checkoutUrl(String variantId) {
@@ -62,7 +67,8 @@ public record FourthwallProperties(
     @Override
     public String toString() {
         return "FourthwallProperties[apiUrl=" + apiUrl + ", shopUrl=" + shopUrl + ", username=" + username
-                + ", password=***, webhookSecret=***, price=" + price + "]";
+                + ", password=***, webhookSecret=***, price=" + price
+                + ", connectTimeout=" + connectTimeout + ", readTimeout=" + readTimeout + "]";
     }
 
     private static String require(String value, String name) {
@@ -70,6 +76,12 @@ public record FourthwallProperties(
             throw new IllegalArgumentException("derechi.fourthwall." + name + " must be set");
         }
         return value.strip();
+    }
+
+    private static void requirePositive(Duration value, String name) {
+        if (value == null || value.isNegative() || value.isZero()) {
+            throw new IllegalArgumentException("derechi.fourthwall." + name + " must be positive: " + value);
+        }
     }
 
     private static String stripSlash(String url) {

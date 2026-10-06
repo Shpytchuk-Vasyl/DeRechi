@@ -11,6 +11,7 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestClient;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -39,7 +40,7 @@ class FourthwallClientTest {
         RestClient.Builder builder = RestClient.builder();
         server = MockRestServiceServer.bindTo(builder).build();
         client = FourthwallClient.of(builder, new FourthwallProperties(API + "/", "https://derechi-shop.fourthwall.com",
-                "api-user", "api-password", "secret", BigDecimal.ONE, "Author's phone number (%s)", "Sent after the payment."));
+                "api-user", "api-password", "secret", BigDecimal.ONE, "Author's phone number (%s)", "Sent after the payment.", Duration.ofSeconds(3), Duration.ofSeconds(10)));
     }
 
     @Test
