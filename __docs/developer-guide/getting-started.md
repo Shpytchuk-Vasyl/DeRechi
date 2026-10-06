@@ -50,7 +50,9 @@ What is now listening, with credentials, is listed in
 
 ## 2. Create the schema
 
-Services never touch the schema; `DB-Postgres` does.
+Services never touch the schema; `DB-Postgres` does. When everything runs in Docker (the
+alternative in step 3), its `db-postgres` container does this on `up` and this step is not
+needed. For services run from IDEA:
 
 ```bash
 ./mvnw -pl DB-Postgres liquibase:update

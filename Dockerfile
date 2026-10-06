@@ -13,7 +13,7 @@ COPY Admin-API Admin-API
 COPY Worker Worker
 COPY Notification Notification
 
-RUN --mount=type=cache,target=/root/.m2 ./mvnw -B -DskipTests package
+RUN --mount=type=cache,target=/root/.m2,sharing=locked ./mvnw -B --strict-checksums -DskipTests package
 
 FROM eclipse-temurin:26-jre
 ARG MODULE

@@ -1,9 +1,11 @@
 # DB-Postgres
 
-The schema library. It holds the JPA entities that define the `derechi` database and the
-Liquibase changelog that creates it. It is **not a service**: it is never started in
-Docker, no other module depends on it, and its jar is only ever built as a side effect of
-building the reactor.
+The schema owner. It holds the JPA entities that define the `derechi` database and the
+Liquibase changelog that creates it. No other module depends on it. In Docker it is a
+**one-shot job**, not a long-running service: the `db-postgres` container applies pending
+changesets, validates the schema against the entities (`ddl-auto: validate`) and exits.
+`client-api`, `admin-api` and `worker` wait for it to exit with 0
+(`condition: service_completed_successfully`).
 
 `DB-Postgres/README.md` is the full reference for the module, including every Liquibase
 goal we use. This page is the short version and the reasoning.
@@ -58,12 +60,15 @@ the other. If either side ever saw `DB-Postgres/changelog/...` or
 second time. The integration tests in `Client-API` and `Admin-API` point Liquibase at the
 same directory on disk for the same reason.
 
-## Why there is no fat jar
+## Why the jar is executable
 
-`spring-boot-maven-plugin` is not bound to `package` here. Nobody consumes the jar, and
-`repackage` would hide the classes under `BOOT-INF/classes/`, which a dependent module
-could not read. `./mvnw -pl DB-Postgres spring-boot:run` still works because the goal is
-invoked directly and configured from the root `pluginManagement`.
+`spring-boot-maven-plugin` is bound to `package`, as in the services. The root `Dockerfile`
+copies `${MODULE}/target/*.jar` and runs it with `java -jar`, so the `db-postgres` image
+needs a repackaged jar. `repackage` moves the classes under `BOOT-INF/classes/`, which a
+dependent module could not read. That is acceptable only because nobody depends on
+`DB-Postgres`. The integration tests in `Client-API` and `Admin-API` read `changelog/` from
+disk, not from the jar. If a module ever needs the entities as a dependency, give the
+executable jar a classifier and change the `COPY` in the `Dockerfile` to match.
 
 ## Generating a migration
 

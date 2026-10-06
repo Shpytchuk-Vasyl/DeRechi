@@ -25,7 +25,7 @@ This builds the custom PostGIS image on first run (it downloads the Ukrainian hu
 
 ## 2. Create the schema
 
-The services never run migrations. Apply the changelog once, and again whenever a new changeset lands:
+The services never run migrations. When they run from IDEA against the infrastructure above, apply the changelog once, and again whenever a new changeset lands:
 
 ```bash
 ./mvnw -pl DB-Postgres liquibase:update
@@ -98,7 +98,7 @@ With personal keys (the Fourthwall API user, a Google Maps key) in `env.local`, 
 docker compose --env-file env.local -f docker-compose.yml -f docker-compose.services.yml up -d --build
 ```
 
-Builds all service images and runs them in the same project. Use it to verify a change in a production-like topology (container names, no `localhost`); for daily work it is slower than running from IDEA. Details in [docker-compose](docker-compose.md).
+Builds all service images and runs them in the same project. The schema step (2) is not needed here: the one-shot `db-postgres` container applies pending changesets before `client-api`, `admin-api` and `worker` start (`docker logs derechi-db-postgres` if they do not). Use it to verify a change in a production-like topology (container names, no `localhost`); for daily work it is slower than running from IDEA. Details in [docker-compose](docker-compose.md).
 
 ## Stopping and resetting
 

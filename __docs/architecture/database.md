@@ -18,8 +18,10 @@ Only the `DB-Postgres` module:
 
 - the JPA entities that describe the schema live in `DB-Postgres/src/main/java`;
 - migrations live in `DB-Postgres/changelog/changes/` as Liquibase formatted SQL;
-- the module is run by hand to apply migrations. It is a library, not a service, and is
-  never started in Docker.
+- the module applies migrations. In Docker it is the one-shot `db-postgres` container: it
+  runs Liquibase `update`, validates the schema (`ddl-auto: validate`) and exits, and the
+  services that use the database start only after it succeeds. Locally,
+  `./mvnw -pl DB-Postgres liquibase:update` does the same without Docker.
 
 Every other service runs with `spring.jpa.hibernate.ddl-auto: none` and does not include
 Liquibase at all: the Boot starter is not on their classpath, so there is nothing to disable.

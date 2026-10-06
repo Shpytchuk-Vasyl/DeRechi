@@ -1,7 +1,7 @@
 # Release
 
 This page describes the intended release process. Parts of it are already how we work (the
-image build, the deploy order, the manual migration); parts of it are not set up yet (CI,
+image build, the deploy order, migrations applied on `up`); parts of it are not set up yet (CI,
 a staging host, tags). Where something does not exist in the repository yet, it says so.
 
 ## Versioning
@@ -18,10 +18,10 @@ a staging host, tags). Where something does not exist in the repository yet, it 
 
 - One Docker image per service, built from the root `Dockerfile` with `--build-arg MODULE=...`.
   The build stage compiles the whole reactor once and is cached; the runtime stage copies one
-  module's jar. `docker-compose.services.yml` already does this for `Getaway`,
+  module's jar. `docker-compose.services.yml` already does this for `DB-Postgres`, `Getaway`,
   `Client-API`, `Admin-API`, `Worker` and `Notification`.
-- `DB-Postgres` is not a service and has no image. Its migrations are applied by hand, see
-  [database changes](database-changes.md).
+- `DB-Postgres` has an image but is not a long-running service: the `db-postgres` container
+  applies pending migrations and exits. See [database changes](database-changes.md).
 - `Launcher` is a local-development convenience, is commented out in the root `<modules>`, and
   is never shipped.
 - Infrastructure configuration that lives in Git and may change with a release:
@@ -49,7 +49,12 @@ a staging host, tags). Where something does not exist in the repository yet, it 
    running broker with the deploy. The import only adds and updates: removing or narrowing a
    binding is still done by hand in the management UI, and a changed queue argument makes the
    import fail, after which the services do not start.
-3. **Database.** `./mvnw -pl DB-Postgres liquibase:update` against the environment's database.
+3. **Database.** Nothing to run by hand. The `db-postgres` container applies pending
+   changesets during step 5, then validates the schema against the entities. `Client-API`,
+   `Admin-API` and `Worker` wait for it to exit with 0. If it fails, Compose reports
+   `dependency failed to start` and does not start them (`docker logs derechi-db-postgres`). The first deploy
+   to an environment whose schema was applied by hand needs a one-time `liquibase:changelogSync`;
+   see [DB-Postgres/README.md](../../DB-Postgres/README.md#a-database-whose-schema-was-applied-by-hand).
 4. **Build images** for the services that changed (or all of them; the reactor build is cached):
 
    ```bash
@@ -57,7 +62,8 @@ a staging host, tags). Where something does not exist in the repository yet, it 
    ```
 
 5. **Deploy the services** in any order. `Getaway` last avoids a few seconds of 5xx on
-   `/graphql` while `Client-API` restarts; nothing else depends on start order.
+   `/graphql` while `Client-API` restarts. The only start order is the one Compose enforces:
+   `db-postgres` before the services that use the database.
 6. **Web-Client** is built and started separately with `pnpm build` and `pnpm start`, pointed at
    the gateway through `GRAPHQL_URL` and `NEXT_PUBLIC_FILES_URL`.
 

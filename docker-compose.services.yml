@@ -46,6 +46,21 @@ services:
       - --storage.tsdb.retention.time=15d
       - --web.enable-lifecycle
 
+  db-postgres:
+    <<: *service-base
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: DB-Postgres
+    container_name: derechi-db-postgres
+    restart: "no"
+    environment:
+      <<: [*jvm, *postgres]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   getaway:
     <<: *service-base
     build:
@@ -82,8 +97,8 @@ services:
       FOURTHWALL_API_PASSWORD: ${FOURTHWALL_API_PASSWORD:-dev-password}
       FOURTHWALL_WEBHOOK_SECRET: ${FOURTHWALL_WEBHOOK_SECRET:-dev-secret}
     depends_on:
-      postgres:
-        condition: service_healthy
+      db-postgres:
+        condition: service_completed_successfully
       rabbitmq-init:
         condition: service_completed_successfully
 
@@ -108,8 +123,8 @@ services:
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-derechi-app-secret}
       GOOGLE_MAPS_API_KEY:
     depends_on:
-      postgres:
-        condition: service_healthy
+      db-postgres:
+        condition: service_completed_successfully
       rabbitmq-init:
         condition: service_completed_successfully
       minio-init:
@@ -129,8 +144,8 @@ services:
       <<: [*jvm, *postgres, *rabbitmq]
       DERECHI_SITE_URL: ${DERECHI_SITE_URL:-http://localhost:3000}
     depends_on:
-      postgres:
-        condition: service_healthy
+      db-postgres:
+        condition: service_completed_successfully
       rabbitmq-init:
         condition: service_completed_successfully
 

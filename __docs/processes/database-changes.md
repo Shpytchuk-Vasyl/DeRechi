@@ -3,8 +3,10 @@
 All services share the `derechi` database, and only `DB-Postgres` is allowed to change its
 schema. Entities in `DB-Postgres` are the source of truth; Liquibase migrations are generated
 from them by diffing against a live database, then fixed by hand and committed. Services run
-with `ddl-auto: none` and `spring.liquibase.enabled: false`, so a migration is something we
-**apply**, not something a service does on start-up.
+with `ddl-auto: none` and `spring.liquibase.enabled: false`, so no service migrates on
+start-up. `DB-Postgres` applies migrations itself. Locally that is the Maven plugin. In
+Docker it is the one-shot `db-postgres` container, which runs before the services that use
+the database.
 
 The rules behind this page are in [database migration conventions](../conventions/database-migrations.md).
 The full Liquibase command reference, including rollback and recovery goals, is in
@@ -118,12 +120,22 @@ The full Liquibase command reference, including rollback and recovery goals, is 
 
 ## Rollout to shared environments
 
-Because no service runs Liquibase, the order on every environment is:
+On an environment run with `docker-compose.services.yml`, Compose enforces the order:
 
-1. Apply the migration with `./mvnw -pl DB-Postgres liquibase:update` pointed at that
-   environment (override the connection with `-Dliquibase.url=... -Dliquibase.username=...
-   -Dliquibase.password=...`, or a separate properties file via `-Dliquibase.propertyFile`).
-2. Deploy the services that need the new schema.
+1. `up -d --build` rebuilds the `db-postgres` image with the new changelog and runs it. It
+   applies the pending changesets, validates the schema against the entities and exits.
+2. `client-api`, `admin-api` and `worker` start only after it exits with 0. If it fails,
+   Compose reports `dependency failed to start` and does not start them; read
+   `docker logs derechi-db-postgres`.
+
+The first `up` against a database whose schema was applied by hand (no `databasechangelog`
+table) needs a one-time `liquibase:changelogSync`; see
+[DB-Postgres/README.md](../../DB-Postgres/README.md#a-database-whose-schema-was-applied-by-hand).
+
+For a database outside that compose stack, apply the migration by hand before deploying:
+`./mvnw -pl DB-Postgres liquibase:update` pointed at that environment. Override the
+connection with `-Dliquibase.url=... -Dliquibase.username=... -Dliquibase.password=...`, or
+pass a separate properties file with `-Dliquibase.propertyFile`.
 
 Write migrations so that the **previous** version of the services still works against the
 new schema where you can: add columns nullable or with defaults, drop columns in a later
@@ -131,6 +143,5 @@ release once nothing reads them. That keeps a service rollback possible without 
 rollback. Rolling a migration back is only possible when the changeset carries an explicit
 `--rollback` line; plain SQL changesets without one cannot be reverted by Liquibase.
 
-Today there is no staging environment and no automated apply; the plan is to run the update
-goal from the deploy pipeline against the staging database before the service images are
-rolled out. See [release](release.md).
+Today there is no staging environment. On any environment that runs the compose stack,
+migrations are applied automatically on deploy by `db-postgres`. See [release](release.md).

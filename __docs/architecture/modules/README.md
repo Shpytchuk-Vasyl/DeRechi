@@ -5,7 +5,7 @@ library and the web client.
 
 | Module | Port | Role | Stack | Talks to |
 |---|---|---|---|---|
-| [DB-Postgres](db-postgres.md) | none | owns the schema and migrations; a library, run by hand | JPA, Liquibase | PostgreSQL |
+| [DB-Postgres](db-postgres.md) | none | owns the schema and migrations; a one-shot container that migrates and exits | JPA, Liquibase | PostgreSQL |
 | [Getaway](getaway.md) | 8080 | single public entry point, routes to Client-API and MinIO | Spring Cloud Gateway (WebFlux) | Client-API, MinIO |
 | [Client-API](client-api.md) | 8082 | public GraphQL API for the web client | Spring MVC, Spring for GraphQL, JPA | PostgreSQL, RabbitMQ (publishes) |
 | [Admin-API](admin-api.md) | 8083 | administration UI under `/admin/**` | Spring MVC, Thymeleaf, htmx, Spring Security OAuth2 client | PostgreSQL, RabbitMQ (publishes), MinIO, Keycloak |
@@ -28,8 +28,10 @@ comes before all of them; `docker compose up -d` handles that. The gateway forwa
 up; nothing else depends on another service being started first.
 `Admin-API` additionally needs Keycloak to answer its issuer URL at startup.
 
-`DB-Postgres` is not in the order because it is not a service: run it once to migrate, see
-[../../processes/database-changes.md](../../processes/database-changes.md).
+The one exception is `DB-Postgres`. Its `db-postgres` container runs after PostgreSQL is
+healthy, applies pending migrations and exits. `Client-API`, `Admin-API` and `Worker` start
+only after it exits with 0 (`condition: service_completed_successfully`); see
+[db-postgres.md](db-postgres.md).
 
 ## Shape of a service module
 

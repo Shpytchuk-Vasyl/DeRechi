@@ -1,6 +1,6 @@
 # Docker image
 
-One `Dockerfile` in the repository root builds every Spring service. Which service ends up in the image is decided by the `MODULE` build argument.
+One `Dockerfile` in the repository root builds every Spring service and the one-shot `db-postgres` migration job (`MODULE=DB-Postgres`). Which module ends up in the image is decided by the `MODULE` build argument.
 
 ## Two stages
 
@@ -16,7 +16,7 @@ COPY Client-API Client-API
 COPY Admin-API Admin-API
 COPY Worker Worker
 COPY Notification Notification
-RUN --mount=type=cache,target=/root/.m2 ./mvnw -B -DskipTests package
+RUN --mount=type=cache,target=/root/.m2,sharing=locked ./mvnw -B --strict-checksums -DskipTests package
 
 FROM eclipse-temurin:26-jre
 ARG MODULE
@@ -28,7 +28,7 @@ ENV JAVA_OPTS=""
 ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar"]
 ```
 
-**Build stage.** Identical for every service: it copies the whole reactor and runs `package` once. Because the stage does not depend on `MODULE`, Docker reuses its layer for all five images, so building the stack compiles the reactor one time, not five. The `--mount=type=cache` keeps `~/.m2` between builds, which is what makes a rebuild after a one-line change take seconds instead of downloading every dependency again.
+**Build stage.** Identical for every service: it copies the whole reactor and runs `package` once. Because the stage does not depend on `MODULE`, Docker reuses its layer for all six images, so building the stack compiles the reactor one time, not six. The `--mount=type=cache` keeps `~/.m2` between builds, which is what makes a rebuild after a one-line change take seconds instead of downloading every dependency again. `sharing=locked` stops the parallel image builds from writing to that cache at the same time. `--strict-checksums` fails a download whose checksum does not match. Without it, Maven only warns and keeps the broken jar in the cache, and every later build fails with `ZipException ... zip END header not found`. If that error appears anyway, clear the cache with `docker builder prune --filter type=exec.cachemount -f`.
 
 **Runtime stage.** A JRE-only image, a non-root `spring` user and the single fat jar of the requested module. `JAVA_OPTS` is empty by default and is where compose injects heap limits and any `-D` flags.
 

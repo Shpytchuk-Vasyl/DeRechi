@@ -5,7 +5,7 @@ A base file and one override, one project named `derechi`. Production runs the s
 | File | Contains | Command |
 |---|---|---|
 | `docker-compose.yml` | infrastructure only | `docker compose --profile dev up -d` |
-| `docker-compose.services.yml` | the five Spring services plus an override for Prometheus | `docker compose --profile dev -f docker-compose.yml -f docker-compose.services.yml up -d --build` |
+| `docker-compose.services.yml` | the five Spring services, the one-shot `db-postgres` migration job, and an override for Prometheus | `docker compose --profile dev -f docker-compose.yml -f docker-compose.services.yml up -d --build` |
 
 ## Why the second file is an override
 
@@ -61,19 +61,19 @@ The `x-jvm` limits exist so the whole stack fits on a laptop. They are **not** p
 
 ## Dependencies and health
 
-Only the containers something waits for declare a `healthcheck`: PostgreSQL, RabbitMQ, MinIO and Mailpit; see the next section. Services use `depends_on` with `condition: service_healthy` for PostgreSQL and Mailpit, `service_completed_successfully` for `rabbitmq-init` (the queues must exist before a listener starts; it waits for RabbitMQ to be healthy itself) and for `minio-init` (Admin-API needs the bucket to exist). No service waits for another Spring service.
+Only the containers something waits for declare a `healthcheck`: PostgreSQL, RabbitMQ, MinIO and Mailpit; see the next section. Services use `depends_on` with `condition: service_healthy` for PostgreSQL and Mailpit, `service_completed_successfully` for `db-postgres` (Client-API, Admin-API and Worker: the schema must be migrated before they query it; `db-postgres` itself waits for PostgreSQL to be healthy), for `rabbitmq-init` (the queues must exist before a listener starts; it waits for RabbitMQ to be healthy itself) and for `minio-init` (Admin-API needs the bucket to exist). No service waits for another Spring service.
 
 Keycloak depends on `postgres` only; it creates its own schema in the `keycloak` database on first start.
 
 ## Healthchecks, restarts and memory
 
-Every long-running container restarts on failure (`restart: unless-stopped`, from `x-infra` and `x-service-base`) and has a memory ceiling (`deploy.resources.limits.memory`), so one leaking container cannot take the host down. The one-shot `rabbitmq-init` and `minio-init` and the on-demand `k6` have neither.
+Every long-running container restarts on failure (`restart: unless-stopped`, from `x-infra` and `x-service-base`) and has a memory ceiling (`deploy.resources.limits.memory`), so one leaking container cannot take the host down. The one-shot `rabbitmq-init` and `minio-init` and the on-demand `k6` have neither. The one-shot `db-postgres` merges `x-service-base` for the build and the memory limit, then overrides it with `restart: "no"`: it migrates, validates and exits, and restarting it would only run the same no-op again.
 
 A healthcheck exists only where a `depends_on: condition: service_healthy` waits on it. Plain Docker (no Swarm) does not restart an `unhealthy` container, so a healthcheck nothing waits for only adds a status to `docker compose ps` and a request every few seconds. Whether a service or Keycloak answers is Prometheus's job: `TargetDown` mails after two minutes, see [monitoring](monitoring.md#alerts). Do not add healthchecks to the Spring services or the monitoring stack unless something starts to depend on them.
 
 | Container | Healthcheck (who waits on it) | Memory limit (variable, default) |
 |---|---|---|
-| postgres | `pg_isready` (pgAdmin with the `dev` profile, Keycloak, Client-API, Admin-API, Worker) | `POSTGRES_MEMORY`, 1g |
+| postgres | `pg_isready` (pgAdmin with the `dev` profile, Keycloak, `db-postgres`) | `POSTGRES_MEMORY`, 1g |
 | pgadmin (`dev` profile) | none | `PGADMIN_MEMORY`, 512m |
 | rabbitmq | `rabbitmq-diagnostics ping` (`rabbitmq-init`) | `RABBITMQ_MEMORY`, 512m |
 | keycloak | none | `KEYCLOAK_MEMORY`, 768m |
@@ -82,6 +82,7 @@ A healthcheck exists only where a `depends_on: condition: service_healthy` waits
 | grafana | none | `GRAFANA_MEMORY`, 256m |
 | minio | `mc ready local` (`minio-init`, Getaway) | `MINIO_MEMORY`, 512m |
 | mailpit | `mailpit readyz` (Notification) | `MAILPIT_MEMORY`, 128m |
+| db-postgres (one-shot) | none; Client-API, Admin-API and Worker wait for it to exit with 0 | `SERVICE_MEMORY`, 512m |
 | the five services | none | `SERVICE_MEMORY`, 512m each |
 
 The memory limits and the `x-jvm` heap belong together: a container limit below what the JVM is allowed to take gets the service killed instead of throwing `OutOfMemoryError`.
@@ -99,7 +100,7 @@ The memory limits and the `x-jvm` heap belong together: a container limit below 
 | `miniodata` | uploaded images in `derechi-files` |
 | `mailpitdata` | captured e-mails |
 
-`docker compose down -v` removes all of them. The Keycloak realm is re-imported on the next start, the schema is not (run `liquibase:update`).
+`docker compose down -v` removes all of them. The Keycloak realm is re-imported on the next start. The schema is re-created by `db-postgres` on the next `up` with `docker-compose.services.yml`; with the base file alone, run `./mvnw -pl DB-Postgres liquibase:update`.
 
 ## Everyday commands
 

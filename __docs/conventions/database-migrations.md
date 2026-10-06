@@ -1,6 +1,6 @@
 # Database migrations
 
-The schema of the shared `derechi` database is owned by one module, `DB-Postgres`. It holds the JPA entities that are the source of truth and the Liquibase changelog derived from them. No service runs Liquibase (`spring.liquibase.enabled` is off and `ddl-auto: none`), so a schema change is a deliberate, reviewed step. The step-by-step procedure is in [database-changes](../processes/database-changes.md); the command reference lives in `DB-Postgres/README.md`. This page is the set of rules a changeset must satisfy.
+The schema of the shared `derechi` database is owned by one module, `DB-Postgres`. It holds the JPA entities that are the source of truth and the Liquibase changelog derived from them. No service runs Liquibase (`spring.liquibase.enabled` is off and `ddl-auto: none`), so a schema change is a deliberate, reviewed step. Once a changeset is merged, the one-shot `db-postgres` container applies it on the next `up --build` of the compose stack. The step-by-step procedure is in [database-changes](../processes/database-changes.md); the command reference lives in `DB-Postgres/README.md`. This page is the set of rules a changeset must satisfy.
 
 ## Layout
 
