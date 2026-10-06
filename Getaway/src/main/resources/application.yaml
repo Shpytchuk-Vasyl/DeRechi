@@ -16,10 +16,6 @@ spring:
                 allow-credentials: true
                 max-age: 3600
           routes:
-            - id: keycloak
-              uri: ${KEYCLOAK_URI:http://localhost:8180}
-              predicates:
-                - Path=/realms/**,/resources/**
             - id: client-api
               uri: ${CLIENT_API_URI:http://localhost:8082}
               predicates:
@@ -56,10 +52,12 @@ server:
   port: 8080
 
 management:
+  server:
+    port: ${MANAGEMENT_PORT:9080}
   endpoints:
     web:
       exposure:
-        include: health,info,prometheus,gateway
+        include: health,info,prometheus
   endpoint:
     health:
-      show-details: always
+      show-details: never

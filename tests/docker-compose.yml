@@ -176,7 +176,7 @@ services:
     entrypoint: ["/bin/sh", "-c"]
     command:
       - >-
-        for url in http://client-api:8082 http://worker:8085 http://notification:8084; do
+        for url in http://client-api:9082 http://worker:9085 http://notification:9084; do
           n=0; until curl -sf "$$url/actuator/health" | grep -q '"status":"UP"'; do
             n=$$((n+1)); [ $$n -gt 90 ] && echo "$$url is not UP" && exit 1; sleep 2;
           done; echo "$$url UP";

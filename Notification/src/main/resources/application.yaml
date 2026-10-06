@@ -45,10 +45,12 @@ server:
   port: 8084
 
 management:
+  server:
+    port: ${MANAGEMENT_PORT:9084}
   endpoints:
     web:
       exposure:
         include: health,info,prometheus
   endpoint:
     health:
-      show-details: always
+      show-details: never

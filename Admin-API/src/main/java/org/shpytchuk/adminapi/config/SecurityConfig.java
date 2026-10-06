@@ -24,12 +24,16 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 @EnableConfigurationProperties({AdminProperties.class, NotificationProperties.class, ArchiveProperties.class})
 public class SecurityConfig {
 
+    static final String[] PUBLIC_ACTUATOR = {"/actuator/health", "/actuator/health/**", "/actuator/info",
+            "/actuator/prometheus"};
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    LogoutSuccessHandler logoutSuccessHandler) throws Exception {
         return http
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/actuator/**", "/css/**", "/js/**", "/error").permitAll()
+                        .requestMatchers(PUBLIC_ACTUATOR).permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/error").permitAll()
                         .anyRequest().authenticated())
                 .headers(headers -> headers.cacheControl(HeadersConfigurer.CacheControlConfig::disable))
                 .oauth2Login(Customizer.withDefaults())
