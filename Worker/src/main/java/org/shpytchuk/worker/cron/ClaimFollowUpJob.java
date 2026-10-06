@@ -1,6 +1,7 @@
 package org.shpytchuk.worker.cron;
 
 import lombok.AllArgsConstructor;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.shpytchuk.worker.config.ClaimsProperties;
 import org.shpytchuk.worker.entity.matching.Claim;
 import org.shpytchuk.worker.repository.ClaimRepository;
@@ -31,6 +32,7 @@ public class ClaimFollowUpJob {
     private final Clock clock;
 
     @Scheduled(fixedDelayString = "${derechi.claims.check-every}")
+    @SchedulerLock(name = "claim-follow-up")
     public void run() {
         Instant now = clock.instant();
         for (ItemKind kind : ItemKind.values()) {
