@@ -39,7 +39,8 @@ notify:
       password: ${NOTIFY_EMAIL_PASSWORD:}
       from: ${NOTIFY_EMAIL_FROM:no-reply@derechi.local}
       from-name: DeRechi
-      tls: false
+      # only for local development, in production use TLS
+      # tls: false
 
 server:
   port: 8084

@@ -2,6 +2,10 @@ spring:
   application:
     name: Client-API
 
+  # cloud:
+  #   inetutils:
+  #     preferred-networks: 192.168.43
+
   threads:
     virtual:
       enabled: true
@@ -28,7 +32,7 @@ spring:
       printer:
         enabled: true
     graphiql:
-      enabled: true
+      enabled: ${GRAPHIQL_ENABLED:false}
 
 server:
   port: 8082

@@ -151,6 +151,9 @@ services:
       NOTIFY_EMAIL_USERNAME: ${NOTIFY_EMAIL_USERNAME:-}
       NOTIFY_EMAIL_PASSWORD: ${NOTIFY_EMAIL_PASSWORD:-}
       NOTIFY_EMAIL_FROM: ${NOTIFY_EMAIL_FROM:-no-reply@derechi.local}
+      SMS_FLY_API_KEY: ${SMS_FLY_API_KEY:-}
+      SMS_FLY_API_URL: ${SMS_FLY_API_URL:-https://sms-fly.ua/api/v2/api.php}
+      SMS_FLY_SOURCE: ${SMS_FLY_SOURCE:-DeRechi}
     depends_on:
       rabbitmq-init:
         condition: service_completed_successfully
