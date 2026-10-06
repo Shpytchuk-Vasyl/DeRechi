@@ -17,7 +17,7 @@ import org.shpytchuk.clientapi.input.MoneyInput;
 import org.shpytchuk.clientapi.input.PlaceInput;
 import org.shpytchuk.clientapi.service.found.FoundItemService;
 import org.shpytchuk.clientapi.service.lost.LostItemService;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.shpytchuk.clientapi.event.EventPublisher;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 
 import java.time.LocalDate;
@@ -47,7 +47,7 @@ class ItemEventAspectTest {
             new ContactInfoDto(4L, "+380671234567", "finder@example.com"));
 
     @Mock
-    private RabbitTemplate rabbitTemplate;
+    private EventPublisher publisher;
 
     @Mock
     private LostItemService lostItemService;
@@ -61,7 +61,7 @@ class ItemEventAspectTest {
 
         proxy(lostItemService).create(INPUT);
 
-        verify(rabbitTemplate).convertAndSend(eq(EXCHANGE), eq("item.lost.created"), any(ItemCreatedEvent.class));
+        verify(publisher).publish(eq(EXCHANGE), eq("item.lost.created"), any(ItemCreatedEvent.class));
     }
 
     @Test
@@ -70,7 +70,7 @@ class ItemEventAspectTest {
 
         proxy(foundItemService).create(INPUT);
 
-        verify(rabbitTemplate).convertAndSend(eq(EXCHANGE), eq("item.found.created"), any(ItemCreatedEvent.class));
+        verify(publisher).publish(eq(EXCHANGE), eq("item.found.created"), any(ItemCreatedEvent.class));
     }
 
     @Test
@@ -80,7 +80,7 @@ class ItemEventAspectTest {
 
         proxy(lostItemService).create(INPUT);
 
-        verify(rabbitTemplate).convertAndSend(eq(EXCHANGE), eq("item.lost.created"), captor.capture());
+        verify(publisher).publish(eq(EXCHANGE), eq("item.lost.created"), captor.capture());
         ItemCreatedEvent event = captor.getValue();
         assertThat(event.id).isEqualTo(1L);
         assertThat(event.title).isEqualTo("Ключі");
@@ -99,12 +99,12 @@ class ItemEventAspectTest {
         } catch (IllegalArgumentException expected) {
         }
 
-        verify(rabbitTemplate, never()).convertAndSend(any(String.class), any(String.class), any(Object.class));
+        verify(publisher, never()).publish(any(String.class), any(String.class), any(Object.class));
     }
 
     private <T> T proxy(T target) {
         AspectJProxyFactory factory = new AspectJProxyFactory(target);
-        factory.addAspect(new ItemEventAspect(rabbitTemplate));
+        factory.addAspect(new ItemEventAspect(publisher));
         return factory.getProxy();
     }
 }

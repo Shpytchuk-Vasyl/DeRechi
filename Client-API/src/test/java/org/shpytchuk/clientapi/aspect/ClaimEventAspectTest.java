@@ -11,7 +11,7 @@ import org.shpytchuk.clientapi.event.ClaimEvent;
 import org.shpytchuk.clientapi.input.ContactInfoInput;
 import org.shpytchuk.clientapi.service.found.FoundClaimService;
 import org.shpytchuk.clientapi.service.lost.LostClaimService;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.shpytchuk.clientapi.event.EventPublisher;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 
 import java.time.Duration;
@@ -32,7 +32,7 @@ class ClaimEventAspectTest {
     private static final ContactInfoInput CONTACT = new ContactInfoInput("+48501234567", "claimant@example.com", List.of());
 
     @Mock
-    private RabbitTemplate rabbitTemplate;
+    private EventPublisher publisher;
 
     @Mock
     private LostClaimService lostClaimService;
@@ -47,7 +47,7 @@ class ClaimEventAspectTest {
 
         proxy(lostClaimService).claim(1L, CONTACT);
 
-        verify(rabbitTemplate).convertAndSend(eq(EXCHANGE), eq("item.lost.claimed"), captor.capture());
+        verify(publisher).publish(eq(EXCHANGE), eq("item.lost.claimed"), captor.capture());
         assertThat(captor.getValue()).isEqualTo(new ClaimEvent(7L));
     }
 
@@ -57,7 +57,7 @@ class ClaimEventAspectTest {
 
         proxy(foundClaimService).claim(2L, CONTACT);
 
-        verify(rabbitTemplate).convertAndSend(eq(EXCHANGE), eq("item.found.claimed"), any(ClaimEvent.class));
+        verify(publisher).publish(eq(EXCHANGE), eq("item.found.claimed"), any(ClaimEvent.class));
     }
 
     @Test
@@ -66,7 +66,7 @@ class ClaimEventAspectTest {
 
         proxy(lostClaimService).claim(1L, CONTACT);
 
-        verify(rabbitTemplate, never()).convertAndSend(any(String.class), any(String.class), any(Object.class));
+        verify(publisher, never()).publish(any(String.class), any(String.class), any(Object.class));
     }
 
     @Test
@@ -75,7 +75,7 @@ class ClaimEventAspectTest {
 
         proxy(foundClaimService).confirm("token");
 
-        verify(rabbitTemplate).convertAndSend(eq(EXCHANGE), eq("item.found.returned"), eq(new ClaimEvent(8L)));
+        verify(publisher).publish(eq(EXCHANGE), eq("item.found.returned"), eq(new ClaimEvent(8L)));
     }
 
     @Test
@@ -87,7 +87,7 @@ class ClaimEventAspectTest {
         proxy.confirm("missing");
         proxy.confirm("done");
 
-        verify(rabbitTemplate, never()).convertAndSend(any(String.class), any(String.class), any(Object.class));
+        verify(publisher, never()).publish(any(String.class), any(String.class), any(Object.class));
     }
 
     @Test
@@ -96,7 +96,7 @@ class ClaimEventAspectTest {
 
         proxy(lostClaimService).markPaid(7L);
 
-        verify(rabbitTemplate).convertAndSend(eq(EXCHANGE), eq("item.lost.paid"), eq(new ClaimEvent(7L)));
+        verify(publisher).publish(eq(EXCHANGE), eq("item.lost.paid"), eq(new ClaimEvent(7L)));
     }
 
     @Test
@@ -105,7 +105,7 @@ class ClaimEventAspectTest {
 
         proxy(foundClaimService).markPaid(8L);
 
-        verify(rabbitTemplate).convertAndSend(eq(EXCHANGE), eq("item.found.paid"), eq(new ClaimEvent(8L)));
+        verify(publisher).publish(eq(EXCHANGE), eq("item.found.paid"), eq(new ClaimEvent(8L)));
     }
 
     @Test
@@ -117,7 +117,7 @@ class ClaimEventAspectTest {
         proxy.markPaid(1L);
         proxy.markPaid(7L);
 
-        verify(rabbitTemplate, never()).convertAndSend(any(String.class), any(String.class), any(Object.class));
+        verify(publisher, never()).publish(any(String.class), any(String.class), any(Object.class));
     }
 
     @Test
@@ -130,7 +130,7 @@ class ClaimEventAspectTest {
         } catch (IllegalArgumentException expected) {
         }
 
-        verify(rabbitTemplate, never()).convertAndSend(any(String.class), any(String.class), any(Object.class));
+        verify(publisher, never()).publish(any(String.class), any(String.class), any(Object.class));
     }
 
     private static ClaimDto dto(Long id, boolean repeated) {
@@ -139,7 +139,7 @@ class ClaimEventAspectTest {
 
     private <T> T proxy(T target) {
         AspectJProxyFactory factory = new AspectJProxyFactory(target);
-        factory.addAspect(new ClaimEventAspect(rabbitTemplate, new ClaimsProperties(EXCHANGE, 1, Duration.ofDays(7))));
+        factory.addAspect(new ClaimEventAspect(publisher, new ClaimsProperties(EXCHANGE, 1, Duration.ofDays(7))));
         return factory.getProxy();
     }
 }

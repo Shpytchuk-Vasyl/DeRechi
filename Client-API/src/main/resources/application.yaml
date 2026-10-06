@@ -25,6 +25,7 @@ spring:
     port: ${RABBITMQ_PORT:5672}
     username: ${RABBITMQ_USER:derechi}
     password: ${RABBITMQ_PASSWORD:derechi}
+    connection-timeout: 4s
 
   graphql:
     schema:
@@ -57,6 +58,10 @@ derechi:
     exchange: derechi.items
     unlock-limit: 1
     unlock-window: P7D
+  events:
+    buffer-capacity: 10000
+    batch-size: 20
+    flush-interval: 5s
   fourthwall:
     api-url: https://api.fourthwall.com/open-api/v1.0
     shop-url: ${FOURTHWALL_SHOP_URL:https://derechi-shop.fourthwall.com}

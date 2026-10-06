@@ -142,11 +142,15 @@ The queue names `worker.items`, `worker.claims` and `worker.archive` are `derech
 | `NOTIFY_EMAIL_PORT` | `1025` | `1025` | SMTP port |
 | `NOTIFY_EMAIL_USERNAME` / `NOTIFY_EMAIL_PASSWORD` | empty | empty | SMTP auth; Mailpit accepts anything |
 | `NOTIFY_EMAIL_FROM` | `no-reply@derechi.local` | same | sender address |
+| `SMS_FLY_API_KEY` | empty | empty | SMS-fly API key; empty switches the SMS channel off |
+| `SMS_FLY_API_URL` | `https://sms-fly.ua/api/v2/api.php` | same | API URL, the cabinet shows the exact one under "API settings" |
+| `SMS_FLY_SOURCE` | `DeRechi` | same | SMS sender (alpha-name), must be approved in the SMS-fly cabinet |
 
 The presence of `notify.channels.email.host` is what enables the channel in NotifyHub, so
 `NOTIFY_EMAIL_HOST` must not be set to an empty string; an empty value counts as "configured"
-and fails validation at startup. Other channels (Telegram bot token, SMS provider) are added as
-new placeholders when they are enabled; see
+and fails validation at startup. SMS is the opposite: it is our own channel (`SmsFlyChannel`),
+not NotifyHub's, and it registers only when `SMS_FLY_API_KEY` is non-blank. Other channels
+(Telegram bot token) are added as new placeholders when they are enabled; see
 [add-a-notification-channel](../extending/add-a-notification-channel.md).
 
 ## Infrastructure containers
