@@ -156,3 +156,4 @@ services:
         condition: service_completed_successfully
       mailpit:
         condition: service_healthy
+        required: false

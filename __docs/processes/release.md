@@ -82,7 +82,8 @@ docker compose --env-file env.prod -f docker-compose.yml -f docker-compose.servi
 - [ ] `Worker` logs the search for that item and nothing lands in
       `worker.items.dlq` (or any other `*.dlq`; the `DeadLetters` alert fires otherwise).
 - [ ] The admin panel logs in through Keycloak and the Matches page renders.
-- [ ] Notifying a candidate produces an email in Mailpit (or the real mail provider) and the
+- [ ] Notifying a candidate produces an email at the real mail provider (Mailpit only runs
+      with the `dev` profile) and the
       row shows "Notified".
 - [ ] An image upload through the gateway lands in the `derechi-files` bucket and is served
       back from `/files/<key>`.

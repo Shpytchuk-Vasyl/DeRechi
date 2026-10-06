@@ -35,7 +35,12 @@ default when `env.prod` lacks it. Before a release make sure `env.prod` sets at 
 `KEYCLOAK_ADMIN`, `KEYCLOAK_ADMIN_PASSWORD`, `KEYCLOAK_PUBLIC_URI`, `DERECHI_SITE_URL`,
 `DERECHI_ADMIN_URL`, `KEYCLOAK_SERVICES_SECRET`, `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD`,
 `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY`, `ALERT_EMAIL_TO`, `ALERT_SMTP_HOST` and
-`ALERT_SMTP_REQUIRE_TLS=true`, besides the database, RabbitMQ and Fourthwall secrets.
+`ALERT_SMTP_REQUIRE_TLS=true`, `NOTIFY_EMAIL_HOST` / `_PORT` / `_USERNAME` / `_PASSWORD` /
+`_FROM` (the defaults point at Mailpit, which production does not run), besides the database,
+RabbitMQ and Fourthwall secrets.
+
+`COMPOSE_PROFILES=dev` in `env.local` turns on the development-only containers (Mailpit, pgAdmin);
+`env.prod` leaves it unset.
 
 See [configuration](../conventions/configuration.md) for the rules behind this layout.
 
@@ -59,7 +64,7 @@ stop matching:
 are the application's account, which `minio-init` creates with the root credentials on every
 `up`. pgAdmin's
 `docker/pgadmin/servers.json` and `pgpass` carry the local `derechi` credentials; pgAdmin is a
-local tool.
+local tool and runs only with the `dev` profile.
 
 ## Shared by the services
 
@@ -156,8 +161,8 @@ new placeholders when they are enabled; see
 | minio-init | `MINIO_ENDPOINT`, `MINIO_ROOT_USER`, `MINIO_ROOT_PASSWORD`; creates the bucket and the application account `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` with `docker/minio/derechi-app-policy.json` |
 | alertmanager | `ALERT_EMAIL_TO`, `ALERT_SMTP_HOST` (`mailpit:1025`), `ALERT_SMTP_FROM`, `ALERT_SMTP_USERNAME`, `ALERT_SMTP_PASSWORD`, `ALERT_SMTP_REQUIRE_TLS` (`false`; set `true` in `env.prod`); rendered into `docker/alertmanager/alertmanager.yml.tmpl` at start, see [monitoring](monitoring.md#alerts) |
 | grafana | `GRAFANA_ADMIN_USER`, `GRAFANA_ADMIN_PASSWORD` |
-| pgadmin | `PGADMIN_DEFAULT_EMAIL`, `PGADMIN_DEFAULT_PASSWORD` |
-| mailpit | nothing environment-specific |
+| pgadmin | `PGADMIN_DEFAULT_EMAIL`, `PGADMIN_DEFAULT_PASSWORD`; started only with the `dev` profile |
+| mailpit | nothing environment-specific; started only with the `dev` profile |
 
 Every long-running container has a memory limit, overridable per environment:
 `POSTGRES_MEMORY` (1g), `PGADMIN_MEMORY` (512m), `RABBITMQ_MEMORY` (512m), `KEYCLOAK_MEMORY`

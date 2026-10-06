@@ -37,7 +37,7 @@ adding it to a composite, a new redirect URI.
 
    ```bash
    docker compose down -v
-   docker compose up -d
+   docker compose --profile dev up -d
    ```
 
 3. Log into the admin panel with a dev user that should have the new role and confirm. The

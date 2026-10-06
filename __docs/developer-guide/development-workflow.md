@@ -40,7 +40,7 @@ because skipping it has bitten us in this repository specifically.
 2. Infrastructure up and schema current:
 
    ```bash
-   docker compose up -d
+   docker compose --profile dev up -d
    ./mvnw -pl DB-Postgres liquibase:update
    ./mvnw test-compile
    ```
@@ -153,7 +153,7 @@ Actions pipeline, with migrations applied before the services roll. That pipelin
 not exist yet; until they do, "staging" means the full compose stack on your machine:
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.services.yml up -d --build
+docker compose --profile dev -f docker-compose.yml -f docker-compose.services.yml up -d --build
 ```
 
 Run the smoke list from [release](../processes/release.md) against it: health endpoints,

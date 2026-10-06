@@ -155,7 +155,7 @@ Everything, including RabbitMQ definitions, the Keycloak realm, MinIO objects an
 
 ```bash
 docker compose down -v
-docker compose up -d
+docker compose --profile dev up -d
 ./mvnw -pl DB-Postgres liquibase:update
 ```
 

@@ -48,7 +48,7 @@ join.
 3. Build the reactor (`./mvnw -DskipTests package`) so every service's classes and
    `application.yaml` are on the launcher's class path, then run `DeRechiLauncher` from the
    IDE or with `./mvnw -pl Launcher spring-boot:run`.
-4. Keep infrastructure running in Docker (`docker compose up -d`). The launcher replaces the
+4. Keep infrastructure running in Docker (`docker compose --profile dev up -d`). The launcher replaces the
    service processes, not PostgreSQL, RabbitMQ, Keycloak or MinIO.
 
 The simpler alternative, and the one the team uses day to day, is one IDE run

@@ -64,10 +64,13 @@ A browser client for the two databases above, for when `psql` or IDEA is not at 
 in desktop mode (no master password) and comes with both servers registered from
 `docker/pgadmin/servers.json`; the password is read from `docker/pgadmin/pgpass`, which pgAdmin
 copies into its own storage on the first start. Both files hold the dev credentials only.
+**Development only**: it is behind the `dev` compose profile (`--profile dev`, or
+`COMPOSE_PROFILES=dev` from `env.local`), because desktop mode has no login and the mounted
+`pgpass` holds the database password; production does not start it.
 
 ## Mailpit
 
-Catches every e-mail the `Notification` service sends. SMTP on 1025 accepts any or no credentials; the UI on 8025 shows the messages. Nothing leaves the machine.
+Catches every e-mail the `Notification` service and Alertmanager send. SMTP on 1025 accepts any or no credentials; the UI on 8025 shows the messages. Nothing leaves the machine. **Development only**: it is behind the `dev` compose profile (`--profile dev`, or `COMPOSE_PROFILES=dev` from `env.local`), so production does not start it and has to set `NOTIFY_EMAIL_*` and `ALERT_SMTP_*` to a real SMTP server.
 
 ## Prometheus, Alertmanager and Grafana
 

@@ -35,7 +35,7 @@ the `start` command for the commented-out `start-dev` one. See
 [deployment/keycloak.md](../deployment/keycloak.md#dev-users).
 
 ```bash
-docker compose up -d
+docker compose --profile dev up -d     # dev adds Mailpit (local mail catcher) and pgAdmin
 ```
 
 The first run builds our Postgres image (PostGIS plus a Ukrainian full-text dictionary) and
@@ -93,7 +93,7 @@ The alternative, everything in containers, is one command and is covered in
 [deployment/local-development.md](../deployment/local-development.md):
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.services.yml up -d --build
+docker compose --profile dev -f docker-compose.yml -f docker-compose.services.yml up -d --build
 ```
 
 ## 4. Open the admin panel

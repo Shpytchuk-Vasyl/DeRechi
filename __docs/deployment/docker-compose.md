@@ -4,8 +4,8 @@ A base file and one override, one project named `derechi`. Production runs the s
 
 | File | Contains | Command |
 |---|---|---|
-| `docker-compose.yml` | infrastructure only | `docker compose up -d` |
-| `docker-compose.services.yml` | the five Spring services plus an override for Prometheus | `docker compose -f docker-compose.yml -f docker-compose.services.yml up -d --build` |
+| `docker-compose.yml` | infrastructure only | `docker compose --profile dev up -d` |
+| `docker-compose.services.yml` | the five Spring services plus an override for Prometheus | `docker compose --profile dev -f docker-compose.yml -f docker-compose.services.yml up -d --build` |
 
 ## Why the second file is an override
 
@@ -16,6 +16,9 @@ A base file and one override, one project named `derechi`. Production runs the s
 Compose's `include:` directive cannot do this: a service defined in an included file cannot be redefined by the including file, and the attempt fails with `services.prometheus conflicts with imported resource`. Passing both files with `-f` merges them, with the second winning for the keys it sets. Keep it that way; do not duplicate the infrastructure into the second file to make it standalone.
 
 ## Production defaults, development by uncommenting
+
+Mailpit and pgAdmin are behind the `dev` profile (`profiles: [dev]`), the same mechanism as `k6` and its `load` profile: a plain `docker compose up` does not start them, `--profile dev` or `COMPOSE_PROFILES=dev` (set in `env.local`) does. pgAdmin runs without a login and with the database password mounted, so it must never run in production. Production mails through a real SMTP server (`NOTIFY_EMAIL_*`, `ALERT_SMTP_*`). `notification` waits for Mailpit with `required: false`, so without the profile it starts on its own instead of failing on a missing dependency.
+
 
 The files are production-safe as committed; what only development wants is commented out in `docker-compose.yml` for a developer to uncomment locally (and not commit):
 
@@ -47,7 +50,7 @@ The base file has one anchor, `x-infra` (`restart: unless-stopped`), merged into
 Every value that differs between environments is a `${NAME:-default}` variable in both files, and the default is the local value. Without an env file compose runs the local stack; with one it runs that environment:
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.services.yml up -d --build                       # local defaults
+docker compose --profile dev -f docker-compose.yml -f docker-compose.services.yml up -d --build         # local defaults
 docker compose --env-file env.local -f docker-compose.yml -f docker-compose.services.yml up -d --build  # local, with personal keys
 docker compose --env-file env.prod  -f docker-compose.yml -f docker-compose.services.yml up -d --build  # production
 ```
@@ -70,8 +73,8 @@ A healthcheck exists only where a `depends_on: condition: service_healthy` waits
 
 | Container | Healthcheck (who waits on it) | Memory limit (variable, default) |
 |---|---|---|
-| postgres | `pg_isready` (pgAdmin, Keycloak, Client-API, Admin-API, Worker) | `POSTGRES_MEMORY`, 1g |
-| pgadmin | none | `PGADMIN_MEMORY`, 512m |
+| postgres | `pg_isready` (pgAdmin with the `dev` profile, Keycloak, Client-API, Admin-API, Worker) | `POSTGRES_MEMORY`, 1g |
+| pgadmin (`dev` profile) | none | `PGADMIN_MEMORY`, 512m |
 | rabbitmq | `rabbitmq-diagnostics ping` (`rabbitmq-init`) | `RABBITMQ_MEMORY`, 512m |
 | keycloak | none | `KEYCLOAK_MEMORY`, 768m |
 | prometheus | none | `PROMETHEUS_MEMORY`, 512m |

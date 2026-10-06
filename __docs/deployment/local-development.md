@@ -16,8 +16,10 @@ Maven itself is not required; use the wrapper in the repository root (`./mvnw` o
 ## 1. Start the infrastructure
 
 ```bash
-docker compose up -d
+docker compose --profile dev up -d
 ```
+
+`--profile dev` adds Mailpit and pgAdmin, which production does not run; `--env-file env.local` does the same through `COMPOSE_PROFILES=dev`.
 
 This builds the custom PostGIS image on first run (it downloads the Ukrainian hunspell dictionary), then starts PostgreSQL, RabbitMQ, Keycloak, MinIO (plus the `minio-init` job that creates the `derechi-files` bucket and the `rabbitmq-init` job that imports the queues), Mailpit, pgAdmin, Prometheus, Alertmanager and Grafana. Wait until `docker compose ps` shows `healthy` for PostgreSQL, RabbitMQ, MinIO and Mailpit and `running` for the rest. Keycloak takes the longest; it is ready when `http://localhost:8180` answers.
 
@@ -87,7 +89,7 @@ It calls `Client-API` through the Gateway (`GRAPHQL_URL`) and loads images from 
 ## Everything in Docker instead
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.services.yml up -d --build
+docker compose --profile dev -f docker-compose.yml -f docker-compose.services.yml up -d --build
 ```
 
 With personal keys (the Fourthwall API user, a Google Maps key) in `env.local`, pass it to compose:

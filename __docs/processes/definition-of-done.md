@@ -49,5 +49,5 @@ description; the reviewer ticks the items they verified, the author ticks the re
       branch deleted.
 - [ ] The change was verified on staging after deploy (once a staging environment exists; until
       then, verified on the full compose stack with
-      `docker compose -f docker-compose.yml -f docker-compose.services.yml up -d --build`).
+      `docker compose --profile dev -f docker-compose.yml -f docker-compose.services.yml up -d --build`).
 - [ ] The ticket is closed with a note on what changed and how it was verified.
