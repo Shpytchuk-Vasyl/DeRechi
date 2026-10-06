@@ -43,6 +43,18 @@ export function snippet(text: string, limit = DESCRIPTION_LIMIT): string {
   return `${lastSpace > limit / 2 ? cut.slice(0, lastSpace) : cut}…`
 }
 
+export function jsonLd(data: unknown): string {
+  return JSON.stringify(data).replace(/[<>&\u2028\u2029]/g, (char) => JSON_LD_ESCAPES[char] ?? char)
+}
+
+const JSON_LD_ESCAPES: Record<string, string> = {
+  "<": "\\u003c",
+  ">": "\\u003e",
+  "&": "\\u0026",
+  "\u2028": "\\u2028",
+  "\u2029": "\\u2029",
+}
+
 export const SITEMAP_KINDS: ItemKind[] = ["lost", "found"]
 
 const SITEMAP_MONTHS_BACK = Math.ceil(STALE_AFTER_DAYS / 30) + 1

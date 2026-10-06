@@ -4,7 +4,7 @@ vi.mock("@/lib/env/client", () => ({
   clientEnv: { NEXT_PUBLIC_SITE_URL: "https://derechi.example/" },
 }))
 
-const { absoluteUrl, isStale, pageAlternates, sitemapIds, snippet } = await import("./seo")
+const { absoluteUrl, isStale, jsonLd, pageAlternates, sitemapIds, snippet } = await import("./seo")
 
 describe("seo", () => {
   it("points every locale and x-default at the same path", () => {
@@ -56,5 +56,14 @@ describe("seo", () => {
       { id: "found-0" },
       { id: "found-1" },
     ])
+  })
+
+  it("keeps a notice title from closing the JSON-LD script tag", () => {
+    const data = { name: "</script><script>alert(1)</script> & co\u2028" }
+
+    const json = jsonLd(data)
+
+    expect(json).not.toMatch(/[<>&\u2028]/)
+    expect(JSON.parse(json)).toEqual(data)
   })
 })

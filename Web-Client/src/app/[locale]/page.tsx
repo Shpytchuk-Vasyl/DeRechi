@@ -1,7 +1,7 @@
 import { getLocale, getTranslations } from "next-intl/server"
 import { MascotRoamer } from "@/components/mascot/mascot-roamer"
 import { Tour } from "@/components/tour/tour"
-import { absoluteUrl } from "@/lib/seo"
+import { absoluteUrl, jsonLd } from "@/lib/seo"
 import Benefits from "@/screens/home/benefits/benefits"
 import ClosingCall from "@/screens/home/closing-call"
 import Explainer from "@/screens/home/explainer/explainer"
@@ -58,7 +58,7 @@ export default async function HomePage() {
       <script
         type="application/ld+json"
         // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD has no other outlet
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd(locale, t("name"))) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(websiteJsonLd(locale, t("name"))) }}
       />
     </>
   )

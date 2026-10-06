@@ -3,6 +3,7 @@ import { Stack } from "@/components/pouf/layout"
 import { Heading } from "@/components/pouf/text"
 import { DEFAULT_LEGAL_COUNTRY, findersLawByCountry } from "@/content/legal"
 import type { Locale } from "@/i18n/routing"
+import { jsonLd } from "@/lib/seo"
 import FaqAccordion from "./faq-accordion"
 import { FAQ_COUNT, FINDERS_LAW_QUESTION } from "./faq-count"
 
@@ -35,7 +36,7 @@ export default async function HomeFaq() {
         type="application/ld+json"
         // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD has no other outlet
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: jsonLd({
             "@context": "https://schema.org",
             "@type": "FAQPage",
             mainEntity: questions,

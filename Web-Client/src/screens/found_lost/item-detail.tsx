@@ -15,7 +15,7 @@ import { countryName } from "@/lib/intl/country"
 import { formatNoticeDate, fromIsoDate } from "@/lib/intl/dates"
 import { formatMoney } from "@/lib/intl/money"
 import { mapsUrl } from "@/lib/maps"
-import { absoluteUrl, isStale, pageAlternates, snippet } from "@/lib/seo"
+import { absoluteUrl, isStale, jsonLd, pageAlternates, snippet } from "@/lib/seo"
 import ClaimCard from "@/screens/found_lost/claim/claim-card"
 import PhotoViewer from "@/screens/found_lost/photo-viewer"
 
@@ -149,7 +149,7 @@ export default async function ItemDetailPage({ kind, id, compact = false }: Prop
           type="application/ld+json"
           // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD has no other outlet
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify([
+            __html: jsonLd([
               itemJsonLd(item),
               breadcrumbsJsonLd(locale, kind, item, {
                 home: tn("home"),
