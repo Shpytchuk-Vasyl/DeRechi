@@ -7,8 +7,8 @@ fix. If you hit something that belongs here, add it in the same PR that fixed it
 
 ### `invalid value for parameter "TimeZone": "Europe/Kiev"`
 
-Every database connection fails, from Maven, from IDEA, from tests. PostgreSQL 18 dropped the
-`Europe/Kiev` alias and your JVM reports it as the default time zone. Set
+Every database connection fails, from Maven, from IDEA, from tests. The database does not
+accept the `Europe/Kiev` alias and your JVM reports it as the default time zone. Set
 `MAVEN_OPTS="-Duser.timezone=Europe/Kyiv"` and add `-Duser.timezone=Europe/Kyiv` to the VM
 options of your run configurations, or change the OS time zone name.
 
@@ -102,8 +102,10 @@ cached for the session: sign out and in again after changing roles.
 ### Login loops or `Invalid redirect_uri`
 
 The admin's redirect URI (`http://localhost:8083/login/oauth2/code/keycloak`) must match a
-pattern on the `derechi-admin` client (`http://localhost:8083/*`). Running the admin on
-another port or host means adding that pattern. In the compose stack the browser talks to
+pattern on the `derechi-admin` client (`${DERECHI_ADMIN_URL}/*`, `http://localhost:8083/*`
+locally). The placeholder is filled only on the first realm import, so running the admin on
+another port or host means changing the redirect URI in the console as well as
+`DERECHI_ADMIN_URL`. In the compose stack the browser talks to
 Keycloak on `KEYCLOAK_PUBLIC_URI` and the service on `KEYCLOAK_URI`; if the public one is
 wrong the browser cannot reach the login page.
 
@@ -140,10 +142,12 @@ alpha-2 code, has no currency in the JDK, or `fallback` is not in the list.
 
 ## Messaging and notifications
 
-### A message ended up in `worker.items.dlq` or `notification.events.dlq`
+### A message ended up in `worker.items.dlq`, `worker.claims.dlq`, `worker.archive.dlq` or `notification.events.dlq`
 
 After three failed attempts the listener rejects the message and the broker dead-letters it.
-Open the queue in the management UI and "Get messages": the `x-death` header carries the
+A minute later the `DeadLetters` alert fires and Alertmanager mails it (into Mailpit locally);
+how to replay or drop the messages is in
+[deployment/monitoring.md](../deployment/monitoring.md#dead-letter-queues). Open the queue in the management UI and "Get messages": the `x-death` header carries the
 reason. The usual causes:
 
 - the routing key has no handler (`No handler for the key ...` in `Worker`);
@@ -162,10 +166,11 @@ SMTP host (Mailpit locally).
 
 ### Notify clicked, nothing in Mailpit
 
-In order: is `Notification` running (its `/actuator/health`); is the message on
-`notification.events` or in its DLQ; does the lost item's contact have an email (the
-`EMAIL` and `ALL` channels need it, `PHONE` and the messengers do not); was the same match
-notified within the last hour (NotifyHub deduplicates by key and TTL). The `Notification` log
+In order: is `Notification` running (`http://localhost:9084/actuator/health`, the management
+port); is the message on `notification.events` or in its DLQ; does the lost item's contact
+have an email (the `EMAIL` and `ALL` channels need it, `PHONE` and the messengers do not); was
+the same match notified within the last hour (NotifyHub deduplicates by key with a one-hour
+TTL, in memory: per instance, and forgotten on restart). The `Notification` log
 prints the subject and channel at `DEBUG`.
 
 ### `@RabbitListener` fails: queue does not exist
@@ -180,17 +185,19 @@ which `rabbitmq-init` imports on every `docker compose up`. Run `docker compose 
 ### Gateway returns 5xx for `/graphql`
 
 The gateway forwards to `CLIENT_API_URI` as is. Either `Client-API` is not up yet (check
-`http://localhost:8082/actuator/health`), or the gateway got the wrong address:
-`/actuator/gateway/routes` on the gateway shows the target it resolved. From IDEA the default
-is `http://localhost:8082`; in compose it is `http://client-api:8082`.
+`http://localhost:9082/actuator/health`, the management port), or the gateway got the wrong
+address. The gateway does not expose `/actuator/gateway/routes`; check the `CLIENT_API_URI` it
+was started with. From IDEA the default is `http://localhost:8082`; in compose it is
+`http://client-api:8082`.
 
 ### Prometheus shows a service target down although it is running
 
-In the dev config targets are `host.docker.internal:<port>`. On Linux that name needs the
-`extra_hosts` entry that `docker-compose.yml` already sets; on Windows and macOS Docker
-Desktop provides it. A service run from IDEA on a different port than the config expects
-also shows as down. In the full compose stack the config switches to `prometheus-full.yml`
-with container names.
+In the dev config targets are `host.docker.internal:<management port>` (9080, 9082 to 9085),
+not the service port. On Linux that name needs the `extra_hosts` entry that
+`docker-compose.yml` already sets; on Windows and macOS Docker Desktop provides it. A service
+run from IDEA with a different `MANAGEMENT_PORT` than the config expects also shows as down.
+In the full compose stack the config switches to `prometheus-full.yml` with container names
+(`<service>:908x`).
 
 ### Keycloak metrics missing
 

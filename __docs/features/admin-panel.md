@@ -4,7 +4,7 @@
 
 ## Signing in
 
-Login is OIDC against Keycloak (client `derechi-admin`, Authorization Code, public client). Every request except `/actuator/**`, `/css/**`, `/js/**` and `/error` requires an authenticated session. Logout goes through Keycloak's end-session endpoint and lands back on `/admin`.
+Login is OIDC against Keycloak (client `derechi-admin`, Authorization Code, public client). Every request except `/actuator/health` (and `/actuator/health/**`), `/actuator/info`, `/actuator/prometheus`, `/css/**`, `/js/**` and `/error` requires an authenticated session. Actuator itself listens on the management port 9083, not on 8083, and compose does not publish it. Logout goes through Keycloak's end-session endpoint and lands back on `/admin`.
 
 Dev users shipped with the realm:
 

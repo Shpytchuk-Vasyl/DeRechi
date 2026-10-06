@@ -14,8 +14,8 @@ business logic (identity, file storage, mail, metrics) is an off-the-shelf conta
                  ┌──────────────┐          ┌─────────────────────┐
   public user ──▶│  Web-Client  │──GraphQL▶│  Getaway (8080)     │
   (browser)      │  Next.js     │          │  Spring Cloud GW    │
-                 └──────────────┘          └──────┬───────┬──────┘
-                       │ presigned PUT            │       │ /realms/**
+                 └──────────────┘          └──────┬──────────────┘
+                       │ presigned PUT            │
                        ▼                   direct URI ▼
                  ┌──────────────┐          ┌──────────┐ ┌──────────────┐
                  │  MinIO (S3)  │◀─upload──│Client-API│ │ Keycloak     │
@@ -31,7 +31,7 @@ business logic (identity, file storage, mail, metrics) is an off-the-shelf conta
                         │     item.*.created│      │notification.#     │
                         │                   ▼      ▼                   │
                         │     ┌──────────────────┐ ┌──────────────┐    │
-                        │     │ Worker │ │ Notification │    │
+                        │     │ Worker           │ │ Notification │    │
                         │     │ (8085)           │ │ (8084)       │    │
                         │     └────────┬─────────┘ └──────┬───────┘    │
                         │              │ similar_item     │ SMTP       │
@@ -44,9 +44,12 @@ business logic (identity, file storage, mail, metrics) is an off-the-shelf conta
                                        ▲                               │
                                        └───────────────────────────────┘
 
-  Prometheus (9090) scrapes /actuator/prometheus on each service; Grafana (3000)
-  reads Prometheus. There is no service registry: the gateway reaches Client-API at
-  CLIENT_API_URI, and the services talk to each other only through RabbitMQ.
+  Prometheus (9090) scrapes /actuator/prometheus on each service's management port
+  (service port + 1000, never published or routed), evaluates the alert rules and hands
+  firing alerts to Alertmanager (9093), which emails them; Grafana (3000) reads
+  Prometheus. Keycloak is not behind the gateway: browsers reach it directly.
+  There is no service registry (planned: bring discovery back): the gateway reaches
+  Client-API at CLIENT_API_URI, and the services talk to each other only through RabbitMQ.
 ```
 
 Two things in the picture are deliberate and worth knowing before reading further:
@@ -93,7 +96,7 @@ Two things in the picture are deliberate and worth knowing before reading furthe
 - [messaging.md](messaging.md): RabbitMQ exchanges, queues, routing keys and the event classes.
 - [authentication.md](authentication.md): Keycloak, the realm, clients, roles and how they reach Spring Security.
 - [file-storage.md](file-storage.md): MinIO, the two upload paths and the public read path.
-- [observability.md](observability.md): actuator, Prometheus jobs and Grafana.
+- [observability.md](observability.md): actuator, Prometheus jobs, alerts and Grafana.
 - [modules/](modules/README.md): one page per module, including the ones that are not Maven modules.
 
 Related: [conventions](../conventions/README.md) for how we write things,

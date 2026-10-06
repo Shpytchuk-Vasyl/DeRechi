@@ -6,7 +6,7 @@ NotifyHub, and this module is the glue between the queue and that library.
 
 | | |
 |---|---|
-| Port | 8084 (actuator only) |
+| Port | 8084 (serves nothing public); actuator on the management port 9084 |
 | Consumes | queue `notification.events`, bound to `derechi.notifications` with `notification.#` |
 | Needs | RabbitMQ, an SMTP server (Mailpit in development). No database. |
 | Stack | Spring AMQP, `notify-spring-boot-starter` + `notify-email` (NotifyHub 1.1.0) |
@@ -39,7 +39,7 @@ notify:
       port: ${NOTIFY_EMAIL_PORT:1025}
       username: ${NOTIFY_EMAIL_USERNAME:}
       password: ${NOTIFY_EMAIL_PASSWORD:}
-      from: no-reply@derechi.local
+      from: ${NOTIFY_EMAIL_FROM:no-reply@derechi.local}
       from-name: DeRechi
       tls: false
 ```
@@ -73,7 +73,9 @@ AMQP's own retry would only triple the attempts; the message goes to
 Each send carries `deduplicationKey = "<event.deduplicationKey>:<CHANNEL>"`
 (`match:<lostId>:<foundId>` from `Admin-API`, `claim:<kind>:<id>` from `Worker`), one
 per channel so a dropped SMS cannot also drop the email. An event without a key falls back to
-`<recipient>:<CHANNEL>`, which only stops exact replays.
+`<recipient>:<CHANNEL>`, which only stops exact replays. The keys are kept by NotifyHub's
+`InMemoryDeduplicationStore` for an hour: per instance and lost on restart, so a message
+redelivered after a restart, or to a second `Notification` instance, is sent again.
 
 The `socialMedias` array in the event is **ignored**. `NotificationRequestedEvent.SocialMediaEnum`
 maps `TELEGRAM` to `Channel.TELEGRAM`, `WHATSAPP` to `Channel.WHATSAPP` and `VIBER` to

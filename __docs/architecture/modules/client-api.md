@@ -6,7 +6,7 @@ to it as is.
 
 | | |
 |---|---|
-| Port | 8082 |
+| Port | 8082; actuator on the management port 9082 |
 | Endpoint | `POST /graphql`; GraphiQL at `/graphiql` (enabled in `application.yaml`); the schema is printed at `/graphql/schema` |
 | Needs | PostgreSQL, RabbitMQ (to publish) |
 | Stack | Spring MVC + Spring for GraphQL, Spring Data JPA, Hibernate Spatial, AspectJ, Spring AMQP, Lombok |
@@ -24,6 +24,8 @@ web-client change too, see [web-client.md](web-client.md).
 | `lostItems(filter, sort, first, after)`, `foundItems(...)` | same | cursor pagination, see below |
 | `createLostItem(input)`, `createFoundItem(input)` | same | `update*` and `delete*` exist in the code and schema as comments, not yet exposed |
 | `claimLostItem(id, contact)`, `claimFoundItem(id, contact)`, `confirmReturn(token)` | `ClaimController` | responses to a notice and the "item is back" link, see [../../features/claims.md](../../features/claims.md) |
+| `unlockLostItemClaim(itemId, id)`, `unlockFoundItemClaim(itemId, id)` | `ClaimController` | create the Fourthwall checkout for the author's phone number; `PAYMENT_UNAVAILABLE`, `UNLOCK_LIMIT` |
+| `lostItemClaim(itemId, id)`, `foundItemClaim(itemId, id)` | `ClaimController` | one claim's state (was it paid), `null` when the notice has no such claim |
 | `categories` | `ReferenceController` | all `thing_category` rows |
 | `countries` | `ReferenceController` | supported countries with their currency, from `CountriesProperties` |
 | `places(name, first, after)` | `ReferenceController` | case-insensitive substring on `name`, sorted by name |
@@ -60,7 +62,8 @@ place's country decides), a found item must have an image.
 
 `GraphQlExceptionResolver` maps `NotFoundException` to `NOT_FOUND`, and both
 `ConstraintViolationException` and `IllegalArgumentException` to `BAD_REQUEST` with a
-readable message. Anything else is an `INTERNAL_ERROR` with no detail.
+readable message, and the payment failures to `PAYMENT_UNAVAILABLE` and `UNLOCK_LIMIT`.
+Anything else is an `INTERNAL_ERROR` with no detail.
 
 ### Contact masking
 
@@ -87,7 +90,9 @@ this module for that query only; nothing here writes history, archiving stays in
 `ClaimService` (per kind) and `ReturnService` record responses to a notice; `ClaimEventAspect`
 publishes a `ClaimEvent` with `item.<kind>.claimed` / `item.<kind>.returned` after `claim(..)` or
 `confirm(..)` returns a non-repeated result, the same `@AfterReturning` + `@Order(0)` pattern as
-`ItemEventAspect`. The exchange is `derechi.claims.exchange`.
+`ItemEventAspect`. The exchange is `derechi.claims.exchange`. The item is read with a plain
+`findById`, without a row lock, so two simultaneous claims with the same phone or email can
+both be recorded. Planned: a `PESSIMISTIC_WRITE` lock on the item row.
 
 ## Config
 
@@ -99,10 +104,29 @@ derechi:
   countries:
     supported: [UA, PL, DE, FR]
     fallback: UA
+  claims:
+    exchange: derechi.items
+    unlock-limit: 1
+    unlock-window: P7D
+  fourthwall:
+    api-url: https://api.fourthwall.com/open-api/v1.0
+    shop-url: ${FOURTHWALL_SHOP_URL:...}
+    username: ${FOURTHWALL_API_USERNAME:...}
+    password: ${FOURTHWALL_API_PASSWORD:...}
+    webhook-secret: ${FOURTHWALL_WEBHOOK_SECRET:dev-secret}
+    price: 1
+    product-name: "Author's phone number (%s)"
+    product-description: "..."
+    connect-timeout: 3s
+    read-timeout: 10s
 ```
 
-bound to `CountriesProperties`, which derives each country's currency from the JDK and
-refuses to start on an unknown code. In Compose the datasource and RabbitMQ are
+`countries` is bound to `CountriesProperties`, which derives each country's currency from
+the JDK and refuses to start on an unknown code. `fourthwall` is bound to the
+`FourthwallProperties` record, which refuses to start on a missing value or a non-positive
+price or timeout and also signs and checks the webhook HMAC. `FourthwallConfig` builds the
+Fourthwall `RestClient` on a `JdkClientHttpRequestFactory` with those timeouts: 3 seconds to
+connect, 10 seconds to read. In Compose the datasource and RabbitMQ are
 set through `POSTGRES_*` and `RABBITMQ_*`; see
 [environment variables](../../deployment/environment-variables.md).
 

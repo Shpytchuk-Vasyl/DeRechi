@@ -98,7 +98,8 @@ intended behaviour, not a bug. Errors come back as `BAD_REQUEST` with messages s
 | `viewer@derechi.local` / `viewer` | `ADMIN_VIEWER` | Matches, lost and found lists only; action buttons hidden, a direct POST gets 403 |
 | `user@derechi.local` / `user` | `USER` | 403 on `/admin` |
 
-Which `SCOPE:ACTION` roles each composite holds is in `docker/keycloak/realms/derechi-realm.json`.
+Which `SCOPE:ACTION` roles each composite holds is in `docker/keycloak/realms/derechi-realm.json`;
+the users themselves are in `docker/keycloak/dev/derechi-users-0.json` (local compose only).
 To switch users, sign out from the admin (it logs you out of Keycloak too) or use a private
 window. Check at least one non-English locale with `?lang=uk`.
 
@@ -109,11 +110,15 @@ window. Check at least one non-English locale with `?lang=uk`.
 | Queue | Consumer | Fed by |
 |---|---|---|
 | `worker.items` | `Worker` | `derechi.items` with `item.*.created` |
+| `worker.claims` | `Worker` | `derechi.items` with `item.*.claimed`, `item.*.returned`, `item.*.paid` |
+| `worker.archive` | `Worker` | `derechi.items` with `item.*.archive` |
 | `notification.events` | `Notification` | `derechi.notifications` with `notification.#` |
-| `worker.items.dlq`, `notification.events.dlq` | nobody | Dead letters after 3 failed attempts |
+| `worker.items.dlq`, `worker.claims.dlq`, `worker.archive.dlq`, `notification.events.dlq` | nobody | Dead letters after 3 failed attempts |
 
-A healthy run leaves the DLQs at zero. A message there can be opened in the UI ("Get
-messages") to see the payload and the `x-death` header with the reason.
+A healthy run leaves the DLQs at zero; otherwise the `DeadLetters` alert lands in Mailpit a
+minute later. A message there can be opened in the UI ("Get messages") to see the payload and
+the `x-death` header with the reason; replaying is described in
+[deployment/monitoring.md](../deployment/monitoring.md#dead-letter-queues).
 
 ### Notifications
 
@@ -124,13 +129,14 @@ match twice within an hour is deduplicated by NotifyHub on purpose.
 ### Images
 
 Upload from the admin item form (jpeg, png, webp, gif, up to 5 MB). The key appears in the
-MinIO console at `http://localhost:9001` (`derechi` / `derechi123`) under `derechi-files`,
+MinIO console at `http://localhost:9001` (root account `derechi` / `derechi123`) under `derechi-files`,
 and the image is served at `http://localhost:8080/files/<key>` through the gateway.
 
 ### Metrics
 
-`http://localhost:9090/targets`. Services run from IDEA are scraped as
-`host.docker.internal:<port>`; a target shows as down until the service is up. Grafana at
+`http://localhost:9090/targets`. Services run from IDEA are scraped on their management port as
+`host.docker.internal:908x` (service port + 1000); a target shows as down until the service is
+up. Grafana at
 `http://localhost:3000` (`admin` / `admin`) has the Prometheus datasource provisioned; the
 Spring Boot dashboard id 4701 works with the `application` label the scrape config sets.
 

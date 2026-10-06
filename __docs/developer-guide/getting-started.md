@@ -18,7 +18,7 @@ and macOS, `mvnw.cmd` on cmd and PowerShell). There is one wrapper for the whole
 modules do not have their own.
 
 If your machine's time zone is `Europe/Kiev`, set `MAVEN_OPTS="-Duser.timezone=Europe/Kyiv"`
-and add the same `-D` flag to your IDEA run configurations. PostgreSQL 18 only accepts the new
+and add the same `-D` flag to your IDEA run configurations. The database rejects the old
 spelling and every connection fails otherwise.
 
 ## 1. Clone and start the infrastructure
@@ -30,9 +30,10 @@ docker compose up -d
 ```
 
 The first run builds our Postgres image (PostGIS plus a Ukrainian full-text dictionary) and
-pulls RabbitMQ, Keycloak, MinIO, Mailpit, pgAdmin, Prometheus and Grafana. Wait until
-`docker compose ps` shows every service healthy or running. Keycloak imports the `derechi`
-realm on this first start; MinIO's init container creates the `derechi-files` bucket and exits.
+pulls RabbitMQ, Keycloak, MinIO, Mailpit, pgAdmin, Prometheus, Alertmanager and Grafana.
+Wait until `docker compose ps` shows every service healthy. Keycloak imports the `derechi`
+realm and the dev users on this first start; MinIO's init container creates the
+`derechi-files` bucket and the application account, then exits.
 
 What is now listening, with credentials, is listed in
 [deployment/infrastructure.md](../deployment/infrastructure.md).
@@ -75,7 +76,8 @@ want it, but do not commit that, and note it starts neither `Notification` nor a
 Docker. See [architecture/modules/launcher.md](../architecture/modules/launcher.md).
 
 Ports: Getaway 8080, Client-API 8082, Admin-API 8083, Notification 8084, Worker 8085.
-Each answers `/actuator/health`.
+Actuator is on a separate management port, the service port + 1000: each answers
+`/actuator/health` on 9080, 9082, 9083, 9084 or 9085.
 
 The alternative, everything in containers, is one command and is covered in
 [deployment/local-development.md](../deployment/local-development.md):
@@ -90,7 +92,8 @@ docker compose -f docker-compose.yml -f docker-compose.services.yml up -d --buil
 `admin`. You should see the navigation with Matches, Lost, Found and the archives. The other
 dev users are `moderator@derechi.local` / `moderator`, `viewer@derechi.local` / `viewer` and
 `user@derechi.local` / `user`; the last one has no admin roles and gets a 403, which is
-correct. Switch the language with `?lang=uk` (or `pl`, `de`, `fr`, `en`).
+correct. They come from `docker/keycloak/dev/derechi-users-0.json`, which only the local
+compose file imports; production has none of them. Switch the language with `?lang=uk` (or `pl`, `de`, `fr`, `en`).
 
 ## 5. Create a lost and a found notice
 

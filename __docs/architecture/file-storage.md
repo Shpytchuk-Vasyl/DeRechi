@@ -9,12 +9,17 @@ S3-compatible object store, in one bucket. The database holds only the object ke
 |---|---|
 | Container | `derechi-minio`, image `quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z` |
 | S3 API | `http://localhost:9000` |
-| Console | `http://localhost:9001`, `derechi` / `derechi123` |
+| Console | `http://localhost:9001`, root account `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` (`derechi` / `derechi123` locally) |
+| Application account | `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` (`derechi-app` / `derechi-app-secret` locally), objects in `derechi-files` only |
 | Bucket | `derechi-files` |
 
 The bucket is created by the one-shot `minio-init` container (`mc mb --ignore-existing`)
 which also sets anonymous **download** on it (`mc anonymous set download`). Reads need no
-credentials; writes do. The container runs `MINIO_PROMETHEUS_AUTH_TYPE=public` so Prometheus
+credentials; writes do. The same container, logged in as root, creates the policy
+`derechi-app` from `docker/minio/derechi-app-policy.json` (get, put and delete objects in
+`derechi-files`, plus `ListBucket` and `GetBucketLocation`), adds the application user
+`MINIO_ACCESS_KEY` and attaches the policy to it. The applications use that account, never
+the root one. The container runs `MINIO_PROMETHEUS_AUTH_TYPE=public` so Prometheus
 can scrape it without a token.
 
 Object keys follow one layout, written by both uploaders:
@@ -37,8 +42,8 @@ URL, though `StorageProperties.urlOf` tolerates an absolute URL for old rows.
 spring.cloud.aws:
   region.static: us-east-1
   credentials:
-    access-key: ${MINIO_ACCESS_KEY:derechi}
-    secret-key: ${MINIO_SECRET_KEY:derechi123}
+    access-key: ${MINIO_ACCESS_KEY:derechi-app}
+    secret-key: ${MINIO_SECRET_KEY:derechi-app-secret}
   s3:
     endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
     path-style-access-enabled: true
@@ -63,7 +68,8 @@ Properties live under `derechi.storage` (`bucket`, `public-url`, `max-size`, bou
 ### Web client: presigned PUT through the gateway
 
 `Web-Client` never sends image bytes through Node or through `Client-API`. A server action
-signs a PUT URL for the key (SigV4) and the browser PUTs the file to
+signs a PUT URL for the key (SigV4) with the application account (`S3_ACCESS_KEY` /
+`S3_SECRET_KEY`, `derechi-app` locally) and the browser PUTs the file to
 `http://<gateway>/derechi-files/<key>?X-Amz-...`. The gateway's `files-upload` route
 (`Path=/derechi-files/**`, `Method=PUT`) forwards it to MinIO with:
 

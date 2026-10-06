@@ -6,11 +6,11 @@ has no HTTP API; the only endpoints are actuator's.
 
 | | |
 |---|---|
-| Port | 8085 (actuator only) |
-| Consumes | queue `worker.items`, bound to `derechi.items` with `item.*.created`; queue `worker.claims`, bound with `item.*.claimed` and `item.*.returned`; queue `worker.archive`, bound with `item.*.archive` |
+| Port | 8085 (serves nothing public); actuator on the management port 9085 |
+| Consumes | queue `worker.items`, bound to `derechi.items` with `item.*.created`; queue `worker.claims`, bound with `item.*.claimed`, `item.*.returned` and `item.*.paid`; queue `worker.archive`, bound with `item.*.archive` |
 | Produces | `NotificationRequestedEvent` on `derechi.notifications` (`notification.claim.*`) |
 | Needs | PostgreSQL, RabbitMQ |
-| Stack | Spring AMQP, Spring Data JPA, Hibernate Spatial + JTS, optimaize `language-detector`, libphonenumber, Lombok |
+| Stack | Spring AMQP, Spring Data JPA, Hibernate Spatial + JTS, optimaize `language-detector`, libphonenumber, ShedLock, Lombok |
 
 ## Flow
 
@@ -81,6 +81,15 @@ button arrives here as `ARCHIVE_REQUESTED` on the third queue (`ArchiveListener`
 confirmed return and the quiet-notice rule call it directly. Archiving re-points the notice's
 claims at the history copy instead of deleting them, which is why this module writes to the
 item, history and claim tables. Texts live in this module's own five `messages*.properties`.
+
+`ClaimFollowUpJob.run` is `@Scheduled` and also `@SchedulerLock(name = "claim-follow-up")`
+(ShedLock): two instances running it at once would send every reminder twice.
+`SchedulerLockConfig` enables the lock with `lockAtMostFor` PT30M (frees the lock of an
+instance that died mid-run) and `lockAtLeastFor` PT1M, and provides a
+`JdbcTemplateLockProvider` with `usingDbTime()`, so the database clock decides and the
+instances' clocks may drift. The lock row lives in the `shedlock` table (migration 009), which
+is not an entity. As far as the scheduled job is concerned, several Worker instances may run
+side by side.
 
 ## Entities
 

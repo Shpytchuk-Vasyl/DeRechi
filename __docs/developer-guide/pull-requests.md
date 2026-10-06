@@ -41,7 +41,8 @@ what they should see. Paste the GraphQL document if there is one.
 Changeset file name; whether it backfills data; whether old services keep working.
 
 ## Keycloak
-Roles, clients or users changed in `docker/keycloak/realms/derechi-realm.json`.
+Roles or clients changed in `docker/keycloak/realms/derechi-realm.json`; dev users changed in
+`docker/keycloak/dev/derechi-users-0.json`.
 
 ## RabbitMQ
 Exchanges, queues, bindings changed in `docker/rabbitmq/definitions.json`.

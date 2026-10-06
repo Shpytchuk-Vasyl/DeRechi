@@ -5,9 +5,11 @@
 Every Maven module inherits `spring-boot-starter-actuator` and
 `micrometer-registry-prometheus` from the root pom and exposes
 `health`, `info` and `prometheus` over HTTP (`management.endpoints.web.exposure.include`
-in each `application.yaml`; `Getaway` adds `gateway`). Health shows details
-(`show-details: always`), which is convenient on a dev box and something to revisit before
-exposing a service publicly.
+in each `application.yaml`). Actuator listens on a separate management port, the service
+port + 1000 (`MANAGEMENT_PORT`: `Getaway` 9080, `Client-API` 9082, `Admin-API` 9083,
+`Notification` 9084, `Worker` 9085). Compose does not publish those ports and the gateway
+never routes `/actuator`, so only Prometheus and the container health checks reach them.
+Health shows no details (`show-details: never`).
 
 Prometheus v3.14.0 runs as a container with a 15-day retention and `--web.enable-lifecycle`
 (so `curl -X POST localhost:9090/-/reload` picks up a config change). Load-test metrics go to
@@ -17,8 +19,8 @@ run:
 
 | File | Used by | Service targets |
 |---|---|---|
-| `prometheus.yml` | `docker compose up` (infrastructure only, services in the IDE) | `host.docker.internal:<port>`, the container reaches the host |
-| `prometheus-full.yml` | `docker compose -f docker-compose.yml -f docker-compose.services.yml up` | container names, `getaway:8080`, `client-api:8082`, ... |
+| `prometheus.yml` | `docker compose up` (infrastructure only, services in the IDE) | `host.docker.internal:<management port>` (9080, 9082, ...), the container reaches the host |
+| `prometheus-full.yml` | `docker compose -f docker-compose.yml -f docker-compose.services.yml up` | container names on the management ports, `getaway:9080`, `client-api:9082`, ... |
 
 The services override in `docker-compose.services.yml` swaps the `--config.file` argument;
 that is why the full stack is an override file rather than a second compose project.
@@ -40,6 +42,20 @@ instance selector. A new service goes into both files with that label, see
 Keycloak is a separate job and not a `derechi-services` target because its metrics are on
 a different port and path and carry no `application` label.
 
+## Alerts
+
+Both files load `rule_files: [alerts.yml]` (`docker/prometheus/alerts.yml`) and send firing
+alerts to Alertmanager v0.34.1 (`alertmanager:9093`, `http://localhost:9093`), which emails
+them using the `ALERT_*` variables. Two rules:
+
+| Alert | Fires when |
+|---|---|
+| `DeadLetters` | a `*.dlq` queue has ready messages for 1 minute |
+| `TargetDown` | any target has `up == 0` for 2 minutes |
+
+Details, and what to do with a dead-lettered message, are in
+[../deployment/monitoring.md](../deployment/monitoring.md#dead-letter-queues).
+
 ## Grafana
 
 Grafana 13.2.1 on `http://localhost:3000`, `admin` / `admin`, sign-up disabled. The only
@@ -52,9 +68,10 @@ volume.
 ## Health
 
 `/actuator/health` on each service includes the datasource and RabbitMQ contributors where
-those are on the classpath. Compose health checks exist for PostgreSQL, RabbitMQ, MinIO and
-Mailpit so dependent containers wait for them; the Spring services have no container
-health check.
+those are on the classpath. Every long-running container has a Compose health check: PostgreSQL,
+RabbitMQ, MinIO, Mailpit, Keycloak, Prometheus, Alertmanager, Grafana and pgAdmin, and the
+Spring services, which query `/actuator/health` on their management port. Infrastructure
+containers restart `unless-stopped` and have memory limits.
 
 ## Logging
 

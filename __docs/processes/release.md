@@ -26,7 +26,10 @@ a staging host, tags). Where something does not exist in the repository yet, it 
   is never shipped.
 - Infrastructure configuration that lives in Git and may change with a release:
   `docker/keycloak/realms/derechi-realm.json`, `docker/rabbitmq/definitions.json`,
-  `docker/prometheus/*.yml`, `docker/grafana/provisioning`.
+  `docker/prometheus/*.yml` (scrape configs and `alerts.yml`), `docker/alertmanager/`,
+  `docker/minio/derechi-app-policy.json`, `docker/grafana/provisioning`, and
+  `docker-compose.prod.yml`. `docker/keycloak/dev/` holds the dev users and is local only; it
+  is never part of a production deploy.
 
 ## Pre-release checklist
 
@@ -50,7 +53,8 @@ a staging host, tags). Where something does not exist in the repository yet, it 
 4. **Build images** for the services that changed (or all of them; the reactor build is cached):
 
    ```bash
-   docker compose -f docker-compose.yml -f docker-compose.services.yml build
+   docker compose --env-file env.prod \
+       -f docker-compose.yml -f docker-compose.services.yml -f docker-compose.prod.yml build
    ```
 
 5. **Deploy the services** in any order. `Getaway` last avoids a few seconds of 5xx on
@@ -61,19 +65,24 @@ a staging host, tags). Where something does not exist in the repository yet, it 
 With the compose stack this collapses to one command, which is how we run it today:
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.services.yml up -d --build
+docker compose --env-file env.prod \
+    -f docker-compose.yml -f docker-compose.services.yml -f docker-compose.prod.yml up -d --build
 ```
 
 ## Smoke checks after deploy
 
-- [ ] Every service answers on `/actuator/health` with `UP` (ports 8080, 8082, 8083,
-      8084, 8085).
-- [ ] `/actuator/gateway/routes` on the gateway shows `client-api` pointing at the right `CLIENT_API_URI`.
+- [ ] Every service reports `UP` on `/actuator/health`. Actuator is on the management ports
+      (9080, 9082, 9083, 9084, 9085), which are internal to the compose network, so check
+      the `healthy` status in `docker compose ps`; the containers' healthchecks read that
+      endpoint.
+- [ ] `/graphql` through the gateway answers, which proves the `client-api` route points at the
+      right `CLIENT_API_URI` (the gateway no longer exposes `/actuator/gateway/routes`).
 - [ ] Prometheus `Status > Targets` shows every target up, including Keycloak, MinIO and RabbitMQ.
+- [ ] Prometheus `Alerts` shows no firing alert, and Alertmanager (port 9093) lists none.
 - [ ] GraphiQL through the gateway (`/graphiql`) runs `categories` and `countries`, and a
       `createLostItem` mutation succeeds.
 - [ ] `Worker` logs the search for that item and nothing lands in
-      `worker.items.dlq`.
+      `worker.items.dlq` (or any other `*.dlq`; the `DeadLetters` alert fires otherwise).
 - [ ] The admin panel logs in through Keycloak and the Matches page renders.
 - [ ] Notifying a candidate produces an email in Mailpit (or the real mail provider) and the
       row shows "Notified".

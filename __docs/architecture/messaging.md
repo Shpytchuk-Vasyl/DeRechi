@@ -93,7 +93,9 @@ spring:
 
 A failing message is retried in-process three times, then rejected without requeue, and the
 queue's dead-letter exchange moves it to the matching `.dlq`. Nothing consumes the DLQs; they
-are there to be inspected in the management UI.
+are there to be inspected in the management UI. The `DeadLetters` alert fires when any
+`.dlq` holds a ready message for a minute; how to inspect and replay is in
+[../deployment/monitoring.md](../deployment/monitoring.md#dead-letter-queues).
 
 Three things skip the retry on purpose by throwing `AmqpRejectAndDontRequeueException`:
 
@@ -103,7 +105,9 @@ Three things skip the retry on purpose by throwing `AmqpRejectAndDontRequeueExce
 
 Idempotency on the notification side comes from `deduplicationKey`: `NotificationSender`
 hands NotifyHub `<event key>:<CHANNEL>`, NotifyHub keeps a one-hour window
-(`notify.deduplication.ttl`) and drops a repeat, which the sender treats as success. On the search side the insert into `similar_item` is keyed by
+(`notify.deduplication.ttl`) and drops a repeat, which the sender treats as success. That
+window lives in NotifyHub's in-memory store: it is per `Notification` instance and is lost on
+restart, so a redelivery after a restart or to a second instance is sent again. On the search side the insert into `similar_item` is keyed by
 `(found_item_id, lost_item_id)`, so reprocessing the same event does not create duplicates.
 
 ## Local development

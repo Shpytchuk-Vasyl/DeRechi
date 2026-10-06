@@ -6,8 +6,11 @@ only piece of the system that talks to it today is the admin panel's login.
 ## Keycloak
 
 Keycloak 26.4 runs as a container (`derechi-keycloak`, port 8180 on the host, 8080 inside
-the Compose network) in `start-dev` mode. Its data lives in the `keycloak` database of the
-shared PostgreSQL container, see [database.md](database.md).
+the Compose network). `docker-compose.yml` runs it in `start-dev` mode (plain HTTP, dev
+users imported); the production override `docker-compose.prod.yml` runs `start --import-realm`
+behind a TLS reverse proxy (`KC_HTTP_ENABLED`, `KC_PROXY_HEADERS=xforwarded`) and mounts only
+the realm file. Its data lives in the `keycloak` database of the shared PostgreSQL container,
+see [database.md](database.md).
 
 The realm `derechi` is versioned in `docker/keycloak/realms/derechi-realm.json` and loaded
 with `--import-realm`. The import happens **only when the realm does not exist yet**, which
@@ -16,19 +19,26 @@ console stays in the database and is not written back to the file. The procedure
 changing the realm and keeping git in sync is in
 [../processes/keycloak-realm-changes.md](../processes/keycloak-realm-changes.md).
 
+The realm has self-registration off (`registrationAllowed: false`) and brute-force
+protection on (`bruteForceProtected: true`). The file holds no users and no real secrets:
+`${DERECHI_SITE_URL}`, `${DERECHI_ADMIN_URL}` and `${KEYCLOAK_SERVICES_SECRET}` are
+placeholders that Keycloak fills from its environment during the import.
+
 Admin console: `http://localhost:8180`, `admin` / `admin`.
 
 ### Clients
 
 | Client | Type | Flow | Used by |
 |---|---|---|---|
-| `derechi-web` | public | Authorization Code + PKCE (S256); direct access grants also on | the public web client, reserved for when it gets a login |
+| `derechi-web` | public | Authorization Code + PKCE (S256); direct access grants off | the public web client, reserved for when it gets a login |
 | `derechi-admin` | public | Authorization Code + PKCE (S256), scopes `openid,profile,email,roles` | `Admin-API` login |
 | `derechi-services` | confidential | `client_credentials` (service account) | reserved for service-to-service calls; nothing uses it yet |
 
-Redirect URIs in the realm file are `localhost` ones (`http://localhost:8083/*` for the
-admin panel, 8080/3000/5173 for the web client). A deployment on another host needs those
-changed.
+Redirect URIs in the realm file are placeholders: `${DERECHI_ADMIN_URL}/*` for the admin
+panel and `${DERECHI_SITE_URL}/*` for the web client (also used as post-logout redirect
+URIs). `docker-compose.yml` defaults them to `http://localhost:8083` and
+`http://localhost:3000`; the production override requires them to be set. They are read on
+the first import only, so changing them later is done in the admin console.
 
 ### Roles
 
@@ -54,6 +64,9 @@ composite; a user would have to be given them directly. How the panel uses these
 
 ### Development users
 
+They live in `docker/keycloak/dev/derechi-users-0.json`, which only `docker-compose.yml`
+mounts next to the realm, so they are imported in development and never in production.
+
 | User | Password | Realm roles |
 |---|---|---|
 | `admin@derechi.local` | `admin` | `ADMIN_SUPER`, `USER` |
@@ -70,8 +83,9 @@ registration `keycloak` with `client-id: derechi-admin`,
 `{baseUrl}/login/oauth2/code/{registrationId}` redirect, and
 `user-name-attribute: preferred_username`.
 
-`SecurityConfig` requires authentication on everything except `/actuator/**`, `/css/**`,
-`/js/**` and `/error`, enables `oauth2Login()` with defaults, and wires logout to
+`SecurityConfig` requires authentication on everything except `/actuator/health(/**)`,
+`/actuator/info`, `/actuator/prometheus` (`PUBLIC_ACTUATOR`; actuator itself is on the
+management port 9083), `/css/**`, `/js/**` and `/error`, enables `oauth2Login()` with defaults, and wires logout to
 `OidcClientInitiatedLogoutSuccessHandler` so that signing out of the panel also ends the
 Keycloak session and lands on `{baseUrl}/admin`.
 
@@ -111,10 +125,11 @@ default profile) a single `issuer-uri: http://localhost:8180/realms/derechi` is 
 
 ## Gateway and Keycloak
 
-The gateway route to Keycloak is a direct `uri:`
-(`KEYCLOAK_URI`, default `http://localhost:8180`), matching `/realms/**` and
-`/resources/**`. That exposes the realm's OIDC endpoints and login theme assets under the
-gateway's origin for the web client. See [modules/getaway.md](modules/getaway.md).
+Keycloak is not behind the gateway. The gateway used to have a `keycloak` route
+(`/realms/**`, `/resources/**`) that exposed the realm under its own origin, but nothing
+used it and it was removed. Browsers reach Keycloak directly at `KEYCLOAK_PUBLIC_URI`
+(`http://localhost:8180` locally), and `Admin-API` talks to it on the internal
+`KEYCLOAK_URI`, as described above. See [modules/getaway.md](modules/getaway.md).
 
 ## What is not there yet
 

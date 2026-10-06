@@ -14,10 +14,11 @@ those files, the file wins and this page needs a fix.
 | Spring Cloud AWS | 4.1.1 | `spring-cloud-aws-starter-s3`, pointed at MinIO |
 | PostgreSQL | 17 with PostGIS 3.5 | custom image built from `docker/postgres/Dockerfile` |
 | RabbitMQ | 4.3.5 | management plugin on, quorum queues |
-| Keycloak | 26.4 | `start-dev --import-realm` |
-| MinIO | RELEASE.2025-09-07 | plus an `mc` init container that creates the bucket |
+| Keycloak | 26.4 | `start-dev --import-realm` in development, `start --import-realm` in `docker-compose.prod.yml` |
+| MinIO | RELEASE.2025-09-07 | plus an `mc` init container that creates the bucket and the `derechi-app` application account |
 | Mailpit | 1.28 | SMTP sink with a web UI, development only |
 | Prometheus | v3.14.0 | |
+| Alertmanager | v0.34.1 | emails the Prometheus alerts, see [observability.md](observability.md#alerts) |
 | Grafana | 13.2.1 | |
 
 ### Spring Boot 4 specifics
@@ -43,9 +44,9 @@ directory so the `keycloak` database exists on first start. Migration 001 then c
 `postgis/postgis:17-3.5` image and skip the Ukrainian configuration, see
 [../conventions/testing.md](../conventions/testing.md).
 
-One note on versions: `.claude/CLAUDE.md` mentions PostgreSQL 18.6, and the `Europe/Kiev`
-timezone quirk in `DB-Postgres/README.md` is a PostgreSQL 18 behaviour. The image compose
-actually builds today is 17. Treat 17 as the truth until the Dockerfile changes.
+One note on versions: the database is PostgreSQL 17, the version of the image compose builds.
+Planned: moving to PostgreSQL 18 (the `Europe/Kiev` timezone quirk in `DB-Postgres/README.md`
+was written with 18 in mind; the image rejects the old spelling today as well).
 
 ## Threading model
 
@@ -68,6 +69,7 @@ WebFlux-based.
 | Caffeine | `Admin-API` | the `categories` cache |
 | libphonenumber | `Admin-API`, `Worker` | phone formatting in `Formats`; the recipient's language for claim messages (`PhoneLocales`) |
 | optimaize `language-detector` 0.6 | `Worker` | picks the PostgreSQL text search configuration from the title |
+| ShedLock 7.10.1 (`shedlock-spring`, `shedlock-provider-jdbc-template`) | `Worker` | one instance at a time runs a scheduled job, through the `shedlock` table |
 | NotifyHub 1.1.0 (`notify-spring-boot-starter`, `notify-email`, `notify-telegram` managed) | `Notification` | one API over email / SMS / messengers |
 | Lombok | `Admin-API`, `Client-API`, `Worker` | entities and forms only; see [../conventions/java-code-style.md](../conventions/java-code-style.md) |
 | Testcontainers (PostgreSQL module) | `Client-API`, `Admin-API` | integration tests against real PostGIS |

@@ -14,20 +14,28 @@ values of another environment come from an env file at the repository root:
 
 | File | For | Committed |
 |---|---|---|
-| `env.local` | the local stack, with personal keys (Fourthwall API user) | no |
+| `env.local` | the local stack, dev values only; do not commit personal keys (Fourthwall API user) into it | yes |
 | `env.test` | the test environment | no |
 | `env.prod` | production | no |
 
 ```bash
-docker compose --env-file env.prod -f docker-compose.yml -f docker-compose.services.yml up -d --build
+docker compose --env-file env.prod \
+    -f docker-compose.yml -f docker-compose.services.yml -f docker-compose.prod.yml up -d --build
 ```
 
-All three are git-ignored because they hold credentials, and all three list the same variables,
-the ones on this page. `env.test` and `env.prod` were created with random secrets; every
+`env.local` is in Git and holds only the local values. `env.test` and `env.prod` are
+git-ignored because they hold credentials. All three list the same variables, the ones on this
+page. `env.test` and `env.prod` were created with random secrets; every
 `CHANGE_ME` in them (public addresses, SMTP, Fourthwall API user, Google Maps key) has to be
 filled in before the first start. The env file only feeds the `${...}` in the compose files;
 each container receives the variables its `environment:` lists, not the whole file. Services
 started from IDEA do not read these files.
+
+`docker-compose.prod.yml` turns the secrets into required variables (`${NAME:?}`):
+`KEYCLOAK_ADMIN`, `KEYCLOAK_ADMIN_PASSWORD`, `KEYCLOAK_PUBLIC_URI`, `DERECHI_SITE_URL`,
+`DERECHI_ADMIN_URL`, `KEYCLOAK_SERVICES_SECRET`, `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD`,
+`MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY`, `ALERT_EMAIL_TO` and `ALERT_SMTP_HOST`. A missing one
+stops `docker compose` instead of starting with the local default.
 
 See [configuration](../conventions/configuration.md) for the rules behind this layout.
 
@@ -44,8 +52,12 @@ stop matching:
 | `KEYCLOAK_ADMIN`, `KEYCLOAK_ADMIN_PASSWORD` | first start of Keycloak's database | in the Keycloak console |
 | `GRAFANA_ADMIN_USER`, `GRAFANA_ADMIN_PASSWORD` | first start of `grafanadata` | in Grafana |
 | `PGADMIN_DEFAULT_EMAIL`, `PGADMIN_DEFAULT_PASSWORD` | first start of `pgadmindata` | in pgAdmin |
+| `DERECHI_SITE_URL`, `DERECHI_ADMIN_URL`, `KEYCLOAK_SERVICES_SECRET` (in Keycloak) | first realm import | in the Keycloak console (redirect URIs, client secret) |
 
-`MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` are read on every start. pgAdmin's
+`MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` are MinIO's root account, read by `minio` and
+`minio-init` on every start; nothing else uses them. `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY`
+are the application's account, which `minio-init` creates with the root credentials on every
+`up`. pgAdmin's
 `docker/pgadmin/servers.json` and `pgpass` carry the local `derechi` credentials; pgAdmin is a
 local tool.
 
@@ -61,6 +73,8 @@ local tool.
 | `RABBITMQ_PORT` | `5672` | `5672` | the services | AMQP port |
 | `RABBITMQ_USER` / `RABBITMQ_PASSWORD` | `derechi` / `derechi` | same | the services, `rabbitmq-init`, and the `rabbitmq` container | broker credentials |
 | `JAVA_OPTS` | empty | `-Xms64m -Xmx256m ... -XX:+UseSerialGC` | every service | JVM flags; the default is laptop sizing |
+| `MANAGEMENT_PORT` | service port + 1000 (`9080`, `9082`, `9083`, `9084`, `9085`) | not set | every service | actuator port (`health`, `info`, `prometheus`); not published by compose, see [monitoring](monitoring.md#actuator) |
+| `SERVICE_MEMORY` | n/a | `512m` | compose | memory limit of each service container |
 
 `spring.datasource.*` and `spring.rabbitmq.*` are
 built from these in every `application.yaml`. Spring's relaxed binding still applies on top
@@ -71,11 +85,12 @@ built from these in every `application.yaml`. Spring's relaxed binding still app
 | Variable | YAML default | Compose default | Purpose |
 |---|---|---|---|
 | `CLIENT_API_URI` | `http://localhost:8082` | `http://client-api:8082` | target of the `client-api` route (`/graphql/**`, `/graphiql/**`, `/api/client/**`) |
-| `KEYCLOAK_URI` | `http://localhost:8180` | `http://keycloak:8080` | target of the `keycloak` route (`/realms/**`, `/resources/**`) |
 | `MINIO_URI` | `http://localhost:9000` | `http://minio:9000` | target of the `files` (GET) and `files-upload` (PUT) routes |
 | `MINIO_BUCKET` | `derechi-files` | not set | bucket segment in the upload path and the `/files/**` rewrite |
 | `MINIO_MAX_UPLOAD` | `5MB` | not set | `RequestSize` filter on presigned uploads |
 | `WEB_ORIGIN_PATTERNS` | `http://localhost:[*],http://127.0.0.1:[*],http://192.168.*:[*],http://10.*:[*]` | same | CORS `allowed-origin-patterns`; the web client's real origin outside a LAN |
+
+The Gateway has no Keycloak route; browsers reach Keycloak directly at `KEYCLOAK_PUBLIC_URI`.
 
 ## Client-API
 
@@ -87,7 +102,8 @@ built from these in every `application.yaml`. Spring's relaxed binding still app
 | `FOURTHWALL_WEBHOOK_SECRET` | `dev-secret` | same | the secret of the `ORDER_PLACED` webhook; every webhook body is signed with it (`X-Fourthwall-Hmac-SHA256`). On a server it must equal the secret set in Fourthwall |
 
 Supported countries are not an environment variable; they are `derechi.countries.supported` in
-the YAML and must match Admin-API's list.
+the YAML and must match Admin-API's list. The Fourthwall client's timeouts are YAML only too:
+`derechi.fourthwall.connect-timeout` (3s) and `read-timeout` (10s).
 
 ## Admin-API
 
@@ -98,7 +114,7 @@ the YAML and must match Admin-API's list.
 | `KEYCLOAK_URI` | `http://keycloak:8080` (read only under `docker`) | `http://keycloak:8080` | token, JWKS and user-info endpoints, reached from inside the network |
 | `KEYCLOAK_PUBLIC_URI` | `http://localhost:8180` | same | the address browsers reach Keycloak at: the authorization endpoint under `docker`, the issuer otherwise; also Keycloak's `KC_HOSTNAME` in full mode |
 | `MINIO_ENDPOINT` | `http://localhost:9000` | `http://minio:9000` | S3 endpoint used to upload images; also `minio-init`'s target |
-| `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` | `derechi` / `derechi123` | same | S3 credentials, and the `minio` container's root user |
+| `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` | `derechi-app` / `derechi-app-secret` | same | S3 credentials of the application's account (objects in `derechi-files` only, `docker/minio/derechi-app-policy.json`), created by `minio-init`; not the root user. The web client uses the same account as `S3_ACCESS_KEY` / `S3_SECRET_KEY` |
 | `MINIO_PUBLIC_URL` | `http://localhost:9000/derechi-files` | `http://localhost:8080/files` | base of image URLs rendered in the admin UI; in full mode they go through the Gateway's `/files` route |
 | `GOOGLE_MAPS_API_KEY` | a committed dev key (known issue, see [configuration](../conventions/configuration.md#rule-7-no-secrets-in-the-repository)) | passed on only when the env file sets it | Google Places widget in the item form |
 
@@ -135,9 +151,16 @@ new placeholders when they are enabled; see
 | postgres | `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`; `initdb/01-keycloak.sh` creates the `keycloak` database owned by `POSTGRES_USER` |
 | rabbitmq | `RABBITMQ_USER`, `RABBITMQ_PASSWORD` as `RABBITMQ_DEFAULT_USER` / `_PASS` |
 | rabbitmq-init | `RABBITMQ_HOST`, `RABBITMQ_USER`, `RABBITMQ_PASSWORD`; imports `docker/rabbitmq/definitions.json` |
-| keycloak | `KEYCLOAK_ADMIN`, `KEYCLOAK_ADMIN_PASSWORD`, `KEYCLOAK_JAVA_OPTS`, and `POSTGRES_HOST` / `_PORT` / `_USER` / `_PASSWORD` for its `keycloak` database; full mode adds `KEYCLOAK_PUBLIC_URI` as `KC_HOSTNAME` |
-| minio | `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY` as the root user |
-| minio-init | `MINIO_ENDPOINT`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY` |
+| keycloak | `KEYCLOAK_ADMIN`, `KEYCLOAK_ADMIN_PASSWORD`, `KEYCLOAK_JAVA_OPTS`, and `POSTGRES_HOST` / `_PORT` / `_USER` / `_PASSWORD` for its `keycloak` database; `DERECHI_SITE_URL` (`http://localhost:3000`), `DERECHI_ADMIN_URL` (`http://localhost:8083`) and `KEYCLOAK_SERVICES_SECRET` (`dev-secret-change-me`) fill the placeholders of the realm file on import; full mode adds `KEYCLOAK_PUBLIC_URI` as `KC_HOSTNAME`. `docker-compose.prod.yml` makes all of these except the database and JVM ones required |
+| minio | `MINIO_ROOT_USER`, `MINIO_ROOT_PASSWORD` (`derechi` / `derechi123`) as the root user, also the console login |
+| minio-init | `MINIO_ENDPOINT`, `MINIO_ROOT_USER`, `MINIO_ROOT_PASSWORD`; creates the bucket and the application account `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` with `docker/minio/derechi-app-policy.json` |
+| alertmanager | `ALERT_EMAIL_TO`, `ALERT_SMTP_HOST` (`mailpit:1025`), `ALERT_SMTP_FROM`, `ALERT_SMTP_USERNAME`, `ALERT_SMTP_PASSWORD`, `ALERT_SMTP_REQUIRE_TLS` (`false`, `true` under `docker-compose.prod.yml`); rendered into `docker/alertmanager/alertmanager.yml.tmpl` at start, see [monitoring](monitoring.md#alerts) |
 | grafana | `GRAFANA_ADMIN_USER`, `GRAFANA_ADMIN_PASSWORD` |
 | pgadmin | `PGADMIN_DEFAULT_EMAIL`, `PGADMIN_DEFAULT_PASSWORD` |
 | mailpit | nothing environment-specific |
+
+Every long-running container has a memory limit, overridable per environment:
+`POSTGRES_MEMORY` (1g), `PGADMIN_MEMORY` (512m), `RABBITMQ_MEMORY` (512m), `KEYCLOAK_MEMORY`
+(768m), `PROMETHEUS_MEMORY` (512m), `ALERTMANAGER_MEMORY` (128m), `GRAFANA_MEMORY` (256m),
+`MINIO_MEMORY` (512m), `MAILPIT_MEMORY` (128m), and `SERVICE_MEMORY` (512m) for each Spring
+service. See [docker-compose](docker-compose.md#healthchecks-restarts-and-memory).

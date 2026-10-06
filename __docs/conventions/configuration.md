@@ -61,6 +61,8 @@ Application-specific settings live under the `derechi` prefix and are bound to a
 | `derechi.storage` | `StorageProperties` (`bucket`, `public-url`, `max-size`) | Admin-API |
 | `derechi.maps` | `MapsProperties` (`api-key`, `region`) | Admin-API |
 | `derechi.notifications` | `NotificationProperties` (`exchange`, `routing-key`) | Admin-API |
+| `derechi.claims` | `ClaimsProperties` (`exchange`, `unlock-limit`, `unlock-window`) | Client-API |
+| `derechi.fourthwall` | `FourthwallProperties` (`api-url`, `shop-url`, `username`, `password`, `webhook-secret`, `price`, `product-name`, `product-description`, `connect-timeout` 3s, `read-timeout` 10s) | Client-API |
 | `derechi.items.queue` | read with `${...}` in `@RabbitListener` | Worker |
 | `derechi.notification.queue` | read with `${...}` in `@RabbitListener` | Notification |
 
@@ -68,28 +70,28 @@ Application-specific settings live under the `derechi` prefix and are bound to a
 
 ## Rule 5: Gateway routes are variables
 
-Every route in `Getaway/src/main/resources/application.yaml` targets a placeholder whose default is the local address: `${CLIENT_API_URI:http://localhost:8082}`, `${KEYCLOAK_URI:http://localhost:8180}`, `${MINIO_URI:http://localhost:9000}`. Compose sets the container addresses. Never write a bare `localhost:<port>` into a route; a new route gets its own `*_URI` variable. There is no service registry (Eureka was removed): on one compose host Docker's DNS resolves the container name, and several instances of a service would sit behind one load-balanced address.
+Every route in `Getaway/src/main/resources/application.yaml` targets a placeholder whose default is the local address: `${CLIENT_API_URI:http://localhost:8082}`, `${MINIO_URI:http://localhost:9000}`. There is no Keycloak route. Compose sets the container addresses. Never write a bare `localhost:<port>` into a route; a new route gets its own `*_URI` variable. There is no service registry (Eureka was removed): on one compose host Docker's DNS resolves the container name, and several instances of a service would sit behind one load-balanced address. Planned: bringing service discovery back.
 
 ## Rule 6: every service is scraped
 
-A new service exposes `/actuator/prometheus` (it gets actuator and the Prometheus registry from the root POM) and must be added to **both** `docker/prometheus/prometheus.yml` and `docker/prometheus/prometheus-full.yml` with an `application` label. See [monitoring](../deployment/monitoring.md).
+A new service exposes `/actuator/prometheus` (it gets actuator and the Prometheus registry from the root POM) on a separate management port, `management.server.port: ${MANAGEMENT_PORT:<service port + 1000>}`, with `management.endpoint.health.show-details: never`. Compose does not publish that port. The service must be added to **both** `docker/prometheus/prometheus.yml` (`host.docker.internal:<management port>`) and `docker/prometheus/prometheus-full.yml` (`<service>:<management port>`) with an `application` label. See [monitoring](../deployment/monitoring.md).
 
 ## Rule 7: no secrets in the repository
 
 Dev credentials for local Docker containers (`derechi`/`derechi`, `admin`/`admin`) are fine as defaults in YAML and compose; they never leave the developer's machine. Anything that is a real credential for an external service goes into an environment variable without a committed default.
 
-The values of an environment live in one file at the repository root, read by compose with `--env-file`: `env.local`, `env.test`, `env.prod`. All three are git-ignored, because they hold that environment's credentials; the variable list they follow is in [environment-variables](../deployment/environment-variables.md).
+The values of an environment live in one file at the repository root, read by compose with `--env-file`: `env.local`, `env.test`, `env.prod`. `env.local` is committed and holds dev values only; `env.test` and `env.prod` are git-ignored, because they hold that environment's credentials. The variable list they follow is in [environment-variables](../deployment/environment-variables.md).
 
 Known issue: `Admin-API/src/main/resources/application.yaml` ships a Google Maps API key as the default of `GOOGLE_MAPS_API_KEY`. It should be rotated and the default removed so the key is supplied only through the environment. Until that is done, do not copy the pattern.
 
 ## Where things are set, by module
 
-| Module | Port | Notable settings |
-|---|---|---|
-| Getaway | 8080 | routes, global CORS from `WEB_ORIGIN_PATTERNS`, `files` and `files-upload` routes to MinIO |
-| Client-API | 8082 | GraphQL schema location, GraphiQL enabled, `derechi.countries` |
-| Admin-API | 8083 | OIDC client `derechi-admin`, Caffeine cache `categories`, static resource content hashing, multipart 5 MB, S3 client for MinIO, `derechi.*` |
-| Worker | 8085 | listener retry `max-attempts: 3`, `default-requeue-rejected: false`, queue name |
-| Notification | 8084 | same listener retry, `notify.*` NotifyHub config, queue name |
+| Module | Port | Management port | Notable settings |
+|---|---|---|---|
+| Getaway | 8080 | 9080 | routes, global CORS from `WEB_ORIGIN_PATTERNS`, `files` and `files-upload` routes to MinIO |
+| Client-API | 8082 | 9082 | GraphQL schema location, GraphiQL enabled, `derechi.countries`, `derechi.claims`, `derechi.fourthwall` |
+| Admin-API | 8083 | 9083 | OIDC client `derechi-admin`, Caffeine cache `categories`, static resource content hashing, multipart 5 MB, S3 client for MinIO, `derechi.*` |
+| Worker | 8085 | 9085 | listener retry `max-attempts: 3`, `default-requeue-rejected: false`, queue name, ShedLock on the claims job |
+| Notification | 8084 | 9084 | same listener retry, `notify.*` NotifyHub config, queue name |
 
 All servlet modules set `spring.threads.virtual.enabled: true`, `spring.jpa.open-in-view: false` and `ddl-auto: none`. Copy those three lines into any new module.

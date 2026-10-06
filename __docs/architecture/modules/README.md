@@ -6,7 +6,7 @@ library and the web client.
 | Module | Port | Role | Stack | Talks to |
 |---|---|---|---|---|
 | [DB-Postgres](db-postgres.md) | none | owns the schema and migrations; a library, run by hand | JPA, Liquibase | PostgreSQL |
-| [Getaway](getaway.md) | 8080 | single public entry point, routes to Client-API, Keycloak and MinIO | Spring Cloud Gateway (WebFlux) | Client-API, Keycloak, MinIO |
+| [Getaway](getaway.md) | 8080 | single public entry point, routes to Client-API and MinIO | Spring Cloud Gateway (WebFlux) | Client-API, MinIO |
 | [Client-API](client-api.md) | 8082 | public GraphQL API for the web client | Spring MVC, Spring for GraphQL, JPA | PostgreSQL, RabbitMQ (publishes) |
 | [Admin-API](admin-api.md) | 8083 | administration UI under `/admin/**` | Spring MVC, Thymeleaf, htmx, Spring Security OAuth2 client | PostgreSQL, RabbitMQ (publishes), MinIO, Keycloak |
 | [Worker](worker.md) | 8085 | background worker: finds candidate matches for every new notice | Spring AMQP, JPA, PostGIS, full-text search | PostgreSQL, RabbitMQ (consumes) |
@@ -15,7 +15,10 @@ library and the web client.
 | [Web-Client](web-client.md) | 3000 | public website, not a Maven module | Next.js, pnpm | Getaway (GraphQL, files) |
 
 Ports are the `server.port` values in each `application.yaml` and are the same inside
-Compose; `docker-compose.services.yml` maps them one to one onto the host.
+Compose; `docker-compose.services.yml` maps them one to one onto the host. Actuator of
+each service listens on a separate management port, the service port + 1000 (9080, 9082,
+9083, 9084, 9085; `MANAGEMENT_PORT`), which Compose does not publish; see
+[../observability.md](../observability.md).
 
 ## Start order
 

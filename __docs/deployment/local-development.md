@@ -19,7 +19,7 @@ Maven itself is not required; use the wrapper in the repository root (`./mvnw` o
 docker compose up -d
 ```
 
-This builds the custom PostGIS image on first run (it downloads the Ukrainian hunspell dictionary), then starts PostgreSQL, RabbitMQ, Keycloak, MinIO (plus the `minio-init` job that creates the `derechi-files` bucket and the `rabbitmq-init` job that imports the queues), Mailpit, pgAdmin, Prometheus and Grafana. Wait until `docker compose ps` shows `healthy` for postgres, rabbitmq, minio and mailpit. Keycloak takes the longest; it is ready when `http://localhost:8180` answers.
+This builds the custom PostGIS image on first run (it downloads the Ukrainian hunspell dictionary), then starts PostgreSQL, RabbitMQ, Keycloak, MinIO (plus the `minio-init` job that creates the `derechi-files` bucket and the `rabbitmq-init` job that imports the queues), Mailpit, pgAdmin, Prometheus, Alertmanager and Grafana. Wait until `docker compose ps` shows `healthy` for every long-running container. Keycloak takes the longest; it is ready when it turns `healthy` and `http://localhost:8180` answers.
 
 ## 2. Create the schema
 
@@ -45,6 +45,8 @@ In any order; the Gateway answers `/graphql` once `Client-API` is up.
 
 Start only what you need: `Admin-API` alone is enough for admin UI work (it needs PostgreSQL, Keycloak, MinIO and RabbitMQ from compose). `Worker` and `Notification` are only needed when you exercise the event flows.
 
+Actuator is on a separate management port, the service port + 1000: `http://localhost:9080/actuator/health` for the Gateway, `9082`, `9083`, `9084`, `9085` for the others. The service ports themselves do not serve `/actuator`.
+
 In IDEA, create a Spring Boot run configuration per `*Application` class, or a compound configuration that starts them together. The `Launcher` module exists to start several contexts in one JVM for manual testing but is currently commented out of the reactor; see [launcher](../architecture/modules/launcher.md).
 
 ## 4. Open things
@@ -58,11 +60,12 @@ In IDEA, create a Spring Boot run configuration per `*Application` class, or a c
 | RabbitMQ management | `http://localhost:15672` | `derechi` / `derechi` |
 | Mailpit (outgoing mail) | `http://localhost:8025` | none |
 | pgAdmin | `http://localhost:5050` | `admin@derechi.local` / `admin` |
-| MinIO console | `http://localhost:9001` | `derechi` / `derechi123` |
+| MinIO console | `http://localhost:9001` | `derechi` / `derechi123` (the root account) |
 | Prometheus | `http://localhost:9090` | none |
+| Alertmanager | `http://localhost:9093` | none |
 | Grafana | `http://localhost:3000` | `admin` / `admin` |
 
-Dev users in the `derechi` realm:
+Dev users in the `derechi` realm, imported from `docker/keycloak/dev/derechi-users-0.json` (local compose only, never in production):
 
 | User | Password | Realm roles |
 |---|---|---|
@@ -103,4 +106,4 @@ docker compose down          # remove containers, keep volumes
 docker compose down -v       # remove volumes too: database, Keycloak realm state, MinIO objects, queues
 ```
 
-After `down -v` the realm is re-imported from `docker/keycloak/realms/derechi-realm.json` on the next start and the schema must be re-created with `liquibase:update`.
+After `down -v` the realm is re-imported from `docker/keycloak/realms/derechi-realm.json` (and the dev users from `docker/keycloak/dev`) on the next start and the schema must be re-created with `liquibase:update`.

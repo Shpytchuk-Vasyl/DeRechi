@@ -14,6 +14,10 @@ DB-Postgres/
       003-add-base_categories.postgresql.sql
       004-similar_item.postgresql.sql
       005-country-and-currency.postgresql.sql
+      006-item-claims.postgresql.sql
+      007-claim-payment.postgresql.sql
+      008-claim-unlock-limit.postgresql.sql
+      009-shedlock.postgresql.sql
   liquibase.properties              # for the Maven plugin; not under src/, so it stays out of the jar
 ```
 
@@ -32,7 +36,7 @@ ALTER TABLE place ADD COLUMN country_code VARCHAR(2);
 
 Use the file number as the prefix of the changeset id so ids stay unique across files. Auto-generated ids like `1789398081101-1` (a timestamp) are accepted but rename them when you review the diff.
 
-**The number is the execution order.** `includeAll` sorts by filename. Keep the prefix zero-padded and monotonic: `006-...`. Two files with the same number is a merge-conflict waiting to happen; if two branches both add `006`, the second one to merge renumbers.
+**The number is the execution order.** `includeAll` sorts by filename. Keep the prefix zero-padded and monotonic: `010-...`. Two files with the same number is a merge-conflict waiting to happen; if two branches both add `010`, the second one to merge renumbers.
 
 **Keep the `.postgresql.sql` suffix** on generated and hand-written changesets alike. Liquibase refuses to serialize a diff into a file without the `*.databaseType.sql` shape, and keeping the convention for manual files means the folder reads uniformly.
 

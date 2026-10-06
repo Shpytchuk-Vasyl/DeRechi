@@ -12,7 +12,7 @@ built.
 
 | | |
 |---|---|
-| Port | 8083 |
+| Port | 8083; actuator on the management port 9083 |
 | Entry point | `http://localhost:8083/admin` (`/` redirects there) |
 | Needs | PostgreSQL, RabbitMQ (to publish notifications), MinIO (uploads), Keycloak (login) |
 | Stack | Spring MVC, Thymeleaf, Spring Security OAuth2 client, Spring Data JPA + Hibernate Spatial, Spring AMQP, Spring Cloud AWS S3, Caffeine, libphonenumber, Lombok |
@@ -42,7 +42,8 @@ and the `candidates` fragments that htmx swaps in, `error/` has 403/404/408/500 
 
 ## Security
 
-`SecurityConfig`: everything but `/actuator/**`, static assets and `/error` requires login;
+`SecurityConfig`: everything but `PUBLIC_ACTUATOR` (`/actuator/health`, `/actuator/health/**`,
+`/actuator/info`, `/actuator/prometheus`), static assets and `/error` requires login;
 `oauth2Login()` against the `keycloak` registration; OIDC-initiated logout back to
 `/admin`; `@EnableMethodSecurity`. The Keycloak side is described in
 [../authentication.md](../authentication.md).
@@ -154,6 +155,7 @@ and [../../features/places.md](../../features/places.md).
 | `derechi.storage.bucket`, `public-url`, `max-size` | `derechi-files`, `MINIO_PUBLIC_URL`, 5MB | `MINIO_PUBLIC_URL=http://localhost:8080/files` |
 | `derechi.notifications.exchange`, `routing-key` | `derechi.notifications`, `notification.match.found` | |
 | `spring.cloud.aws.s3.endpoint` | `MINIO_ENDPOINT`, `http://localhost:9000` | `MINIO_ENDPOINT=http://minio:9000` |
+| `spring.cloud.aws.credentials.access-key`, `secret-key` | `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`: the application account `derechi-app` / `derechi-app-secret`, not MinIO's root, see [../file-storage.md](../file-storage.md) | `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY` |
 | `spring.security.oauth2.client.provider.keycloak.*` | `issuer-uri` (default profile) | `SPRING_PROFILES_ACTIVE=docker`, `KEYCLOAK_URI`, `KEYCLOAK_PUBLIC_URI` |
 
 Plus the usual datasource and RabbitMQ settings. Hikari `connection-timeout`,

@@ -34,15 +34,16 @@ root already sets.
 
 **Versions.** `<dependencyManagement>` imports the Spring Cloud, Spring Cloud AWS and
 Testcontainers BOMs and pins the few libraries outside them: `graphql-java-extended-scalars`,
-`language-detector`, the NotifyHub artifacts, springdoc. A module `<dependency>` never carries
+`language-detector`, the NotifyHub artifacts, ShedLock (`shedlock-spring` and
+`shedlock-provider-jdbc-template` at `${shedlock.version}`), springdoc. A module `<dependency>` never carries
 a `<version>`. The two exceptions are not module dependencies at all: the Lombok entry in
 `annotationProcessorPaths` and the Liquibase plugin's extension dependencies. Even those take
 their version from a root property.
 
 **Shared dependencies.** Every module gets `spring-boot-starter-actuator`,
 `micrometer-registry-prometheus` and, in test scope, `spring-boot-starter-actuator-test`.
-That is what makes "every service exposes `/actuator/prometheus`" true without each pom
-saying so.
+That is what makes "every service exposes `/actuator/prometheus`" (on its management port,
+see [observability.md](observability.md)) true without each pom saying so.
 
 **Plugins.** `<pluginManagement>` configures three plugins:
 

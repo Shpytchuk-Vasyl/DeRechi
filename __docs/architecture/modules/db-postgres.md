@@ -20,7 +20,10 @@ DB-Postgres/
 │       ├── 003-add-base_categories.postgresql.sql
 │       ├── 004-similar_item.postgresql.sql
 │       ├── 005-country-and-currency.postgresql.sql
-│       └── 006-item-claims.postgresql.sql
+│       ├── 006-item-claims.postgresql.sql
+│       ├── 007-claim-payment.postgresql.sql
+│       ├── 008-claim-unlock-limit.postgresql.sql
+│       └── 009-shedlock.postgresql.sql     # Worker's ShedLock table, no entity
 ├── liquibase.properties                # for the Maven plugin; not under src/ on purpose
 ├── pom.xml
 └── src/main/
@@ -30,7 +33,8 @@ DB-Postgres/
     │   ├── lost/        LostItem, LostItemHistory, LostItemClaim
     │   ├── found/       FoundItem, FoundItemHistory, FoundItemClaim
     │   ├── detail/      ContactInfo, Place
-    │   └── matching/    SimilarItem, Claim
+    │   ├── matching/    SimilarItem, Claim
+    │   └── payment/     FourthwallOrder
     └── resources/application.yaml      # ddl-auto: validate, liquibase enabled
 ```
 
@@ -87,7 +91,7 @@ PostGIS typmods, array columns, naming strategy, the `DB-Postgres/` prefix on
 | File | Purpose |
 |---|---|
 | `src/main/resources/application.yaml` | `localhost:5432/derechi`, `ddl-auto: validate`, `spring.liquibase.change-log: classpath:changelog/changelog-master.yaml` |
-| `liquibase.properties` | the same JDBC URL, `changeLogFile=changelog/changelog-master.yaml`, `diffChangeLogFile=DB-Postgres/changelog/changes/000-delta.postgresql.sql`, `referenceUrl` with the explicit `CamelCaseToUnderscoresNamingStrategy`, `diffExcludeObjects` for the PostGIS tables |
+| `liquibase.properties` | the same JDBC URL, `changeLogFile=changelog/changelog-master.yaml`, `diffChangeLogFile=DB-Postgres/changelog/changes/000-delta.postgresql.sql`, `referenceUrl` with the explicit `CamelCaseToUnderscoresNamingStrategy`, `diffExcludeObjects` for the PostGIS tables and `shedlock` (a table without an entity, which the diff would otherwise drop) |
 
 ## Tests
 

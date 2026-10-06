@@ -27,7 +27,7 @@ and **not**:
 - `<properties>` with `java.version` (the root sets `<release>26</release>` in `pluginManagement`);
 - a `<version>` on any `<dependency>`.
 
-Versions live in the root, either as a BOM import or a managed version in `<dependencyManagement>` (Spring Cloud, Spring Cloud AWS, Testcontainers, springdoc, NotifyHub, graphql-extended-scalars, language-detector, Liquibase). If a new library is needed, add its version to the root first, then reference it without a version in the module.
+Versions live in the root, either as a BOM import or a managed version in `<dependencyManagement>` (Spring Cloud, Spring Cloud AWS, Testcontainers, springdoc, NotifyHub, graphql-extended-scalars, language-detector, Liquibase, ShedLock via `shedlock.version`). If a new library is needed, add its version to the root first, then reference it without a version in the module.
 
 Two things are not module dependencies and therefore do not go through `<dependencyManagement>`, but still take their version from root `<properties>`: `annotationProcessorPaths` for Lombok in the module's `maven-compiler-plugin`, and the extra `<dependencies>` of `liquibase-maven-plugin` in `DB-Postgres` (`liquibase-hibernate7`, `spring-orm`, `hibernate-spatial`, ...).
 

@@ -74,6 +74,14 @@ Vitest, colocated as `<name>.test.ts`, no browser and no running backend:
 React components are not unit-tested; `async` server components are not supported by
 Vitest, and the screens are checked by hand in `pnpm dev`.
 
+## Errors
+
+Server errors (server components, server actions, route handlers, the proxy) are logged by
+`onRequestError` in `src/instrumentation.ts` as one JSON line each (`"event":"request_error"`, the
+message, digest, stack, method, path without the query string, route), so the hosting's log view
+can filter them. Request headers and the query string stay out: they carry cookies, claim ids and
+search terms. Errors in the browser are not collected.
+
 ## Locales
 
 `en` (fallback), `uk`, `pl`, `de`, `fr`: the same five the admin panel ships, sharing its
@@ -204,7 +212,9 @@ the photo is only stored once the rest of the notice has passed validation.
 
 1. `createUploadTicket` (a server action) checks the type and size, generates the key
    (`items/yyyy/MM/<uuid>.<ext>`, the layout `Admin-API` already writes) and signs a PUT URL
-   with SigV4, see `src/lib/uploads/presign.ts`.
+   with SigV4, see `src/lib/uploads/presign.ts`. It signs with `S3_ACCESS_KEY`/`S3_SECRET_KEY`,
+   MinIO's application account (`derechi-app` locally, created by `minio-init`), which may only
+   read, write and delete objects in the bucket; never the root credentials.
 2. The browser PUTs the file to `http://<gateway>/derechi-files/<key>?X-Amz-…`.
 3. The Gateway's `files-upload` route forwards it to MinIO with **`PreserveHostHeader`** and
    no path rewrite: the signature covers both, so either one would break it. A presigned PUT
@@ -265,6 +275,8 @@ Every page sets its own `canonical` and one `hreflang` per locale (plus `x-defau
 `pageAlternates` in `src/lib/seo.ts`; the layout's alternates alone would point every page at
 the locale's home. Notice pages get a title of the form `Lost: Keys – Lviv, 12 Sept 2026`,
 breadcrumbs and an `ItemPage` in JSON-LD; the home page adds `WebSite` with a `SearchAction`.
+JSON-LD goes into the page only through `jsonLd()` in `src/lib/seo.ts`: `JSON.stringify` leaves `<`
+as is, so a notice titled `</script><script>…` would otherwise run as a script on its own page.
 Pages without a photo inherit the generated card from `[locale]/opengraph-image.tsx`.
 
 Nothing is indexable unless `NODE_ENV` is `production` **and** `NEXT_PUBLIC_SITE_URL` is a public

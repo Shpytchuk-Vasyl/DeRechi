@@ -1,8 +1,7 @@
 # Getaway
 
 The public entry point, a Spring Cloud Gateway on WebFlux. Its job is narrow: get the web
-client's traffic to `Client-API`, expose Keycloak's OIDC endpoints under the same origin,
-and move files in and out of MinIO. It is the one reactive module in the reactor; everything
+client's traffic to `Client-API` and move files in and out of MinIO. It is the one reactive module in the reactor; everything
 else is blocking code on virtual threads.
 
 The module is named `Getaway` (not `Gateway`); the directory, `artifactId`, `<module>` entry
@@ -10,9 +9,9 @@ and `spring.application.name` all use that spelling, and so does the Dockerfile.
 
 | | |
 |---|---|
-| Port | 8080 |
+| Port | 8080; actuator on the management port 9080 |
 | Dependencies | `spring-cloud-starter-gateway-server-webflux`, `spring-cloud-starter-circuitbreaker-reactor-resilience4j` |
-| Needs | Client-API, Keycloak and MinIO reachable at the configured URIs |
+| Needs | Client-API and MinIO reachable at the configured URIs |
 | Code | `GetawayApplication` and `application.yaml`; no Java beyond the main class |
 
 ## Routes
@@ -22,19 +21,24 @@ Defined in `Getaway/src/main/resources/application.yaml` under
 
 | Id | Match | Target | Filters |
 |---|---|---|---|
-| `keycloak` | `/realms/**`, `/resources/**` | `${KEYCLOAK_URI:http://localhost:8180}` | none |
 | `client-api` | `/graphql/**`, `/graphiql/**`, `/api/client/**` | `${CLIENT_API_URI:http://localhost:8082}` | none |
 | `files-upload` | `PUT /${MINIO_BUCKET:derechi-files}/**` | `${MINIO_URI:http://localhost:9000}` | `PreserveHostHeader`, `DedupeResponseHeader` on the CORS headers, `RequestSize` `${MINIO_MAX_UPLOAD:5MB}` |
 | `files` | `GET /files/**` | `${MINIO_URI:http://localhost:9000}` | `RewritePath` `/files/(?<key>.*)` to `/derechi-files/${key}`, `AddResponseHeader Cache-Control: public, max-age=31536000, immutable` |
 
+There used to be a `keycloak` route (`/realms/**`, `/resources/**`) that exposed the realm
+under the gateway's origin. Nothing used it, so it was removed: browsers reach Keycloak
+directly, see [../authentication.md](../authentication.md#gateway-and-keycloak).
+
 Every route is a direct `uri:` from a variable whose default is the local address; compose
-sets the container address (`http://client-api:8082`). There is no service registry: on one
-compose host the container name is resolved by Docker's DNS, and running several
-`Client-API` instances would put a load balancer (or a Kubernetes Service) behind that one
-address rather than bring a registry back.
+sets the container address (`http://client-api:8082`). There is no service registry since
+the `Discovery` module was removed: on one compose host the container name is resolved by
+Docker's DNS, and today several `Client-API` instances would need a load balancer (or a
+Kubernetes Service) behind that one address. Planned: bring service discovery back, with
+`lb://` routes.
 
 `Admin-API` is intentionally not routed here. It is a server-rendered application with its
-own session and OIDC redirect URIs registered for `localhost:8083`; putting it behind the
+own session and OIDC redirect URIs registered for `${DERECHI_ADMIN_URL}` (`localhost:8083`
+locally); putting it behind the
 gateway would only add a second origin to keep in sync with Keycloak.
 
 The upload route and the read route are explained end to end in
@@ -53,20 +57,22 @@ are allowed, all headers, the usual methods, one-hour max age.
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `KEYCLOAK_URI` | `http://localhost:8180` | Keycloak base for the `keycloak` route |
 | `MINIO_URI` | `http://localhost:9000` | MinIO base for both file routes |
 | `MINIO_BUCKET` | `derechi-files` | bucket name used in both file routes |
 | `MINIO_MAX_UPLOAD` | `5MB` | body cap on the presigned PUT |
 | `WEB_ORIGIN_PATTERNS` | localhost and LAN patterns | CORS allow list |
 | `CLIENT_API_URI` | `http://localhost:8082` | target of the `client-api` route |
+| `MANAGEMENT_PORT` | `9080` | actuator port |
 
 In Compose the gateway waits for `minio` to be healthy.
 
 ## Actuator
 
-`health`, `info`, `prometheus` and `gateway`. The last one lists the live routes at
-`/actuator/gateway/routes`, which is the quickest way to confirm that a running gateway has
-the configuration you think it has (a `404` on a PUT to the bucket means it does not).
+`health`, `info` and `prometheus`, on the management port 9080, which Compose does not
+publish; no route forwards `/actuator`. Health shows no details (`show-details: never`).
+The `gateway` endpoint is not exposed any more: it could add and delete routes at runtime.
+To check the routes of a running gateway, read its `application.yaml` and the environment
+of the container (a `404` on a PUT to the bucket means the upload route does not match).
 
 ## Tests
 

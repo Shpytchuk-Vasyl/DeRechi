@@ -69,9 +69,11 @@ Everything that archives goes through Worker, which is why the admin panel also 
 `contact` is the same `ContactInfoInput` as in `ItemInput` (E.164 phone, email, optional
 messengers) with the same validation. Unknown item or token → `NOT_FOUND`.
 
-`ClaimService` (one subclass per kind) locks the item row (`PESSIMISTIC_WRITE`, so two concurrent
-claims cannot both miss each other) and looks for an existing claim on the item with the same phone
-**or** email; if there is one it returns its id with `repeated: true` and publishes nothing.
+`ClaimService` (one subclass per kind) loads the item with a plain `findById` and looks for an
+existing claim on the item with the same phone **or** email. There is no lock today, so two
+concurrent identical claims can both miss each other and both be created. Planned: a
+`PESSIMISTIC_WRITE` lock on the item row (a unique index cannot do it, the phone and email live in
+`contact_info`). If a matching claim exists it returns its id with `repeated: true` and publishes nothing.
 Otherwise it saves a new `contact_info` row, the claim (`token` = random UUID, `created_at`), and
 returns `ClaimDto(id, repeated = false)`. `ClaimEventAspect`, an `@AfterReturning` advice on
 `ClaimService+.claim(..)` and `confirm(..)` with `@Order(0)` (outside the transaction proxy, like
@@ -85,8 +87,8 @@ the outermost one, or the advice would fire before the commit.
 
 ### Worker
 
-The worker gained a second queue, `worker.claims`, bound with `item.*.claimed` and
-`item.*.returned`, and a scheduled job.
+The worker gained a second queue, `worker.claims`, bound with `item.*.claimed`,
+`item.*.returned` and `item.*.paid` (dead letters to `worker.claims.dlq`), and a scheduled job.
 
 - `ClaimListener` dispatches by routing key like `ItemCreatedListener`. `claimed` loads the claim
   with both contact infos and calls `ClaimNotifier.notifyAuthor`; `returned` calls
@@ -109,7 +111,10 @@ The worker gained a second queue, `worker.claims`, bound with `item.*.claimed` a
      this is what keeps the privacy policy's "one year at most" true.
   Each claim is handled in its own transaction, publish first and stamp second: a RabbitMQ outage
   is retried on the next run, and a stamp failure at worst repeats a message inside NotifyHub's
-  one-hour dedup window.
+  one-hour dedup window (in memory, per `Notification` instance, lost on restart).
+  `run()` carries `@SchedulerLock(name = "claim-follow-up")` (ShedLock, JDBC provider, table
+  `shedlock` from migration `009-shedlock`), so with several Worker instances only one runs the job
+  at a time.
 - `ItemArchiver` is the **only** code that archives a notice; the admin "Archive" button sends an
   `ARCHIVE_REQUESTED` event (`item.<kind>.archive`, queue `worker.archive`,
   `ArchiveListener`) and this class runs it, as it does for a confirmed return and for the job.
@@ -189,7 +194,8 @@ The flow:
    (`payment_product_id`, `payment_variant_id`) and the checkout comes back as
    `Claim.checkoutUrl`: `<shop>/cart/checkout?products=<variantId>:1`. The product is created
    outside any transaction; a second click reuses it. Fourthwall allows 5 product creations a
-   minute per shop, so a 429, a 5xx or a timeout surfaces as the GraphQL error
+   minute per shop, so a 429, a 5xx or a timeout (`derechi.fourthwall.connect-timeout` 3s,
+   `read-timeout` 10s) surfaces as the GraphQL error
    `PAYMENT_UNAVAILABLE` and the dialog offers to try again. The product is kept after the payment
    on purpose: it is the shop's record of the sale.
 
@@ -231,11 +237,12 @@ the URL above and the `ORDER_PLACED` event gives `FOURTHWALL_WEBHOOK_SECRET`; th
 
 ## Storage
 
-`lost_item_claim` and `found_item_claim` (migrations `006-item-claims`, `007-claim-payment`), one row per response:
+`lost_item_claim` and `found_item_claim` (migrations `006-item-claims`, `007-claim-payment`,
+`008-claim-unlock-limit`), one row per response:
 `item_id` **or** `archived_item_id` (a `CHECK` makes it exactly one), the claimant's
 `contact_info_id`, `token`, `created_at`, `author_reminded_at`, `claimant_reminded_at`,
-`confirmed_at`, plus `payment_product_id`, `payment_variant_id`, `paid_at` and `contacts_sent_at`
-for the paid phone number. `fourthwall_order` keeps every accepted `ORDER_PLACED` webhook (`order_id`
+`confirmed_at`, plus `payment_product_id`, `payment_variant_id`, `payment_requested_at`, `paid_at`
+and `contacts_sent_at` for the paid phone number. `fourthwall_order` keeps every accepted `ORDER_PLACED` webhook (`order_id`
 unique, friendly id, status, payer email and name, amount, currency, test flag, and the claim it was
 matched to, if any; the link is dropped when the claim is deleted). While the notice is published
 the claim points at it; archiving re-points it at
@@ -253,7 +260,10 @@ notice from the admin panel deletes them at once. The privacy policy on the web 
 - Vercel BotID on the server action, same as for posting a notice.
 - Same phone or email on the same notice: no second message, `repeated: true`.
 - The 1-hour cookie hides the button after a response.
-- NotifyHub dedup drops an exact replay of the same event within an hour.
+- NotifyHub dedup drops an exact replay of the same event within an hour (in memory, per
+  `Notification` instance, so a restart or a second instance lets a replay through).
+- Two identical claims sent at the same moment can both be created: there is no lock on the item
+  row yet (planned, see above).
 
 There is no rate limit per IP yet, and nothing stops a person from sending someone else's phone
 number; the terms say the contacts must be your own, and the message to the author says to
@@ -281,6 +291,6 @@ check details before meeting.
 - `Notification/src/main/java/org/shpytchuk/notification/service/NotificationSender.java`
 - `Admin-API/src/main/java/org/shpytchuk/adminapi/service/AdminItemService.java`, `templates/fragments/dialogs.html`
 - `Web-Client/src/screens/found_lost/claim-card.tsx`, `src/screens/claims/confirm-return.tsx`, `src/app/actions/claim.ts`
-- `DB-Postgres/changelog/changes/006-item-claims.postgresql.sql`, `007-claim-payment.postgresql.sql`
+- `DB-Postgres/changelog/changes/006-item-claims.postgresql.sql`, `007-claim-payment.postgresql.sql`, `008-claim-unlock-limit.postgresql.sql`, `009-shedlock.postgresql.sql`
 - `docker/rabbitmq/definitions.json`
 - Tests: `ClaimControllerTests`, `FourthwallWebhookControllerTests`, `FourthwallClientTest`, `FourthwallOrderPlacedTest`, `FourthwallPropertiesTest`, `ClaimEventAspectTest`, `ClaimNotifierTest`, `ClaimFollowUpJobTest`, `ClaimFollowUpsTests`, `ClaimRepositoryTests` (Worker), `ClaimHandlersTest`, `ItemArchiverTest`, `ItemArchiverTests`, `ArchiveListenerTest`, `PhoneLocalesTest`, `NotificationSenderTest`, `LostItemAdminServiceTest`, `AdminItemServiceTests`, `ItemClaimsTests`, and in `Web-Client` `claim.test.ts`, `claim-schema.test.ts`, `claim-cookie.test.ts`
