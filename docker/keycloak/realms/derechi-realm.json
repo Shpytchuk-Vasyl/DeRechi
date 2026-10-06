@@ -3,12 +3,17 @@
   "displayName": "DeRechi",
   "enabled": true,
   "sslRequired": "external",
-  "registrationAllowed": true,
+  "registrationAllowed": false,
   "registrationEmailAsUsername": true,
   "loginWithEmailAllowed": true,
   "duplicateEmailsAllowed": false,
   "resetPasswordAllowed": true,
   "verifyEmail": false,
+  "bruteForceProtected": true,
+  "permanentLockout": false,
+  "failureFactor": 5,
+  "waitIncrementSeconds": 60,
+  "maxFailureWaitSeconds": 900,
   "accessTokenLifespan": 900,
   "ssoSessionIdleTimeout": 1800,
   "ssoSessionMaxLifespan": 36000,
@@ -106,17 +111,15 @@
       "protocol": "openid-connect",
       "publicClient": true,
       "standardFlowEnabled": true,
-      "directAccessGrantsEnabled": true,
+      "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": false,
       "redirectUris": [
-        "http://localhost:8080/*",
-        "http://localhost:3000/*",
-        "http://localhost:5173/*"
+        "${DERECHI_SITE_URL}/*"
       ],
       "webOrigins": ["+"],
       "attributes": {
         "pkce.code.challenge.method": "S256",
-        "post.logout.redirect.uris": "http://localhost:8080/*##http://localhost:3000/*"
+        "post.logout.redirect.uris": "${DERECHI_SITE_URL}/*"
       },
       "defaultClientScopes": ["openid", "profile", "email", "roles", "web-origins"],
       "optionalClientScopes": ["offline_access"]
@@ -132,12 +135,12 @@
       "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": false,
       "redirectUris": [
-        "http://localhost:8083/*"
+        "${DERECHI_ADMIN_URL}/*"
       ],
       "webOrigins": ["+"],
       "attributes": {
         "pkce.code.challenge.method": "S256",
-        "post.logout.redirect.uris": "http://localhost:8083/*"
+        "post.logout.redirect.uris": "${DERECHI_ADMIN_URL}/*"
       },
       "defaultClientScopes": ["openid", "profile", "email", "roles", "web-origins"],
       "protocolMappers": [
@@ -179,79 +182,13 @@
       "enabled": true,
       "protocol": "openid-connect",
       "publicClient": false,
-      "secret": "dev-secret-change-me",
+      "secret": "${KEYCLOAK_SERVICES_SECRET}",
       "standardFlowEnabled": false,
       "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": true,
       "attributes": {
         "access.token.lifespan": "300"
       }
-    }
-  ],
-  "users": [
-    {
-      "username": "admin@derechi.local",
-      "email": "admin@derechi.local",
-      "emailVerified": true,
-      "firstName": "Dev",
-      "lastName": "Admin",
-      "enabled": true,
-      "credentials": [
-        {
-          "type": "password",
-          "value": "admin",
-          "temporary": false
-        }
-      ],
-      "realmRoles": ["ADMIN_SUPER", "USER"]
-    },
-    {
-      "username": "moderator@derechi.local",
-      "email": "moderator@derechi.local",
-      "emailVerified": true,
-      "firstName": "Dev",
-      "lastName": "Moderator",
-      "enabled": true,
-      "credentials": [
-        {
-          "type": "password",
-          "value": "moderator",
-          "temporary": false
-        }
-      ],
-      "realmRoles": ["ADMIN_EDITOR", "USER"]
-    },
-    {
-      "username": "viewer@derechi.local",
-      "email": "viewer@derechi.local",
-      "emailVerified": true,
-      "firstName": "Dev",
-      "lastName": "Viewer",
-      "enabled": true,
-      "credentials": [
-        {
-          "type": "password",
-          "value": "viewer",
-          "temporary": false
-        }
-      ],
-      "realmRoles": ["ADMIN_VIEWER", "USER"]
-    },
-    {
-      "username": "user@derechi.local",
-      "email": "user@derechi.local",
-      "emailVerified": true,
-      "firstName": "Dev",
-      "lastName": "User",
-      "enabled": true,
-      "credentials": [
-        {
-          "type": "password",
-          "value": "user",
-          "temporary": false
-        }
-      ],
-      "realmRoles": ["USER"]
     }
   ]
 }

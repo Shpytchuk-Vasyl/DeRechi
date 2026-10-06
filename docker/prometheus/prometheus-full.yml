@@ -4,6 +4,14 @@ global:
   external_labels:
     project: derechi
 
+rule_files:
+  - alerts.yml
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["alertmanager:9093"]
+
 scrape_configs:
 
   - job_name: prometheus
@@ -13,15 +21,15 @@ scrape_configs:
   - job_name: derechi-services
     metrics_path: /actuator/prometheus
     static_configs:
-      - targets: ["getaway:8080"]
+      - targets: ["getaway:9080"]
         labels: { application: Getaway }
-      - targets: ["client-api:8082"]
+      - targets: ["client-api:9082"]
         labels: { application: Client-API }
-      - targets: ["admin-api:8083"]
+      - targets: ["admin-api:9083"]
         labels: { application: Admin-API }
-      - targets: ["worker:8085"]
+      - targets: ["worker:9085"]
         labels: { application: Worker }
-      - targets: ["notification:8084"]
+      - targets: ["notification:9084"]
         labels: { application: Notification }
 
   - job_name: keycloak

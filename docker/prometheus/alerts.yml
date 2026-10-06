@@ -1,0 +1,24 @@
+groups:
+  - name: derechi
+    rules:
+
+      - alert: DeadLetters
+        expr: max by (queue) (rabbitmq_queue_messages_ready{queue=~".+\.dlq"}) > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $labels.queue }} holds {{ $value }} dead message(s)"
+          description: >-
+            A consumer rejected these messages after its retries. Read the reason in the service log,
+            fix the cause, then move them back to the main queue: __docs/deployment/monitoring.md,
+            "Dead-letter queues".
+
+      - alert: TargetDown
+        expr: up == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "{{ $labels.job }} {{ $labels.application }} ({{ $labels.instance }}) is down"
+          description: Prometheus has not reached the target for two minutes.

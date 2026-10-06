@@ -9,8 +9,8 @@ describeIf(`presigned upload against ${endpoint}`, () => {
     endpoint: endpoint ?? "",
     bucket: process.env.S3_BUCKET ?? "derechi-files",
     region: process.env.S3_REGION ?? "us-east-1",
-    accessKeyId: process.env.S3_ACCESS_KEY ?? "derechi",
-    secretAccessKey: process.env.S3_SECRET_KEY ?? "derechi123",
+    accessKeyId: process.env.S3_ACCESS_KEY ?? "derechi-app",
+    secretAccessKey: process.env.S3_SECRET_KEY ?? "derechi-app-secret",
     expiresIn: 300,
   }
 

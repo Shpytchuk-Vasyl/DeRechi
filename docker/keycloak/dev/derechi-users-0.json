@@ -1,0 +1,80 @@
+{
+  "realm": "derechi",
+  "users": [
+    {
+      "username": "admin@derechi.local",
+      "email": "admin@derechi.local",
+      "emailVerified": true,
+      "firstName": "Dev",
+      "lastName": "Admin",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "ADMIN_SUPER",
+        "USER"
+      ]
+    },
+    {
+      "username": "moderator@derechi.local",
+      "email": "moderator@derechi.local",
+      "emailVerified": true,
+      "firstName": "Dev",
+      "lastName": "Moderator",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "moderator",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "ADMIN_EDITOR",
+        "USER"
+      ]
+    },
+    {
+      "username": "viewer@derechi.local",
+      "email": "viewer@derechi.local",
+      "emailVerified": true,
+      "firstName": "Dev",
+      "lastName": "Viewer",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "viewer",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "ADMIN_VIEWER",
+        "USER"
+      ]
+    },
+    {
+      "username": "user@derechi.local",
+      "email": "user@derechi.local",
+      "emailVerified": true,
+      "firstName": "Dev",
+      "lastName": "User",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "user",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "USER"
+      ]
+    }
+  ]
+}

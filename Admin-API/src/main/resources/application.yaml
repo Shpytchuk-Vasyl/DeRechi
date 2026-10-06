@@ -57,8 +57,8 @@ spring:
       region:
         static: us-east-1
       credentials:
-        access-key: ${MINIO_ACCESS_KEY:derechi}
-        secret-key: ${MINIO_SECRET_KEY:derechi123}
+        access-key: ${MINIO_ACCESS_KEY:derechi-app}
+        secret-key: ${MINIO_SECRET_KEY:derechi-app-secret}
       s3:
         endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
         path-style-access-enabled: true
@@ -114,13 +114,15 @@ server:
     min-response-size: 1KB
 
 management:
+  server:
+    port: ${MANAGEMENT_PORT:9083}
   endpoints:
     web:
       exposure:
         include: health,info,prometheus
   endpoint:
     health:
-      show-details: always
+      show-details: never
 
 ---
 spring:
