@@ -24,11 +24,14 @@ export const ERROR_KEYS: ReadonlySet<string> = new Set([
   "outOfRange",
   "phoneFormat",
   "emailFormat",
+  "consent",
 ])
 
 export const SOCIAL_MEDIA = ["TELEGRAM", "VIBER", "WHATSAPP"] as const
 
 export const PHONE_PATTERN = /^\+[1-9]\d{7,14}$/
+
+export const consentSchema = z.boolean("consent").refine((value) => value, "consent")
 
 const placeSchema = z.object({
   id: z.string("placeRequired").min(1, "placeRequired").max(255, "tooLong"),
@@ -71,7 +74,7 @@ export function reportSchema(kind: ItemKind) {
 export type ReportValues = z.infer<ReturnType<typeof reportSchema>>
 
 export function draftSchema(kind: ItemKind) {
-  return reportSchema(kind).omit({ image: true })
+  return reportSchema(kind).omit({ image: true }).extend({ consent: consentSchema })
 }
 
 export type ReportDraft = z.infer<ReturnType<typeof draftSchema>>

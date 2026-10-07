@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl"
 import { Controller, useFormContext, useWatch } from "react-hook-form"
 import { useCountry } from "@/components/country/country-provider"
+import { ConsentCheckbox } from "@/components/form/consent-checkbox"
 import { ContactFields } from "@/components/form/contact-fields"
 import { LegalLink } from "@/components/form/legal-link"
 import { Select } from "@/components/pouf/controls"
@@ -73,7 +74,7 @@ export default function StepContacts() {
 
       <ContactFields prefix="contact." />
 
-      <p className="text-muted-foreground text-sm">
+      <ConsentCheckbox>
         {t.rich("consent", {
           terms: (chunks) => (
             <LegalLink href={{ pathname: paths.terms, query: { country: placeCountry } }}>
@@ -86,7 +87,7 @@ export default function StepContacts() {
             </LegalLink>
           ),
         })}
-      </p>
+      </ConsentCheckbox>
     </>
   )
 }

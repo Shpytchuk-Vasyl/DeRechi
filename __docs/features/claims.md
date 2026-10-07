@@ -15,8 +15,10 @@ On a notice page (`Web-Client`, `ClaimCard` in `src/screens/found_lost/claim-car
 
 1. The author's masked phone and email, as before.
 2. A button, "It's mine, send my contacts" on a found notice, "I found it, send my contacts" on a
-   lost one. It expands an inline form: phone, email, messengers, the consent line linking to the
-   terms and the privacy policy for the country of the notice's place.
+   lost one. It expands an inline form: phone, email, messengers, and a required consent checkbox
+   linking to the terms and the privacy policy for the country of the notice's place. The form
+   does not submit until the box is ticked; the checkbox is front-end only (see
+   `Web-Client/README.md`), so Client-API gets no consent field.
 3. After submitting: "We passed your contacts to the finder/owner. They'll get in touch." The
    server action also sets a cookie `DERECHI_CLAIM_<kind>_<id>` for an hour, so reloading the
    page shows the same state instead of the button. A repeat with the same phone or email is

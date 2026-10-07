@@ -1,13 +1,14 @@
 import { useTranslations } from "next-intl"
 import { type ReactNode, type SubmitEventHandler, useEffect } from "react"
 import { useFormContext } from "react-hook-form"
+import { ConsentCheckbox } from "@/components/form/consent-checkbox"
 import { ContactFields } from "@/components/form/contact-fields"
 import { LegalLink } from "@/components/form/legal-link"
 import { Button } from "@/components/pouf/Button"
 import { ErrorNote } from "@/components/pouf/feedback"
 import { SafetyLink, SafetyNote } from "@/components/safety/safety-note"
 import { paths } from "@/i18n/paths"
-import type { ClaimValues } from "@/schema/claim-schema"
+import type { ClaimFormValues } from "@/schema/claim-schema"
 import { useClaimItem } from "./claim-item"
 
 type Props = {
@@ -22,7 +23,7 @@ export default function ClaimForm({ failure, onSubmit, onCancel }: Props) {
   const {
     setFocus,
     formState: { isSubmitting },
-  } = useFormContext<ClaimValues>()
+  } = useFormContext<ClaimFormValues>()
 
   useEffect(() => {
     setFocus("phone")
@@ -36,12 +37,12 @@ export default function ClaimForm({ failure, onSubmit, onCancel }: Props) {
     <form onSubmit={onSubmit} noValidate className="mt-5 flex flex-col gap-5">
       <ContactFields />
 
-      <p className="text-muted-foreground text-sm">
+      <ConsentCheckbox>
         {tc.rich("consent", {
           terms: legal(paths.terms),
           privacy: legal(paths.privacy),
         })}
-      </p>
+      </ConsentCheckbox>
 
       <SafetyNote>
         {tc.rich("safetyNote", { link: (chunks) => <SafetyLink newTab>{chunks}</SafetyLink> })}

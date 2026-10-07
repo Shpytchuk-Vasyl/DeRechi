@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { CLAIM_ID, claimSchema, toContactInput } from "./claim-schema"
+import { CLAIM_ID, claimFormSchema, claimSchema, toContactInput } from "./claim-schema"
 
 const valid = { phone: "+380671234567", email: "olena@example.com", socialMedias: ["TELEGRAM"] }
 
@@ -36,6 +36,21 @@ describe("claimSchema", () => {
   it("accepts only the messengers the API knows", () => {
     expect(claimSchema.safeParse({ ...valid, socialMedias: ["SIGNAL"] }).success).toBe(false)
     expect(claimSchema.safeParse({ phone: valid.phone, email: valid.email }).success).toBe(true)
+  })
+})
+
+describe("claimFormSchema", () => {
+  it("accepts the contacts once the consent box is ticked", () => {
+    expect(claimFormSchema.safeParse({ ...valid, consent: true }).success).toBe(true)
+  })
+
+  it.each([false, undefined])("requires the consent box to be ticked, not %s", (consent) => {
+    const result = claimFormSchema.safeParse({ ...valid, consent })
+    expect(result.success ? undefined : result.error.issues[0]?.message).toBe("consent")
+  })
+
+  it("keeps consent out of what the server action sends to Client-API", () => {
+    expect(claimSchema.parse({ ...valid, consent: true })).not.toHaveProperty("consent")
   })
 })
 

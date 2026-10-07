@@ -131,7 +131,17 @@ describe("draftSchema", () => {
   it("accepts a found notice with no image yet, because the file is still local", () => {
     const { image, ...withoutImage } = valid
     expect(image).toBeTruthy()
-    expect(draftSchema("found").safeParse(withoutImage).success).toBe(true)
+    expect(draftSchema("found").safeParse({ ...withoutImage, consent: true }).success).toBe(true)
+  })
+
+  it.each([false, undefined])("requires the consent box to be ticked, not %s", (consent) => {
+    const { image, ...withoutImage } = valid
+    expect(image).toBeTruthy()
+
+    const result = draftSchema("found").safeParse({ ...withoutImage, consent })
+
+    expect(result.success).toBe(false)
+    expect(result.success ? undefined : result.error.issues[0]?.message).toBe("consent")
   })
 
   it("still enforces everything else", () => {
@@ -140,11 +150,17 @@ describe("draftSchema", () => {
 
     const result = draftSchema("found").safeParse({
       ...withoutImage,
+      consent: true,
       contact: { ...valid.contact, phone: "0671234567" },
     })
 
     expect(result.success).toBe(false)
     expect(result.success ? undefined : result.error.issues[0]?.message).toBe("phoneFormat")
+  })
+
+  it("keeps consent out of what the server action sends to Client-API", () => {
+    const parsed = reportSchema("found").parse({ ...valid, consent: true })
+    expect(parsed).not.toHaveProperty("consent")
   })
 
   it("leaves the image rule to the server schema", () => {

@@ -194,9 +194,15 @@ sentences in every locale and that country's `updated` date. Adding a country to
 page falls back to the first jurisdiction and warns in the server log.
 
 `/terms` and `/privacy` read the viewer's country (cookie, then geo header) on the server, so
-only those two pages are dynamic. `?country=XX` overrides it: the consent line in the notice
+only those two pages are dynamic. `?country=XX` overrides it: the consent checkbox in the notice
 form links to the version for the country of the place being reported, since that is the
-market the notice is posted in. The texts are drafts for a lawyer; the operator and contact
+market the notice is posted in.
+
+Both the notice form and the claim form end with a required consent checkbox
+(`ConsentCheckbox`, field `consent`, error `form.error.consent`): nothing is published or sent
+until it is ticked. It exists only in the client-side schemas (`draftSchema`, `claimFormSchema`);
+the server actions validate with `reportSchema`/`claimSchema`, which strip it, so Client-API
+never sees it. A restored report draft never brings the tick back: consent is given anew. The texts are drafts for a lawyer; the operator and contact
 email they name come from `LEGAL_CONTACT` in `src/content/legal/types.ts`. The privacy policy
 still carries two placeholders, `[EMAIL AND SMS PROVIDER, HOSTING: TO BE ADDED]` and
 `[SIMILAR FINDS NOTIFICATIONS: TO BE DESCRIBED]`, to be written once those are settled.

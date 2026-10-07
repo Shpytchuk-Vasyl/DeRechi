@@ -1,6 +1,6 @@
 import * as RCheck from '@radix-ui/react-checkbox'
 import { cn } from 'cn'
-import { useId } from 'react'
+import { useId, type Ref } from 'react'
 
 interface CheckboxProps {
   checked: boolean | 'indeterminate'
@@ -9,28 +9,44 @@ interface CheckboxProps {
   disabled?: boolean
   label?: string
   hideLabel?: boolean
+  ref?: Ref<HTMLButtonElement>
+  invalid?: boolean
+  describedBy?: string
 }
 
-export function Checkbox({ checked, onChange, id, disabled, label, hideLabel }: CheckboxProps) {
+export function Checkbox({
+  checked,
+  onChange,
+  id,
+  disabled,
+  label,
+  hideLabel,
+  ref,
+  invalid,
+  describedBy,
+}: CheckboxProps) {
   const generatedId = useId()
   const controlId = id ?? generatedId
   return (
     <div className="pouf-checkbox-row inline-flex items-center gap-(--s2)">
       <RCheck.Root
+        ref={ref}
         id={controlId}
         className={cn([
-          'pouf-checkbox w-7 h-7 rounded-[9px] border-none p-0 cursor-pointer cushion-field flex-none',
+          'pouf-checkbox w-7 h-7 rounded-[9px] border-none p-0 cursor-pointer flex-none',
           'flex items-center justify-center',
           '[transition:background_160ms_ease,transform_160ms_cubic-bezier(0.23,1,0.32,1)]',
-          'enabled:active:[transform:scale(0.92)]',
+          'enabled:active:transform-[scale(0.92)]',
           'data-[state=checked]:bg-purple disabled:opacity-50 disabled:cursor-not-allowed',
         ],
-        checked === 'indeterminate' ? 'bg-purple' : 'bg-bg')}
-        // Pass the real tri-state: coercing it to false makes Radix hide the indicator.
+        checked === 'indeterminate' ? 'bg-purple' : 'bg-bg',
+        invalid ? '[box-shadow:var(--pouf-field),inset_0_0_0_3px_var(--orange)]' : 'cushion-field')}
         checked={checked === 'indeterminate' ? 'indeterminate' : checked}
         onCheckedChange={onChange}
         disabled={disabled}
         aria-label={label}
+        aria-invalid={invalid || undefined}
+        aria-describedby={describedBy}
       >
         <RCheck.Indicator className={[
             'pouf-checkbox__indicator text-[var(--on-accent)] flex [&_svg]:w-5 [&_svg]:h-5',

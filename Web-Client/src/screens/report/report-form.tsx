@@ -44,7 +44,13 @@ export default function ReportForm({ kind, categories, maxUploadBytes, compact =
 
   const form = useForm<ReportDraft>({
     resolver: zodResolver(draftSchema(kind)),
-    defaultValues: { title: "", description: "", date: todayIso(), categoryId: "" },
+    defaultValues: {
+      title: "",
+      description: "",
+      date: todayIso(),
+      categoryId: "",
+      consent: false,
+    },
   })
   const {
     handleSubmit,

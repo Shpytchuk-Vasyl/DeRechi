@@ -46,16 +46,20 @@ export function Field({ label, children, hint, error }: FieldProps) {
           {hint}
         </span>
       )}
-      {error && (
-        <span
-          className="pouf-error text-sm font-extrabold text-(--on-accent) bg-orange rounded-xl py-2 px-3 [align-self:start] max-w-full"
-          id={`${id}-err`}
-          role="alert"
-        >
-          {error}
-        </span>
-      )}
+      {error && <FieldError id={`${id}-err`}>{error}</FieldError>}
     </div>
+  )
+}
+
+export function FieldError({ id, children }: { id: string; children: ReactNode }) {
+  return (
+    <span
+      className="pouf-error text-sm font-extrabold text-(--on-accent) bg-orange rounded-xl py-2 px-3 [align-self:start] max-w-full"
+      id={id}
+      role="alert"
+    >
+      {children}
+    </span>
   )
 }
 

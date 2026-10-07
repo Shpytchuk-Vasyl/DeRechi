@@ -6,6 +6,10 @@ import { useTranslations } from "next-intl"
 import { useCallback, useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone"
 import { Button, IconButton } from "@/components/pouf/Button"
+import { FieldError } from "@/components/pouf/Input"
+
+const INPUT_ID = "image-upload"
+const ERROR_ID = `${INPUT_ID}-err`
 
 const ACCEPT = {
   "image/jpeg": [".jpg", ".jpeg"],
@@ -65,58 +69,70 @@ export function ImageUpload({ file, onFileChange, maxBytes, uploading, error }: 
   const problem = error ?? rejected
 
   return (
-    <div
-      {...getRootProps()}
-      className={cn(
-        "cushion-field flex flex-wrap items-center gap-4 rounded-control p-5 transition-colors",
-        isDragActive ? "bg-secondary" : "bg-bg",
-      )}
-    >
-      <input {...getInputProps({ id: "image-upload" })} />
-
-      <div className="relative grid h-21 w-28 place-items-center overflow-hidden rounded-control bg-surface">
-        {preview ? (
-          // biome-ignore lint/performance/noImgElement: object URL, never optimised
-          <img src={preview} alt={t("preview")} className="h-full w-full object-cover" />
-        ) : (
-          <ImagePlus className="size-6 text-muted-foreground" aria-hidden />
+    <div className="flex flex-col gap-2">
+      <div
+        {...getRootProps()}
+        className={cn(
+          "flex flex-wrap items-center gap-4 rounded-control p-5 transition-colors",
+          isDragActive ? "bg-secondary" : "bg-bg",
+          // Same-property utilities don't cascade, so the invalid ring replaces the cushion.
+          problem
+            ? "[box-shadow:var(--pouf-field),inset_0_0_0_3px_var(--orange)]"
+            : "cushion-field",
         )}
-        {uploading ? (
-          <span className="absolute inset-0 grid place-items-center bg-surface/70">
-            <Loader2 className="size-5 animate-spin text-primary" aria-hidden />
-          </span>
-        ) : null}
-      </div>
+      >
+        <input
+          {...getInputProps({
+            id: INPUT_ID,
+            "aria-invalid": problem ? true : undefined,
+            "aria-describedby": problem ? ERROR_ID : undefined,
+          })}
+        />
 
-      <div className="min-w-50 flex-1">
-        <p className="font-semibold">{t("label")}</p>
-        <p className="mt-1 text-muted-foreground text-sm">
-          {t("hint", { size: Math.round(maxBytes / (1024 * 1024)) })}
-        </p>
-        <p aria-live="polite" className="mt-1 text-sm">
-          {uploading ? <span className="text-muted-foreground">{t("uploading")}</span> : null}
-          {!uploading && file && !problem ? (
-            <span className="text-muted-foreground">{file.name}</span>
+        <div className="relative grid h-21 w-28 place-items-center overflow-hidden rounded-control bg-surface">
+          {preview ? (
+            // biome-ignore lint/performance/noImgElement: object URL, never optimised
+            <img src={preview} alt={t("preview")} className="h-full w-full object-cover" />
+          ) : (
+            <ImagePlus className="size-6 text-muted-foreground" aria-hidden />
+          )}
+          {uploading ? (
+            <span className="absolute inset-0 grid place-items-center bg-surface/70">
+              <Loader2 className="size-5 animate-spin text-primary" aria-hidden />
+            </span>
           ) : null}
-          {problem ? <span className="text-destructive">{problem}</span> : null}
-        </p>
-      </div>
+        </div>
 
-      <div className="flex gap-2">
-        <Button variant="quiet" onClick={open}>
-          {t("choose")}
-        </Button>
-        {file ? (
-          <IconButton
-            label={t("remove")}
-            icon={<X className="size-4" />}
-            onClick={() => {
-              setRejected(null)
-              onFileChange(null)
-            }}
-          />
-        ) : null}
+        <div className="min-w-50 flex-1">
+          <p className="font-semibold">{t("label")}</p>
+          <p className="mt-1 text-muted-foreground text-sm">
+            {t("hint", { size: Math.round(maxBytes / (1024 * 1024)) })}
+          </p>
+          <p aria-live="polite" className="mt-1 text-sm">
+            {uploading ? <span className="text-muted-foreground">{t("uploading")}</span> : null}
+            {!uploading && file && !problem ? (
+              <span className="text-muted-foreground">{file.name}</span>
+            ) : null}
+          </p>
+        </div>
+
+        <div className="flex gap-2">
+          <Button variant="quiet" onClick={open}>
+            {t("choose")}
+          </Button>
+          {file ? (
+            <IconButton
+              label={t("remove")}
+              icon={<X className="size-4" />}
+              onClick={() => {
+                setRejected(null)
+                onFileChange(null)
+              }}
+            />
+          ) : null}
+        </div>
       </div>
+      {problem ? <FieldError id={ERROR_ID}>{problem}</FieldError> : null}
     </div>
   )
 }

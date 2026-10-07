@@ -5,7 +5,7 @@ import { FormProvider, useForm } from "react-hook-form"
 import { claimNotice } from "@/app/actions/claim"
 import { Button } from "@/components/pouf/Button"
 import { Heading, Text } from "@/components/pouf/text"
-import { type ClaimValues, claimSchema } from "@/schema/claim-schema"
+import { type ClaimFormValues, claimFormSchema } from "@/schema/claim-schema"
 import ClaimForm from "./claim-form"
 import { useClaimItem } from "./claim-item"
 import type { ClaimSuccess } from "./use-claim"
@@ -21,9 +21,9 @@ export default function ClaimPrompt({ onSent }: Props) {
   const [open, setOpen] = useState(false)
   const [failure, setFailure] = useState<string | null>(null)
 
-  const form = useForm<ClaimValues>({
-    resolver: zodResolver(claimSchema),
-    defaultValues: { phone: "", email: "", socialMedias: [] },
+  const form = useForm<ClaimFormValues>({
+    resolver: zodResolver(claimFormSchema),
+    defaultValues: { phone: "", email: "", socialMedias: [], consent: false },
   })
 
   const send = form.handleSubmit(async (values) => {

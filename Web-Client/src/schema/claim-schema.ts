@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { MAX_EMAIL, PHONE_PATTERN, SOCIAL_MEDIA } from "@/schema/report-schema"
+import { consentSchema, MAX_EMAIL, PHONE_PATTERN, SOCIAL_MEDIA } from "@/schema/report-schema"
 
 export const claimSchema = z.object({
   phone: z.string("phoneFormat").trim().regex(PHONE_PATTERN, "phoneFormat"),
@@ -7,9 +7,13 @@ export const claimSchema = z.object({
   socialMedias: z.array(z.enum(SOCIAL_MEDIA)).optional(),
 })
 
+export const claimFormSchema = claimSchema.extend({ consent: consentSchema })
+
 export const CLAIM_ID = /^[1-9]\d{0,17}$/
 
 export type ClaimValues = z.infer<typeof claimSchema>
+
+export type ClaimFormValues = z.infer<typeof claimFormSchema>
 
 export function toContactInput(values: ClaimValues) {
   return {
