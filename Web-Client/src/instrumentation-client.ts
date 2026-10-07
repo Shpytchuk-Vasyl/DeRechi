@@ -1,6 +1,7 @@
 import { initBotId } from "botid/client/core"
 
-if (window.isSecureContext) {
+// Dev only
+// if (window.isSecureContext) {
   initBotId({
     protect: [
       { path: "/*/report/*", method: "POST" },
@@ -8,4 +9,4 @@ if (window.isSecureContext) {
       { path: "/*/found/*", method: "POST" },
     ],
   })
-}
+// }
