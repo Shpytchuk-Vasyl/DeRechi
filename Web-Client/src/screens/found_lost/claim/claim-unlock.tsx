@@ -16,6 +16,7 @@ import { LinkButton } from "@/components/pouf/link-button"
 import { Blob } from "@/components/pouf/media"
 import { Text } from "@/components/pouf/text"
 import { SafetyNote } from "@/components/safety/safety-note"
+import { useSmsOutageNotice } from "@/hooks/use-sms-outage-notice"
 import { fromIsoInstant } from "@/lib/intl/dates"
 import { useClaimItem } from "./claim-item"
 
@@ -49,6 +50,7 @@ export default function ClaimUnlock({ unlock, onChange }: Props) {
   const [timedOut, setTimedOut] = useState(false)
   const [preparing, setPreparing] = useState(false)
   const [failure, setFailure] = useState<Failure>(null)
+  const warnSmsOutage = useSmsOutageNotice()
   const { claimId, checkoutUrl, paid, contactsSent } = unlock
 
   const prepare = useCallback(async () => {
@@ -105,6 +107,7 @@ export default function ClaimUnlock({ unlock, onChange }: Props) {
     if (next) {
       setTimedOut(false)
       setFailure(null)
+      warnSmsOutage()
     }
   }
 

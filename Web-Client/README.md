@@ -147,6 +147,14 @@ detail tag: the token does not say which notice it closes, so that page stays ca
 hour runs out, and a claim sent from it in the meantime answers `notFound`, which revalidates
 that notice's tag.
 
+### SMS outage notice
+
+`NEXT_PUBLIC_SMS_OUTAGE=true` is a feature flag for when the SMS channel is down: opening the
+claim form and opening the unlock dialog each show a warning toast once ("SMS is temporarily
+unavailable, emails arrive as usual", `smsOutage.*` in the bundles, `useSmsOutageNotice`).
+Nothing is blocked; the claim and the payment go through as usual. Unset or `false` turns it
+off. Being `NEXT_PUBLIC_`, it is inlined at build time, so flipping it needs a rebuild.
+
 ### Unlocking the author's phone number (Fourthwall)
 
 After a claim, the "done" state offers the author's phone number (only the number, not the

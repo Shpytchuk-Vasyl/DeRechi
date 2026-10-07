@@ -451,5 +451,9 @@
     "prizeTitle": "Znajda złapany pięć razy!",
     "prizeText": "Poddaje się: jesteś oficjalnie jego najlepszym przyjacielem. Nikt nie dostrzega zgub szybciej niż ty.",
     "prizeHome": "Wróć do ogłoszeń"
+  },
+  "smsOutage": {
+    "title": "Niestety SMS-y chwilowo nie działają",
+    "text": "Pracujemy nad tym. E-maile docierają jak zwykle."
   }
 }

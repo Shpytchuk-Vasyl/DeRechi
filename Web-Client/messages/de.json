@@ -451,5 +451,9 @@
     "prizeTitle": "Du hast Znaida fünfmal gefangen!",
     "prizeText": "Er gibt auf: Du bist offiziell sein bester Freund. Niemand entdeckt Verlorenes schneller als du.",
     "prizeHome": "Zurück zu den Meldungen"
+  },
+  "smsOutage": {
+    "title": "SMS funktionieren leider vorübergehend nicht",
+    "text": "Wir arbeiten daran. E-Mails kommen wie gewohnt an."
   }
 }

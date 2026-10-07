@@ -451,5 +451,9 @@
     "prizeTitle": "Vous avez attrapé Znaïda cinq fois !",
     "prizeText": "Il abandonne : vous êtes officiellement son meilleur ami. Personne ne repère un objet perdu plus vite que vous.",
     "prizeHome": "Retour aux annonces"
+  },
+  "smsOutage": {
+    "title": "Les SMS sont malheureusement indisponibles pour le moment",
+    "text": "Nous y travaillons. Les e-mails arrivent comme d’habitude."
   }
 }

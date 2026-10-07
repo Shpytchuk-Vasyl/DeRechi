@@ -451,5 +451,9 @@
     "prizeTitle": "You caught Znaida five times!",
     "prizeText": "He gives up: you are officially his best friend. Nobody spots a lost thing faster than you.",
     "prizeHome": "Back to the board"
+  },
+  "smsOutage": {
+    "title": "Sorry, SMS is temporarily unavailable",
+    "text": "We are working on it. Emails arrive as usual."
   }
 }

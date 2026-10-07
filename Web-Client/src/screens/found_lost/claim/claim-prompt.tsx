@@ -5,6 +5,7 @@ import { FormProvider, useForm } from "react-hook-form"
 import { claimNotice } from "@/app/actions/claim"
 import { Button } from "@/components/pouf/Button"
 import { Heading, Text } from "@/components/pouf/text"
+import { useSmsOutageNotice } from "@/hooks/use-sms-outage-notice"
 import { type ClaimFormValues, claimFormSchema } from "@/schema/claim-schema"
 import ClaimForm from "./claim-form"
 import { useClaimItem } from "./claim-item"
@@ -20,6 +21,7 @@ export default function ClaimPrompt({ onSent }: Props) {
   const tc = useTranslations("claim")
   const [open, setOpen] = useState(false)
   const [failure, setFailure] = useState<string | null>(null)
+  const warnSmsOutage = useSmsOutageNotice()
 
   const form = useForm<ClaimFormValues>({
     resolver: zodResolver(claimFormSchema),
@@ -50,7 +52,13 @@ export default function ClaimPrompt({ onSent }: Props) {
           <ClaimForm failure={failure} onSubmit={send} onCancel={() => setOpen(false)} />
         </FormProvider>
       ) : (
-        <Button className="mt-4" onClick={() => setOpen(true)}>
+        <Button
+          className="mt-4"
+          onClick={() => {
+            setOpen(true)
+            warnSmsOutage()
+          }}
+        >
           {kind === "lost" ? tc("sendFound") : tc("sendMine")}
         </Button>
       )}
