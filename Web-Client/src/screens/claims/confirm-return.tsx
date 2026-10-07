@@ -73,7 +73,7 @@ function Shell({
   children: React.ReactNode
 }) {
   return (
-    <Card className="items-center text-center mx-auto max-w-xl">
+    <Card className="mx-auto max-w-xl items-center text-center">
       <CardHeader>
         <Blob icon={icon} tone={tone} size="md" />
         <CardTitle>{title}</CardTitle>

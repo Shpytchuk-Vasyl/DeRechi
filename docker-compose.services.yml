@@ -80,6 +80,7 @@ services:
       <<: *jvm
       CLIENT_API_URI: ${CLIENT_API_URI:-http://client-api:8082}
       MINIO_URI: ${MINIO_URI:-http://minio:9000}
+      MINIO_BUCKET: ${MINIO_BUCKET:-derechi-files}
       WEB_ORIGIN_PATTERNS: ${WEB_ORIGIN_PATTERNS:-http://localhost:[*],http://127.0.0.1:[*],http://192.168.*:[*],http://10.*:[*]}
 
   client-api:
@@ -122,6 +123,8 @@ services:
       KEYCLOAK_URI: ${KEYCLOAK_URI:-http://keycloak:8080}
       KEYCLOAK_PUBLIC_URI: ${KEYCLOAK_PUBLIC_URI:-http://localhost:8180}
       MINIO_ENDPOINT: ${MINIO_ENDPOINT:-http://minio:9000}
+      MINIO_REGION: ${MINIO_REGION:-us-east-1}
+      MINIO_BUCKET: ${MINIO_BUCKET:-derechi-files}
       MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL:-http://localhost:8080/files}
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-derechi-app}
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-derechi-app-secret}

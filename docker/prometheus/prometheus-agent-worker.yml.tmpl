@@ -1,0 +1,24 @@
+global:
+  scrape_interval: 60s
+  external_labels:
+    project: derechi
+
+scrape_configs:
+
+  - job_name: derechi-services
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["worker:9085"]
+        labels: { application: Worker }
+      - targets: ["notification:9084"]
+        labels: { application: Notification }
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: "spring_data_repository_invocations_.*|graphql_datafetcher_.*|.+_active_seconds_.*|tomcat_sessions_.*"
+        action: drop
+
+remote_write:
+  - url: "${GRAFANA_CLOUD_PROM_URL}"
+    basic_auth:
+      username: "${GRAFANA_CLOUD_PROM_USER}"
+      password: "${GRAFANA_CLOUD_TOKEN}"

@@ -55,7 +55,7 @@ spring:
   cloud:
     aws:
       region:
-        static: us-east-1
+        static: ${MINIO_REGION:us-east-1}
       credentials:
         access-key: ${MINIO_ACCESS_KEY:derechi-app}
         secret-key: ${MINIO_SECRET_KEY:derechi-app-secret}
@@ -100,7 +100,7 @@ derechi:
     supported: [UA, PL, DE, FR]
     fallback: UA
   storage:
-    bucket: derechi-files
+    bucket: ${MINIO_BUCKET:derechi-files}
     public-url: ${MINIO_PUBLIC_URL:http://localhost:9000/${derechi.storage.bucket}}
     max-size: 5MB
   notifications:

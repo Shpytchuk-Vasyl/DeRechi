@@ -5,11 +5,8 @@ import { clientEnv } from "@/lib/env/client"
 
 export const SITE_URL = clientEnv.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "")
 
-const LOCAL_HOST =
-  /^(localhost|127\.\d+\.\d+\.\d+|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|.*\.local)$/i
-
-export const INDEXABLE = false; //temporary offline;
-  //process.env.NODE_ENV === "production" && !LOCAL_HOST.test(new URL(SITE_URL).hostname)
+export const INDEXABLE = false //temporary offline;
+//process.env.NODE_ENV === "production" && !LOCAL_HOST.test(new URL(SITE_URL).hostname)
 
 export const STALE_AFTER_DAYS = 30
 

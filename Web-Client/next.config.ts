@@ -33,11 +33,17 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
-      { source: "/:locale/claims/:token", headers: [{ key: "Referrer-Policy", value: "no-referrer" }] },
+      {
+        source: "/:locale/claims/:token",
+        headers: [{ key: "Referrer-Policy", value: "no-referrer" }],
+      },
     ]
   },
   images: {
-    formats: ["image/avif", "image/webp"],
+    formats: ["image/webp"],
+    deviceSizes: [640, 828, 1080, 1920],
+    imageSizes: [256, 384],
+    minimumCacheTTL: 2678400,
     remotePatterns: filesOrigin(),
     dangerouslyAllowLocalIP: !process.env.VERCEL,
   },
