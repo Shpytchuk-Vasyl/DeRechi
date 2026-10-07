@@ -1,41 +1,46 @@
 {
   "code": "DE",
-  "updated": "2026-10-05",
+  "updated": "2026-10-07",
   "texts": {
     "en": {
       "findersLaw": "Under the German Civil Code (BGB), a finder must notify the owner without delay or, if the owner is unknown, report the find to the local lost-property office once the item is worth more than €10 (§ 965). The finder is entitled to a finder's fee of 5% of the value up to €500 and 3% of the value above that (§ 971).",
       "governingLaw": "These terms are governed by the law of Germany. We first offer to settle any dispute by writing to {email}; if that fails, it goes to court under German law.",
       "dataLaw": "This policy follows the General Data Protection Regulation (GDPR) and the German Federal Data Protection Act (BDSG).",
       "rightsBasis": "Under Articles 15–21 of the GDPR you have the right to:",
-      "complaintRight": "complain to the data protection authority of your federal state or to the Federal Commissioner for Data Protection and Freedom of Information (BfDI)."
+      "complaintRight": "complain to the data protection authority of your federal state or to the Federal Commissioner for Data Protection and Freedom of Information (BfDI).",
+      "withdrawalLaw": "In Germany, this follows § 356(5) of the German Civil Code (BGB)."
     },
     "uk": {
       "findersLaw": "За Цивільним кодексом Німеччини (BGB) той, хто знайшов річ, має негайно повідомити власника, а якщо він невідомий і річ коштує понад 10 €, заявити про знахідку в місцеве бюро знахідок (§ 965). Той, хто знайшов, має право на винагороду 5% вартості до 500 € і 3% від суми понад це (§ 971).",
       "governingLaw": "До цих умов застосовується право Німеччини. Спірні питання ми спершу пропонуємо вирішити листуванням на {email}; якщо домовитися не вдасться, то в суді відповідно до законодавства Німеччини.",
       "dataLaw": "Політика відповідає Загальному регламенту про захист даних (GDPR) і Федеральному закону Німеччини про захист даних (BDSG).",
       "rightsBasis": "Відповідно до статей 15–21 GDPR ви маєте право:",
-      "complaintRight": "поскаржитися наглядовому органу з захисту даних вашої федеральної землі або Федеральному уповноваженому з захисту даних і свободи інформації (BfDI)."
+      "complaintRight": "поскаржитися наглядовому органу з захисту даних вашої федеральної землі або Федеральному уповноваженому з захисту даних і свободи інформації (BfDI).",
+      "withdrawalLaw": "У Німеччині це передбачено § 356 абз. 5 Цивільного кодексу Німеччини (BGB)."
     },
     "pl": {
       "findersLaw": "Zgodnie z niemieckim kodeksem cywilnym (BGB) znalazca musi niezwłocznie powiadomić właściciela, a jeśli jest on nieznany i rzecz jest warta ponad 10 €, zgłosić znalezisko w lokalnym biurze rzeczy znalezionych (§ 965). Znalazcy przysługuje znaleźne w wysokości 5% wartości do 500 € i 3% od nadwyżki (§ 971).",
       "governingLaw": "Do niniejszego regulaminu stosuje się prawo niemieckie. Sporne kwestie proponujemy najpierw rozwiązać drogą korespondencji na {email}; jeśli nie uda się dojść do porozumienia, przed sądem zgodnie z prawem niemieckim.",
       "dataLaw": "Polityka jest zgodna z ogólnym rozporządzeniem o ochronie danych (RODO) i niemiecką federalną ustawą o ochronie danych (BDSG).",
       "rightsBasis": "Zgodnie z art. 15–21 RODO masz prawo:",
-      "complaintRight": "złożyć skargę do organu ochrony danych swojego kraju związkowego lub do Federalnego Pełnomocnika ds. Ochrony Danych i Wolności Informacji (BfDI)."
+      "complaintRight": "złożyć skargę do organu ochrony danych swojego kraju związkowego lub do Federalnego Pełnomocnika ds. Ochrony Danych i Wolności Informacji (BfDI).",
+      "withdrawalLaw": "W Niemczech wynika to z § 356 ust. 5 niemieckiego kodeksu cywilnego (BGB)."
     },
     "de": {
       "findersLaw": "Nach dem Bürgerlichen Gesetzbuch (BGB) muss der Finder den Eigentümer unverzüglich benachrichtigen oder, wenn dieser unbekannt ist und die Sache mehr als 10 € wert ist, den Fund beim örtlichen Fundbüro anzeigen (§ 965). Dem Finder steht ein Finderlohn von 5 % des Wertes bis 500 € und 3 % des darüber liegenden Wertes zu (§ 971).",
       "governingLaw": "Auf diese Bedingungen ist deutsches Recht anwendbar. Streitfragen schlagen wir vor, zunächst im Schriftverkehr unter {email} zu klären; gelingt keine Einigung, entscheidet ein Gericht nach deutschem Recht.",
       "dataLaw": "Die Erklärung entspricht der Datenschutz-Grundverordnung (DSGVO) und dem Bundesdatenschutzgesetz (BDSG).",
       "rightsBasis": "Gemäß Artikel 15–21 DSGVO haben Sie das Recht:",
-      "complaintRight": "sich bei der Datenschutzaufsichtsbehörde Ihres Bundeslandes oder beim Bundesbeauftragten für den Datenschutz und die Informationsfreiheit (BfDI) zu beschweren."
+      "complaintRight": "sich bei der Datenschutzaufsichtsbehörde Ihres Bundeslandes oder beim Bundesbeauftragten für den Datenschutz und die Informationsfreiheit (BfDI) zu beschweren.",
+      "withdrawalLaw": "Dies ergibt sich aus § 356 Abs. 5 BGB."
     },
     "fr": {
       "findersLaw": "Selon le Code civil allemand (BGB), la personne qui trouve un objet doit en informer sans délai le propriétaire ou, si celui-ci est inconnu et que l’objet vaut plus de 10 €, déclarer la trouvaille au bureau des objets trouvés local (§ 965). Elle a droit à une récompense de 5 % de la valeur jusqu’à 500 € et de 3 % au-delà (§ 971).",
       "governingLaw": "Ces conditions sont régies par le droit allemand. Nous proposons d’abord de régler tout différend par échange de courriers à {email} ; à défaut d’accord, le litige est porté devant les tribunaux conformément au droit allemand.",
       "dataLaw": "Cette politique est conforme au règlement général sur la protection des données (RGPD) et à la loi fédérale allemande sur la protection des données (BDSG).",
       "rightsBasis": "Conformément aux articles 15 à 21 du RGPD, vous avez le droit :",
-      "complaintRight": "de déposer une plainte auprès de l’autorité de protection des données de votre Land ou du Commissaire fédéral à la protection des données et à la liberté d’information (BfDI)."
+      "complaintRight": "de déposer une plainte auprès de l’autorité de protection des données de votre Land ou du Commissaire fédéral à la protection des données et à la liberté d’information (BfDI).",
+      "withdrawalLaw": "En Allemagne, cela découle du § 356, alinéa 5 du Code civil allemand (BGB)."
     }
   }
 }

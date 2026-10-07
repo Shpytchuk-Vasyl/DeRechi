@@ -3,7 +3,11 @@ import { Link } from "@/i18n/navigation"
 import type { paths } from "@/i18n/paths"
 
 type Props = {
-  href: { pathname: typeof paths.terms | typeof paths.privacy; query: { country: string } }
+  href: {
+    pathname: typeof paths.terms | typeof paths.privacy
+    query: { country: string }
+    hash?: string
+  }
   children: ReactNode
 }
 

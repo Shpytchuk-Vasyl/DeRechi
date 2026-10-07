@@ -1,41 +1,46 @@
 {
   "code": "UA",
-  "updated": "2026-10-05",
+  "updated": "2026-10-07",
   "texts": {
     "en": {
       "findersLaw": "The Civil Code of Ukraine requires a finder to tell the owner, or the police or local council if the owner is unknown (art. 337). The finder is entitled to ask the owner for a reward of up to 20% of the item's value (art. 339).",
       "governingLaw": "These terms are governed by the law of Ukraine. We first offer to settle any dispute by writing to {email}; if that fails, it goes to court under Ukrainian law.",
       "dataLaw": "This policy follows the Law of Ukraine “On Personal Data Protection”.",
       "rightsBasis": "Under Article 8 of the Law of Ukraine “On Personal Data Protection” you have the right to:",
-      "complaintRight": "complain to the Ukrainian Parliament Commissioner for Human Rights."
+      "complaintRight": "complain to the Ukrainian Parliament Commissioner for Human Rights.",
+      "withdrawalLaw": "For consumers in Ukraine, this is governed by the Law of Ukraine “On Consumer Rights Protection”."
     },
     "uk": {
       "findersLaw": "Цивільний кодекс України зобовʼязує того, хто знайшов річ, повідомити про це власника, а якщо він невідомий, то поліцію або орган місцевого самоврядування (ст. 337). Той, хто знайшов, має право вимагати від власника винагороду до 20% вартості речі (ст. 339).",
       "governingLaw": "До цих умов застосовується право України. Спірні питання ми спершу пропонуємо вирішити листуванням на {email}; якщо домовитися не вдасться, то в суді відповідно до законодавства України.",
       "dataLaw": "Політика відповідає Закону України «Про захист персональних даних».",
       "rightsBasis": "Відповідно до статті 8 Закону України «Про захист персональних даних» ви маєте право:",
-      "complaintRight": "поскаржитися Уповноваженому Верховної Ради України з прав людини."
+      "complaintRight": "поскаржитися Уповноваженому Верховної Ради України з прав людини.",
+      "withdrawalLaw": "Для споживачів в Україні це регулює Закон України «Про захист прав споживачів»."
     },
     "pl": {
       "findersLaw": "Kodeks cywilny Ukrainy zobowiązuje znalazcę do powiadomienia właściciela, a jeśli jest on nieznany, policji lub organu samorządu lokalnego (art. 337). Znalazca ma prawo żądać od właściciela nagrody w wysokości do 20% wartości rzeczy (art. 339).",
       "governingLaw": "Do niniejszego regulaminu stosuje się prawo Ukrainy. Sporne kwestie proponujemy najpierw rozwiązać drogą korespondencji na {email}; jeśli nie uda się dojść do porozumienia, przed sądem zgodnie z prawem Ukrainy.",
       "dataLaw": "Polityka jest zgodna z ustawą Ukrainy „O ochronie danych osobowych”.",
       "rightsBasis": "Zgodnie z art. 8 ustawy Ukrainy „O ochronie danych osobowych” masz prawo:",
-      "complaintRight": "złożyć skargę do Rzecznika Praw Człowieka Rady Najwyższej Ukrainy."
+      "complaintRight": "złożyć skargę do Rzecznika Praw Człowieka Rady Najwyższej Ukrainy.",
+      "withdrawalLaw": "Dla konsumentów na Ukrainie kwestię tę reguluje ustawa Ukrainy „O ochronie praw konsumentów”."
     },
     "de": {
       "findersLaw": "Das Zivilgesetzbuch der Ukraine verpflichtet den Finder, den Eigentümer über den Fund zu informieren und, falls dieser unbekannt ist, die Polizei oder die örtliche Selbstverwaltungsbehörde (Art. 337). Der Finder ist berechtigt, vom Eigentümer einen Finderlohn von bis zu 20 % des Wertes des Gegenstands zu verlangen (Art. 339).",
       "governingLaw": "Auf diese Bedingungen ist ukrainisches Recht anwendbar. Streitfragen schlagen wir vor, zunächst im Schriftverkehr unter {email} zu klären; gelingt keine Einigung, entscheidet ein Gericht nach ukrainischem Recht.",
       "dataLaw": "Die Erklärung entspricht dem ukrainischen Gesetz „Über den Schutz personenbezogener Daten“.",
       "rightsBasis": "Gemäß Artikel 8 des ukrainischen Gesetzes „Über den Schutz personenbezogener Daten“ haben Sie das Recht:",
-      "complaintRight": "sich beim Menschenrechtsbeauftragten der Werchowna Rada der Ukraine zu beschweren."
+      "complaintRight": "sich beim Menschenrechtsbeauftragten der Werchowna Rada der Ukraine zu beschweren.",
+      "withdrawalLaw": "Für Verbraucher in der Ukraine regelt dies das ukrainische Gesetz „Über den Schutz der Verbraucherrechte“."
     },
     "fr": {
       "findersLaw": "Le Code civil ukrainien oblige la personne qui a trouvé un objet à en informer le propriétaire ou, si celui-ci est inconnu, la police ou l’organe d’autonomie locale (art. 337). La personne qui a trouvé l’objet a le droit d’exiger du propriétaire une récompense allant jusqu’à 20 % de la valeur de l’objet (art. 339).",
       "governingLaw": "Ces conditions sont régies par le droit ukrainien. Nous proposons d’abord de régler tout différend par échange de courriers à {email} ; à défaut d’accord, le litige est porté devant les tribunaux conformément à la législation ukrainienne.",
       "dataLaw": "Cette politique est conforme à la loi ukrainienne « Sur la protection des données personnelles ».",
       "rightsBasis": "Conformément à l’article 8 de la loi ukrainienne « Sur la protection des données personnelles », vous avez le droit :",
-      "complaintRight": "de déposer une plainte auprès du Commissaire aux droits de l’homme de la Verkhovna Rada d’Ukraine."
+      "complaintRight": "de déposer une plainte auprès du Commissaire aux droits de l’homme de la Verkhovna Rada d’Ukraine.",
+      "withdrawalLaw": "Pour les consommateurs en Ukraine, cette question est régie par la loi ukrainienne « Sur la protection des droits des consommateurs »."
     }
   }
 }

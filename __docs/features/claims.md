@@ -175,7 +175,13 @@ A responder never sees the author's contacts for free; the author decides whom t
 After responding, the notice page offers "Get the author's phone number": a small dialog explains
 that the number will be sent by SMS and email to the contacts the responder gave, that this is how
 the $1 payment keeps the service free, and shows a "Continue to payment" button that opens the
-Fourthwall checkout in a new tab. A claimant can open one checkout a week (`UNLOCK_LIMIT`); the
+Fourthwall checkout in a new tab. That button only works once the responder ticks a box agreeing
+that the number is sent right after payment and acknowledging that this ends the 14-day right of
+withdrawal: for digital content EU consumer law (PL, DE, FR) waives that right only with such
+consent given before payment, so the consent and the acknowledgement are in the label itself and
+not only in the terms; the label links to the terms' section 5 (`#author-number`), which spells out
+the 14 days and the statute per country (`withdrawalLaw` in the jurisdiction files). Unticked, the button shows a field error under the box instead of
+the checkout; the tick is not stored and is cleared whenever the dialog opens. A claimant can open one checkout a week (`UNLOCK_LIMIT`); the
 dialog then says when the next one is possible instead of offering a retry. Only the phone number is sent; the author's email and messengers stay private. The
 dialog polls the claim status every 20 seconds and switches to "payment received" and then "sent to
 your email and phone".

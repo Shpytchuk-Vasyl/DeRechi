@@ -48,11 +48,14 @@
         ]
       },
       {
+        "id": "author-number",
         "heading": "5. The author's phone number",
         "body": [
           "A notice author's phone number is provided only to a person who has responded to that notice and left their own contacts. We pass those contacts to the author before the number is sent. The author therefore already has the contacts of everyone who may receive their number, and people who have not left their contacts cannot receive it.",
           "Getting the number costs $1; it is the only paid feature of DeRechi and the way the service is funded. You pay on a Fourthwall checkout page that opens in a new tab; your card or wallet details go to Fourthwall, never to us. Once Fourthwall confirms the payment, we send the number by SMS and email to the contacts you gave in your response. The author's email is not sent.",
-          "One person can get an author's number at most once a week. The payment is not refunded once the number has been sent."
+          "One person can get an author's number at most once a week.",
+          "If the law gives you, as a consumer, the right to withdraw from a distance purchase within 14 days, for the author's number that right ends once the number has been sent. Before paying, you tick a box by which you expressly agree that the number is sent immediately after payment, before the withdrawal period ends, and acknowledge that you thereby lose your right of withdrawal. {withdrawalLaw} For this reason the payment is not refunded once the number has been sent.",
+          "If the number has not reached you within 24 hours of the payment, write to {email}: we will send it again or refund the payment."
         ]
       },
       {

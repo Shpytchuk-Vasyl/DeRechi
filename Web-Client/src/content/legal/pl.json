@@ -48,11 +48,14 @@
         ]
       },
       {
+        "id": "author-number",
         "heading": "5. Numer telefonu autora",
         "body": [
           "Numer telefonu autora ogłoszenia udostępniamy wyłącznie osobie, która odpowiedziała na to ogłoszenie i zostawiła swoje dane kontaktowe. Dane te przekazujemy autorowi, zanim wyślemy jego numer. Autor ma więc już dane kontaktowe każdego, kto może otrzymać jego numer, a osoby, które nie zostawiły swoich danych, nie mogą go otrzymać.",
           "Uzyskanie numeru kosztuje 1 $; to jedyna płatna funkcja DeRechi, z której utrzymuje się serwis. Płacisz na stronie płatności Fourthwall, która otwiera się w nowej karcie; dane karty lub portfela trafiają do Fourthwall, nie do nas. Gdy Fourthwall potwierdzi płatność, wyślemy numer SMS-em i e-mailem na dane z Twojej odpowiedzi. E-maila autora nie wysyłamy.",
-          "Jedna osoba może uzyskać numer autora najwyżej raz w tygodniu. Płatność nie podlega zwrotowi po wysłaniu numeru."
+          "Jedna osoba może uzyskać numer autora najwyżej raz w tygodniu.",
+          "Jeżeli przepisy przyznają Ci jako konsumentowi prawo odstąpienia od umowy zawartej na odległość w ciągu 14 dni, w przypadku numeru autora prawo to wygasa z chwilą wysłania numeru. Przed płatnością zaznaczasz pole, którym wyraźnie zgadzasz się na wysłanie numeru zaraz po płatności, przed upływem terminu do odstąpienia od umowy, i przyjmujesz do wiadomości, że tracisz w ten sposób prawo odstąpienia od umowy. {withdrawalLaw} Dlatego po wysłaniu numeru płatność nie podlega zwrotowi.",
+          "Jeśli numer nie dotrze do Ciebie w ciągu 24 godzin od płatności, napisz na {email}: wyślemy go ponownie lub zwrócimy płatność."
         ]
       },
       {

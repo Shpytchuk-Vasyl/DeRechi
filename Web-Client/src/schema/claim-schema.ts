@@ -9,6 +9,12 @@ export const claimSchema = z.object({
 
 export const claimFormSchema = claimSchema.extend({ consent: consentSchema })
 
+export const waiverSchema = z.object({
+  consent: z.boolean("waiver").refine((value) => value, "waiver"),
+})
+
+export type WaiverValues = z.infer<typeof waiverSchema>
+
 export const CLAIM_ID = /^[1-9]\d{0,17}$/
 
 export type ClaimValues = z.infer<typeof claimSchema>

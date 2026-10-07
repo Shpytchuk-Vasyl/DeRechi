@@ -1,41 +1,46 @@
 {
   "code": "PL",
-  "updated": "2026-10-05",
+  "updated": "2026-10-07",
   "texts": {
     "en": {
       "findersLaw": "Under the Polish Act on Found Property, a finder who does not know the owner must hand the item over to the district office (starosta) within a reasonable time, or to the police if it is money, securities, valuables or documents. The finder may ask the owner for a finder's fee (znaleźne) of up to 10% of the item's value.",
       "governingLaw": "These terms are governed by the law of Poland. We first offer to settle any dispute by writing to {email}; if that fails, it goes to court under Polish law.",
       "dataLaw": "This policy follows the General Data Protection Regulation (GDPR) and the Polish Personal Data Protection Act.",
       "rightsBasis": "Under Articles 15–21 of the GDPR you have the right to:",
-      "complaintRight": "complain to the President of the Personal Data Protection Office (UODO)."
+      "complaintRight": "complain to the President of the Personal Data Protection Office (UODO).",
+      "withdrawalLaw": "In Poland, this follows Article 38(1)(13) of the Consumer Rights Act of 30 May 2014."
     },
     "uk": {
       "findersLaw": "За польським Законом про знайдені речі той, хто знайшов річ і не знає власника, має в розумний строк передати її до староства (powiat), а гроші, цінні папери, коштовності й документи передати до поліції. Той, хто знайшов, може вимагати від власника винагороду (znaleźne) до 10% вартості речі.",
       "governingLaw": "До цих умов застосовується право Польщі. Спірні питання ми спершу пропонуємо вирішити листуванням на {email}; якщо домовитися не вдасться, то в суді відповідно до законодавства Польщі.",
       "dataLaw": "Політика відповідає Загальному регламенту про захист даних (GDPR) і польському Закону про захист персональних даних.",
       "rightsBasis": "Відповідно до статей 15–21 GDPR ви маєте право:",
-      "complaintRight": "поскаржитися Голові Управління з захисту персональних даних (UODO)."
+      "complaintRight": "поскаржитися Голові Управління з захисту персональних даних (UODO).",
+      "withdrawalLaw": "У Польщі це передбачено ст. 38 ч. 1 п. 13 Закону про права споживачів від 30 травня 2014 року."
     },
     "pl": {
       "findersLaw": "Zgodnie z ustawą o rzeczach znalezionych znalazca, który nie zna właściciela, powinien w rozsądnym terminie oddać rzecz staroście, a pieniądze, papiery wartościowe, kosztowności i dokumenty oddać Policji. Znalazca może żądać od właściciela znaleźnego w wysokości do 10% wartości rzeczy.",
       "governingLaw": "Do niniejszego regulaminu stosuje się prawo polskie. Sporne kwestie proponujemy najpierw rozwiązać drogą korespondencji na {email}; jeśli nie uda się dojść do porozumienia, przed sądem zgodnie z prawem polskim.",
       "dataLaw": "Polityka jest zgodna z ogólnym rozporządzeniem o ochronie danych (RODO) i ustawą o ochronie danych osobowych.",
       "rightsBasis": "Zgodnie z art. 15–21 RODO masz prawo:",
-      "complaintRight": "złożyć skargę do Prezesa Urzędu Ochrony Danych Osobowych (UODO)."
+      "complaintRight": "złożyć skargę do Prezesa Urzędu Ochrony Danych Osobowych (UODO).",
+      "withdrawalLaw": "Wynika to z art. 38 ust. 1 pkt 13 ustawy z dnia 30 maja 2014 r. o prawach konsumenta."
     },
     "de": {
       "findersLaw": "Nach dem polnischen Gesetz über Fundsachen muss ein Finder, der den Eigentümer nicht kennt, die Sache innerhalb angemessener Frist beim Landratsamt (starosta) abgeben, Geld, Wertpapiere, Wertsachen und Dokumente bei der Polizei. Der Finder kann vom Eigentümer einen Finderlohn (znaleźne) von bis zu 10 % des Wertes verlangen.",
       "governingLaw": "Auf diese Bedingungen ist polnisches Recht anwendbar. Streitfragen schlagen wir vor, zunächst im Schriftverkehr unter {email} zu klären; gelingt keine Einigung, entscheidet ein Gericht nach polnischem Recht.",
       "dataLaw": "Die Erklärung entspricht der Datenschutz-Grundverordnung (DSGVO) und dem polnischen Datenschutzgesetz.",
       "rightsBasis": "Gemäß Artikel 15–21 DSGVO haben Sie das Recht:",
-      "complaintRight": "sich beim Präsidenten des Amtes für den Schutz personenbezogener Daten (UODO) zu beschweren."
+      "complaintRight": "sich beim Präsidenten des Amtes für den Schutz personenbezogener Daten (UODO) zu beschweren.",
+      "withdrawalLaw": "In Polen ergibt sich dies aus Art. 38 Abs. 1 Nr. 13 des Verbraucherrechtegesetzes vom 30. Mai 2014."
     },
     "fr": {
       "findersLaw": "Selon la loi polonaise sur les objets trouvés, la personne qui trouve un objet et n’en connaît pas le propriétaire doit le remettre dans un délai raisonnable au bureau du district (starosta), ou à la police s’il s’agit d’argent, de titres, d’objets de valeur ou de documents. Elle peut demander au propriétaire une récompense (znaleźne) pouvant atteindre 10 % de la valeur de l’objet.",
       "governingLaw": "Ces conditions sont régies par le droit polonais. Nous proposons d’abord de régler tout différend par échange de courriers à {email} ; à défaut d’accord, le litige est porté devant les tribunaux conformément au droit polonais.",
       "dataLaw": "Cette politique est conforme au règlement général sur la protection des données (RGPD) et à la loi polonaise sur la protection des données personnelles.",
       "rightsBasis": "Conformément aux articles 15 à 21 du RGPD, vous avez le droit :",
-      "complaintRight": "de déposer une plainte auprès du Président de l’Office de protection des données personnelles (UODO)."
+      "complaintRight": "de déposer une plainte auprès du Président de l’Office de protection des données personnelles (UODO).",
+      "withdrawalLaw": "En Pologne, cela découle de l’article 38, paragraphe 1, point 13 de la loi du 30 mai 2014 sur les droits des consommateurs."
     }
   }
 }

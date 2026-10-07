@@ -196,6 +196,7 @@
       "support": "Your $1 payment helps keep DeRechi free for everyone. You can pay with Apple Pay, Google Pay or a bank card.",
       "safety": "We never send payment links by SMS or messenger.",
       "pay": "Continue to payment",
+      "waiver": "I expressly agree to get the number right after payment and acknowledge that I thereby lose my right of withdrawal. <terms>Details in the terms</terms>",
       "preparing": "Preparing the payment…",
       "unavailable": "Payments are busy right now. Try again in a minute.",
       "failed": "Couldn't prepare the payment. Try again.",
@@ -397,6 +398,7 @@
       "phoneFormat": "Use the international format, for example +380671234567.",
       "emailFormat": "That email address does not look right.",
       "consent": "Tick the box to agree to the terms.",
+      "waiver": "Tick the box to continue to payment.",
       "validation": "Some fields still need fixing.",
       "captcha": "The anti-spam check did not pass. Try again.",
       "failed": "The notice could not be published. Try again in a moment."

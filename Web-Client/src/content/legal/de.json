@@ -48,11 +48,14 @@
         ]
       },
       {
+        "id": "author-number",
         "heading": "5. Telefonnummer des Verfassers",
         "body": [
           "Die Telefonnummer des Verfassers einer Anzeige erhält ausschließlich eine Person, die auf diese Anzeige geantwortet und ihre eigenen Kontaktdaten hinterlassen hat. Diese Kontaktdaten leiten wir an den Verfasser weiter, bevor seine Nummer versandt wird. Der Verfasser verfügt daher bereits über die Kontaktdaten aller, die seine Nummer erhalten können, und Personen, die keine Kontaktdaten hinterlassen haben, können sie nicht erhalten.",
           "Der Erhalt der Nummer kostet 1 $; dies ist die einzige kostenpflichtige Funktion von DeRechi, aus der sich der Dienst finanziert. Sie zahlen auf einer Bezahlseite von Fourthwall, die sich in einem neuen Tab öffnet; Ihre Karten- oder Wallet-Daten gehen an Fourthwall, nie an uns. Sobald Fourthwall uns die Zahlung bestätigt, senden wir die Nummer per SMS und E-Mail an die Kontaktdaten, die Sie in Ihrer Antwort angegeben haben. Die E-Mail-Adresse des Verfassers wird nicht versandt.",
-          "Eine Person kann die Nummer eines Verfassers höchstens einmal pro Woche erhalten. Die Zahlung wird nicht erstattet, sobald die Nummer versandt wurde."
+          "Eine Person kann die Nummer eines Verfassers höchstens einmal pro Woche erhalten.",
+          "Steht Ihnen als Verbraucher ein Recht zu, einen im Fernabsatz geschlossenen Vertrag binnen 14 Tagen zu widerrufen, erlischt dieses Recht für die Nummer des Verfassers, sobald die Nummer versandt wurde. Vor der Zahlung setzen Sie ein Häkchen, mit dem Sie ausdrücklich zustimmen, dass die Nummer sofort nach der Zahlung und damit vor Ablauf der Widerrufsfrist versandt wird, und bestätigen, dass Ihnen bekannt ist, dass Sie dadurch Ihr Widerrufsrecht verlieren. {withdrawalLaw} Deshalb wird die Zahlung nicht erstattet, sobald die Nummer versandt wurde.",
+          "Ist die Nummer nicht innerhalb von 24 Stunden nach der Zahlung bei Ihnen angekommen, schreiben Sie an {email}: Wir senden sie erneut oder erstatten die Zahlung."
         ]
       },
       {

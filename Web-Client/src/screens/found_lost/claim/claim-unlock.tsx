@@ -1,7 +1,11 @@
+import { zodResolver } from "@hookform/resolvers/zod"
 import { CircleCheck, ExternalLink, Phone } from "lucide-react"
 import { useFormatter, useTranslations } from "next-intl"
 import { useCallback, useEffect, useState } from "react"
+import { FormProvider, useForm, useWatch } from "react-hook-form"
 import { claimStatus, unlockClaim } from "@/app/actions/claim"
+import { ConsentCheckbox } from "@/components/form/consent-checkbox"
+import { LegalLink } from "@/components/form/legal-link"
 import { Button } from "@/components/pouf/Button"
 import {
   Dialog,
@@ -17,7 +21,9 @@ import { Blob } from "@/components/pouf/media"
 import { Text } from "@/components/pouf/text"
 import { SafetyNote } from "@/components/safety/safety-note"
 import { useSmsOutageNotice } from "@/hooks/use-sms-outage-notice"
+import { paths } from "@/i18n/paths"
 import { fromIsoInstant } from "@/lib/intl/dates"
+import { type WaiverValues, waiverSchema } from "@/schema/claim-schema"
 import { useClaimItem } from "./claim-item"
 
 export type PhoneUnlock = {
@@ -42,14 +48,22 @@ type Failure =
 const POLL_EVERY_MS = 20_000
 const POLL_FOR_MS = 15 * 60_000
 
+// The section of the terms on the author's number and the right of withdrawal (`id` in the legal JSON).
+const TERMS_SECTION = "author-number"
+
 export default function ClaimUnlock({ unlock, onChange }: Props) {
-  const { kind, itemId } = useClaimItem()
+  const { kind, itemId, countryCode } = useClaimItem()
   const t = useTranslations("claim.unlock")
   const format = useFormatter()
   const [open, setOpen] = useState(false)
   const [timedOut, setTimedOut] = useState(false)
   const [preparing, setPreparing] = useState(false)
   const [failure, setFailure] = useState<Failure>(null)
+  const waiver = useForm<WaiverValues>({
+    resolver: zodResolver(waiverSchema),
+    defaultValues: { consent: false },
+  })
+  const waived = useWatch({ control: waiver.control, name: "consent" })
   const warnSmsOutage = useSmsOutageNotice()
   const { claimId, checkoutUrl, paid, contactsSent } = unlock
 
@@ -107,6 +121,7 @@ export default function ClaimUnlock({ unlock, onChange }: Props) {
     if (next) {
       setTimedOut(false)
       setFailure(null)
+      waiver.reset()
       warnSmsOutage()
     }
   }
@@ -153,10 +168,40 @@ export default function ClaimUnlock({ unlock, onChange }: Props) {
                 <SafetyNote>{t("safety")}</SafetyNote>
 
                 {checkoutUrl ? (
-                  <LinkButton href={checkoutUrl} target="_blank" block>
-                    <ExternalLink className="size-4" aria-hidden />
-                    {t("pay")}
-                  </LinkButton>
+                  <FormProvider {...waiver}>
+                    <form
+                      onSubmit={waiver.handleSubmit(() => {})}
+                      noValidate
+                      className="flex flex-col gap-5"
+                    >
+                      <ConsentCheckbox>
+                        {t.rich("waiver", {
+                          terms: (chunks) => (
+                            <LegalLink
+                              href={{
+                                pathname: paths.terms,
+                                query: { country: countryCode },
+                                hash: TERMS_SECTION,
+                              }}
+                            >
+                              {chunks}
+                            </LegalLink>
+                          ),
+                        })}
+                      </ConsentCheckbox>
+                      {waived ? (
+                        <LinkButton href={checkoutUrl} target="_blank" block>
+                          <ExternalLink className="size-4" aria-hidden />
+                          {t("pay")}
+                        </LinkButton>
+                      ) : (
+                        <Button type="submit" block>
+                          <ExternalLink className="size-4" aria-hidden />
+                          {t("pay")}
+                        </Button>
+                      )}
+                    </form>
+                  </FormProvider>
                 ) : failure?.reason === "limited" ? (
                   <ErrorNote>
                     {failure.retryAfter

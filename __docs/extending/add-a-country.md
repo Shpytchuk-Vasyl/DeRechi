@@ -57,9 +57,9 @@ its currency select and Places restriction automatically; country names
 come from `Intl.DisplayNames`, so no message key is needed there either.
 
 One thing it does need: the legal pages are assembled per jurisdiction. Add
-`Web-Client/src/content/legal/jurisdictions/<CC>.json` with the five country-dependent
-sentences (`findersLaw`, `governingLaw`, `dataLaw`, `rightsBasis`, `complaintRight`) in all
-five locales and the document's `updated` date, and register it in
+`Web-Client/src/content/legal/jurisdictions/<CC>.json` with the six country-dependent
+sentences (`findersLaw`, `governingLaw`, `dataLaw`, `rightsBasis`, `complaintRight`,
+`withdrawalLaw`) in all five locales and the document's `updated` date, and register it in
 `Web-Client/src/content/legal/index.ts`. Without it `/terms`, `/privacy` and the FAQ answer
 about rewards fall back to the first jurisdiction (UA) and the server log warns. The Places
 restriction is capped at five countries on the web side too.

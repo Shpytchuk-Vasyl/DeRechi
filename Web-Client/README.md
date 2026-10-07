@@ -172,6 +172,18 @@ and SMS.
   creation) reads as "try again in a minute" with a retry button; `UNLOCK_LIMIT` (one checkout
   per claimant a week, by phone or email) shows the date from `extensions.retryAfter` and no
   retry button; any other failure gets a generic retry. There is no code to type and no environment variable on this side.
+- Above the payment link sits a required waiver checkbox (`claim.unlock.waiver`): the buyer
+  expressly agrees that the number is sent right after payment and acknowledges losing the right
+  of withdrawal, which EU law (PL, DE, FR) asks for before payment for digital content. Both
+  elements stay in the label itself, because a general "I accept the terms" does not count as
+  that consent; the details (the 14 days, the statute per country, what happens if the number
+  does not arrive) are in the terms, section 5, linked from the label with `#author-number`. Clicking
+  "Continue to payment" unticked does not open the checkout: the box is a small react-hook-form
+  form (`waiverSchema` in `claim-schema.ts`, field `consent`), and submitting it shows
+  `form.error.waiver` under the box, marks it invalid and focuses it. Until the tick the button is
+  a submit button with no `href`, so a middle click or "open in new tab" cannot skip it either. The tick lives only in the dialog's state, is
+  cleared every time the dialog opens and never reaches the server. Creating the checkout on open
+  is not a payment, so it does not wait for the tick. Paid claims show no checkbox.
 - The claim cookie holds the claim id, for 30 days, so a returning claimant sees the button
   and how far the unlock got (`PhoneUnlock`); `useClaim` reads it with `readClaimCookie` and asks
   `claimStatus(kind, itemId, claimId)` on mount, which also returns the `checkoutUrl` once it
@@ -195,11 +207,15 @@ and SMS.
 
 `src/content/legal/<locale>.json` holds the documents; the sentences that depend on the
 country are slots: `{findersLaw}` (finder's duties and fee), `{governingLaw}`, `{dataLaw}`,
-`{rightsBasis}` and `{complaintRight}`. They are filled from
-`src/content/legal/jurisdictions/<CC>.json`, one file per supported country with the five
-sentences in every locale and that country's `updated` date. Adding a country to
+`{rightsBasis}`, `{complaintRight}` and `{withdrawalLaw}` (the consumer law under which the
+right of withdrawal ends for the author's number: the statute and article in PL, DE, FR; only the
+law's name for UA, whose new consumer law with the digital content article is not in force yet).
+They are filled from `src/content/legal/jurisdictions/<CC>.json`, one file per supported country
+with the six sentences in every locale and that country's `updated` date. Adding a country to
 `derechi.countries.supported` therefore means adding one jurisdiction file; without it the
-page falls back to the first jurisdiction and warns in the server log.
+page falls back to the first jurisdiction and warns in the server log. A section may carry an
+`id`, rendered as the `<section>`'s anchor: the terms' section 5 is `author-number`, which the
+unlock dialog's waiver links to.
 
 `/terms` and `/privacy` read the viewer's country (cookie, then geo header) on the server, so
 only those two pages are dynamic. `?country=XX` overrides it: the consent checkbox in the notice
@@ -210,7 +226,10 @@ Both the notice form and the claim form end with a required consent checkbox
 (`ConsentCheckbox`, field `consent`, error `form.error.consent`): nothing is published or sent
 until it is ticked. It exists only in the client-side schemas (`draftSchema`, `claimFormSchema`);
 the server actions validate with `reportSchema`/`claimSchema`, which strip it, so Client-API
-never sees it. A restored report draft never brings the tick back: consent is given anew. The texts are drafts for a lawyer; the operator and contact
+never sees it. A restored report draft never brings the tick back: consent is given anew.
+`ConsentCheckbox` is only the react-hook-form binding: the label with links and the field error
+are the pouf `Checkbox`'s own (`label` takes rich content, `error` renders the standard
+`FieldError`). The unlock dialog's withdrawal waiver uses the same `ConsentCheckbox`. The texts are drafts for a lawyer; the operator and contact
 email they name come from `LEGAL_CONTACT` in `src/content/legal/types.ts`. The privacy policy
 still carries two placeholders, `[EMAIL AND SMS PROVIDER, HOSTING: TO BE ADDED]` and
 `[SIMILAR FINDS NOTIFICATIONS: TO BE DESCRIBED]`, to be written once those are settled.

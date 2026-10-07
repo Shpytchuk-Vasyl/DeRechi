@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest"
-import { CLAIM_ID, claimFormSchema, claimSchema, toContactInput } from "./claim-schema"
+import {
+  CLAIM_ID,
+  claimFormSchema,
+  claimSchema,
+  toContactInput,
+  waiverSchema,
+} from "./claim-schema"
 
 const valid = { phone: "+380671234567", email: "olena@example.com", socialMedias: ["TELEGRAM"] }
 
@@ -51,6 +57,17 @@ describe("claimFormSchema", () => {
 
   it("keeps consent out of what the server action sends to Client-API", () => {
     expect(claimSchema.parse({ ...valid, consent: true })).not.toHaveProperty("consent")
+  })
+})
+
+describe("waiverSchema", () => {
+  it("accepts a ticked waiver", () => {
+    expect(waiverSchema.safeParse({ consent: true }).success).toBe(true)
+  })
+
+  it.each([false, undefined])("requires the waiver box to be ticked, not %s", (consent) => {
+    const result = waiverSchema.safeParse({ consent })
+    expect(result.success ? undefined : result.error.issues[0]?.message).toBe("waiver")
   })
 })
 

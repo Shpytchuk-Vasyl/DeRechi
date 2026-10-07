@@ -3,6 +3,7 @@ import type { Locale } from "@/i18n/routing"
 export type LegalBlock = string | string[]
 
 export type LegalSection = {
+  id?: string
   heading: string
   body: LegalBlock[]
 }
@@ -25,6 +26,7 @@ export type JurisdictionTexts = {
   dataLaw: string
   rightsBasis: string
   complaintRight: string
+  withdrawalLaw: string
 }
 
 export type Jurisdiction = {

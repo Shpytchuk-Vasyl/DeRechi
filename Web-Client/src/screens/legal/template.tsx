@@ -86,7 +86,7 @@ export default async function LegalTemplate({
         </header>
 
         {doc.sections.map((section) => (
-          <section key={section.heading}>
+          <section key={section.heading} id={section.id}>
             <Heading level={2}>{section.heading}</Heading>
             <div className="leading-relaxed">
               {section.body.map((block) => (

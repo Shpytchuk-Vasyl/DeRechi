@@ -25,6 +25,7 @@ export const ERROR_KEYS: ReadonlySet<string> = new Set([
   "phoneFormat",
   "emailFormat",
   "consent",
+  "waiver",
 ])
 
 export const SOCIAL_MEDIA = ["TELEGRAM", "VIBER", "WHATSAPP"] as const

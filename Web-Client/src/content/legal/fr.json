@@ -48,11 +48,14 @@
         ]
       },
       {
+        "id": "author-number",
         "heading": "5. Numéro de téléphone de l’auteur",
         "body": [
           "Le numéro de téléphone de l’auteur d’une annonce n’est fourni qu’à une personne qui a répondu à cette annonce et laissé ses propres coordonnées. Nous transmettons ces coordonnées à l’auteur avant l’envoi de son numéro. L’auteur dispose donc déjà des coordonnées de toute personne susceptible de recevoir son numéro, et une personne qui n’a pas laissé ses coordonnées ne peut pas l’obtenir.",
           "L’obtention du numéro coûte 1 $ ; c’est la seule fonction payante de DeRechi, celle qui finance le service. Vous payez sur une page de paiement Fourthwall qui s’ouvre dans un nouvel onglet ; les données de votre carte ou de votre portefeuille vont à Fourthwall, jamais à nous. Dès que Fourthwall nous confirme le paiement, nous envoyons le numéro par SMS et par e-mail aux coordonnées que vous avez indiquées dans votre réponse. L’adresse e-mail de l’auteur n’est pas envoyée.",
-          "Une même personne ne peut obtenir le numéro d’un auteur qu’une fois par semaine. Le paiement n’est pas remboursé une fois le numéro envoyé."
+          "Une même personne ne peut obtenir le numéro d’un auteur qu’une fois par semaine.",
+          "Si la loi vous accorde, en tant que consommateur, le droit de vous rétracter d’un achat à distance dans un délai de 14 jours, ce droit prend fin, pour le numéro de l’auteur, dès l’envoi du numéro. Avant de payer, vous cochez une case par laquelle vous acceptez expressément que le numéro soit envoyé dès le paiement, avant la fin du délai de rétractation, et reconnaissez perdre ainsi votre droit de rétractation. {withdrawalLaw} C’est pourquoi le paiement n’est pas remboursé une fois le numéro envoyé.",
+          "Si le numéro ne vous est pas parvenu dans les 24 heures suivant le paiement, écrivez à {email} : nous vous le renverrons ou rembourserons le paiement."
         ]
       },
       {
