@@ -192,6 +192,7 @@ services:
       - "9093:9093"     # http://localhost:9093
     volumes:
       - ./docker/alertmanager/alertmanager.yml.tmpl:/etc/alertmanager/alertmanager.yml.tmpl:ro
+      - ./docker/alertmanager/email.tmpl:/etc/alertmanager/email.tmpl:ro
       - alertmanagerdata:/alertmanager
     deploy:
       resources:

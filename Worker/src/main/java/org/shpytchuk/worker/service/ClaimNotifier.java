@@ -36,6 +36,9 @@ public class ClaimNotifier {
     private static final String CLAIMANT_REMINDER_KEY = "claim.reminder.claimant";
     private static final String UNLOCKED_KEY = "claim.unlocked";
 
+    static final int TITLE_MAX_LENGTH = 15;
+    private static final String TITLE_ELLIPSIS = "...";
+
     private static final PhoneNumberUtil PHONE_NUMBERS = PhoneNumberUtil.getInstance();
 
     private final RabbitTemplate rabbitTemplate;
@@ -52,7 +55,7 @@ public class ClaimNotifier {
         publish(CREATED_ROUTING_KEY, author,
                 text(key + ".subject", locale),
                 text(key + ".body", locale,
-                        item.getTitle(),
+                        shortTitle(item.getTitle()),
                         formatPhone(claimant.getPhone()),
                         claimant.getEmail(),
                         messengers(claimant, locale),
@@ -76,7 +79,7 @@ public class ClaimNotifier {
         ContactInfo author = notice.getInfo();
         ContactInfo claimant = claim.getContactInfo();
         Locale locale = PhoneLocales.of(claimant.getPhone());
-        String title = notice.getTitle();
+        String title = shortTitle(notice.getTitle());
 
         publish(UNLOCKED_ROUTING_KEY, claimant,
                 text(UNLOCKED_KEY + ".subject", locale, title),
@@ -88,7 +91,7 @@ public class ClaimNotifier {
 
     private void remind(ItemKind kind, Claim claim, ContactInfo recipient, String key, String deduplicationKey) {
         Locale locale = PhoneLocales.of(recipient.getPhone());
-        String title = claim.getItem().getTitle();
+        String title = shortTitle(claim.getItem().getTitle());
 
         publish(REMINDER_ROUTING_KEY, recipient,
                 text(key + ".subject", locale, title),
@@ -128,6 +131,13 @@ public class ClaimNotifier {
             case VIBER -> "Viber";
             case WHATSAPP -> "WhatsApp";
         };
+    }
+
+    static String shortTitle(String title) {
+        if (title == null || title.codePointCount(0, title.length()) <= TITLE_MAX_LENGTH) {
+            return title;
+        }
+        return title.substring(0, title.offsetByCodePoints(0, TITLE_MAX_LENGTH)).strip() + TITLE_ELLIPSIS;
     }
 
     private static String formatPhone(String phone) {

@@ -3,7 +3,7 @@ groups:
     rules:
 
       - alert: DeadLetters
-        expr: max by (queue) (rabbitmq_queue_messages_ready{queue=~".+\.dlq"}) > 0
+        expr: max by (queue) (rabbitmq_queue_messages_ready{queue=~".+\\.dlq"}) > 0
         for: 1m
         labels:
           severity: warning
@@ -20,5 +20,5 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: "{{ $labels.job }} {{ $labels.application }} ({{ $labels.instance }}) is down"
+          summary: "{{ with $labels.application }}{{ . }}{{ else }}{{ $labels.job }}{{ end }} ({{ $labels.instance }}) is down"
           description: Prometheus has not reached the target for two minutes.

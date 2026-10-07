@@ -71,6 +71,13 @@ Alertmanager (`prom/alertmanager`, port 9093) groups by `alertname`, `queue` and
 
 Alertmanager cannot read environment variables, so the container renders `docker/alertmanager/alertmanager.yml.tmpl` with `awk` at start, replacing every `${VAR}`. Values must not contain a double quote or a backslash. Locally the alerts land in Mailpit (`http://localhost:8025`). In dev mode `TargetDown` fires for every service you did not start in IDEA; that is expected.
 
+The email is `docker/alertmanager/email.tmpl` (subject, HTML and plain-text part). The subject is `[WARNING]` / `[CRITICAL]` plus the alert's `summary`, or `[RESOLVED] <alert> · <queue, service or target>`. The body shows the summary, the description, the queue / service / target and the start time in Kyiv time; a resolution names what recovered and quotes the old summary, because a resolved alert keeps the annotations it fired with. It has no links: neither Alertmanager nor Prometheus has a public URL, and Alertmanager's own links point at the container hostname. To preview a change without sending anything, render it with the alert data in a JSON file:
+
+```bash
+docker run --rm --entrypoint amtool -v "$PWD/docker/alertmanager:/t" -v "$PWD/alert.json:/a.json" prom/alertmanager:v0.34.1 \
+  template render --template.glob=/t/email.tmpl --template.type=html --template.text='{{ template "derechi.email.html" . }}' --template.data=/a.json
+```
+
 To try a rule after editing it: `curl -X POST http://localhost:9090/-/reload`, then `http://localhost:9090/alerts` shows its state and `http://localhost:9093` what Alertmanager holds.
 
 ## Dead-letter queues

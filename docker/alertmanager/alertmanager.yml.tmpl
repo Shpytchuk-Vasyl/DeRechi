@@ -9,6 +9,9 @@ global:
   smtp_auth_password: "${ALERT_SMTP_PASSWORD}"
   smtp_require_tls: ${ALERT_SMTP_REQUIRE_TLS}
 
+templates:
+  - /etc/alertmanager/email.tmpl
+
 route:
   receiver: team
   group_by: [alertname, queue, application]
@@ -21,3 +24,7 @@ receivers:
     email_configs:
       - to: "${ALERT_EMAIL_TO}"
         send_resolved: true
+        headers:
+          Subject: '{{ template "derechi.email.subject" . }}'
+        html: '{{ template "derechi.email.html" . }}'
+        text: '{{ template "derechi.email.text" . }}'

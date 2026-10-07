@@ -1,0 +1,120 @@
+{{/*
+  The alert email of the "team" receiver (alertmanager.yml.tmpl). Alertmanager groups by
+  alertname, queue and application, so one email usually carries one alert.
+
+  No links: the container has no public URL, and Alertmanager's own ("View in Alertmanager",
+  "Source") point at the container hostname. Times are in Kyiv time.
+*/}}
+
+{{ define "derechi.time" }}{{ (. | tz "Europe/Kyiv").Format "02.01.2006 15:04 MST" }}{{ end }}
+
+{{/* A resolved subject names what recovered: the queue, the service, or the scrape target. */}}
+{{ define "derechi.email.subject" -}}
+{{ if eq .Status "firing" -}}
+[{{ with .CommonLabels.severity }}{{ toUpper . }}{{ else }}FIRING{{ end }}] {{ (index .Alerts.Firing 0).Annotations.summary }}{{ if gt (len .Alerts.Firing) 1 }} ({{ len .Alerts.Firing }} alerts){{ end }}
+{{- else -}}
+[RESOLVED] {{ .CommonLabels.alertname }}
+{{- with .CommonLabels.queue }} · {{ . }}{{ else }}{{ with .CommonLabels.application }} · {{ . }}{{ else }}{{ with .CommonLabels.instance }} · {{ . }}{{ end }}{{ end }}{{ end }}
+{{- end }}
+{{- end }}
+
+{{/* The queue, the service, or the scrape target of one alert; called with .Labels. */}}
+{{ define "derechi.alert.target" }}{{ with .queue }}{{ . }}{{ else }}{{ with .application }}{{ . }}{{ else }}{{ .instance }}{{ end }}{{ end }}{{ end }}
+
+{{/*
+  A resolved alert keeps the annotations it fired with, so its summary ("holds 1 dead message")
+  and description ("fix the cause") are stale: the heading names what recovered instead.
+*/}}
+{{ define "derechi.alert.html" -}}
+<tr><td style="padding:20px 24px 0;border-top:1px solid #e5e7eb;">
+  {{- if eq .Status "resolved" }}
+  <div style="font-size:17px;font-weight:600;line-height:1.4;color:#111827;">{{ template "derechi.alert.target" .Labels }} is back to normal</div>
+  <div style="margin-top:8px;font-size:14px;line-height:1.55;color:#6b7280;">Was: {{ .Annotations.summary }}</div>
+  {{- else }}
+  <div style="font-size:17px;font-weight:600;line-height:1.4;color:#111827;">{{ .Annotations.summary }}</div>
+  {{- with .Annotations.description }}
+  <div style="margin-top:8px;font-size:14px;line-height:1.55;color:#374151;">{{ . }}</div>
+  {{- end }}
+  {{- end }}
+</td></tr>
+<tr><td style="padding:12px 24px 20px;">
+  <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:13px;line-height:1.7;color:#374151;">
+    <tr><td style="padding-right:20px;color:#6b7280;">Alert</td><td>{{ .Labels.alertname }}</td></tr>
+    {{- with .Labels.queue }}
+    <tr><td style="padding-right:20px;color:#6b7280;">Queue</td><td>{{ . }}</td></tr>
+    {{- end }}
+    {{- with .Labels.application }}
+    <tr><td style="padding-right:20px;color:#6b7280;">Service</td><td>{{ . }}</td></tr>
+    {{- end }}
+    {{- if not .Labels.queue }}{{ with .Labels.instance }}
+    <tr><td style="padding-right:20px;color:#6b7280;">Target</td><td>{{ . }}</td></tr>
+    {{- end }}{{ end }}
+    <tr><td style="padding-right:20px;color:#6b7280;">Started</td><td>{{ template "derechi.time" .StartsAt }}</td></tr>
+    {{- if eq .Status "resolved" }}
+    <tr><td style="padding-right:20px;color:#6b7280;">Resolved</td><td>{{ template "derechi.time" .EndsAt }}</td></tr>
+    {{- end }}
+  </table>
+</td></tr>
+{{- end }}
+
+{{ define "derechi.email.html" -}}
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head>
+<body style="margin:0;padding:24px 12px;background:#f3f4f6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border:1px solid #e5e7eb;border-radius:8px;">
+<tr>
+  {{- if eq .Status "resolved" }}
+  <td style="padding:14px 24px;background:#15803d;border-radius:7px 7px 0 0;color:#ffffff;font-size:13px;font-weight:600;letter-spacing:.05em;">RESOLVED</td>
+  {{- else if eq .CommonLabels.severity "critical" }}
+  <td style="padding:14px 24px;background:#b91c1c;border-radius:7px 7px 0 0;color:#ffffff;font-size:13px;font-weight:600;letter-spacing:.05em;">CRITICAL · FIRING</td>
+  {{- else }}
+  <td style="padding:14px 24px;background:#b45309;border-radius:7px 7px 0 0;color:#ffffff;font-size:13px;font-weight:600;letter-spacing:.05em;">{{ with .CommonLabels.severity }}{{ toUpper . }}{{ else }}ALERT{{ end }} · FIRING</td>
+  {{- end }}
+</tr>
+{{- range .Alerts.Firing }}
+{{ template "derechi.alert.html" . }}
+{{- end }}
+{{- range .Alerts.Resolved }}
+{{ template "derechi.alert.html" . }}
+{{- end }}
+<tr><td style="padding:14px 24px;border-top:1px solid #e5e7eb;font-size:12px;color:#9ca3af;">DeRechi monitoring · Alertmanager</td></tr>
+</table>
+</td></tr></table>
+</body>
+</html>
+{{- end }}
+
+{{ define "derechi.email.text" -}}
+{{ range .Alerts -}}
+{{ if eq .Status "resolved" -}}
+RESOLVED
+{{ template "derechi.alert.target" .Labels }} is back to normal
+Was: {{ .Annotations.summary }}
+{{ else -}}
+{{ with .Labels.severity }}{{ toUpper . }}{{ else }}ALERT{{ end }} · FIRING
+{{ .Annotations.summary }}
+{{ with .Annotations.description }}
+{{ . }}
+{{ end }}
+{{- end }}
+Alert     {{ .Labels.alertname }}
+{{- with .Labels.queue }}
+Queue     {{ . }}
+{{- end }}
+{{- with .Labels.application }}
+Service   {{ . }}
+{{- end }}
+{{- if not .Labels.queue }}{{ with .Labels.instance }}
+Target    {{ . }}
+{{- end }}{{ end }}
+Started   {{ template "derechi.time" .StartsAt }}
+{{- if eq .Status "resolved" }}
+Resolved  {{ template "derechi.time" .EndsAt }}
+{{- end }}
+
+{{ end -}}
+--
+DeRechi monitoring · Alertmanager
+{{- end }}

@@ -2,12 +2,16 @@ package org.shpytchuk.worker.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.shpytchuk.worker.entity.found.FoundItemClaim;
 import org.shpytchuk.worker.entity.lost.LostItemClaim;
 import org.shpytchuk.worker.entity.detail.ContactInfo.SocialMediaEnum;
 import org.shpytchuk.worker.event.NotificationRequestedEvent;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -38,8 +42,11 @@ class ClaimNotifierTest {
         NotificationRequestedEvent event = published(ClaimNotifier.CREATED_ROUTING_KEY);
         assertThat(event.subject()).isEqualTo("DeRechi: вашу річ знайдено");
         assertThat(event.message())
-                .contains("«Чорний рюкзак»", "+380 50 987 6543", "finder@example.com", "Telegram, WhatsApp",
-                        "http://localhost:3000/uk/lost/1")
+                .startsWith("Вітаємо!\n\nЛюдина повідомляє, що знайшла вашу річ «Чорний рюкзак»")
+                .contains("Контакти:\n  Телефон: +380 50 987 6543\n  Пошта: finder@example.com\n"
+                                + "  Месенджери: Telegram, WhatsApp\n",
+                        "Оголошення: http://localhost:3000/uk/lost/1")
+                .endsWith("\n\n— Команда DeRechi")
                 .doesNotContain("{0}", "{4}", "claim.lost.body");
         assertThat(event.phone()).isEqualTo("+380671234567");
         assertThat(event.email()).isEqualTo("owner@example.com");
@@ -56,10 +63,59 @@ class ClaimNotifierTest {
         NotificationRequestedEvent event = published(ClaimNotifier.CREATED_ROUTING_KEY);
         assertThat(event.subject()).isEqualTo("DeRechi: the owner of the item you found showed up");
         assertThat(event.message())
-                .startsWith("Someone says the item “Black backpack” you found is theirs")
-                .contains("messengers: none", "http://localhost:3000/en/found/2");
+                .startsWith("Hello,\n\nSomeone says the item “Black backpack” you found is theirs")
+                .contains("  Messengers: none\n", "Notice: http://localhost:3000/en/found/2")
+                .endsWith("\n\n— The DeRechi team");
         assertThat(event.phone()).isEqualTo("+16502530000");
         assertThat(event.deduplicationKey()).isEqualTo("claim:found:43");
+    }
+
+    @ParameterizedTest(name = "{0} notice, {2}")
+    @CsvSource({
+            "LOST, +380671234567, uk", "LOST, +48512345678, pl", "LOST, +4930123456, de",
+            "LOST, +33123456789, fr", "LOST, +16502530000, en",
+            "FOUND, +380671234567, uk", "FOUND, +48512345678, pl", "FOUND, +4930123456, de",
+            "FOUND, +33123456789, fr", "FOUND, +16502530000, en"})
+    void writesTheAuthorTheSameLetterInEveryLanguage(ItemKind kind, String authorPhone, String language) {
+        notifier.notifyAuthor(kind, kind == ItemKind.LOST ? lostClaim(authorPhone) : foundClaim(authorPhone));
+
+        String message = published(ClaimNotifier.CREATED_ROUTING_KEY).message();
+        List<String> lines = message.lines().toList();
+
+        // greeting, lead, three indented contact lines, the notice link, the safety advice (lost only), the signature
+        assertThat(lines).as(message).hasSize(kind == ItemKind.LOST ? 14 : 12);
+        assertThat(List.of(lines.get(1), lines.get(3), lines.get(8), lines.get(10), lines.get(lines.size() - 2)))
+                .as(message).allMatch(String::isEmpty);
+        assertThat(lines.subList(5, 8)).as(message).allMatch(line -> line.startsWith("  ") && line.contains(":"));
+        assertThat(lines.get(9)).as(message)
+                .endsWith("http://localhost:3000/%s/%s/%d".formatted(language, kind.segment(), kind == ItemKind.LOST ? 1 : 2));
+        assertThat(lines.getLast()).as(message).startsWith("— ").contains("DeRechi");
+        assertThat(message).as(message).doesNotContain("{", "}", "''");
+    }
+
+    @Test
+    void cutsALongTitleSoTheSmsStaysShort() {
+        FoundItemClaim claim = foundClaim("+380671234567");
+        claim.getItem().setTitle("Чорний шкіряний рюкзак з ноутбуком");
+
+        notifier.notifyAuthor(ItemKind.FOUND, claim);
+
+        NotificationRequestedEvent event = published(ClaimNotifier.CREATED_ROUTING_KEY);
+        assertThat(event.message())
+                .contains("«Чорний шкіряний...»")
+                .doesNotContain("рюкзак з ноутбуком", "розпитайте про деталі");
+    }
+
+    @ParameterizedTest(name = "\"{0}\" -> \"{1}\"")
+    @CsvSource(delimiter = '|', value = {
+            "Чорний рюкзак            | Чорний рюкзак",
+            "Ключі від квартир        | Ключі від кварт...",
+            "Ключі від кварти         | Ключі від кварт...",
+            "Ключі від кварт          | Ключі від кварт",
+            "Синій гаманець і картки  | Синій гаманець...",
+            "😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀 | 😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀..."})
+    void cutsTitlesLongerThanFifteenCharacters(String title, String expected) {
+        assertThat(ClaimNotifier.shortTitle(title)).isEqualTo(expected);
     }
 
     @Test
