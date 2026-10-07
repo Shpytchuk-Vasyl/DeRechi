@@ -25,6 +25,9 @@ spring:
     port: ${RABBITMQ_PORT:5672}
     username: ${RABBITMQ_USER:derechi}
     password: ${RABBITMQ_PASSWORD:derechi}
+    virtual-host: ${RABBITMQ_VHOST:/}
+    ssl:
+      enabled: ${RABBITMQ_SSL:false}
     connection-timeout: 4s
 
   graphql:

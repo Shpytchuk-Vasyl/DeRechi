@@ -38,7 +38,7 @@ The services file uses YAML anchors to avoid repeating the same environment bloc
 |---|---|
 | `x-service-base` | `build` context and `Dockerfile`, `restart: unless-stopped`, memory limit `${SERVICE_MEMORY:-512m}` |
 | `x-postgres` | `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` |
-| `x-rabbitmq` | `RABBITMQ_HOST`, `RABBITMQ_PORT`, `RABBITMQ_USER`, `RABBITMQ_PASSWORD` |
+| `x-rabbitmq` | `RABBITMQ_HOST`, `RABBITMQ_PORT`, `RABBITMQ_USER`, `RABBITMQ_PASSWORD`, `RABBITMQ_VHOST`, `RABBITMQ_SSL` |
 | `x-jvm` | `JAVA_OPTS`, by default a 256 MB heap and SerialGC |
 
 A service merges what it needs: `environment: { <<: [*jvm, *postgres, *rabbitmq], ... }`. A new service copies one of the existing blocks and adds its own build `args: MODULE: <Name>`.

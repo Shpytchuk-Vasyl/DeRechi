@@ -77,6 +77,8 @@ local tool and runs only with the `dev` profile.
 | `RABBITMQ_HOST` | `localhost` | `rabbitmq` | Client-API, Admin-API, Worker, Notification, `rabbitmq-init` | broker host |
 | `RABBITMQ_PORT` | `5672` | `5672` | the services | AMQP port |
 | `RABBITMQ_USER` / `RABBITMQ_PASSWORD` | `derechi` / `derechi` | same | the services, `rabbitmq-init`, and the `rabbitmq` container | broker credentials |
+| `RABBITMQ_VHOST` | `/` | `/` | the services | virtual host; on a hosted broker (CloudAMQP) it is the username, not `/` |
+| `RABBITMQ_SSL` | `false` | `false` | the services | AMQP over TLS; `true` with port `5671` for a hosted broker |
 | `JAVA_OPTS` | empty | `-Xms64m -Xmx256m ... -XX:+UseSerialGC` | every service | JVM flags; the default is laptop sizing |
 | `MANAGEMENT_PORT` | service port + 1000 (`9080`, `9082`, `9083`, `9084`, `9085`) | not set | every service | actuator port (`health`, `info`, `prometheus`); not published by compose, see [monitoring](monitoring.md#actuator) |
 | `SERVICE_MEMORY` | n/a | `512m` | compose | memory limit of each service container |
