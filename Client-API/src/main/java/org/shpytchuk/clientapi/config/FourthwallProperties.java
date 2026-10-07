@@ -23,7 +23,8 @@ public record FourthwallProperties(
         String productDescription,
         Duration connectTimeout,
         Duration readTimeout,
-        ProductImage productImage
+        ProductImage productImage,
+        ProductFile productFile
 ) {
 
     public static final String SIGNATURE_HEADER = "X-Fourthwall-Hmac-SHA256";
@@ -45,6 +46,9 @@ public record FourthwallProperties(
         requirePositive(readTimeout, "read-timeout");
         if (productImage != null && (productImage.url() == null || productImage.url().isBlank())) {
             productImage = null;
+        }
+        if (productFile != null && (productFile.text() == null || productFile.text().isBlank())) {
+            productFile = null;
         }
     }
 
@@ -73,17 +77,40 @@ public record FourthwallProperties(
         return "FourthwallProperties[apiUrl=" + apiUrl + ", shopUrl=" + shopUrl + ", username=" + username
                 + ", password=***, webhookSecret=***, price=" + price
                 + ", connectTimeout=" + connectTimeout + ", readTimeout=" + readTimeout
-                + ", productImage=" + productImage + "]";
+                + ", productImage=" + productImage
+                + ", productFile=" + (productFile == null ? null : productFile.name()) + "]";
+    }
+
+    public record ProductFile(String name, String text) {
+
+        public static final String CONTENT_TYPE = "text/plain";
+
+        public ProductFile {
+            if (text != null && !text.isBlank() && (name == null || name.isBlank())) {
+                throw new IllegalArgumentException("derechi.fourthwall.product-file needs a name");
+            }
+            name = name == null ? null : name.strip();
+        }
+
+        public byte[] bytes() {
+            return text.getBytes(StandardCharsets.UTF_8);
+        }
     }
 
     public record ProductImage(String url, int width, int height) {
 
         public ProductImage {
-            if (url != null && !url.isBlank() && (width <= 0 || height <= 0)) {
-                throw new IllegalArgumentException(
-                        "derechi.fourthwall.product-image needs a positive width and height: " + width + "x" + height);
-            }
             url = url == null ? null : url.strip();
+            if (url != null && !url.isEmpty()) {
+                if (width <= 0 || height <= 0) {
+                    throw new IllegalArgumentException(
+                            "derechi.fourthwall.product-image needs a positive width and height: " + width + "x" + height);
+                }
+                if (!url.startsWith("https://")) {
+                    throw new IllegalArgumentException(
+                            "derechi.fourthwall.product-image.url must be an https URL: " + url);
+                }
+            }
         }
     }
 

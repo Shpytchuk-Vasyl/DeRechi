@@ -61,10 +61,9 @@ public class FourthwallOrderService {
     public void receive(FourthwallOrderPlaced order) {
         Optional<Unpaid> unpaid = transactionTemplate.execute(status -> record(order).map(this::unpaid));
         if (unpaid != null) {
-            unpaid.ifPresent(claim -> {
-                serviceFor(claim.claim()).markPaid(claim.claim().getId());
-                closeSelfCancel(order.orderId(), claim.noticeUrl());
-            });
+            unpaid.ifPresent(pending -> serviceFor(pending.claim()).markPaid(pending.claim().getId())
+                    .filter(paid -> !paid.repeated())
+                    .ifPresent(paid -> closeSelfCancel(order.orderId(), pending.noticeUrl())));
         }
     }
 

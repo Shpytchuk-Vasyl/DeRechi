@@ -76,6 +76,15 @@ derechi:
     connect-timeout: 3s
     read-timeout: 10s
     product-image:
-      url: ${FOURTHWALL_PRODUCT_IMAGE_URL=https://cdn.fourthwall.com/customizations/sh_b033e02b-f108-4a5b-8703-df9ac3ebf4c9/652a19a8-9532-4902-9e55-0574a68ec98a.png}
+      url: ${FOURTHWALL_PRODUCT_IMAGE_URL:https://cdn.fourthwall.com/customizations/sh_b033e02b-f108-4a5b-8703-df9ac3ebf4c9/652a19a8-9532-4902-9e55-0574a68ec98a.png}
       width: 600
       height: 800
+    product-file:
+      name: derechi-phone-number.txt
+      text: |
+        DeRechi: the phone number of the author of the notice
+
+        Thank you for the payment. The phone number of the author of the notice is sent by SMS and email
+        to the contacts you left in your response on DeRechi. Nothing else is shipped.
+
+        If the number has not arrived within 24 hours, you will get the payment back.

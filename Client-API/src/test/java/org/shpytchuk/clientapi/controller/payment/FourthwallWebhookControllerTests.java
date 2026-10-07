@@ -183,6 +183,8 @@ class FourthwallWebhookControllerTests extends AbstractGraphQlTests {
 
         assertThat(orderRepository.findByLostItemClaimIdOrderByIdAsc(claim.getId())).hasSize(2);
         verify(rabbitTemplate, times(1)).convertAndSend(eq(EXCHANGE), eq("item.lost.paid"), any(ClaimEvent.class));
+        verify(fourthwall).markDownloaded(eq("ord-1"), anyString());
+        verify(fourthwall, never()).markDownloaded(eq("ord-2"), anyString());
     }
 
     @Test

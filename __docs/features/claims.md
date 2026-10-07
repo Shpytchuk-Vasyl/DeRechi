@@ -202,11 +202,19 @@ The flow:
    set, `POST /products/{id}/images` with that media-library file as the checkout thumbnail. Create
    takes no images, but this call answers with the full product, so the variant id comes from it;
    only without an image (or when attaching failed) does `GET /products/{id}` read it. Two calls
-   either way. The image (600x800, the shop's 3:4 product photos) is uploaded once per shop through
+   either way, plus three for the product file below. The image (600x800, the shop's 3:4 product photos) is uploaded once per shop through
    the media library API (`POST /media/upload-url`, `PUT` the bytes, `POST /media/images`). The URL
    to configure is the `uri` that `GET /media/images` lists on `cdn.fourthwall.com`, not the upload's
    `fileUrl`, which points to a temporary bucket. The image is decoration: if attaching it fails, the product is sold without it and
-   the log warns. Both ids are stored on the claim
+   the log warns. Then, if `derechi.fourthwall.product-file.text` is set (YAML only), the product gets
+   that text as its downloadable file (`product-file.name`, `text/plain`): `POST
+   /products/{id}/digital-files/upload-url`, `PUT` the bytes to the signed Google Cloud Storage URL,
+   `POST /products/{id}/digital-files`. The `PUT` goes through a second `RestClient` without the
+   Basic auth, so the API credentials never reach Google, and takes the URL as a `URI`, since a
+   string would be encoded again and break the signature. Fourthwall lets the buyer cancel a digital
+   order for 30 days until its file is downloaded; the file gives the buyer something to download.
+   It only closes the cancel once the buyer actually downloads it. A failure warns and the product is
+   sold without a file, like the image. Both ids are stored on the claim
    (`payment_product_id`, `payment_variant_id`) and the checkout comes back as
    `Claim.checkoutUrl`: `<shop>/cart/checkout?products=<variantId>:1`. The product is created
    outside any transaction; a second click reuses it. Fourthwall allows 5 product creations a
@@ -242,11 +250,15 @@ The flow:
    Right after, `FourthwallClient.markDownloaded` calls `PUT /order/{id}/downloaded` with
    `defaultFileUrl` = the notice page (`derechi.site.url` + `/<kind>/<itemId>`, the site root for an
    archived notice). Fourthwall lets the buyer cancel a digital order, and get the money back, for
-   30 days unless its file was downloaded; ours has no file, so without this the number could be
-   bought and refunded. The call creates a "download" with that link and marks it downloaded, which
-   closes the self-service cancel; the shop can still cancel from the dashboard (the terms promise
-   a refund when the number has not arrived within 24 hours). A failure only logs a warning, the
-   payment is recorded either way. The API user needs `order_write`.
+   30 days unless its file was downloaded, so without this the number could be bought and refunded.
+   With a product file the call marks that file downloaded (`defaultFileUrl` is used only when the
+   order has no download), which closes the self-service cancel; the shop can still cancel from the
+   dashboard (the terms promise a refund when the number has not arrived within 24 hours). A failure
+   only logs a warning, the payment is recorded either way. The API user needs `order_write`, and the
+   Basic auth API user does NOT have it: Fourthwall answers `403` with
+   `WWW-Authenticate: Bearer error="insufficient_scope"`, for any order id, although the docs say the
+   API user has unrestricted access. Until Fourthwall grants it, the product file is what closes the
+   cancel.
 5. `Worker` (`PaidHandler` on `worker.claims`) sends the author's phone number to the responder,
    `notification.claim.unlocked`, in the responder's language, dedup `claim:<kind>:<id>:unlocked`,
    and stamps `contacts_sent_at`. If the notice was archived in the meantime the number comes from
