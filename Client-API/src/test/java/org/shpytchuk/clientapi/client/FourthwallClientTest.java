@@ -32,6 +32,8 @@ class FourthwallClientTest {
              "variants":[{"id":"var-1","name":"Author's phone number (lost-42)","unitPrice":{"value":1,"currency":"USD"}}]}
             """;
 
+    private static final String IMAGE = "https://cdn.fourthwall.com/media/derechi-product.png";
+
     private MockRestServiceServer server;
     private FourthwallClient client;
 
@@ -39,8 +41,19 @@ class FourthwallClientTest {
     void setUp() {
         RestClient.Builder builder = RestClient.builder();
         server = MockRestServiceServer.bindTo(builder).build();
-        client = FourthwallClient.of(builder, new FourthwallProperties(API + "/", "https://derechi-shop.fourthwall.com",
-                "api-user", "api-password", "secret", BigDecimal.ONE, "Author's phone number (%s)", "Sent after the payment.", Duration.ofSeconds(3), Duration.ofSeconds(10)));
+        client = FourthwallClient.of(builder, properties(null));
+    }
+
+    private static FourthwallProperties properties(FourthwallProperties.ProductImage image) {
+        return new FourthwallProperties(API + "/", "https://derechi-shop.fourthwall.com",
+                "api-user", "api-password", "secret", BigDecimal.ONE, "Author's phone number (%s)", "Sent after the payment.",
+                Duration.ofSeconds(3), Duration.ofSeconds(10), image);
+    }
+
+    private FourthwallClient clientWithImage() {
+        RestClient.Builder builder = RestClient.builder();
+        server = MockRestServiceServer.bindTo(builder).build();
+        return FourthwallClient.of(builder, properties(new FourthwallProperties.ProductImage(IMAGE, 600, 800)));
     }
 
     @Test
@@ -65,6 +78,41 @@ class FourthwallClientTest {
                 BigDecimal.ONE);
 
         assertThat(product).isEqualTo(new FourthwallProduct("prod-1", "var-1"));
+        server.verify();
+    }
+
+    @Test
+    void attachesTheConfiguredImageAndTakesTheVariantFromItsAnswerWithoutAGet() {
+        FourthwallClient client = clientWithImage();
+        server.expect(requestTo(API + "/products"))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withStatus(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON)
+                        .body("{\"productId\":\"prod-1\",\"images\":[]}"));
+        server.expect(requestTo(API + "/products/prod-1/images"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(header("Authorization", "Basic YXBpLXVzZXI6YXBpLXBhc3N3b3Jk"))
+                .andExpect(jsonPath("$.images[0].url").value(IMAGE))
+                .andExpect(jsonPath("$.images[0].width").value(600))
+                .andExpect(jsonPath("$.images[0].height").value(800))
+                .andRespond(withStatus(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(PRODUCT));
+
+        assertThat(client.createDigitalProduct("n", "d", BigDecimal.ONE)).isEqualTo(new FourthwallProduct("prod-1", "var-1"));
+        server.verify();
+    }
+
+    @Test
+    void sellsTheProductWithoutAnImageAndReadsTheVariantWhenAttachingItFails() {
+        FourthwallClient client = clientWithImage();
+        server.expect(requestTo(API + "/products"))
+                .andRespond(withStatus(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON)
+                        .body("{\"productId\":\"prod-1\",\"images\":[]}"));
+        server.expect(requestTo(API + "/products/prod-1/images"))
+                .andRespond(withStatus(HttpStatus.FORBIDDEN).contentType(MediaType.APPLICATION_JSON)
+                        .body("{\"code\":\"OFFER_MODIFICATION_FORBIDDEN_ERROR\"}"));
+        server.expect(requestTo(API + "/products/prod-1"))
+                .andRespond(withSuccess(PRODUCT, MediaType.APPLICATION_JSON));
+
+        assertThat(client.createDigitalProduct("n", "d", BigDecimal.ONE)).isEqualTo(new FourthwallProduct("prod-1", "var-1"));
         server.verify();
     }
 

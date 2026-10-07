@@ -22,7 +22,8 @@ public record FourthwallProperties(
         String productName,
         String productDescription,
         Duration connectTimeout,
-        Duration readTimeout
+        Duration readTimeout,
+        ProductImage productImage
 ) {
 
     public static final String SIGNATURE_HEADER = "X-Fourthwall-Hmac-SHA256";
@@ -42,6 +43,9 @@ public record FourthwallProperties(
         }
         requirePositive(connectTimeout, "connect-timeout");
         requirePositive(readTimeout, "read-timeout");
+        if (productImage != null && (productImage.url() == null || productImage.url().isBlank())) {
+            productImage = null;
+        }
     }
 
     public String checkoutUrl(String variantId) {
@@ -68,7 +72,19 @@ public record FourthwallProperties(
     public String toString() {
         return "FourthwallProperties[apiUrl=" + apiUrl + ", shopUrl=" + shopUrl + ", username=" + username
                 + ", password=***, webhookSecret=***, price=" + price
-                + ", connectTimeout=" + connectTimeout + ", readTimeout=" + readTimeout + "]";
+                + ", connectTimeout=" + connectTimeout + ", readTimeout=" + readTimeout
+                + ", productImage=" + productImage + "]";
+    }
+
+    public record ProductImage(String url, int width, int height) {
+
+        public ProductImage {
+            if (url != null && !url.isBlank() && (width <= 0 || height <= 0)) {
+                throw new IllegalArgumentException(
+                        "derechi.fourthwall.product-image needs a positive width and height: " + width + "x" + height);
+            }
+            url = url == null ? null : url.strip();
+        }
     }
 
     private static String require(String value, String name) {

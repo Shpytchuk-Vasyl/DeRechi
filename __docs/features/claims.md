@@ -198,7 +198,15 @@ The flow:
    the claim id. `ClaimUnlockService` finds the claim on that notice, and if it is unpaid and has no product yet, asks
    `FourthwallClient` for one: `POST /open-api/v1.0/products` with `type: digital`,
    `publishOnCreate: false`, the name `derechi.fourthwall.product-name` with the claim reference
-   (`lost-42`), then `GET /products/{id}` for the variant id. Both ids are stored on the claim
+   (`lost-42`), then, if `derechi.fourthwall.product-image.url` (`FOURTHWALL_PRODUCT_IMAGE_URL`) is
+   set, `POST /products/{id}/images` with that media-library file as the checkout thumbnail. Create
+   takes no images, but this call answers with the full product, so the variant id comes from it;
+   only without an image (or when attaching failed) does `GET /products/{id}` read it. Two calls
+   either way. The image (600x800, the shop's 3:4 product photos) is uploaded once per shop through
+   the media library API (`POST /media/upload-url`, `PUT` the bytes, `POST /media/images`). The URL
+   to configure is the `uri` that `GET /media/images` lists on `cdn.fourthwall.com`, not the upload's
+   `fileUrl`, which points to a temporary bucket. The image is decoration: if attaching it fails, the product is sold without it and
+   the log warns. Both ids are stored on the claim
    (`payment_product_id`, `payment_variant_id`) and the checkout comes back as
    `Claim.checkoutUrl`: `<shop>/cart/checkout?products=<variantId>:1`. The product is created
    outside any transaction; a second click reuses it. Fourthwall allows 5 product creations a

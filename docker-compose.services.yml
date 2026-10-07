@@ -96,6 +96,7 @@ services:
       FOURTHWALL_API_USERNAME: ${FOURTHWALL_API_USERNAME:-dev-user}
       FOURTHWALL_API_PASSWORD: ${FOURTHWALL_API_PASSWORD:-dev-password}
       FOURTHWALL_WEBHOOK_SECRET: ${FOURTHWALL_WEBHOOK_SECRET:-dev-secret}
+      FOURTHWALL_PRODUCT_IMAGE_URL: ${FOURTHWALL_PRODUCT_IMAGE_URL:-}
     depends_on:
       db-postgres:
         condition: service_completed_successfully

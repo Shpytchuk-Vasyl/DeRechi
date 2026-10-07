@@ -105,6 +105,7 @@ The Gateway has no Keycloak route; browsers reach Keycloak directly at `KEYCLOAK
 | `FOURTHWALL_SHOP_URL` | `https://derechi-shop.fourthwall.com` | same | the shop whose checkout the unlock dialog opens |
 | `FOURTHWALL_API_USERNAME` / `FOURTHWALL_API_PASSWORD` | `dev-user` / `dev-password` | same | the API user from Settings, For developers, Open API (basic auth); creates the per-response products. The real values live in `env.local` / `env.prod`, never in the repository |
 | `FOURTHWALL_WEBHOOK_SECRET` | `dev-secret` | same | the secret of the `ORDER_PLACED` webhook; every webhook body is signed with it (`X-Fourthwall-Hmac-SHA256`). On a server it must equal the secret set in Fourthwall |
+| `FOURTHWALL_PRODUCT_IMAGE_URL` | empty | empty | the checkout thumbnail attached to every per-response product: the `uri` (`https://cdn.fourthwall.com/...`) of an image already in the shop's media library. Empty means products without an image. Its size is YAML only, `derechi.fourthwall.product-image.width`/`height` (600x800, the shop's 3:4 product photos), and must match the uploaded file |
 
 Supported countries are not an environment variable; they are `derechi.countries.supported` in
 the YAML and must match Admin-API's list. The Fourthwall client's timeouts are YAML only too:

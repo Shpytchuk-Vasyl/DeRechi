@@ -44,25 +44,47 @@ class FourthwallPropertiesTest {
 
     @Test
     void refusesToStartWithoutCredentialsOrAPrice() {
-        assertThatThrownBy(() -> new FourthwallProperties("https://api", "https://shop", " ", "pw", "s", BigDecimal.ONE, "n", "d", Duration.ofSeconds(3), Duration.ofSeconds(10)))
+        assertThatThrownBy(() -> new FourthwallProperties("https://api", "https://shop", " ", "pw", "s", BigDecimal.ONE, "n", "d", Duration.ofSeconds(3), Duration.ofSeconds(10), null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("username");
-        assertThatThrownBy(() -> new FourthwallProperties("https://api", "https://shop", "u", "pw", null, BigDecimal.ONE, "n", "d", Duration.ofSeconds(3), Duration.ofSeconds(10)))
+        assertThatThrownBy(() -> new FourthwallProperties("https://api", "https://shop", "u", "pw", null, BigDecimal.ONE, "n", "d", Duration.ofSeconds(3), Duration.ofSeconds(10), null))
                 .hasMessageContaining("webhook-secret");
-        assertThatThrownBy(() -> new FourthwallProperties("https://api", "https://shop", "u", "pw", "s", BigDecimal.ZERO, "n", "d", Duration.ofSeconds(3), Duration.ofSeconds(10)))
+        assertThatThrownBy(() -> new FourthwallProperties("https://api", "https://shop", "u", "pw", "s", BigDecimal.ZERO, "n", "d", Duration.ofSeconds(3), Duration.ofSeconds(10), null))
                 .hasMessageContaining("price");
-        assertThatThrownBy(() -> new FourthwallProperties("https://api", "", "u", "pw", "s", BigDecimal.ONE, "n", "d", Duration.ofSeconds(3), Duration.ofSeconds(10)))
+        assertThatThrownBy(() -> new FourthwallProperties("https://api", "", "u", "pw", "s", BigDecimal.ONE, "n", "d", Duration.ofSeconds(3), Duration.ofSeconds(10), null))
                 .hasMessageContaining("shop-url");
     }
 
     @Test
     void refusesToStartWithoutTimeouts() {
         assertThatThrownBy(() -> new FourthwallProperties("https://api", "https://shop", "u", "pw", "s", BigDecimal.ONE,
-                "n", "d", null, Duration.ofSeconds(10)))
+                "n", "d", null, Duration.ofSeconds(10), null))
                 .hasMessageContaining("connect-timeout");
         assertThatThrownBy(() -> new FourthwallProperties("https://api", "https://shop", "u", "pw", "s", BigDecimal.ONE,
-                "n", "d", Duration.ofSeconds(3), Duration.ZERO))
+                "n", "d", Duration.ofSeconds(3), Duration.ZERO, null))
                 .hasMessageContaining("read-timeout");
+    }
+
+    @Test
+    void treatsABlankProductImageAsNone() {
+        assertThat(withImage(new FourthwallProperties.ProductImage(" ", 0, 0)).productImage()).isNull();
+        assertThat(withImage(new FourthwallProperties.ProductImage(null, 0, 0)).productImage()).isNull();
+        assertThat(withImage(null).productImage()).isNull();
+    }
+
+    @Test
+    void keepsAProductImageWithItsSize() {
+        FourthwallProperties.ProductImage image = withImage(
+                new FourthwallProperties.ProductImage(" https://cdn.fourthwall.com/media/derechi.png ", 600, 800)).productImage();
+
+        assertThat(image).isEqualTo(new FourthwallProperties.ProductImage("https://cdn.fourthwall.com/media/derechi.png", 600, 800));
+    }
+
+    @Test
+    void refusesAProductImageWithoutASize() {
+        assertThatThrownBy(() -> new FourthwallProperties.ProductImage("https://cdn.fourthwall.com/media/derechi.png", 600, 0))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("product-image");
     }
 
     @Test
@@ -74,6 +96,11 @@ class FourthwallPropertiesTest {
 
     private static FourthwallProperties properties(String shopUrl) {
         return new FourthwallProperties("https://api.fourthwall.com/open-api/v1.0/", shopUrl, "api-user", "api-password",
-                "webhook-secret-value", BigDecimal.ONE, "Author's phone number (%s)", "Sent after the payment.", Duration.ofSeconds(3), Duration.ofSeconds(10));
+                "webhook-secret-value", BigDecimal.ONE, "Author's phone number (%s)", "Sent after the payment.", Duration.ofSeconds(3), Duration.ofSeconds(10), null);
+    }
+
+    private static FourthwallProperties withImage(FourthwallProperties.ProductImage image) {
+        return new FourthwallProperties("https://api.fourthwall.com/open-api/v1.0/", "https://shop", "api-user", "api-password",
+                "webhook-secret-value", BigDecimal.ONE, "Author's phone number (%s)", "Sent after the payment.", Duration.ofSeconds(3), Duration.ofSeconds(10), image);
     }
 }

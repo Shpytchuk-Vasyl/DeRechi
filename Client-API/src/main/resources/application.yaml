@@ -73,3 +73,7 @@ derechi:
     product-description: "After the payment, the phone number of the author of the notice is sent by SMS and email to the contacts you left in your response on DeRechi. Nothing is shipped."
     connect-timeout: 3s
     read-timeout: 10s
+    product-image:
+      url: ${FOURTHWALL_PRODUCT_IMAGE_URL=https://cdn.fourthwall.com/customizations/sh_b033e02b-f108-4a5b-8703-df9ac3ebf4c9/652a19a8-9532-4902-9e55-0574a68ec98a.png}
+      width: 600
+      height: 800
