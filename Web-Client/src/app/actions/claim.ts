@@ -48,18 +48,18 @@ export async function claimNotice(
   id: string,
   values: unknown,
 ): Promise<ClaimResult> {
-  const parsed = claimSchema.safeParse(values)
-  if (!isItem(kind, id) || !parsed.success) {
-    return { ok: false, reason: "validation" }
-  }
-
-  if (!(await passesBotCheck())) {
-    return { ok: false, reason: "captcha" }
-  }
-
-  const variables = { id, contact: toContactInput(parsed.data) }
-
   try {
+    const parsed = claimSchema.safeParse(values)
+    if (!isItem(kind, id) || !parsed.success) {
+      return { ok: false, reason: "validation" }
+    }
+
+    if (!(await passesBotCheck())) {
+      return { ok: false, reason: "captcha" }
+    }
+
+    const variables = { id, contact: toContactInput(parsed.data) }
+
     const claim =
       kind === "lost"
         ? (await graphqlRequest(ClaimLostItemMutation, variables, NO_STORE)).claimLostItem

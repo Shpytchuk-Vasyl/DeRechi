@@ -183,7 +183,7 @@ public final class DeRechiLauncher {
             }
         }
         throw new IllegalStateException("На класпасі немає application.yaml зі spring.application.name="
-                + applicationName + " — модуль не зібраний?");
+                + applicationName + " – модуль не зібраний?");
     }
 
     @SafeVarargs

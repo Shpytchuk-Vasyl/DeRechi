@@ -13,17 +13,17 @@ export type ReportResult =
 
 export async function createNotice(kind: ItemKind, values: unknown): Promise<ReportResult> {
   const parsed = reportSchema(kind).safeParse(values)
-  if (!parsed.success) {
-    return { ok: false, reason: "validation" }
-  }
-
-  if (!(await passesBotCheck())) {
-    return { ok: false, reason: "captcha" }
-  }
-
-  const input = toItemInput(parsed.data)
-
   try {
+    if (!parsed.success) {
+      return { ok: false, reason: "validation" }
+    }
+
+    if (!(await passesBotCheck())) {
+      return { ok: false, reason: "captcha" }
+    }
+
+    const input = toItemInput(parsed.data)
+
     const created =
       kind === "lost"
         ? (await graphqlRequest(CreateLostItemMutation, { input }, NO_STORE)).createLostItem

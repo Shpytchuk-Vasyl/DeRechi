@@ -139,6 +139,12 @@ by script on purpose: the page stays cacheable, the server render always shows t
 `ClaimCard` swaps in the "already sent" state on mount. A second claim with the same phone or
 email comes back as `repeated: true`, and nothing is sent again.
 
+BotID's client starts only in a secure context (`window.isSecureContext`): its challenge needs
+`crypto.subtle`, which plain `http` on a LAN IP does not have, so testing `next dev` from a phone at
+`http://192.168.x.x:3000` used to hang every protected request with "Cannot read properties of
+undefined (reading 'importKey')". Production is `https`, and off Vercel the server check passes
+everyone anyway, so nothing is lost.
+
 The author and later the claimant get a reminder linking to `/<locale>/claims/<token>`. That
 page (`noindex`, disallowed in `robots.txt`) has one button that calls `confirmReturn(token)`;
 the notice is then archived by Worker. An unknown or used-up token reads as "this

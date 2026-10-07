@@ -61,7 +61,11 @@ One thing it does need: the legal pages are assembled per jurisdiction. Add
 sentences (`findersLaw`, `governingLaw`, `dataLaw`, `rightsBasis`, `complaintRight`,
 `withdrawalLaw`) in all five locales and the document's `updated` date, and register it in
 `Web-Client/src/content/legal/index.ts`. Without it `/terms`, `/privacy` and the FAQ answer
-about rewards fall back to the first jurisdiction (UA) and the server log warns. The Places
+about rewards fall back to the first jurisdiction (UA) and the server log warns. Also add the
+country's calling code to `CALLING_CODES` in `Web-Client/src/lib/intl/phone.ts`: phone keypads
+often have no "+", so a number typed the local way (`067...`) is completed with the viewer's
+country code when the field loses focus; without the entry such numbers stay as typed and fail
+validation. The Places
 restriction is capped at five countries on the web side too.
 
 ## Checklist

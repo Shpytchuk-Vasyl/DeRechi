@@ -2,9 +2,11 @@
 
 import { useTranslations } from "next-intl"
 import { Controller, useFormContext } from "react-hook-form"
+import { useCountry } from "@/components/country/country-provider"
 import { Checkbox } from "@/components/pouf/checkbox"
 import { Field, Input, Label } from "@/components/pouf/Input"
 import { useFieldMessage } from "@/hooks/use-field-message"
+import { toInternational } from "@/lib/intl/phone"
 import { ERROR_KEYS, SOCIAL_MEDIA } from "@/schema/report-schema"
 import { Text } from "../pouf/text"
 
@@ -18,6 +20,7 @@ export function ContactFields({ prefix = "" }: Props) {
   const t = useTranslations("form")
   const message = useFieldMessage(ERROR_KEYS)
   const { control } = useFormContext()
+  const viewer = useCountry()
 
   return (
     <>
@@ -39,7 +42,10 @@ export function ContactFields({ prefix = "" }: Props) {
                   placeholder="+380671234567"
                   value={field.value ?? ""}
                   onChange={(value) => field.onChange(value.replace(/[\s().-]/g, ""))}
-                  onBlur={field.onBlur}
+                  onBlur={() => {
+                    field.onChange(toInternational(field.value ?? "", viewer.code))
+                    field.onBlur()
+                  }}
                   invalid={Boolean(fieldState.error)}
                 />
               )}

@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 /**
  * GET requests handled by this controller can be stored in the browser's private cache for the specified duration.
  * Any other method (POST/PUT/PATCH/DELETE) is served with {@code no-store},
- * and a subsequent redirect clears the cached list — see {@link CacheControlInterceptor}.
+ * and a subsequent redirect clears the cached list – see {@link CacheControlInterceptor}.
  */
 @Documented
 @Inherited

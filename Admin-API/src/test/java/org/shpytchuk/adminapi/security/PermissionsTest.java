@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Права адмінки живуть у Keycloak, тому пари Scope:Action у коді мають збігатися з клієнтськими ролями
- * клієнта {@code derechi-admin} у realm-імпорті — інакше @PreAuthorize мовчки нікого не пустить.
+ * клієнта {@code derechi-admin} у realm-імпорті – інакше @PreAuthorize мовчки нікого не пустить.
  */
 class PermissionsTest {
 
@@ -38,7 +38,7 @@ class PermissionsTest {
     }
 
     /**
-     * Архів — лише для супер-адміна, і лише на перегляд: realm-імпорт видає ADMIN_SUPER
+     * Архів – лише для супер-адміна, і лише на перегляд: realm-імпорт видає ADMIN_SUPER
      * тільки *_HISTORY:VIEW, а ADMIN_EDITOR і ADMIN_VIEWER не отримують нічого архівного.
      */
     @Test

@@ -46,7 +46,7 @@ class ClaimNotifierTest {
                 .contains("Контакти:\n  Телефон: +380 50 987 6543\n  Пошта: finder@example.com\n"
                                 + "  Месенджери: Telegram, WhatsApp\n",
                         "Оголошення: http://localhost:3000/uk/lost/1")
-                .endsWith("\n\n— Команда DeRechi")
+                .endsWith("\n\n– Команда DeRechi")
                 .doesNotContain("{0}", "{4}", "claim.lost.body");
         assertThat(event.phone()).isEqualTo("+380671234567");
         assertThat(event.email()).isEqualTo("owner@example.com");
@@ -65,7 +65,7 @@ class ClaimNotifierTest {
         assertThat(event.message())
                 .startsWith("Hello,\n\nSomeone says the item “Black backpack” you found is theirs")
                 .contains("  Messengers: none\n", "Notice: http://localhost:3000/en/found/2")
-                .endsWith("\n\n— The DeRechi team");
+                .endsWith("\n\n– The DeRechi team");
         assertThat(event.phone()).isEqualTo("+16502530000");
         assertThat(event.deduplicationKey()).isEqualTo("claim:found:43");
     }
@@ -89,7 +89,7 @@ class ClaimNotifierTest {
         assertThat(lines.subList(5, 8)).as(message).allMatch(line -> line.startsWith("  ") && line.contains(":"));
         assertThat(lines.get(9)).as(message)
                 .endsWith("http://localhost:3000/%s/%s/%d".formatted(language, kind.segment(), kind == ItemKind.LOST ? 1 : 2));
-        assertThat(lines.getLast()).as(message).startsWith("— ").contains("DeRechi");
+        assertThat(lines.getLast()).as(message).startsWith("– ").contains("DeRechi");
         assertThat(message).as(message).doesNotContain("{", "}", "''");
     }
 

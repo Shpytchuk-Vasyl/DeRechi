@@ -28,7 +28,7 @@ class MessagesTest {
 
     private static final String BASE_BUNDLE = "messages.properties";
 
-    /** {0}, {1,number} тощо — усе, що MessageFormat підставить з аргументів. */
+    /** {0}, {1,number} тощо – усе, що MessageFormat підставить з аргументів. */
     private static final Pattern PLACEHOLDER = Pattern.compile("\\{(\\d+)[^}]*}");
 
     @Test
@@ -54,7 +54,7 @@ class MessagesTest {
     }
 
     /**
-     * Загублений {0} у перекладі — не помилка компіляції, але користувач побачить
+     * Загублений {0} у перекладі – не помилка компіляції, але користувач побачить
      * речення без номера речі. Набір аргументів має збігатися в усіх мовах.
      */
     @Test
@@ -77,7 +77,7 @@ class MessagesTest {
     }
 
     /**
-     * Англійська живе в базовому бандлі — він же фолбек для невідомих мов.
+     * Англійська живе в базовому бандлі – він же фолбек для невідомих мов.
      * Окремий messages_en.properties був би її другою копією, яка з часом і розійдеться.
      */
     private static String bundleName(Locale locale) {

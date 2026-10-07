@@ -1,4 +1,4 @@
-# DB-Postgres — database schema
+# DB-Postgres – database schema
 
 This module owns the schema of the shared `derechi` database. No other module depends on it.
 Entities live here, migrations live here, and every other service runs with `ddl-auto: none`
@@ -9,7 +9,7 @@ validates the schema against the entities and exits. `client-api`, `admin-api` a
 start only after it exits with 0. See [In Docker](#in-docker).
 
 Migrations are managed by **Liquibase**. Deltas are generated from the JPA entities, so the
-entities are the source of truth and the changelog is derived from them — but the generated
+entities are the source of truth and the changelog is derived from them – but the generated
 output always needs a read-through before it is applied (see [Known quirks](#known-quirks)).
 
 ## Layout
@@ -40,7 +40,7 @@ exist in the SQL format.
 docker compose up -d postgres
 ```
 
-The image is `postgis/postgis` — the stock `postgres` image has no PostGIS, and
+The image is `postgis/postgis` – the stock `postgres` image has no PostGIS, and
 `place.coordinate` is a `geography` column.
 
 If the JVM default timezone is `Europe/Kiev`, every connection fails with
@@ -81,7 +81,7 @@ database is involved.
 ### 4. Review and rename
 
 **Read the generated file before applying it.** Liquibase gets several things in this project
-wrong — the list is below. Fix them by hand.
+wrong – the list is below. Fix them by hand.
 
 Then rename `003-delta.postgresql.sql` to something meaningful:
 
@@ -114,7 +114,7 @@ This is for your local database while you work on the migration. On a stack star
 
 The module runs with `ddl-auto: validate`, so Hibernate compares the resulting schema against
 the entities and refuses to start on any mismatch. This is the step that catches what the diff
-got wrong — do not skip it.
+got wrong – do not skip it.
 
 A second `liquibase:diff` should then report `changeSets count: 0`.
 
@@ -179,7 +179,7 @@ entities emits a scalar `SMALLINT`. Caught by `ddl-auto: validate`, not by the d
 explicitly. Without it the diff produces `ContactInfo` and `socialMedias` instead of
 `contact_info` and `social_medias`.
 
-**`diffChangeLogFile` is resolved from the reactor root**, not from the module — hence the
+**`diffChangeLogFile` is resolved from the reactor root**, not from the module – hence the
 `DB-Postgres/` prefix in `liquibase.properties`. Every other path there is module-relative.
 
 **`liquibase:dropAll` does not work on this database.** It cannot drop `geometry_columns`,
@@ -200,7 +200,7 @@ Corrections always go into a new changeset.
 what orders the migrations. Keep it zero-padded and monotonic.
 
 **Repeatable changesets** (`runOnChange:true`) are the right tool for views, functions and
-reference-data seeds — anything that should re-run whenever its definition changes.
+reference-data seeds – anything that should re-run whenever its definition changes.
 
 **Indexes are not generated** unless declared in `@Table(indexes = ...)`. The GiST index for
 geo queries on `place.coordinate`, for instance, has to be written into a migration by hand.
@@ -225,7 +225,7 @@ changesets from there, not from the source tree, so run it whenever a changeset 
 | `./mvnw -pl DB-Postgres liquibase:updateSQL` | Dry run: prints the SQL instead of executing it. |
 | `./mvnw -pl DB-Postgres liquibase:update -Dliquibase.changesToApply=1` | Applies only the next N changesets. |
 | `./mvnw -pl DB-Postgres liquibase:update -Dliquibase.toTag=v1` | Applies everything up to a tag, then stops. |
-| `./mvnw -pl DB-Postgres liquibase:updateTestingRollback` | Applies, rolls back, applies again — proves the rollback works. |
+| `./mvnw -pl DB-Postgres liquibase:updateTestingRollback` | Applies, rolls back, applies again – proves the rollback works. |
 
 ### Inspecting
 
@@ -234,7 +234,7 @@ changesets from there, not from the source tree, so run it whenever a changeset 
 | `./mvnw -pl DB-Postgres liquibase:status -Dliquibase.verbose=true` | Lists changesets not yet applied. First thing to run when a migration "did nothing". |
 | `./mvnw -pl DB-Postgres liquibase:history` | Lists what has been applied, in order. |
 | `./mvnw -pl DB-Postgres liquibase:validate` | Parses the changelog and checks for duplicate ids and checksum conflicts, without touching the schema. |
-| `./mvnw -pl DB-Postgres liquibase:unexpectedChangeSets` | Finds rows in `databasechangelog` with no matching file — typically a renamed or deleted changeset. |
+| `./mvnw -pl DB-Postgres liquibase:unexpectedChangeSets` | Finds rows in `databasechangelog` with no matching file – typically a renamed or deleted changeset. |
 | `./mvnw -pl DB-Postgres liquibase:listLocks` | Shows who holds the changelog lock. |
 | `./mvnw -pl DB-Postgres liquibase:snapshot -Dliquibase.outputFile=snapshot.json` | Dumps the current schema as JSON. |
 | `./mvnw -pl DB-Postgres liquibase:dbDoc -Dliquibase.outputDirectory=target/dbdoc` | Generates browsable HTML docs for the schema. |
@@ -245,7 +245,7 @@ changesets from there, not from the source tree, so run it whenever a changeset 
 |---|---|
 | `./mvnw -pl DB-Postgres liquibase:diff` | Entities vs. live database; writes `diffChangeLogFile`. The main one. |
 | `./mvnw -pl DB-Postgres liquibase:diff -Dliquibase.diffChangeLogFile=DB-Postgres/changelog/changes/004-something.postgresql.sql` | Same, but names the output file up front so it does not need renaming afterwards. |
-| `./mvnw -pl DB-Postgres liquibase:diff -Dliquibase.outputFile=diff.txt` | Report only — prints the differences instead of writing a changeset. |
+| `./mvnw -pl DB-Postgres liquibase:diff -Dliquibase.outputFile=diff.txt` | Report only – prints the differences instead of writing a changeset. |
 | `./mvnw -pl DB-Postgres liquibase:generateChangeLog` | Builds a changelog from the **existing database**, ignoring the entities. For adopting a schema that has no changelog yet. |
 
 ### Tags and rollback
@@ -275,7 +275,7 @@ database have drifted apart.
 | `./mvnw -pl DB-Postgres liquibase:changelogSyncToTag -Dliquibase.toTag=v1` | Same, but stops at a tag. |
 | `./mvnw -pl DB-Postgres liquibase:clearCheckSums` | Clears stored checksums so they are recomputed on the next run. Fixes "checksum changed" after an applied file was edited. |
 | `./mvnw -pl DB-Postgres liquibase:releaseLocks` | Releases a stale changelog lock left by a killed run. |
-| `./mvnw -pl DB-Postgres liquibase:update -Dliquibase.dropFirst=true` | Drops everything, then applies. Does **not** work here — see `dropAll` under [Known quirks](#known-quirks). |
+| `./mvnw -pl DB-Postgres liquibase:update -Dliquibase.dropFirst=true` | Drops everything, then applies. Does **not** work here – see `dropAll` under [Known quirks](#known-quirks). |
 
 To reset a dev database, recreate it instead:
 
@@ -300,7 +300,7 @@ Goals ignore properties that belong to another goal and say so:
 java.lang.NoSuchFieldException: ...
 ```
 
-That is informational — `liquibase.properties` is shared by every goal, and `update` has no
+That is informational – `liquibase.properties` is shared by every goal, and `update` has no
 `diffChangeLogFile` field. The build still succeeds.
 
 

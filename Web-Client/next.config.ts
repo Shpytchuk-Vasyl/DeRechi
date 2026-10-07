@@ -28,6 +28,7 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   reactCompiler: true,
   typedRoutes: true,
+  allowedDevOrigins: process.env.VERCEL ? ["192.168.*.*", "10.*.*.*"] : undefined,
   poweredByHeader: false,
   async headers() {
     return [
@@ -38,7 +39,7 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: filesOrigin(),
-    dangerouslyAllowLocalIP: process.env.NODE_ENV !== "production",
+    dangerouslyAllowLocalIP: !process.env.VERCEL,
   },
   experimental: {
     turbopackRustReactCompiler: true,
