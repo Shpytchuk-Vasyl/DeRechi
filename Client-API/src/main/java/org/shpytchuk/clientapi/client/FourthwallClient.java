@@ -20,6 +20,7 @@ public class FourthwallClient {
 
     static final String PRODUCTS = "/products";
     static final String IMAGES = "/images";
+    static final String ORDERS = "/order";
     static final String DIGITAL = "digital";
 
     private final RestClient restClient;
@@ -67,6 +68,19 @@ public class FourthwallClient {
         return new FourthwallProduct(productId, variantId);
     }
 
+    public void markDownloaded(String orderId, String defaultFileUrl) {
+        try {
+            restClient.put()
+                    .uri(ORDERS + "/{id}/downloaded", orderId)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Map.of("defaultFileUrl", defaultFileUrl))
+                    .retrieve()
+                    .toBodilessEntity();
+        } catch (RestClientException e) {
+            throw unavailable(e);
+        }
+    }
+
     private JsonNode attachImage(String productId) {
         if (image == null) {
             return null;
@@ -98,12 +112,17 @@ public class FourthwallClient {
                 throw new PaymentUnavailableException("Fourthwall answered with an empty body");
             }
             return node;
-        } catch (RestClientResponseException e) {
-            throw new PaymentUnavailableException(
-                    "Fourthwall answered %d: %s".formatted(e.getStatusCode().value(), e.getResponseBodyAsString()), e);
         } catch (RestClientException e) {
-            throw new PaymentUnavailableException("Fourthwall is unreachable: " + e.getMessage(), e);
+            throw unavailable(e);
         }
+    }
+
+    private static PaymentUnavailableException unavailable(RestClientException e) {
+        if (e instanceof RestClientResponseException response) {
+            return new PaymentUnavailableException("Fourthwall answered %d: %s"
+                    .formatted(response.getStatusCode().value(), response.getResponseBodyAsString()), e);
+        }
+        return new PaymentUnavailableException("Fourthwall is unreachable: " + e.getMessage(), e);
     }
 
     private static String text(JsonNode node, String field) {

@@ -28,7 +28,7 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   reactCompiler: true,
   typedRoutes: true,
-  allowedDevOrigins: process.env.VERCEL ? ["192.168.*.*", "10.*.*.*"] : undefined,
+  allowedDevOrigins: process.env.VERCEL ? undefined : ["192.168.*.*", "10.*.*.*"],
   poweredByHeader: false,
   async headers() {
     return [

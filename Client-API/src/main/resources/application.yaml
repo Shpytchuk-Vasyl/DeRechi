@@ -50,6 +50,8 @@ management:
       show-details: never
 
 derechi:
+  site:
+    url: ${DERECHI_SITE_URL:http://localhost:3000}
   countries:
     # ISO 3166-1 alpha-2;
     supported: [UA, PL, DE, FR]

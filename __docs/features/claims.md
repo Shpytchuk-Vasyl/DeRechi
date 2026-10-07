@@ -239,6 +239,14 @@ The flow:
 4. A match stamps `paid_at` through `ClaimService.markPaid`, and `ClaimEventAspect` publishes
    `item.<kind>.paid` after the commit, exactly like `claimed` and `returned`. A second order for
    an already paid claim is stored but publishes nothing.
+   Right after, `FourthwallClient.markDownloaded` calls `PUT /order/{id}/downloaded` with
+   `defaultFileUrl` = the notice page (`derechi.site.url` + `/<kind>/<itemId>`, the site root for an
+   archived notice). Fourthwall lets the buyer cancel a digital order, and get the money back, for
+   30 days unless its file was downloaded; ours has no file, so without this the number could be
+   bought and refunded. The call creates a "download" with that link and marks it downloaded, which
+   closes the self-service cancel; the shop can still cancel from the dashboard (the terms promise
+   a refund when the number has not arrived within 24 hours). A failure only logs a warning, the
+   payment is recorded either way. The API user needs `order_write`.
 5. `Worker` (`PaidHandler` on `worker.claims`) sends the author's phone number to the responder,
    `notification.claim.unlocked`, in the responder's language, dedup `claim:<kind>:<id>:unlocked`,
    and stamps `contacts_sent_at`. If the notice was archived in the meantime the number comes from

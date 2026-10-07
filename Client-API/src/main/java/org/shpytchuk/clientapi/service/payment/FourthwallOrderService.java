@@ -1,10 +1,13 @@
 package org.shpytchuk.clientapi.service.payment;
 
+import org.shpytchuk.clientapi.client.FourthwallClient;
+import org.shpytchuk.clientapi.config.SiteProperties;
 import org.shpytchuk.clientapi.controller.payment.FourthwallOrderPlaced;
 import org.shpytchuk.clientapi.entity.Claim;
 import org.shpytchuk.clientapi.entity.found.FoundItemClaim;
 import org.shpytchuk.clientapi.entity.lost.LostItemClaim;
 import org.shpytchuk.clientapi.entity.payment.FourthwallOrder;
+import org.shpytchuk.clientapi.exeption.PaymentUnavailableException;
 import org.shpytchuk.clientapi.repository.found.FoundItemClaimRepository;
 import org.shpytchuk.clientapi.repository.lost.LostItemClaimRepository;
 import org.shpytchuk.clientapi.repository.payment.FourthwallOrderRepository;
@@ -34,26 +37,52 @@ public class FourthwallOrderService {
     private final LostClaimService lostClaimService;
     private final FoundClaimService foundClaimService;
     private final TransactionTemplate transactionTemplate;
+    private final FourthwallClient fourthwall;
+    private final SiteProperties site;
 
     public FourthwallOrderService(FourthwallOrderRepository orderRepository,
                                   LostItemClaimRepository lostClaimRepository,
                                   FoundItemClaimRepository foundClaimRepository,
                                   LostClaimService lostClaimService,
                                   FoundClaimService foundClaimService,
-                                  TransactionTemplate transactionTemplate) {
+                                  TransactionTemplate transactionTemplate,
+                                  FourthwallClient fourthwall,
+                                  SiteProperties site) {
         this.orderRepository = orderRepository;
         this.lostClaimRepository = lostClaimRepository;
         this.foundClaimRepository = foundClaimRepository;
         this.lostClaimService = lostClaimService;
         this.foundClaimService = foundClaimService;
         this.transactionTemplate = transactionTemplate;
+        this.fourthwall = fourthwall;
+        this.site = site;
     }
 
     public void receive(FourthwallOrderPlaced order) {
-        Optional<Claim<?>> unpaid = transactionTemplate.execute(status -> record(order));
+        Optional<Unpaid> unpaid = transactionTemplate.execute(status -> record(order).map(this::unpaid));
         if (unpaid != null) {
-            unpaid.ifPresent(claim -> serviceFor(claim).markPaid(claim.getId()));
+            unpaid.ifPresent(claim -> {
+                serviceFor(claim.claim()).markPaid(claim.claim().getId());
+                closeSelfCancel(order.orderId(), claim.noticeUrl());
+            });
         }
+    }
+
+    private void closeSelfCancel(String orderId, String noticeUrl) {
+        try {
+            fourthwall.markDownloaded(orderId, noticeUrl);
+        } catch (PaymentUnavailableException e) {
+            log.warn("Fourthwall order {} stays cancellable by the buyer: {}", orderId, e.getMessage());
+        }
+    }
+
+    private Unpaid unpaid(Claim<?> claim) {
+        String kind = claim instanceof LostItemClaim ? "lost" : "found";
+        String url = claim.getItem() == null ? site.url() : site.notice(kind, claim.getItem().getId());
+        return new Unpaid(claim, url);
+    }
+
+    private record Unpaid(Claim<?> claim, String noticeUrl) {
     }
 
     private Optional<Claim<?>> record(FourthwallOrderPlaced placed) {

@@ -117,6 +117,31 @@ class FourthwallClientTest {
     }
 
     @Test
+    void marksAPaidOrderDownloadedWithTheNoticeAsItsFile() {
+        server.expect(requestTo(API + "/order/ord-1/downloaded"))
+                .andExpect(method(HttpMethod.PUT))
+                .andExpect(header("Authorization", "Basic YXBpLXVzZXI6YXBpLXBhc3N3b3Jk"))
+                .andExpect(jsonPath("$.defaultFileUrl").value("https://derechi.example/lost/42"))
+                .andRespond(withSuccess());
+
+        client.markDownloaded("ord-1", "https://derechi.example/lost/42");
+
+        server.verify();
+    }
+
+    @Test
+    void reportsAnOrderThatCannotBeMarkedDownloadedAsPaymentUnavailable() {
+        server.expect(requestTo(API + "/order/ord-1/downloaded"))
+                .andRespond(withStatus(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON)
+                        .body("{\"code\":\"ORDER_HAS_NO_DOWNLOADS_ERROR\",\"orderId\":\"ord-1\"}"));
+
+        assertThatThrownBy(() -> client.markDownloaded("ord-1", "https://derechi.example/lost/42"))
+                .isInstanceOf(PaymentUnavailableException.class)
+                .hasMessageContaining("400")
+                .hasMessageContaining("ORDER_HAS_NO_DOWNLOADS_ERROR");
+    }
+
+    @Test
     void reportsTheRateLimitAsPaymentUnavailable() {
         server.expect(requestTo(API + "/products"))
                 .andRespond(withStatus(HttpStatus.TOO_MANY_REQUESTS).contentType(MediaType.APPLICATION_JSON)

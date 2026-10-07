@@ -1,7 +1,7 @@
 import { initBotId } from "botid/client/core"
 
 // Dev only
-// if (window.isSecureContext) {
+if (process.env.VERCEL) {
   initBotId({
     protect: [
       { path: "/*/report/*", method: "POST" },
@@ -9,4 +9,4 @@ import { initBotId } from "botid/client/core"
       { path: "/*/found/*", method: "POST" },
     ],
   })
-// }
+}
