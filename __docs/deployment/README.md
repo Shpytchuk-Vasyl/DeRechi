@@ -10,4 +10,4 @@ DeRechi runs in two modes. In **development mode** only the infrastructure (Post
 - [Keycloak](keycloak.md) - the realm file, clients, dev users, exporting changes.
 - [Monitoring](monitoring.md) - Prometheus scrape configs, alerts and Alertmanager, dead-letter queues, Grafana, actuator endpoints.
 
-Production runs the same compose stack with `env.prod` (Keycloak in `start` mode without dev users, TLS at a reverse proxy in front of the host). There is no CI and no staging environment yet.
+Production runs the same compose stack with `env.prod` (Keycloak in `start` mode without dev users, TLS at a reverse proxy in front of the host). Tests run in GitHub Actions (`tests` workflow, see [stack tests](../developer-guide/stack-tests.md#ci)); there is no staging environment yet.

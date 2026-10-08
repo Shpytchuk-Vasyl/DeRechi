@@ -15,6 +15,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
+import static org.springframework.core.NestedExceptionUtils.getMostSpecificCause;
+
 public class FourthwallClient {
 
     private static final Logger log = LoggerFactory.getLogger(FourthwallClient.class);
@@ -77,7 +79,7 @@ public class FourthwallClient {
         if (variantId.isEmpty()) {
             throw new PaymentUnavailableException("Fourthwall product " + productId + " has no variant");
         }
-        log.info("Created Fourthwall product {} with variant {}", productId, variantId);
+        log.debug("Created Fourthwall product {} with variant {}", productId, variantId);
         return new FourthwallProduct(productId, variantId);
     }
 
@@ -88,6 +90,7 @@ public class FourthwallClient {
                 .body(Map.of("defaultFileUrl", defaultFileUrl))
                 .retrieve()
                 .toBodilessEntity());
+        log.debug("Fourthwall order {} marked downloaded", orderId);
     }
 
     private JsonNode attachImage(String productId) {
@@ -105,7 +108,7 @@ public class FourthwallClient {
                     .retrieve()
                     .body(JsonNode.class));
         } catch (PaymentUnavailableException e) {
-            log.warn("Fourthwall product {} stays without an image: {}", productId, e.getMessage());
+            log.warn("Fourthwall product {} stays without an image: {}", productId, getMostSpecificCause(e).toString());
             return null;
         }
     }
@@ -146,7 +149,7 @@ public class FourthwallClient {
                     .toBodilessEntity());
         } catch (PaymentUnavailableException e) {
             log.warn("Fourthwall product {} stays without a file, its orders stay cancellable: {}",
-                    productId, e.getMessage());
+                    productId, getMostSpecificCause(e).toString());
         }
     }
 

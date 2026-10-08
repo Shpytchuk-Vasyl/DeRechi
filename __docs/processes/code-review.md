@@ -55,8 +55,9 @@ discussion, take it to a call and write the outcome back on the PR.
 ## What the author does
 
 - Self-review the diff on GitHub before requesting review. Most trivial findings disappear here.
-- Make sure `./mvnw test-compile` and `./mvnw test` pass with Docker running. We do not have CI
-  wired up yet; until GitHub Actions is in place, the author's local run is the build.
+- Make sure `./mvnw test-compile` and `./mvnw test` pass with Docker running. Run the `tests`
+  workflow on the branch (module suites without `Admin-API`, then the integration tests); a red
+  run is fixed before review, not explained.
 - Fill in the PR template honestly, especially "How to test" and the migration/Keycloak/
   Web-Client sections. See [pull requests](../developer-guide/pull-requests.md).
 - Respond to every comment, even with "done". Resolve the conversation yourself once addressed.

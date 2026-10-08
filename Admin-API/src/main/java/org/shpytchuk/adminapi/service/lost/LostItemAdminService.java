@@ -45,13 +45,13 @@ public class LostItemAdminService extends AdminItemService<LostItem> {
     }
 
     @Override
-    protected void deleteMatches(Long id) {
-        similarItemRepository.deleteByLostItemId(id);
+    protected int deleteMatches(Long id) {
+        return similarItemRepository.deleteByLostItemId(id);
     }
 
     @Override
-    protected void deleteClaims(Long id) {
-        itemClaims.deleteOf(id);
+    protected int deleteClaims(Long id) {
+        return itemClaims.deleteOf(id);
     }
 
     @Override

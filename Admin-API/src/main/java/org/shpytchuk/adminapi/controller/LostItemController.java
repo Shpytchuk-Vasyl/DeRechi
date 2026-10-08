@@ -53,8 +53,9 @@ public class LostItemController extends ItemController<LostItem> {
     public String create(@Valid @ModelAttribute("form") ItemForm form,
                          BindingResult binding,
                          Model model,
+                         Authentication authentication,
                          RedirectAttributes redirectAttributes) {
-        return super.create(form, binding, model, redirectAttributes);
+        return super.create(form, binding, model, authentication, redirectAttributes);
     }
 
     @Override
@@ -71,21 +72,24 @@ public class LostItemController extends ItemController<LostItem> {
                          @Valid @ModelAttribute("form") ItemForm form,
                          BindingResult binding,
                          Model model,
+                         Authentication authentication,
                          RedirectAttributes redirectAttributes) {
-        return super.update(id, form, binding, model, redirectAttributes);
+        return super.update(id, form, binding, model, authentication, redirectAttributes);
     }
 
+    @Override
     @PostMapping("/{id}/archive")
     @RequirePermission(scope = Scope.LOST_ITEM, action = Action.ARCHIVE)
     public String archive(@PathVariable Long id, Authentication authentication,
                           RedirectAttributes redirectAttributes) {
-        return super.archive(id, authentication.getName(), redirectAttributes);
+        return super.archive(id, authentication, redirectAttributes);
     }
 
     @Override
     @PostMapping("/{id}/delete")
     @RequirePermission(scope = Scope.LOST_ITEM, action = Action.DELETE)
-    public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        return super.delete(id, redirectAttributes);
+    public String delete(@PathVariable Long id, Authentication authentication,
+                         RedirectAttributes redirectAttributes) {
+        return super.delete(id, authentication, redirectAttributes);
     }
 }

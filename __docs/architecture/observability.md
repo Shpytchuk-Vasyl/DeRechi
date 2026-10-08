@@ -79,7 +79,5 @@ Plain SLF4J through Logback, Boot defaults. Loggers are declared as
 `private static final Logger log = LoggerFactory.getLogger(X.class);`; `@Slf4j` is not used
 (see [../conventions/java-code-style.md](../conventions/java-code-style.md)). Logs go to
 stdout, which in Compose means `docker compose logs -f <service>`. There is no log
-aggregation and no tracing; Micrometer tracing is not on the classpath.
-
-Some existing log messages are in Ukrainian and some in English; grep for both when
-searching logs.
+aggregation and no tracing; Micrometer tracing is not on the classpath. What and how the
+services log is in [../conventions/logging.md](../conventions/logging.md).

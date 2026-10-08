@@ -24,6 +24,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import static org.springframework.core.NestedExceptionUtils.getMostSpecificCause;
+
 @Service
 public class FourthwallOrderService {
 
@@ -63,7 +65,11 @@ public class FourthwallOrderService {
         if (unpaid != null) {
             unpaid.ifPresent(pending -> serviceFor(pending.claim()).markPaid(pending.claim().getId())
                     .filter(paid -> !paid.repeated())
-                    .ifPresent(paid -> closeSelfCancel(order.orderId(), pending.noticeUrl())));
+                    .ifPresent(paid -> {
+                        log.info("Marked {} claim {} paid by Fourthwall order {}",
+                                kind(pending.claim()), paid.id(), order.orderId());
+                        closeSelfCancel(order.orderId(), pending.noticeUrl());
+                    }));
         }
     }
 
@@ -71,14 +77,18 @@ public class FourthwallOrderService {
         try {
             fourthwall.markDownloaded(orderId, noticeUrl);
         } catch (PaymentUnavailableException e) {
-            log.warn("Fourthwall order {} stays cancellable by the buyer: {}", orderId, e.getMessage());
+            log.warn("Fourthwall order {} stays cancellable by the buyer: {}", orderId,
+                    getMostSpecificCause(e).toString());
         }
     }
 
     private Unpaid unpaid(Claim<?> claim) {
-        String kind = claim instanceof LostItemClaim ? "lost" : "found";
-        String url = claim.getItem() == null ? site.url() : site.notice(kind, claim.getItem().getId());
+        String url = claim.getItem() == null ? site.url() : site.notice(kind(claim), claim.getItem().getId());
         return new Unpaid(claim, url);
+    }
+
+    private static String kind(Claim<?> claim) {
+        return claim instanceof LostItemClaim ? "lost" : "found";
     }
 
     private record Unpaid(Claim<?> claim, String noticeUrl) {
@@ -99,7 +109,7 @@ public class FourthwallOrderService {
         }
 
         link(order, claim.get());
-        log.info("Fourthwall order {} matched claim {}", placed.orderId(), claim.get().getId());
+        log.info("Fourthwall order {} matched {} claim {}", placed.orderId(), kind(claim.get()), claim.get().getId());
         return claim.filter(matched -> matched.getPaidAt() == null);
     }
 

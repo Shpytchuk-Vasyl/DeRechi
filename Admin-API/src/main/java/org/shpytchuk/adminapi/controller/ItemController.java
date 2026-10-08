@@ -8,21 +8,29 @@ import org.shpytchuk.adminapi.form.ItemFormValidator;
 import org.shpytchuk.adminapi.model.ItemModel;
 import org.shpytchuk.adminapi.security.Scope;
 import org.shpytchuk.adminapi.service.AdminItemService;
+import org.shpytchuk.adminapi.view.DeletedItem;
 import org.shpytchuk.adminapi.view.detail.ItemView;
 import org.shpytchuk.adminapi.view.Pager;
 import org.shpytchuk.adminapi.view.SortView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Locale;
+
 @CachedPage
 public abstract class ItemController<T extends Thing> {
+
+    private static final Logger log = LoggerFactory.getLogger(ItemController.class);
 
     private static final String LIST_VIEW = "items/list";
     private static final String FORM_VIEW = "items/form";
@@ -34,6 +42,7 @@ public abstract class ItemController<T extends Thing> {
     private final Scope scope;
     private final String basePath;
     private final String titleKey;
+    private final String kind;
 
     protected ItemController(AdminItemService<T> service,
                              ItemModel itemModel,
@@ -49,6 +58,7 @@ public abstract class ItemController<T extends Thing> {
         this.scope = scope;
         this.basePath = basePath;
         this.titleKey = titleKey;
+        this.kind = scope.name().toLowerCase(Locale.ROOT).replace('_', ' ');
     }
 
     @InitBinder("form")
@@ -81,6 +91,7 @@ public abstract class ItemController<T extends Thing> {
     protected String create(ItemForm form,
                             BindingResult binding,
                             Model model,
+                            Authentication authentication,
                             RedirectAttributes redirectAttributes) {
         if (binding.hasErrors()) {
             describe(model);
@@ -89,6 +100,7 @@ public abstract class ItemController<T extends Thing> {
         }
 
         Long id = service.create(form).getId();
+        log.info("{} created {} {}", authentication.getName(), kind, id);
         return redirectWithMessage(redirectAttributes, id, "created");
     }
 
@@ -103,6 +115,7 @@ public abstract class ItemController<T extends Thing> {
                             ItemForm form,
                             BindingResult binding,
                             Model model,
+                            Authentication authentication,
                             RedirectAttributes redirectAttributes) {
         if (binding.hasErrors()) {
             describe(model);
@@ -111,16 +124,20 @@ public abstract class ItemController<T extends Thing> {
         }
 
         service.update(id, form);
+        log.info("{} updated {} {}", authentication.getName(), kind, id);
         return redirectWithMessage(redirectAttributes, id, "updated");
     }
 
-    protected String archive(Long id, String actor, RedirectAttributes redirectAttributes) {
-        service.archive(id, actor);
+    protected String archive(Long id, Authentication authentication, RedirectAttributes redirectAttributes) {
+        service.archive(id, authentication.getName());
+        log.info("{} requested archiving of {} {}", authentication.getName(), kind, id);
         return redirectWithMessage(redirectAttributes, id, "archived");
     }
 
-    protected String delete(Long id, RedirectAttributes redirectAttributes) {
-        service.delete(id);
+    protected String delete(Long id, Authentication authentication, RedirectAttributes redirectAttributes) {
+        DeletedItem deleted = service.delete(id);
+        log.info("{} deleted {} {} with {} matches and {} claims",
+                authentication.getName(), kind, id, deleted.matches(), deleted.claims());
         return redirectWithMessage(redirectAttributes, id, "deleted");
     }
 

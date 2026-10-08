@@ -27,6 +27,7 @@ import org.shpytchuk.adminapi.service.found.FoundItemAdminService;
 import org.shpytchuk.adminapi.service.found.FoundItemHistoryAdminService;
 import org.shpytchuk.adminapi.service.lost.LostItemAdminService;
 import org.shpytchuk.adminapi.service.lost.LostItemHistoryAdminService;
+import org.shpytchuk.adminapi.view.DeletedItem;
 import org.shpytchuk.adminapi.view.Formats;
 import org.shpytchuk.adminapi.view.Plurals;
 import org.shpytchuk.adminapi.view.detail.SocialMediaIcons;
@@ -210,6 +211,7 @@ class ItemControllerPermissionsTests {
         when(service.form(7L)).thenReturn(form());
         when(service.create(any())).thenReturn(saved);
         when(service.update(eq(7L), any())).thenReturn(saved);
+        when(service.delete(7L)).thenReturn(new DeletedItem(0, 0));
     }
 
     private static ItemForm form() {

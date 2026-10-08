@@ -45,13 +45,13 @@ public class FoundItemAdminService extends AdminItemService<FoundItem> {
     }
 
     @Override
-    protected void deleteMatches(Long id) {
-        similarItemRepository.deleteByFoundItemId(id);
+    protected int deleteMatches(Long id) {
+        return similarItemRepository.deleteByFoundItemId(id);
     }
 
     @Override
-    protected void deleteClaims(Long id) {
-        itemClaims.deleteOf(id);
+    protected int deleteClaims(Long id) {
+        return itemClaims.deleteOf(id);
     }
 
     @Override

@@ -52,6 +52,9 @@ management:
     health:
       show-details: never
 
+logging:
+  exception-conversion-word: "%wEx{10}"
+
 derechi:
   site:
     url: ${DERECHI_SITE_URL:http://localhost:3000}

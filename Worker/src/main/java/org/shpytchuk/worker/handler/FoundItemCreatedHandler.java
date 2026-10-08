@@ -21,7 +21,7 @@ public class FoundItemCreatedHandler implements ItemCreatedHandler {
 
     private static final Logger log = LoggerFactory.getLogger(FoundItemCreatedHandler.class);
 
-    private final  ItemService<LostItem> lostItemSearch;
+    private final ItemService<LostItem> lostItemSearch;
     private final SimilarItemRepository similarItemRepository;
 
     @Override
@@ -32,12 +32,12 @@ public class FoundItemCreatedHandler implements ItemCreatedHandler {
     @Override
     @Transactional
     public void onItemCreated(ItemCreatedEvent event) {
-        log.info("Searching for lost items for the found {}", event.getId());
+        log.info("Searching lost items matching found item {}", event.getId());
 
         List<LostItem> candidates = lostItemSearch.findAllMostSuitable(event).getContent();
 
         if (candidates.isEmpty()) {
-            log.info("No candidates found for the founded item {}", event.getId());
+            log.info("No candidates for found item {}", event.getId());
             return;
         }
 
@@ -47,6 +47,6 @@ public class FoundItemCreatedHandler implements ItemCreatedHandler {
         Double[] matchOrders = candidates.stream().map(Thing::getOrderMatch).toArray(Double[]::new);
 
         int inserted = similarItemRepository.insertAll(foundItemIds, lostItemIds, matchOrders);
-        log.info("Saved {} candidates for the founded {}", inserted, event.getId());
+        log.info("Saved {} candidates for found item {}", inserted, event.getId());
     }
 }

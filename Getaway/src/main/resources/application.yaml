@@ -61,3 +61,6 @@ management:
   endpoint:
     health:
       show-details: never
+
+logging:
+  exception-conversion-word: "%wEx{10}"

@@ -1,5 +1,6 @@
 package org.shpytchuk.adminapi.config;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.shpytchuk.adminapi.exception.NotFoundException;
 import org.shpytchuk.adminapi.security.AdminPermissions;
@@ -18,6 +19,8 @@ import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
+import static org.springframework.core.NestedExceptionUtils.getMostSpecificCause;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -41,28 +44,32 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public String accessDenied(AccessDeniedException exception, Model model) {
-        log.debug("Відмова в доступі", exception);
+    public String accessDenied(AccessDeniedException exception, Model model, HttpServletRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.warn("{} was denied {} {}", authentication == null ? null : authentication.getName(),
+                request.getMethod(), request.getRequestURI());
         describeAdmin(model);
         model.addAttribute("message", text("error.forbidden"));
         return "error/403";
     }
 
     @ExceptionHandler(Exception.class)
-    public String unexpected(Exception exception, Model model, HttpServletResponse response) throws Exception {
+    public String unexpected(Exception exception, Model model,
+                             HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (exception instanceof ErrorResponse) {
             throw exception;
         }
 
         if (isTimeout(exception)) {
-            log.warn("Таймаут при обробці запиту", exception);
+            log.warn("{} {} timed out: {}", request.getMethod(), request.getRequestURI(),
+                    getMostSpecificCause(exception).toString());
             response.setStatus(HttpStatus.REQUEST_TIMEOUT.value());
             describeAdmin(model);
             model.addAttribute("message", text("error.timeout"));
             return "error/408";
         }
 
-        log.error("Необроблена помилка", exception);
+        log.error("{} {} failed", request.getMethod(), request.getRequestURI(), exception);
         response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         describeAdmin(model);
         model.addAttribute("message", text("error.unexpected"));

@@ -50,7 +50,7 @@ Each module has its own copy of `EventType` and `EventTypeScanner`; they are del
 
    Queue names come from properties (`derechi.items.queue`, `derechi.notification.queue`), so add `derechi.<something>.queue` to the consumer's `application.yaml` and reference it as `@RabbitListener(queues = "${...}")`.
 
-6. **Failure policy.** Consumers already set `spring.rabbitmq.listener.simple.retry.max-attempts: 3` and `default-requeue-rejected: false`, so an exception retries in-process three times and then dead-letters. Throw for transient failures; throw `AmqpRejectAndDontRequeueException` for messages that can never succeed so they go to the DLQ immediately.
+6. **Failure policy.** Consumers already set `spring.rabbitmq.listener.simple.retry.max-retries: 2` (Boot 4's name; the old `max-attempts` is silently ignored) and `default-requeue-rejected: false`, so a failing message is attempted three times in-process and then dead-letters. Throw for transient failures; throw `AmqpRejectAndDontRequeueException` for messages that can never succeed so they go to the DLQ immediately.
 
 7. **Idempotency.** RabbitMQ delivers at least once. Design the handler so a replay is harmless (the example deletes rows, which is naturally idempotent; inserts should use a natural key, as `similar_item` does with its composite primary key).
 

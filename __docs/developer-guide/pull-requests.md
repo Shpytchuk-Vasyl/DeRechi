@@ -87,8 +87,8 @@ For admin UI changes: before and after, in at least one non-English locale.
 
 ## What we do not have yet
 
-There are no required status checks because there is no CI configured in the repository. The
-plan is a GitHub Actions workflow that runs `./mvnw test` with Docker and blocks merge on
-failure, plus branch protection on `main` requiring one approval. Until then the author's
-green local run and the reviewer's judgement are the gate; say in the PR that you ran the
-full suite.
+The `tests` workflow (`.github/workflows/tests.yml`) runs `./mvnw test` of the shipped modules (all
+but `Admin-API`) and then the integration tests, see [stack tests](stack-tests.md#ci). For now it
+runs only on demand: the pull-request trigger is commented out, so it is not a status check, and
+branch protection on `main` (green `tests` and one approval) is still the plan. Until then the
+author runs it for the branch and the reviewer checks that the run is green before approving.

@@ -2,8 +2,6 @@ package org.shpytchuk.worker.listener;
 
 import org.shpytchuk.worker.event.ItemCreatedEvent;
 import org.shpytchuk.worker.handler.ItemCreatedHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -17,9 +15,6 @@ import java.util.stream.Collectors;
 @Component
 public class ItemCreatedListener {
 
-    private static final Logger log = LoggerFactory.getLogger(ItemCreatedListener.class);
-
-
     private final Map<String, ItemCreatedHandler> handlers;
 
     public ItemCreatedListener(List<ItemCreatedHandler> handlers) {
@@ -30,8 +25,6 @@ public class ItemCreatedListener {
     @RabbitListener(queues = "${derechi.items.queue}")
     public void onItemCreated(ItemCreatedEvent event, Message message) {
         String routingKey = message.getMessageProperties().getReceivedRoutingKey();
-        log.debug("Get {} with {} key", event, routingKey);
-
         ItemCreatedHandler handler = handlers.get(routingKey);
         if (handler == null) {
             throw new AmqpRejectAndDontRequeueException("No handler for the key " + routingKey);

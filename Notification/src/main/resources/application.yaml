@@ -19,7 +19,13 @@ spring:
         default-requeue-rejected: false
         retry:
           enabled: true
-          max-attempts: 3
+          max-retries: 2
+
+logging:
+  exception-conversion-word: "%wEx{10}"
+  level:
+    io.notifyhub.core.NotificationExecutor: ERROR
+    io.notifyhub.core.pipeline.RetrySendHandler: ERROR
 
 derechi:
   notification:

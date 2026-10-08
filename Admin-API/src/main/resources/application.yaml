@@ -127,6 +127,9 @@ management:
     health:
       show-details: never
 
+logging:
+  exception-conversion-word: "%wEx{10}"
+
 ---
 spring:
   config:

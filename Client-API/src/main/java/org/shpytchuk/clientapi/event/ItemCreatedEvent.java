@@ -21,4 +21,9 @@ public class ItemCreatedEvent {
         this.lon = dto.place().lon();
         this.title = dto.title();
     }
+
+    @Override
+    public String toString() {
+        return "ItemCreatedEvent[id=" + id + ", category=" + category + "]";
+    }
 }

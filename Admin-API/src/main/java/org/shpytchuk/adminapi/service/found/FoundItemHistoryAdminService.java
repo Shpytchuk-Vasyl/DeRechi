@@ -36,13 +36,13 @@ public class FoundItemHistoryAdminService extends AdminItemService<FoundItemHist
     }
 
     @Override
-    protected void deleteMatches(Long id) {
-        // no-op
+    protected int deleteMatches(Long id) {
+        return 0;
     }
 
     @Override
-    protected void deleteClaims(Long id) {
-        itemClaims.deleteOf(id);
+    protected int deleteClaims(Long id) {
+        return itemClaims.deleteOf(id);
     }
 
     @Override

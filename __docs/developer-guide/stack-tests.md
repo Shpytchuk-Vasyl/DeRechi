@@ -12,8 +12,8 @@ reactor, so `./mvnw test` does not run them:
 
 ```bash
 tests/run.sh                         # integration + load (profile `load`, 2 min, 10 visits/s)
-tests/run.sh --profile smoke         # what CI runs
-tests/run.sh --only integration      # or --only load
+tests/run.sh --profile smoke         # quick check of both
+tests/run.sh --only integration      # what CI runs; or --only load
 tests/run.sh --profile stress --rate 20 --items 100000 --keep
 ```
 
@@ -113,7 +113,19 @@ With `--keep`, Grafana (`http://localhost:13000`, anonymous view, `admin` / `adm
 
 ## CI
 
-[`.github/workflows/tests.yml`](../../.github/workflows/tests.yml) runs the same command on pull
-requests to `main` (`--profile smoke`) and on demand with a chosen profile and rate, puts
-`summary.md` on the job page and uploads `tests/reports/` as an artifact. Load numbers from a
-shared runner are a smoke check, not a benchmark.
+[`.github/workflows/tests.yml`](../../.github/workflows/tests.yml) runs on demand (`workflow_dispatch`);
+the pull-request trigger is written but commented out for now. Two stages:
+
+1. **`unit`**, one job per module that `images.yml` ships (`DB-Postgres`, `Getaway`, `Client-API`,
+   `Worker`, `Notification`), in parallel: `./mvnw -pl <module> test`. `Admin-API` is not tested
+   in CI. The context tests connect to `localhost` just like on a developer machine, so a job
+   starts from the root `docker-compose.yml` only what its module needs: PostgreSQL (our image with
+   the dictionaries) for `DB-Postgres` and `Client-API`, RabbitMQ with `rabbitmq-init` for
+   `Client-API`, `Worker` and `Notification`, nothing for `Getaway`. `Worker`'s database tests run
+   on their Testcontainers PostGIS. `fail-fast` is off, so one red module does not hide the others. On failure
+   the job uploads `target/surefire-reports/` and prints the compose logs.
+2. **`integration`**, only when every `unit` job is green: `tests/run.sh --only integration` on the
+   `derechi-tests` stack. It puts `summary.md` on the job page and uploads `tests/reports/` as an
+   artifact.
+
+Load tests are not in CI yet; run them with `tests/run.sh` by hand.

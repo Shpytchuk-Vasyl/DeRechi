@@ -29,19 +29,17 @@ public class GraphQlRequestLogger implements WebGraphQlInterceptor {
         long start = System.nanoTime();
         return chain.next(request)
                 .doOnNext(response -> logResponse(request, response, millisSince(start)))
-                .doOnError(failure -> log.error("GraphQL {} vars={} -> failed in {} ms",
-                        describe(request.getDocument(), request.getOperationName()),
-                        request.getVariables(), millisSince(start), failure));
+                .doOnError(failure -> log.error("GraphQL {} -> failed in {} ms",
+                        describe(request.getDocument(), request.getOperationName()), millisSince(start), failure));
     }
 
     private static void logResponse(WebGraphQlRequest request, WebGraphQlResponse response, long millis) {
         String operation = describe(request.getDocument(), request.getOperationName());
-        Object variables = request.getVariables();
         List<ResponseError> errors = response.getErrors();
         if (errors.isEmpty()) {
-            log.info("GraphQL {} vars={} -> OK in {} ms", operation, variables, millis);
+            log.info("GraphQL {} -> OK in {} ms", operation, millis);
         } else {
-            log.warn("GraphQL {} vars={} -> {} in {} ms", operation, variables, describe(errors), millis);
+            log.warn("GraphQL {} -> {} in {} ms", operation, describe(errors), millis);
         }
     }
 
@@ -65,9 +63,10 @@ public class GraphQlRequestLogger implements WebGraphQlInterceptor {
         }
     }
 
+    // Messages are left out: they may echo input (the confirmReturn token in NOT_FOUND, values in validation errors)
     private static String describe(List<ResponseError> errors) {
         return errors.stream()
-                .map(error -> error.getErrorType() + " at " + error.getPath() + ": " + error.getMessage())
+                .map(error -> error.getErrorType() + " at " + error.getPath())
                 .collect(Collectors.joining("; "));
     }
 

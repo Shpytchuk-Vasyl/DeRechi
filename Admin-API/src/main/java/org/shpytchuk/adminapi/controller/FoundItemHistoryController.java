@@ -12,6 +12,7 @@ import org.shpytchuk.adminapi.security.Scope;
 import org.shpytchuk.adminapi.service.found.FoundItemHistoryAdminService;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -56,8 +57,9 @@ public class FoundItemHistoryController extends ItemController<FoundItemHistory>
     public String create(@Valid @ModelAttribute("form") ItemForm form,
                          BindingResult binding,
                          Model model,
+                         Authentication authentication,
                          RedirectAttributes redirectAttributes) {
-        return super.create(form, binding, model, redirectAttributes);
+        return super.create(form, binding, model, authentication, redirectAttributes);
     }
 
     @Override
@@ -74,14 +76,16 @@ public class FoundItemHistoryController extends ItemController<FoundItemHistory>
                          @Valid @ModelAttribute("form") ItemForm form,
                          BindingResult binding,
                          Model model,
+                         Authentication authentication,
                          RedirectAttributes redirectAttributes) {
-        return super.update(id, form, binding, model, redirectAttributes);
+        return super.update(id, form, binding, model, authentication, redirectAttributes);
     }
 
     @Override
     @PostMapping("/{id}/delete")
     @RequirePermission(scope = Scope.FOUND_ITEM_HISTORY, action = Action.DELETE)
-    public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        return super.delete(id, redirectAttributes);
+    public String delete(@PathVariable Long id, Authentication authentication,
+                         RedirectAttributes redirectAttributes) {
+        return super.delete(id, authentication, redirectAttributes);
     }
 }

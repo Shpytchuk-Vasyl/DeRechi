@@ -15,9 +15,6 @@ import org.shpytchuk.adminapi.mapper.ItemMapper;
 import org.shpytchuk.adminapi.repository.matching.SimilarItemRepository;
 import org.shpytchuk.adminapi.view.Formats;
 import org.shpytchuk.adminapi.view.matching.NotifiedMatch;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.amqp.AmqpConnectException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -29,8 +26,6 @@ import java.time.Instant;
 @Service
 @AllArgsConstructor
 public class MatchNotificationService {
-
-    private static final Logger log = LoggerFactory.getLogger(MatchNotificationService.class);
 
     private static final String SUBJECT_KEY = "notification.match.subject";
     private static final String BODY_KEY = "notification.match.body";
@@ -50,14 +45,7 @@ public class MatchNotificationService {
 
         NotificationRequestedEvent event = getEvent(match, channel);
 
-        try {
-            rabbitTemplate.convertAndSend(properties.exchange(), properties.routingKey(), event);
-        log.info("Сповістили власника загубленої {} про знайдену {} каналом {} (адмін {})",
-                lostItemId, foundItemId, channel, actor);
-        } catch (AmqpConnectException e) {
-            log.error("Rabbit зараз не доступний.");
-            throw e;
-        }
+        rabbitTemplate.convertAndSend(properties.exchange(), properties.routingKey(), event);
 
         match.setNotifiedAt(Instant.now());
         match.setNotifiedBy(actor);

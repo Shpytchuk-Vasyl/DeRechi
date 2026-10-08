@@ -11,6 +11,7 @@ import org.shpytchuk.clientapi.dto.ItemSort;
 import org.shpytchuk.clientapi.entity.detail.ContactInfo;
 import org.shpytchuk.clientapi.entity.detail.ContactInfo.SocialMediaEnum;
 import org.shpytchuk.clientapi.entity.detail.Place;
+import org.shpytchuk.clientapi.entity.lost.LostItem;
 import org.shpytchuk.clientapi.entity.thing.Thing;
 import org.shpytchuk.clientapi.entity.thing.ThingCategory;
 import org.shpytchuk.clientapi.exeption.NotFoundException;
@@ -21,6 +22,8 @@ import org.shpytchuk.clientapi.repository.thing.ThingCategoryRepository;
 import org.shpytchuk.clientapi.repository.thing.ThingRepository;
 import org.shpytchuk.clientapi.specification.ThingSpecifications;
 import org.shpytchuk.clientapi.util.GeoPoints;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.*;
 import org.springframework.graphql.data.query.ScrollSubrange;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +35,8 @@ import java.util.function.Supplier;
 
 @AllArgsConstructor
 public abstract class ItemService<T extends Thing> {
+
+    private static final Logger log = LoggerFactory.getLogger(ItemService.class);
 
     private final ThingRepository<T> repository;
     private final ThingCategoryRepository categoryRepository;
@@ -61,7 +66,9 @@ public abstract class ItemService<T extends Thing> {
         ContactInfo info = new ContactInfo();
         apply(input, item, info);
         contactInfoRepository.save(info);
-        return ItemMapper.toDto(repository.save(item));
+        T saved = repository.save(item);
+        log.info("Created {} item {}", saved instanceof LostItem ? "lost" : "found", saved.getId());
+        return ItemMapper.toDto(saved);
     }
 
 //    @Transactional

@@ -50,7 +50,10 @@ public class ClaimUnlockService {
             throw e;
         }
         ClaimDto attached = service.attachProduct(claim.id(), product);
-        if (!product.variantId().equals(attached.paymentVariantId())) {
+        if (product.variantId().equals(attached.paymentVariantId())) {
+            log.info("Checkout created for {} claim {}: Fourthwall product {}, variant {}",
+                    kind, claim.id(), product.productId(), product.variantId());
+        } else {
             log.warn("Fourthwall product {} is orphaned: {} claim {} already had variant {}",
                     product.productId(), kind, claim.id(), attached.paymentVariantId());
         }

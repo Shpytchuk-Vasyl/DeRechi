@@ -26,7 +26,7 @@ public final class EventTypeScanner {
             Class<?> previous = mapping.put(id, type);
             if (previous != null) {
                 throw new IllegalStateException(
-                        "Duplicate @EventType(\"" + id + "\"): " + previous.getName() + " і " + type.getName());
+                        "Duplicate @EventType(\"" + id + "\"): " + previous.getName() + " and " + type.getName());
             }
         }
         return mapping;

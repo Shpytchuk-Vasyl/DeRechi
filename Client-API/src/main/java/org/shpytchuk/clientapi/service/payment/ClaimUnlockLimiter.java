@@ -6,6 +6,8 @@ import org.shpytchuk.clientapi.entity.detail.ContactInfo;
 import org.shpytchuk.clientapi.exeption.UnlockLimitException;
 import org.shpytchuk.clientapi.repository.found.FoundItemClaimRepository;
 import org.shpytchuk.clientapi.repository.lost.LostItemClaimRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,8 @@ import java.util.stream.Stream;
 @Service
 @AllArgsConstructor
 public class ClaimUnlockLimiter {
+
+    private static final Logger log = LoggerFactory.getLogger(ClaimUnlockLimiter.class);
 
     private final LostItemClaimRepository lostClaimRepository;
     private final FoundItemClaimRepository foundClaimRepository;
@@ -36,7 +40,10 @@ public class ClaimUnlockLimiter {
                 .sorted()
                 .toList();
         if (requested.size() >= properties.unlockLimit()) {
-            throw new UnlockLimitException(requested.get(requested.size() - properties.unlockLimit()).plus(window));
+            Instant retryAfter = requested.get(requested.size() - properties.unlockLimit()).plus(window);
+            log.info("Unlock limit reached for contact {}: {} checkouts in {}, retry after {}",
+                    claimant.getId(), requested.size(), window, retryAfter);
+            throw new UnlockLimitException(retryAfter);
         }
     }
 }

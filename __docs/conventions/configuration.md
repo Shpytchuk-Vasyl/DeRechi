@@ -91,7 +91,7 @@ Known issue: `Admin-API/src/main/resources/application.yaml` ships a Google Maps
 | Getaway | 8080 | 9080 | routes, global CORS from `WEB_ORIGIN_PATTERNS`, `files` and `files-upload` routes to MinIO |
 | Client-API | 8082 | 9082 | GraphQL schema location, GraphiQL enabled, `derechi.countries`, `derechi.claims`, `derechi.fourthwall` |
 | Admin-API | 8083 | 9083 | OIDC client `derechi-admin`, Caffeine cache `categories`, static resource content hashing, multipart 5 MB, S3 client for MinIO, `derechi.*` |
-| Worker | 8085 | 9085 | listener retry `max-attempts: 3`, `default-requeue-rejected: false`, queue name, ShedLock on the claims job |
+| Worker | 8085 | 9085 | listener retry `max-retries: 2` (3 attempts), `default-requeue-rejected: false`, queue name, ShedLock on the claims job |
 | Notification | 8084 | 9084 | same listener retry, `notify.*` NotifyHub config, queue name |
 
 All servlet modules set `spring.threads.virtual.enabled: true`, `spring.jpa.open-in-view: false` and `ddl-auto: none`. Copy those three lines into any new module.

@@ -19,6 +19,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.function.Predicate;
 
+import static org.springframework.core.NestedExceptionUtils.getMostSpecificCause;
+
 @Component
 @AllArgsConstructor
 public class ClaimFollowUpJob {
@@ -97,10 +99,11 @@ public class ClaimFollowUpJob {
                 }
             } catch (AmqpException unavailable) {
                 log.warn("{} claims: {} {} failed, the broker is unavailable; the rest waits for the next run: {}",
-                        kind, step, id, unavailable.getMessage());
+                        kind, step, id, getMostSpecificCause(unavailable).toString());
                 break;
             } catch (RuntimeException failed) {
-                log.warn("{} claims: {} {} failed, retrying on the next run", kind, step, id, failed);
+                log.warn("{} claims: {} {} failed, retrying on the next run: {}",
+                        kind, step, id, getMostSpecificCause(failed).toString());
             }
         }
         return done;

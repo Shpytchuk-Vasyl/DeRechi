@@ -88,7 +88,7 @@ spring:
         default-requeue-rejected: false
         retry:
           enabled: true
-          max-attempts: 3
+          max-retries: 2
 ```
 
 A failing message is retried in-process three times, then rejected without requeue, and the

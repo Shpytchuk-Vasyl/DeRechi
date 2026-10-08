@@ -62,6 +62,7 @@ public class FourthwallWebhookController {
             return ResponseEntity.badRequest().build();
         }
 
+        log.info("Accepted Fourthwall webhook {}", order.get());
         orderService.receive(order.get());
         return ResponseEntity.ok().build();
     }

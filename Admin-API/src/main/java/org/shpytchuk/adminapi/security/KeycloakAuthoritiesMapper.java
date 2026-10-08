@@ -46,7 +46,7 @@ public class KeycloakAuthoritiesMapper implements GrantedAuthoritiesMapper {
             }
         }
 
-        log.debug("Authorities адміна: {}", mapped);
+        log.debug("Admin authorities: {}", mapped);
         return mapped;
     }
 

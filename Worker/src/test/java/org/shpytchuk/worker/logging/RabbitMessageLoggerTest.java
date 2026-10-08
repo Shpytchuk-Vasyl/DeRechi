@@ -18,10 +18,20 @@ class RabbitMessageLoggerTest {
     private final RabbitMessageLogger logger = new RabbitMessageLogger();
 
     @Test
-    void describesTheQueueTheKeyTheTypeAndTheBody() {
+    void describesTheQueueTheKeyTheTypeAndTheId() {
         assertThat(RabbitMessageLogger.describe(message(false)))
-                .isEqualTo("worker.claims item.lost.claimed CLAIM {\"id\":42}");
+                .isEqualTo("worker.claims item.lost.claimed CLAIM 42");
         assertThat(RabbitMessageLogger.describe(message(true))).endsWith(" (redelivered)");
+    }
+
+    @Test
+    void leavesTheRestOfTheBodyOut() {
+        assertThat(RabbitMessageLogger.describe(message("{\"id\":17,\"title\":\"Keys\",\"lat\":50.4}")))
+                .isEqualTo("worker.claims item.lost.claimed CLAIM 17");
+        assertThat(RabbitMessageLogger.describe(message("{\"title\":\"Keys\"}")))
+                .isEqualTo("worker.claims item.lost.claimed CLAIM without id, 16 bytes");
+        assertThat(RabbitMessageLogger.describe(message("not json")))
+                .isEqualTo("worker.claims item.lost.claimed CLAIM without id, 8 bytes");
     }
 
     @Test
@@ -57,11 +67,19 @@ class RabbitMessageLoggerTest {
     }
 
     private static Message message(boolean redelivered) {
+        return message("{\"id\":42}", redelivered);
+    }
+
+    private static Message message(String body) {
+        return message(body, false);
+    }
+
+    private static Message message(String body, boolean redelivered) {
         MessageProperties properties = new MessageProperties();
         properties.setConsumerQueue("worker.claims");
         properties.setReceivedRoutingKey("item.lost.claimed");
         properties.setHeader("__TypeId__", "CLAIM");
         properties.setRedelivered(redelivered);
-        return new Message("{\"id\":42}".getBytes(StandardCharsets.UTF_8), properties);
+        return new Message(body.getBytes(StandardCharsets.UTF_8), properties);
     }
 }

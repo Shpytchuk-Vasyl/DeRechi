@@ -2,6 +2,8 @@ package org.shpytchuk.notification.config;
 
 import org.shpytchuk.notification.channel.SmsFlyChannel;
 import org.shpytchuk.notification.channel.SmsFlyProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
@@ -20,10 +22,13 @@ import java.net.http.HttpClient;
 @EnableConfigurationProperties(SmsFlyProperties.class)
 public class SmsFlyConfig {
 
+    private static final Logger log = LoggerFactory.getLogger(SmsFlyConfig.class);
+
     static final String API_KEY = "derechi.sms-fly.api-key";
 
     @Bean
     public SmsFlyChannel smsFlyChannel(SmsFlyProperties properties) {
+        log.info("SMS channel is on: SMS-fly {} as {}", properties.apiUrl(), properties.source());
         return SmsFlyChannel.of(RestClient.builder().requestFactory(requestFactory(properties)), properties);
     }
 

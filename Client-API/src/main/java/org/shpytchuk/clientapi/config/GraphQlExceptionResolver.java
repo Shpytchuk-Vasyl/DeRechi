@@ -10,6 +10,8 @@ import org.shpytchuk.clientapi.exeption.NotFoundException;
 import org.shpytchuk.clientapi.exeption.PaymentErrorType;
 import org.shpytchuk.clientapi.exeption.PaymentUnavailableException;
 import org.shpytchuk.clientapi.exeption.UnlockLimitException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.graphql.execution.DataFetcherExceptionResolverAdapter;
 import org.springframework.graphql.execution.ErrorType;
 import org.springframework.stereotype.Component;
@@ -17,14 +19,22 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.springframework.core.NestedExceptionUtils.getMostSpecificCause;
+
 @Component
 public class GraphQlExceptionResolver extends DataFetcherExceptionResolverAdapter {
+
+    private static final Logger log = LoggerFactory.getLogger(GraphQlExceptionResolver.class);
 
     @Override
     protected GraphQLError resolveToSingleError(Throwable ex, DataFetchingEnvironment env) {
         return switch (ex) {
             case NotFoundException e -> error(ErrorType.NOT_FOUND, e.getMessage(), env);
-            case PaymentUnavailableException e -> error(PaymentErrorType.PAYMENT_UNAVAILABLE, e.getMessage(), env);
+            case PaymentUnavailableException e -> {
+                log.warn("Payment unavailable at {}: {}", env.getExecutionStepInfo().getPath(),
+                        getMostSpecificCause(e).toString());
+                yield error(PaymentErrorType.PAYMENT_UNAVAILABLE, e.getMessage(), env);
+            }
             case UnlockLimitException e -> GraphqlErrorBuilder.newError(env)
                     .errorType(PaymentErrorType.UNLOCK_LIMIT)
                     .message(e.getMessage())

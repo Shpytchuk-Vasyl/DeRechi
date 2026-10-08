@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import static org.springframework.core.NestedExceptionUtils.getMostSpecificCause;
+
 @Component
 public class EventPublisher {
 
@@ -39,13 +41,15 @@ public class EventPublisher {
     public void publish(String exchange, String routingKey, Object event) {
         PendingEvent next = new PendingEvent(exchange, routingKey, event);
         if (!pending.isEmpty()) {
+            log.debug("Buffering {} with key {} behind {} pending events", event, routingKey, pending.size());
             buffer(next);
             return;
         }
         try {
             send(rabbitTemplate, next);
         } catch (AmqpException e) {
-            log.warn("RabbitMQ is unavailable, buffering {} with key {}: {}", event, routingKey, e.getMessage());
+            log.warn("RabbitMQ is unavailable, buffering {} with key {}: {}", event, routingKey,
+                    getMostSpecificCause(e).toString());
             buffer(next);
         }
     }
@@ -86,7 +90,8 @@ public class EventPublisher {
             log.info("Sent {} buffered events, {} left", batch.size(), pending.size());
             return true;
         } catch (AmqpException e) {
-            log.warn("RabbitMQ failed after {} of {} buffered events: {}", sent[0], batch.size(), e.getMessage());
+            log.warn("RabbitMQ failed after {} of {} buffered events: {}", sent[0], batch.size(),
+                    getMostSpecificCause(e).toString());
             for (int i = batch.size() - 1; i >= sent[0]; i--) {
                 if (!pending.offerFirst(batch.get(i))) {
                     log.error("Event buffer is full, dropping {}", batch.get(i));

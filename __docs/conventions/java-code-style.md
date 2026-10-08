@@ -46,9 +46,7 @@ Always a static logger from `LoggerFactory`:
 private static final Logger log = LoggerFactory.getLogger(MatchService.class);
 ```
 
-`@Slf4j` is not used in this project. One style keeps the codebase greppable and the logger field visible where it is declared.
-
-Log with placeholders, never string concatenation. Do not log full stack traces for expected conditions (a missing entity, a validation failure); those are handled and rendered by `GlobalExceptionHandler` or `GraphQlExceptionResolver`.
+`@Slf4j` is not used in this project. One style keeps the codebase greppable and the logger field visible where it is declared. What to log, at which level, and how to log a failure without a stack trace is in [Logging](logging.md).
 
 ## Blocking code, virtual threads
 

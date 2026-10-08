@@ -32,12 +32,12 @@ public class LostItemCreatedHandler implements ItemCreatedHandler {
     @Override
     @Transactional
     public void onItemCreated(ItemCreatedEvent event) {
-        log.info("Search for found items belonging to the person who lost them {}", event.getId());
+        log.info("Searching found items matching lost item {}", event.getId());
 
         List<FoundItem> candidates = foundItemSearch.findAllMostSuitable(event).getContent();
 
         if (candidates.isEmpty()) {
-            log.info("No candidates found for the lost {}", event.getId());
+            log.info("No candidates for lost item {}", event.getId());
             return;
         }
 
@@ -47,6 +47,6 @@ public class LostItemCreatedHandler implements ItemCreatedHandler {
         Double[] matchOrders = candidates.stream().map(Thing::getOrderMatch).toArray(Double[]::new);
 
         int inserted = similarItemRepository.insertAll(foundItemIds, lostItemIds, matchOrders);
-        log.info("Saved {} candidates for the lost {}", inserted, event.getId());
+        log.info("Saved {} candidates for lost item {}", inserted, event.getId());
     }
 }

@@ -125,7 +125,7 @@ spring:
         default-requeue-rejected: false
         retry:
           enabled: true
-          max-attempts: 3
+          max-retries: 2
 ```
 
 Datasource and RabbitMQ as in every service, from `POSTGRES_*` and `RABBITMQ_*`.

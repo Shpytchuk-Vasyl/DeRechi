@@ -10,6 +10,7 @@ import org.shpytchuk.adminapi.form.ItemFormValidator;
 import org.shpytchuk.adminapi.model.GlobalModelAdvice;
 import org.shpytchuk.adminapi.model.ItemModel;
 import org.shpytchuk.adminapi.service.ImageStorage;
+import org.shpytchuk.adminapi.view.DeletedItem;
 import org.shpytchuk.adminapi.view.Formats;
 import org.shpytchuk.adminapi.view.Plurals;
 import org.shpytchuk.adminapi.view.detail.SocialMediaIcons;
@@ -279,6 +280,7 @@ class LostItemControllerTests {
         verify(service, never()).delete(anyLong());
 
         when(service.scopeKey()).thenReturn("LOST_ITEM");
+        when(service.delete(7L)).thenReturn(new DeletedItem(0, 0));
 
         mockMvc.perform(post("/admin/lost-items/7/delete")
                         .with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.DELETE)))

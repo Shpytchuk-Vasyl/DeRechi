@@ -21,10 +21,9 @@ import org.shpytchuk.adminapi.repository.detail.PlaceRepository;
 import org.shpytchuk.adminapi.repository.thing.ThingCategoryRepository;
 import org.shpytchuk.adminapi.repository.thing.ThingRepository;
 import org.shpytchuk.adminapi.specification.ThingSpecifications;
+import org.shpytchuk.adminapi.view.DeletedItem;
 import org.shpytchuk.adminapi.view.matching.ClaimView;
 import org.shpytchuk.adminapi.view.detail.ItemView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,8 +36,6 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public abstract class AdminItemService<T extends Thing> {
-
-    private static final Logger log = LoggerFactory.getLogger(AdminItemService.class);
 
     private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory(new PrecisionModel(), 4326);
 
@@ -75,9 +72,9 @@ public abstract class AdminItemService<T extends Thing> {
         this.archiveRoutingKey = archiveRoutingKey;
     }
 
-    protected abstract void deleteMatches(Long id);
+    protected abstract int deleteMatches(Long id);
 
-    protected abstract void deleteClaims(Long id);
+    protected abstract int deleteClaims(Long id);
 
     @Transactional(readOnly = true)
     public Page<ItemView> page(Pageable pageable, ItemFilter filter) {
@@ -117,15 +114,15 @@ public abstract class AdminItemService<T extends Thing> {
         }
         require(id);
         rabbitTemplate.convertAndSend(archive.exchange(), archiveRoutingKey, new ArchiveRequestedEvent(id, actor));
-        log.info("{} asked to archive {} {}", actor, scopeKey, id);
     }
 
     @Transactional
-    public void delete(Long id) {
+    public DeletedItem delete(Long id) {
         T item = require(id);
-        deleteMatches(id);
-        deleteClaims(id);
+        int matches = deleteMatches(id);
+        int claims = deleteClaims(id);
         repository.delete(item);
+        return new DeletedItem(matches, claims);
     }
 
     public String scopeKey() {
@@ -161,7 +158,7 @@ public abstract class AdminItemService<T extends Thing> {
     private String countryCode(ItemForm form) {
         String code = upper(form.getCountryCode());
         if (!countries.supports(code)) {
-            throw new IllegalArgumentException("Непідтримувана країна: " + code);
+            throw new IllegalArgumentException("Unsupported country: " + code);
         }
         return code;
     }
@@ -171,7 +168,7 @@ public abstract class AdminItemService<T extends Thing> {
                 ? countries.currencyOf(countryCode)
                 : upper(form.getCurrency());
         if (!countries.currencies().contains(currency)) {
-            throw new IllegalArgumentException("Непідтримувана валюта: " + currency);
+            throw new IllegalArgumentException("Unsupported currency: " + currency);
         }
         return currency;
     }

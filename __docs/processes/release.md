@@ -109,8 +109,8 @@ docker compose --env-file env.prod -f docker-compose.yml -f docker-compose.servi
 
 ## Where we want to get to
 
-The plan is a GitHub Actions pipeline that builds the reactor, runs the tests with Docker,
-builds and pushes the images, applies migrations to staging and rolls the compose stack on a
-staging host, then promotes the same images to production after the smoke checks above pass.
-None of that exists in the repository yet; until it does, the steps on this page are run by
+Two pieces exist: the `tests` workflow runs the module suites and the integration tests on
+demand, and `images` builds and pushes the images on demand. The plan is to chain them, then apply migrations to staging, roll the compose stack on a
+staging host and promote the same images to production after the smoke checks above pass.
+The deploy part does not exist yet; until it does, the steps on this page are run by
 hand by whoever releases.

@@ -35,7 +35,7 @@ spring:
         default-requeue-rejected: false
         retry:
           enabled: true
-          max-attempts: 3
+          max-retries: 2
 
 derechi:
   items:
@@ -65,3 +65,6 @@ management:
   endpoint:
     health:
       show-details: never
+
+logging:
+  exception-conversion-word: "%wEx{10}"

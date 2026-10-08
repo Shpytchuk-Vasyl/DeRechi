@@ -70,7 +70,7 @@ public class SmsFlyChannel implements NotificationChannel {
         }
 
         String messageId = text(data, "messageID");
-        log.info("SMS-fly прийняв повідомлення {}, вартість {}", messageId, text(data.path(NAME), "cost"));
+        log.info("SMS-fly accepted message {}, cost {}", messageId, text(data.path(NAME), "cost"));
         return new SendResult(messageId);
     }
 

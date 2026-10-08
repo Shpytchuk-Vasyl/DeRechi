@@ -6,9 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
-import org.springframework.core.NestedExceptionUtils;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 
-import java.nio.charset.StandardCharsets;
+import static org.springframework.core.NestedExceptionUtils.getMostSpecificCause;
 
 public class RabbitMessageLogger implements MethodInterceptor {
 
@@ -31,20 +33,35 @@ public class RabbitMessageLogger implements MethodInterceptor {
             return result;
         } catch (Throwable failure) {
             log.warn("Rabbit {} -> failed in {} ms: {}", received, millisSince(start),
-                    NestedExceptionUtils.getMostSpecificCause(failure).toString());
+                    getMostSpecificCause(failure).toString());
             throw failure;
         }
     }
 
     static String describe(Message message) {
         MessageProperties properties = message.getMessageProperties();
-        String body = message.getBody() == null ? "" : new String(message.getBody(), StandardCharsets.UTF_8);
         return "%s %s %s %s%s".formatted(
                 properties.getConsumerQueue(),
                 properties.getReceivedRoutingKey(),
                 properties.getHeader(TYPE_HEADER),
-                body,
+                id(message.getBody()),
                 Boolean.TRUE.equals(properties.isRedelivered()) ? " (redelivered)" : "");
+    }
+
+    private static String id(byte[] body) {
+        if (body == null || body.length == 0) {
+            return "without body";
+        }
+        try {
+            JsonNode tree = JsonMapper.shared().readTree(body);
+            JsonNode id = tree == null ? null : tree.path("id");
+            if (id != null && id.isIntegralNumber()) {
+                return id.asString();
+            }
+        } catch (JacksonException unreadable) {
+            // not JSON: the conversion fails later and the failure line says why
+        }
+        return "without id, " + body.length + " bytes";
     }
 
     private static long millisSince(long start) {

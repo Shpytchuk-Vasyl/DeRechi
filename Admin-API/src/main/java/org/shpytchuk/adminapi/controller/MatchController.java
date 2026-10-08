@@ -13,6 +13,8 @@ import org.shpytchuk.adminapi.service.matching.MatchService;
 import org.shpytchuk.adminapi.view.matching.MatchRow;
 import org.shpytchuk.adminapi.view.matching.NotifiedMatch;
 import org.shpytchuk.adminapi.view.Pager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -25,6 +27,8 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 @CachedPage
 public class MatchController {
+
+    private static final Logger log = LoggerFactory.getLogger(MatchController.class);
 
     static final String BASE_PATH = "/admin/matches";
 
@@ -68,6 +72,8 @@ public class MatchController {
                               Model model) {
         NotifiedMatch notified = notificationService.notifyOwner(
                 lostItemId, foundItemId, authentication.getName(), channel);
+        log.info("{} notified the owner of lost item {} about found item {} via {}",
+                authentication.getName(), lostItemId, foundItemId, channel);
 
         model.addAttribute("lost", notified.lost());
         model.addAttribute("candidate", notified.candidate());

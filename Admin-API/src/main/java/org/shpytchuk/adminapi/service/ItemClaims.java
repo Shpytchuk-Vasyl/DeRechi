@@ -61,13 +61,14 @@ public final class ItemClaims<C extends Claim> {
         return result;
     }
 
-    public void deleteOf(Long itemId) {
+    public int deleteOf(Long itemId) {
         List<C> claims = byId.apply(itemId);
         if (claims.isEmpty()) {
-            return;
+            return 0;
         }
         List<ContactInfo> contacts = claims.stream().map(Claim::getContactInfo).toList();
         repository.deleteAll(claims);
         contactInfoRepository.deleteAll(contacts);
+        return claims.size();
     }
 }
