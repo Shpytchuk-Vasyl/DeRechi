@@ -457,5 +457,11 @@
   "smsOutage": {
     "title": "Sorry, SMS is temporarily unavailable",
     "text": "We are working on it. Emails arrive as usual."
+  },
+  "maintenance": {
+    "title": "Technical work in progress",
+    "text": "DeRechi is being updated right now. We will be back soon, thank you for your patience.",
+    "home": "Go to the home page",
+    "metaDescription": "DeRechi is temporarily unavailable due to technical work."
   }
 }

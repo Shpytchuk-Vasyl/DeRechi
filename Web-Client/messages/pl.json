@@ -457,5 +457,11 @@
   "smsOutage": {
     "title": "Niestety SMS-y chwilowo nie działają",
     "text": "Pracujemy nad tym. E-maile docierają jak zwykle."
+  },
+  "maintenance": {
+    "title": "Trwają prace techniczne",
+    "text": "Właśnie aktualizujemy DeRechi. Wkrótce wracamy, dziękujemy za cierpliwość.",
+    "home": "Na stronę główną",
+    "metaDescription": "DeRechi jest chwilowo niedostępny z powodu prac technicznych."
   }
 }

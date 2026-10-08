@@ -457,5 +457,11 @@
   "smsOutage": {
     "title": "SMS funktionieren leider vorübergehend nicht",
     "text": "Wir arbeiten daran. E-Mails kommen wie gewohnt an."
+  },
+  "maintenance": {
+    "title": "Technische Wartungsarbeiten",
+    "text": "Wir aktualisieren DeRechi gerade. Wir sind bald zurück, danke für deine Geduld.",
+    "home": "Zur Startseite",
+    "metaDescription": "DeRechi ist wegen Wartungsarbeiten vorübergehend nicht verfügbar."
   }
 }

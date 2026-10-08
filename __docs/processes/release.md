@@ -65,7 +65,10 @@ a staging host, tags). Where something does not exist in the repository yet, it 
    `/graphql` while `Client-API` restarts. The only start order is the one Compose enforces:
    `db-postgres` before the services that use the database.
 6. **Web-Client** is built and started separately with `pnpm build` and `pnpm start`, pointed at
-   the gateway through `GRAPHQL_URL` and `NEXT_PUBLIC_FILES_URL`.
+   the gateway through `GRAPHQL_URL` and `NEXT_PUBLIC_FILES_URL`. If the release takes the API
+   down for longer than a restart, deploy the web client with `NEXT_PUBLIC_MAINTENANCE=true`
+   first and switch it back off once the smoke checks pass. Only the home page and the legal
+   pages stay open; see [Web-Client feature flags](../architecture/modules/web-client.md#feature-flags).
 
 With the compose stack this collapses to one command, which is how we run it today:
 

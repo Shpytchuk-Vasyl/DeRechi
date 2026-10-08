@@ -457,5 +457,11 @@
   "smsOutage": {
     "title": "Les SMS sont malheureusement indisponibles pour le moment",
     "text": "Nous y travaillons. Les e-mails arrivent comme d’habitude."
+  },
+  "maintenance": {
+    "title": "Maintenance en cours",
+    "text": "Nous mettons DeRechi à jour en ce moment. Nous revenons bientôt, merci de votre patience.",
+    "home": "Retour à l’accueil",
+    "metaDescription": "DeRechi est temporairement indisponible pour cause de maintenance."
   }
 }

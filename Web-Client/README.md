@@ -161,6 +161,14 @@ unavailable, emails arrive as usual", `smsOutage.*` in the bundles, `useSmsOutag
 Nothing is blocked; the claim and the payment go through as usual. Unset or `false` turns it
 off. Being `NEXT_PUBLIC_`, it is inlined at build time, so flipping it needs a rebuild.
 
+### Maintenance mode
+
+`NEXT_PUBLIC_MAINTENANCE=true` closes the site for technical work: `src/proxy.ts` redirects (307)
+every page except the home page, `/terms` and `/privacy` to `/{locale}/maintenance`
+(`maintenance.*` in the bundles). Links on the home page still lead there. `/api/*` and files
+are outside the proxy matcher and keep working. With the flag off the maintenance page is a 404.
+Same as the SMS flag, it is inlined at build time and needs a rebuild.
+
 ### Unlocking the author's phone number (Fourthwall)
 
 After a claim, the "done" state offers the author's phone number (only the number, not the
