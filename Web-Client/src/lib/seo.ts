@@ -5,10 +5,9 @@ import { clientEnv } from "@/lib/env/client"
 
 export const SITE_URL = clientEnv.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "")
 
-export const INDEXABLE = false //temporary offline;
-//process.env.NODE_ENV === "production" && !LOCAL_HOST.test(new URL(SITE_URL).hostname)
+export const INDEXABLE = !!process.env.VERCEL;
 
-export const STALE_AFTER_DAYS = 30
+export const STALE_AFTER_DAYS = 14
 
 const DESCRIPTION_LIMIT = 160
 
