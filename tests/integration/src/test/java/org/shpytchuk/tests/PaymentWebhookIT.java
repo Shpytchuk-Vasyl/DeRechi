@@ -29,7 +29,7 @@ class PaymentWebhookIT extends StackIT {
                 "select count(*) from lost_item_claim where id = ? and paid_at is not null and contacts_sent_at is not null",
                 claim.id())).isEqualTo(1));
         Mail mail = awaitOneMailTo(claimant.email());
-        assertThat(mail.subject()).isEqualTo("DeRechi: номер автора оголошення «%s»".formatted(item.title()));
+        assertThat(mail.subject()).isEqualTo("DeRechi: номер автора оголошення «%s»".formatted(shortTitle(item.title())));
         assertThat(digits(mail.text())).contains(digits(item.author().phone()));
         JsonNode status = graphql("""
                 query($itemId: ID!, $id: ID!) { lostItemClaim(itemId: $itemId, id: $id) { paid contactsSent } }""",
@@ -50,6 +50,10 @@ class PaymentWebhookIT extends StackIT {
         assertThat(response.statusCode()).isEqualTo(401);
         assertThat(count("select count(*) from lost_item_claim where id = ? and paid_at is null", claim.id()))
                 .isEqualTo(1);
+    }
+
+    private static String shortTitle(String title) {
+        return title.length() <= 15 ? title : title.substring(0, 15).strip() + "...";
     }
 
     private static String order(String variant) {
