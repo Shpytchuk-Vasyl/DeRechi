@@ -35,7 +35,7 @@ Tests are JUnit 5 with AssertJ and Spring Boot's test starters. Database-backed 
 
 - starts `postgis/postgis:17-3.5` once per JVM (`@Testcontainers(disabledWithoutDocker = true)`),
 - applies `DB-Postgres/changelog/changelog-master.yaml` through the Liquibase API, reading the changelog from the sibling module's folder,
-- skips the Ukrainian full-text configuration, because the hunspell dictionary only exists in our custom Postgres image (see [docker-image](../deployment/docker-image.md)),
+- skips the Ukrainian and Polish full-text configurations (`skipHunspellFullTextSearch`), because the hunspell dictionaries only exist in our custom Postgres image (see [docker-image](../deployment/docker-image.md)),
 - truncates every table with `RESTART IDENTITY CASCADE` before each test,
 - points `spring.datasource.*` at the container through `@DynamicPropertySource`.
 

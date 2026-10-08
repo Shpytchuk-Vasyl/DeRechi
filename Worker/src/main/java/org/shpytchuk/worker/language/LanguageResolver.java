@@ -18,7 +18,7 @@ import java.util.List;
 @Component
 public class LanguageResolver {
 
-    private static final List<String> DETECT_ONLY_CODES = List.of("pl");
+    private static final List<String> DETECT_ONLY_CODES = List.of();
 
     private final LanguageDetector detector;
     private final TextObjectFactory textObjectFactory;

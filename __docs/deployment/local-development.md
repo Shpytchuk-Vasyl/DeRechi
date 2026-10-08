@@ -21,7 +21,7 @@ docker compose --profile dev up -d
 
 `--profile dev` adds Mailpit and pgAdmin, which production does not run; `--env-file env.local` does the same through `COMPOSE_PROFILES=dev`.
 
-This builds the custom PostGIS image on first run (it downloads the Ukrainian hunspell dictionary), then starts PostgreSQL, RabbitMQ, Keycloak, MinIO (plus the `minio-init` job that creates the `derechi-files` bucket and the `rabbitmq-init` job that imports the queues), Mailpit, pgAdmin, Prometheus, Alertmanager and Grafana. Wait until `docker compose ps` shows `healthy` for PostgreSQL, RabbitMQ, MinIO and Mailpit and `running` for the rest. Keycloak takes the longest; it is ready when `http://localhost:8180` answers.
+This builds the custom PostGIS image on first run (it downloads the Ukrainian and Polish hunspell dictionaries), then starts PostgreSQL, RabbitMQ, Keycloak, MinIO (plus the `minio-init` job that creates the `derechi-files` bucket and the `rabbitmq-init` job that imports the queues), Mailpit, pgAdmin, Prometheus, Alertmanager and Grafana. Wait until `docker compose ps` shows `healthy` for PostgreSQL, RabbitMQ, MinIO and Mailpit and `running` for the rest. Keycloak takes the longest; it is ready when `http://localhost:8180` answers.
 
 ## 2. Create the schema
 

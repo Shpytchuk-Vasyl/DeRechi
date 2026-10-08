@@ -93,6 +93,19 @@ class ItemServiceTests extends AbstractRepositoryTests {
     }
 
     @Test
+    void ranksAPolishTitleWithThePolishConfiguration() {
+        LostItem umbrella = lost("Parasolka", null);
+        LostItem wallet = lost("Czarny skórzany portfel z dokumentami", null);
+
+        List<LostItem> found = service.findAllMostSuitable(event("Czarny skórzany portfel z dokumentami")).getContent();
+
+        assertThat(found).extracting(Thing::getId).containsExactly(wallet.getId(), umbrella.getId());
+        assertThat(found.getFirst().getOrderMatch())
+                .isCloseTo(rank("polish", wallet.getId(), "Czarny skórzany portfel z dokumentami"), within(1e-6))
+                .isPositive();
+    }
+
+    @Test
     void keepsAtMostFiveCandidates() {
         for (int i = 0; i < 7; i++) {
             lost("Wallet " + i, null);

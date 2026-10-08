@@ -12,7 +12,7 @@ Check what PostgreSQL offers out of the box:
 SELECT cfgname FROM pg_ts_config ORDER BY 1;
 ```
 
-The stock image ships snowball configs for most Western European languages plus `russian`; `ukrainian` is ours (hunspell, built in `docker/postgres/Dockerfile` and migration `001`). Polish is **not** in the list, which is why it is detect-only today.
+The stock image ships snowball configs for most Western European languages plus `russian`; `ukrainian` and `polish` are ours (hunspell, built in `docker/postgres/Dockerfile` and migrations `001` and `010`).
 
 Two cases follow.
 
@@ -34,12 +34,14 @@ Two cases follow.
 
 ## Case 2: PostgreSQL has no config (example: Polish)
 
-1. **Dictionary.** Extend `docker/postgres/Dockerfile`: download a hunspell dictionary for the language in the `dict` stage, rename to `pl_pl.dict` and `pl_pl.affix` (PostgreSQL insists on those extensions, lower case), and `COPY` them into `tsearch_data` next to the Ukrainian files. Add a stop-word file (`polish.stop`) alongside `ukrainian.stop`.
+Polish went this way already, so its files are the reference: the `DICT_PL_COMMIT` block in `docker/postgres/Dockerfile`, `docker/postgres/polish.stop` and `010-polish-fts.postgresql.sql`.
+
+1. **Dictionary.** Extend `docker/postgres/Dockerfile`: download a hunspell dictionary for the language in the `dict` stage, rename to `pl_pl.dict` and `pl_pl.affix` (PostgreSQL insists on those extensions, lower case), and `COPY` them into `tsearch_data` next to the Ukrainian files. PostgreSQL reads them only in UTF-8: check the `SET` line of the `.aff` file, and if it names another charset (`pl_PL` is `ISO8859-2`), convert both files with `iconv` and rewrite that line to `SET UTF-8`. Pin the download (a release version or a commit). Add a stop-word file (`polish.stop`) alongside `ukrainian.stop`.
 
 2. **Migration.** New changeset in `DB-Postgres/changelog/changes/`, modelled on `001-ukrainian-fts`:
 
    ```sql
-   --changeset vasil:006-polish-fts
+   --changeset vasil:010-polish-fts
    --preconditions onFail:MARK_RAN onError:HALT
    --precondition-sql-check expectedResult:0 SELECT count(*) FROM pg_ts_config WHERE cfgname = 'polish'
    CREATE TEXT SEARCH DICTIONARY polish_hunspell (
@@ -55,7 +57,7 @@ Two cases follow.
 
 4. **Enum.** Add `POLISH("pl", "polish")` to `SearchLanguage` and remove `"pl"` from `LanguageResolver.DETECT_ONLY_CODES`, otherwise the profile is loaded twice.
 
-5. **Tests.** `Client-API`'s `AbstractPostgresTests` runs the real changelog against a stock `postgis/postgis` container, which has no hunspell files. It pre-creates `ukrainian` as `COPY = simple` in `skipUkrainianFullTextSearch()` so the `001` precondition marks the changeset as run. Do the same for the new config in that method (and in any other module's test base that migrates), or the migration fails in CI.
+5. **Tests.** The `AbstractPostgresTests` of `Client-API`, `Admin-API` and `Worker` run the real changelog against a stock `postgis/postgis` container, which has no hunspell files. They pre-create `ukrainian` and `polish` as `COPY = simple` in `skipHunspellFullTextSearch()` so the preconditions of `001` and `010` mark those changesets as run. Add the new config to that method in all three, or the migration fails in CI.
 
 ## Tests to add or update
 

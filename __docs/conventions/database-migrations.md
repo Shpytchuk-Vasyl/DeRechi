@@ -77,7 +77,7 @@ Put the schema change and the backfill of one column into the same changeset so 
 
 ## Tests run the real changelog
 
-`Client-API`'s `AbstractPostgresTests` starts `postgis/postgis:17-3.5` in Testcontainers and applies `DB-Postgres/changelog/changelog-master.yaml` through the Liquibase API before the context starts. A migration that does not apply cleanly to an empty database fails `./mvnw -pl Client-API test`, which is the cheapest way to check a changeset before a review. The test harness skips the Ukrainian full-text configuration because the hunspell dictionary only exists in our custom Postgres image; see [testing](testing.md).
+`Client-API`'s `AbstractPostgresTests` starts `postgis/postgis:17-3.5` in Testcontainers and applies `DB-Postgres/changelog/changelog-master.yaml` through the Liquibase API before the context starts. A migration that does not apply cleanly to an empty database fails `./mvnw -pl Client-API test`, which is the cheapest way to check a changeset before a review. The test harness skips the Ukrainian and Polish full-text configurations because the hunspell dictionaries only exist in our custom Postgres image; see [testing](testing.md).
 
 ## Timezone
 

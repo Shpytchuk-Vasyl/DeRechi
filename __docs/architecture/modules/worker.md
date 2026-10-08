@@ -58,12 +58,12 @@ words, and the title can be in any of the languages the site supports.
 |---|---|
 | `ENGLISH`, `GERMAN`, `FRENCH`, `SPANISH`, `ITALIAN`, `RUSSIAN` | the PostgreSQL built-ins |
 | `UKRAINIAN` | `ukrainian`, created by migration 001 from the hunspell dictionary baked into our PostgreSQL image |
+| `POLISH` | `polish`, created by migration 010 the same way, from the `pl_PL` hunspell dictionary (sjp.pl) |
 | `SIMPLE` | `simple`, the fallback for a blank title, an undetected language, or a detected language with no configuration |
 
-The detector is loaded with profiles for every `SearchLanguage` plus `pl`
-(`DETECT_ONLY_CODES`). Polish is in the detector so that Polish titles are not mistaken
-for Ukrainian or Russian, but there is no `polish` configuration in PostgreSQL, so it
-falls through to `simple`. Adding a language is described in
+The detector is loaded with profiles for every `SearchLanguage` plus `DETECT_ONLY_CODES`
+(empty today): a language can be detected without a configuration, so that its titles are
+not mistaken for a neighbour, and then falls through to `simple`. Adding a language is described in
 [../../extending/add-a-search-language.md](../../extending/add-a-search-language.md).
 
 `FullTextFunctionContributor` registers one HQL function per `SearchLanguage`

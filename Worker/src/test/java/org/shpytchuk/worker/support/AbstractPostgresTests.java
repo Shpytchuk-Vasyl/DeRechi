@@ -34,7 +34,7 @@ public abstract class AbstractPostgresTests {
 
     static {
         POSTGRES.start();
-        skipUkrainianFullTextSearch();
+        skipHunspellFullTextSearch();
         migrate();
     }
 
@@ -60,10 +60,11 @@ public abstract class AbstractPostgresTests {
         registry.add("spring.datasource.password", POSTGRES::getPassword);
     }
 
-    private static void skipUkrainianFullTextSearch() {
+    private static void skipHunspellFullTextSearch() {
         try (Connection connection = connect();
              Statement statement = connection.createStatement()) {
             statement.execute("CREATE TEXT SEARCH CONFIGURATION ukrainian (COPY = simple)");
+            statement.execute("CREATE TEXT SEARCH CONFIGURATION polish (COPY = simple)");
         } catch (Exception e) {
             throw new IllegalStateException("Cannot prepare the test database", e);
         }

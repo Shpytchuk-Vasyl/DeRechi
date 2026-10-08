@@ -21,7 +21,7 @@ One container, two databases:
 - `derechi` is the application database shared by every service. Its schema is owned by `DB-Postgres` and applied with Liquibase; see [database](../architecture/database.md).
 - `keycloak` is created by `docker/postgres/initdb/01-keycloak.sh` (as `POSTGRES_USER`) on the first start of an empty volume and is managed entirely by Keycloak.
 
-The image is a custom build of `postgis/postgis:17-3.5` with the Ukrainian hunspell dictionary and stop-word list, needed by the `ukrainian` full-text search configuration that `Worker` uses for ranking; see [docker-image](docker-image.md).
+The image is a custom build of `postgis/postgis:17-3.5` with the Ukrainian and Polish hunspell dictionaries and stop-word lists, needed by the `ukrainian` and `polish` full-text search configurations that `Worker` uses for ranking; see [docker-image](docker-image.md).
 
 ```bash
 docker exec -it derechi-postgres psql -U derechi -d derechi

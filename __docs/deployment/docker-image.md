@@ -68,9 +68,9 @@ The build context is the repository root. `.dockerignore` keeps `**/target/`, `.
 
 `docker/postgres/Dockerfile` builds the database image used by compose:
 
-1. A small Alpine stage downloads the Ukrainian hunspell dictionary from the `dict_uk` project (version pinned by `DICT_UK_VERSION=6.8.5`) and renames the files to `uk_ua.dict` / `uk_ua.affix`, the names PostgreSQL's ispell template expects.
-2. The final stage is `postgis/postgis:17-3.5` with those files and `ukrainian.stop` copied into `tsearch_data/`, plus `initdb/` copied into `docker-entrypoint-initdb.d/`.
+1. A small Alpine stage downloads the Ukrainian hunspell dictionary from the `dict_uk` project (version pinned by `DICT_UK_VERSION=6.8.5`) and renames the files to `uk_ua.dict` / `uk_ua.affix`, the names PostgreSQL's ispell template expects. The same stage downloads the Polish `pl_PL` dictionary (sjp.pl) from `LibreOffice/dictionaries` at the commit pinned in `DICT_PL_COMMIT`, converts it from ISO-8859-2 to UTF-8 (PostgreSQL reads dictionaries only in UTF-8, the `SET` line of the affix file is rewritten too) and saves it as `pl_pl.dict` / `pl_pl.affix`.
+2. The final stage is `postgis/postgis:17-3.5` with those files and `ukrainian.stop` and `polish.stop` (the `stopwords-iso` list) copied into `tsearch_data/`, plus `initdb/` copied into `docker-entrypoint-initdb.d/`.
 
-`initdb/01-keycloak.sh` creates the `keycloak` database on the first start of an empty volume. Migration `001` in `DB-Postgres` then creates the `ukrainian` text-search configuration on top of the dictionary, which is why the stock `postgis/postgis` image cannot be used directly for a full database and why the test harness skips that changeset.
+`initdb/01-keycloak.sh` creates the `keycloak` database on the first start of an empty volume. Migrations `001` and `010` in `DB-Postgres` then create the `ukrainian` and `polish` text-search configurations on top of the dictionaries, which is why the stock `postgis/postgis` image cannot be used directly for a full database and why the test harness skips those changesets.
 
 The image is tagged `derechi/postgis:17-3.5-uk`. A commented line in the Dockerfile points to `imresamu/postgis` for macOS on Apple silicon, where the official image has no arm64 build.

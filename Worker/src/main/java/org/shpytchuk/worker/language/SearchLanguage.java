@@ -13,6 +13,7 @@ public enum SearchLanguage {
     ITALIAN("it", "italian"),
     RUSSIAN("ru", "russian"),
     UKRAINIAN("uk", "ukrainian"),
+    POLISH("pl", "polish"),
 
     SIMPLE(null, "simple");
 

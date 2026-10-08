@@ -36,13 +36,14 @@ PostgreSQL full-text search needs a configuration (`regconfig`) to stem words. `
 | `SPANISH` | es | `spanish` |
 | `ITALIAN` | it | `italian` |
 | `UKRAINIAN` | uk | `ukrainian` |
+| `POLISH` | pl | `polish` |
 | `SIMPLE` | none | `simple` |
 
-Polish is in `DETECT_ONLY_CODES`: the detector knows it so that Polish text is not misread as Ukrainian, but there is no Polish regconfig in PostgreSQL, so it resolves to `SIMPLE` (no stemming, exact tokens).
+`DETECT_ONLY_CODES` (empty today) is for a language the detector should know without a regconfig, so that its text is not misread as a neighbour; such a language resolves to `SIMPLE` (no stemming, exact tokens).
 
 `FullTextFunctionContributor` registers an HQL function `ts_rank_<regconfig>` for every enum value plus a generic `ts_rank_cfg` and the `dwithin` predicate. That is why adding a language is an enum change rather than SQL (see [Add a search language](../extending/add-a-search-language.md)).
 
-The `ukrainian` configuration is not built into PostgreSQL. `docker/postgres/Dockerfile` downloads the `dict_uk` hunspell dictionary into `tsearch_data`, and migration `001-extentions-and-configuration.sql` creates the dictionary and configuration. Tests on a stock PostGIS image stub it with `COPY = simple` (`AbstractPostgresTests.skipUkrainianFullTextSearch`).
+The `ukrainian` and `polish` configurations are not built into PostgreSQL. `docker/postgres/Dockerfile` downloads the `dict_uk` and `pl_PL` hunspell dictionaries into `tsearch_data`, and migrations `001-extentions-and-configuration.sql` and `010-polish-fts.postgresql.sql` create the dictionaries and configurations. Tests on a stock PostGIS image stub both with `COPY = simple` (`AbstractPostgresTests.skipHunspellFullTextSearch`).
 
 ## Failure handling
 

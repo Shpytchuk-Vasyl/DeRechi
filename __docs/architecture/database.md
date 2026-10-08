@@ -71,13 +71,13 @@ Two type choices are deliberate:
 ## Extensions and text search
 
 Migration 001 enables PostGIS and creates a `ukrainian` text search configuration from the
-hunspell dictionary that `docker/postgres/Dockerfile` bakes into the image. The
-configuration is guarded by a precondition so the changeset is marked as run on a database
+hunspell dictionary that `docker/postgres/Dockerfile` bakes into the image; migration 010
+does the same for `polish`. Each configuration is guarded by a precondition so the changeset is marked as run on a database
 where it already exists.
 
 `Worker` ranks candidates with `ts_rank(to_tsvector('<config>', ...), ...)`, where
 `<config>` is one of PostgreSQL's built-in configurations (`english`, `german`, `french`,
-`spanish`, `italian`, `russian`), our `ukrainian`, or `simple` as the fallback. See
+`spanish`, `italian`, `russian`), our `ukrainian` and `polish`, or `simple` as the fallback. See
 [modules/worker.md](modules/worker.md).
 
 PostGIS owns a few catalog-like tables (`spatial_ref_sys`, `geometry_columns`, ...). They
