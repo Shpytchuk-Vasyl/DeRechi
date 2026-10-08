@@ -152,7 +152,7 @@ and [../../features/places.md](../../features/places.md).
 | `derechi.admin.page-size` | 20 | |
 | `derechi.maps.api-key`, `region` | from `GOOGLE_MAPS_API_KEY`, `UA` | |
 | `derechi.countries.supported`, `fallback` | `[UA, PL, DE, FR]`, `UA` | |
-| `derechi.storage.bucket`, `public-url`, `max-size` | `derechi-files`, `MINIO_PUBLIC_URL`, 5MB | `MINIO_PUBLIC_URL=http://localhost:8080/files` |
+| `derechi.storage.bucket`, `public-url`, `max-size` | `derechi-files`, `MINIO_PUBLIC_URL`, 5MB | `MINIO_PUBLIC_URL=http://localhost:9000/derechi-files` |
 | `derechi.notifications.exchange`, `routing-key` | `derechi.notifications`, `notification.match.found` | |
 | `spring.cloud.aws.s3.endpoint` | `MINIO_ENDPOINT`, `http://localhost:9000` | `MINIO_ENDPOINT=http://minio:9000` |
 | `spring.cloud.aws.credentials.access-key`, `secret-key` | `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`: the application account `derechi-app` / `derechi-app-secret`, not MinIO's root, see [../file-storage.md](../file-storage.md) | `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY` |

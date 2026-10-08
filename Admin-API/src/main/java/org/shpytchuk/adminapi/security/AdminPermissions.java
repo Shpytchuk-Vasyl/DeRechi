@@ -35,7 +35,7 @@ public final class AdminPermissions {
     }
 
     public boolean can(Scope scope, Action action) {
-        return authorities.contains(Permissions.authority(scope, action));
+        return scope.supports(action) && authorities.contains(Permissions.authority(scope, action));
     }
 
     public Set<String> authorities() {

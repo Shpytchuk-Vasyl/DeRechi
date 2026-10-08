@@ -88,6 +88,10 @@ spring:
         provider:
           keycloak:
             user-name-attribute: preferred_username
+            authorization-uri: ${KEYCLOAK_PUBLIC_URI:http://localhost:8180}/realms/derechi/protocol/openid-connect/auth
+            token-uri: ${KEYCLOAK_URI:http://localhost:8180}/realms/derechi/protocol/openid-connect/token
+            jwk-set-uri: ${KEYCLOAK_URI:http://localhost:8180}/realms/derechi/protocol/openid-connect/certs
+            user-info-uri: ${KEYCLOAK_URI:http://localhost:8180}/realms/derechi/protocol/openid-connect/userinfo
 
 derechi:
   admin:
@@ -129,30 +133,3 @@ management:
 
 logging:
   exception-conversion-word: "%wEx{10}"
-
----
-spring:
-  config:
-    activate:
-      on-profile: "!docker"
-  security:
-    oauth2:
-      client:
-        provider:
-          keycloak:
-            issuer-uri: ${KEYCLOAK_PUBLIC_URI:http://localhost:8180}/realms/derechi
-
----
-spring:
-  config:
-    activate:
-      on-profile: "docker"
-  security:
-    oauth2:
-      client:
-        provider:
-          keycloak:
-            authorization-uri: ${KEYCLOAK_PUBLIC_URI:http://localhost:8180}/realms/derechi/protocol/openid-connect/auth
-            token-uri: ${KEYCLOAK_URI:http://keycloak:8080}/realms/derechi/protocol/openid-connect/token
-            jwk-set-uri: ${KEYCLOAK_URI:http://keycloak:8080}/realms/derechi/protocol/openid-connect/certs
-            user-info-uri: ${KEYCLOAK_URI:http://keycloak:8080}/realms/derechi/protocol/openid-connect/userinfo

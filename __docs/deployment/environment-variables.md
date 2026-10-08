@@ -125,7 +125,7 @@ the YAML and must match Admin-API's list. The Fourthwall client's timeouts are Y
 | `MINIO_ENDPOINT` | `http://localhost:9000` | `http://minio:9000` | S3 endpoint used to upload images; also `minio-init`'s target |
 | `MINIO_REGION` | `us-east-1` | `us-east-1` | region the uploads are signed for; MinIO ignores it|
 | `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` | `derechi-app` / `derechi-app-secret` | same | S3 credentials of the application's account (objects in `derechi-files` only, `docker/minio/derechi-app-policy.json`), created by `minio-init`; not the root user. The web client uses the same account as `S3_ACCESS_KEY` / `S3_SECRET_KEY` |
-| `MINIO_PUBLIC_URL` | `http://localhost:9000/derechi-files` | `http://localhost:8080/files` | base of image URLs rendered in the admin UI; in full mode they go through the Gateway's `/files` route |
+| `MINIO_PUBLIC_URL` | `http://localhost:9000/derechi-files` | `http://localhost:9000/derechi-files` | base of image URLs rendered in the admin UI; read straight from MinIO, not through the Gateway |
 | `GOOGLE_MAPS_API_KEY` | a committed dev key (known issue, see [configuration](../conventions/configuration.md#rule-7-no-secrets-in-the-repository)) | passed on only when the env file sets it | Google Places widget in the item form |
 
 ## Worker
