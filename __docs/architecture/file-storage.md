@@ -97,7 +97,7 @@ Each consumer builds the public URL from its own setting:
 
 | Who | Setting | Default |
 |---|---|---|
-| `Admin-API` | `derechi.storage.public-url` / `MINIO_PUBLIC_URL` | `http://localhost:9000/derechi-files` locally, `http://localhost:8080/files` in Compose |
+| `Admin-API` | `derechi.storage.public-url` / `MINIO_PUBLIC_URL` | `http://localhost:9000/derechi-files` locally and in Compose (straight to MinIO, not through the Gateway) |
 | `Web-Client` | `NEXT_PUBLIC_FILES_URL` | the gateway's `/files` |
 | `Getaway` | `MINIO_URI`, `MINIO_BUCKET` | `http://localhost:9000`, `derechi-files` |
 

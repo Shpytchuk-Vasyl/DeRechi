@@ -35,7 +35,7 @@ The full write-up, including how to read the 403 and 404 variants on the PUT, is
 
 The Gateway route `files` rewrites `GET /files/<key>` to `/derechi-files/<key>` on MinIO and adds `Cache-Control: public, max-age=31536000, immutable`. Keys contain a UUID, so immutability is safe. The bucket has anonymous download enabled by `minio-init` in `docker-compose.yml`.
 
-In the containerised setup `MINIO_PUBLIC_URL` for `Admin-API` is `http://localhost:8080/files` by default, which means admin pages also go through the Gateway rather than hitting port 9000.
+`Admin-API` does not go through the Gateway: `MINIO_PUBLIC_URL` points straight at the bucket (`http://localhost:9000/derechi-files` locally and in Compose), which works because the bucket allows anonymous download. Those responses do not carry the Gateway's `Cache-Control` header.
 
 ## Known gaps
 

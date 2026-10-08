@@ -125,7 +125,7 @@ services:
       MINIO_ENDPOINT: ${MINIO_ENDPOINT:-http://minio:9000}
       MINIO_REGION: ${MINIO_REGION:-us-east-1}
       MINIO_BUCKET: ${MINIO_BUCKET:-derechi-files}
-      MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL:-http://localhost:8080/files}
+      MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL:-http://localhost:9000/derechi-files}
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-derechi-app}
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-derechi-app-secret}
       GOOGLE_MAPS_API_KEY:
