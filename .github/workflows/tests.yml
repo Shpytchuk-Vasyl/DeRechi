@@ -62,6 +62,7 @@ jobs:
         with:
           name: surefire-${{ matrix.module }}
           path: ${{ matrix.module }}/target/surefire-reports/
+          if-no-files-found: ignore
 
       - name: Infrastructure logs
         if: failure()
