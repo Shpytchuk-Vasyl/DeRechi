@@ -56,7 +56,7 @@ time: flipping one means a rebuild and redeploy of the web client, not a restart
 | Variable | Default | Effect |
 |---|---|---|
 | `NEXT_PUBLIC_SMS_OUTAGE` | `true` | The claim form and the unlock dialog show a one-time warning toast that SMS is down and emails arrive as usual. Nothing is blocked. Turn it on when SMS-fly is unavailable or `SMS_FLY_API_KEY` is empty in `Notification`. |
-| `NEXT_PUBLIC_MAINTENANCE` | `false` | Technical work. `src/proxy.ts` redirects (307) every page except the home page, `/terms` and `/privacy` to `/{locale}/maintenance`. `/api/*` (the Fourthwall webhook among them) and files stay outside the proxy, so they keep working. With the flag off the maintenance page is a 404. |
+| `NEXT_PUBLIC_MAINTENANCE` | `false` | Technical work. `src/proxy.ts` rewrites every page except the home page, `/terms` and `/privacy` to the `/{locale}/maintenance` route handler, so the closed URL answers 503 with `Retry-After: 3600` and search engines keep it indexed (Google's advice for planned downtime). `/api/*` (the Fourthwall webhook among them) and files stay outside the proxy, so they keep working. With the flag off the route is a 404. |
 
 Maintenance mode only closes the web client. The admin panel and the backend stay up, and
 the reminder links (`/{locale}/claims/{token}`) lead to the maintenance page too while it is on.

@@ -163,10 +163,15 @@ off. Being `NEXT_PUBLIC_`, it is inlined at build time, so flipping it needs a r
 
 ### Maintenance mode
 
-`NEXT_PUBLIC_MAINTENANCE=true` closes the site for technical work: `src/proxy.ts` redirects (307)
-every page except the home page, `/terms` and `/privacy` to `/{locale}/maintenance`
-(`maintenance.*` in the bundles). Links on the home page still lead there. `/api/*` and files
-are outside the proxy matcher and keep working. With the flag off the maintenance page is a 404.
+`NEXT_PUBLIC_MAINTENANCE=true` closes the site for technical work: `src/proxy.ts` rewrites every
+page except the home page, `/terms` and `/privacy` to `/{locale}/maintenance`, so the closed URL
+itself answers **503** with `Retry-After: 3600` and crawlers keep it in the index. The maintenance
+"page" is a route handler (`src/app/[locale]/maintenance/route.ts`) that returns standalone HTML
+with inline styles and `noindex` (`maintenance.*` in the bundles): an App Router page cannot answer
+503, and a rewrite to a page keeps its 200. Links on the home page still lead there; a client-side
+navigation gets HTML instead of an RSC payload and falls back to a full page load. Non-GET requests
+to a closed page get 405. `/api/*` and files are outside the proxy matcher and keep working. With
+the flag off the route is a 404.
 Same as the SMS flag, it is inlined at build time and needs a rebuild.
 
 ### Unlocking the author's phone number (Fourthwall)
