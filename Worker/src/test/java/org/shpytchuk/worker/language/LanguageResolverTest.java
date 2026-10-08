@@ -1,6 +1,5 @@
 package org.shpytchuk.worker.language;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -20,16 +19,11 @@ class LanguageResolverTest {
             "Schwarze Lederbrieftasche mit Führerschein am Bahnhof verloren, GERMAN",
             "Portefeuille noir en cuir perdu près de la gare avec mon permis, FRENCH",
             "Cartera negra de cuero perdida cerca de la estación con mi carné, SPANISH",
-            "Portafoglio nero di pelle perso vicino alla stazione con la patente, ITALIAN"
+            "Portafoglio nero di pelle perso vicino alla stazione con la patente, ITALIAN",
+            "Zgubiłam czarny skórzany portfel z prawem jazdy przy dworcu, POLISH"
     })
     void picksTheFullTextConfigurationOfTheTitleLanguage(String title, SearchLanguage expected) {
         assertThat(RESOLVER.resolve(title)).isEqualTo(expected);
-    }
-
-    @Test
-    void doesNotMistakePolishForUkrainianOrRussianButHasNoPolishConfiguration() {
-        assertThat(RESOLVER.resolve("Zgubiłam czarny skórzany portfel z prawem jazdy przy dworcu"))
-                .isEqualTo(SearchLanguage.SIMPLE);
     }
 
     @ParameterizedTest
