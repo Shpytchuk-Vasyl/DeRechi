@@ -12,11 +12,11 @@ import java.net.http.HttpClient;
 public class DisposableEmailsConfig {
 
     @Bean
-    public DisposableEmailDomains disposableEmailDomains(RestClient.Builder builder, DisposableEmailsProperties properties) {
+    public DisposableEmailDomains disposableEmailDomains(DisposableEmailsProperties properties) {
         JdkClientHttpRequestFactory factory = new JdkClientHttpRequestFactory(HttpClient.newBuilder()
                 .connectTimeout(properties.timeout())
                 .build());
         factory.setReadTimeout(properties.timeout());
-        return new DisposableEmailDomains(builder.requestFactory(factory).build(), properties.url());
+        return new DisposableEmailDomains(RestClient.builder().requestFactory(factory).build(), properties.url());
     }
 }
