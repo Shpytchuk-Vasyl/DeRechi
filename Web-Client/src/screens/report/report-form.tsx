@@ -13,7 +13,6 @@ import { Card } from "@/components/pouf/card"
 import { ErrorNote } from "@/components/pouf/feedback"
 import { Skeleton } from "@/components/pouf/skeleton"
 import { toast } from "@/components/pouf/toaster"
-import { Tour } from "@/components/tour/tour"
 import { usePhoto } from "@/hooks/use-photo"
 import { useRouter } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
@@ -158,7 +157,6 @@ export default function ReportForm({ kind, categories, maxUploadBytes, compact =
             : "grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]"
         }
       >
-        {compact ? null : <Tour id="report" />}
 
         <Shell className={cx("flex h-fit flex-col gap-5", compact && "min-h-0 flex-1")}>
           <StepIndicator

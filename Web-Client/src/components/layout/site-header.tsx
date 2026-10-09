@@ -34,9 +34,6 @@ export async function SiteHeader() {
       <Spacer />
 
       <Row gap={2} align="center" wrap={false}>
-        {/* <NotOnLanding>
-            <TourButton />
-          </NotOnLanding> */}
         <span className="max-md:hidden">
           <ReportButton />
         </span>

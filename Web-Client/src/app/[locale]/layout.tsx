@@ -10,7 +10,6 @@ import { SiteAnalytics } from "@/components/layout/site-analytics"
 import { SiteFooter } from "@/components/layout/site-footer"
 import { SiteHeader } from "@/components/layout/site-header"
 import { Toaster } from "@/components/pouf/toaster"
-import { TourProvider } from "@/components/tour/tour-context"
 import { routing } from "@/i18n/routing"
 import { clientEnv } from "@/lib/env/client"
 import { INDEXABLE } from "@/lib/seo"
@@ -74,19 +73,17 @@ export default async function LocaleLayout({
       <body className="flex min-h-full flex-col">
         <NextIntlClientProvider>
           <CountryProvider countries={countries}>
-            <TourProvider>
-              <div className="container mx-auto flex w-full flex-1 flex-col p-4 max-md:pb-[calc(96px+env(safe-area-inset-bottom))] md:p-8 lg:px-16 xl:px-32">
-                <SiteHeader />
-                <main className="flex-1 pt-8">{children}</main>
-                {modal}
-                <SiteFooter />
-              </div>
-              <MobileNav />
+            <div className="container mx-auto flex w-full flex-1 flex-col p-4 max-md:pb-[calc(96px+env(safe-area-inset-bottom))] md:p-8 lg:px-16 xl:px-32">
+              <SiteHeader />
+              <main className="flex-1 pt-8">{children}</main>
+              {modal}
+              <SiteFooter />
+            </div>
+            <MobileNav />
 
-              <div className="pouf-toasts">
-                <Toaster />
-              </div>
-            </TourProvider>
+            <div className="pouf-toasts">
+              <Toaster />
+            </div>
           </CountryProvider>
         </NextIntlClientProvider>
         {process.env.VERCEL ? <SiteAnalytics /> : null}

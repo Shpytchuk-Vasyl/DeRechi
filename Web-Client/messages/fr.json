@@ -15,7 +15,6 @@
     "terms": "Conditions",
     "privacy": "Confidentialité",
     "safety": "Sécurité",
-    "tour": "Faites-moi visiter",
     "footerNotices": "Annonces",
     "footerDocuments": "Documents"
   },
@@ -407,48 +406,6 @@
       "failed": "L’annonce n’a pas pu être publiée. Réessayez dans un instant."
     },
     "pickDate": "Choisissez une date"
-  },
-  "tour": {
-    "progress": "Étape {current} sur {total}",
-    "next": "Suivant",
-    "back": "Retour",
-    "done": "Compris",
-    "home": {
-      "report": {
-        "title": "Commencez par votre côté",
-        "text": "Vous avez perdu un objet ou ramassé celui de quelqu’un ? Les deux prennent une minute et ne demandent aucun compte."
-      },
-      "search": {
-        "title": "Regardez avant de publier",
-        "text": "Cherchez par le nom de l’objet et la période approximative. Ce que vous choisissez se retrouve dans l’adresse : la recherche peut être gardée ou envoyée."
-      },
-      "recent": {
-        "title": "Les dernières trouvailles",
-        "text": "Les objets ramassés ces derniers jours. Ouvrez-en un pour voir le lieu, la date et comment joindre la personne."
-      },
-      "language": {
-        "title": "Cinq langues",
-        "text": "Ukrainien, anglais, polonais, allemand et français. Votre choix est retenu et vaut aussi pour l’interface d’administration."
-      }
-    },
-    "report": {
-      "details": {
-        "title": "Nommez l’objet simplement",
-        "text": "Un nom court et ordinaire fonctionne le mieux : les rayures, l’usure et le contenu vont dans la description."
-      },
-      "photo": {
-        "title": "La photo fait le plus gros",
-        "text": "Déposez le fichier ici, il part directement vers notre stockage. Un objet trouvé ne se publie pas sans photo."
-      },
-      "place": {
-        "title": "Le dernier endroit dont vous êtes sûr",
-        "text": "Choisissez-le dans les suggestions pour que les coordonnées suivent le nom."
-      },
-      "contacts": {
-        "title": "Qui voit vos coordonnées",
-        "text": "Vos coordonnées ne s’affichent qu’en partie. La personne qui reconnaît l’objet vous envoie les siennes depuis l’annonce, et vous les recevez par e-mail et SMS."
-      }
-    }
   },
   "game": {
     "catch": "Attraper Znaïda",

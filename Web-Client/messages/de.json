@@ -15,7 +15,6 @@
     "terms": "Nutzungsbedingungen",
     "privacy": "Datenschutz",
     "safety": "Sicherheit",
-    "tour": "Kurz zeigen",
     "footerNotices": "Anzeigen",
     "footerDocuments": "Dokumente"
   },
@@ -407,48 +406,6 @@
       "failed": "Die Meldung konnte nicht veröffentlicht werden. Versuch es gleich noch einmal."
     },
     "pickDate": "Datum wählen"
-  },
-  "tour": {
-    "progress": "Schritt {current} von {total}",
-    "next": "Weiter",
-    "back": "Zurück",
-    "done": "Verstanden",
-    "home": {
-      "report": {
-        "title": "Fang auf deiner Seite an",
-        "text": "Etwas verloren oder etwas aufgehoben? Beides dauert eine Minute und braucht kein Konto."
-      },
-      "search": {
-        "title": "Erst schauen, dann melden",
-        "text": "Suche nach dem Namen der Sache und ungefähr dem Zeitraum. Was du einstellst, steht in der Adresse, so lässt sich die Suche merken oder weitergeben."
-      },
-      "recent": {
-        "title": "Die neuesten Fundsachen",
-        "text": "Was in den letzten Tagen aufgehoben wurde. Öffne eine Meldung für Ort, Datum und den Weg zum Finder."
-      },
-      "language": {
-        "title": "Fünf Sprachen",
-        "text": "Ukrainisch, Englisch, Polnisch, Deutsch und Französisch. Die Wahl wird gemerkt und gilt auch im Admin-Bereich."
-      }
-    },
-    "report": {
-      "details": {
-        "title": "Benenne die Sache schlicht",
-        "text": "Ein kurzer, gewöhnlicher Name wirkt am besten: Kratzer, Abnutzung und Inhalt gehören in die Beschreibung."
-      },
-      "photo": {
-        "title": "Das Foto macht die meiste Arbeit",
-        "text": "Zieh die Datei hierher, sie geht direkt in unseren Speicher. Ein Fund lässt sich ohne Foto nicht melden."
-      },
-      "place": {
-        "title": "Der letzte Ort, bei dem du sicher bist",
-        "text": "Wähle ihn aus den Vorschlägen, dann kommen die Koordinaten mit dem Namen mit."
-      },
-      "contacts": {
-        "title": "Wer deine Kontakte sieht",
-        "text": "Deine Kontakte stehen nur teilweise da. Wer die Sache erkennt, schickt dir seine über die Anzeige, und du bekommst sie per E-Mail und SMS."
-      }
-    }
   },
   "game": {
     "catch": "Znaida fangen",

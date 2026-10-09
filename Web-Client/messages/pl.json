@@ -15,7 +15,6 @@
     "terms": "Regulamin",
     "privacy": "Prywatność",
     "safety": "Bezpieczeństwo",
-    "tour": "Pokaż, jak to działa",
     "footerNotices": "Ogłoszenia",
     "footerDocuments": "Dokumenty"
   },
@@ -407,48 +406,6 @@
       "failed": "Nie udało się opublikować ogłoszenia. Spróbuj za chwilę."
     },
     "pickDate": "Wybierz datę"
-  },
-  "tour": {
-    "progress": "Krok {current} z {total}",
-    "next": "Dalej",
-    "back": "Wstecz",
-    "done": "Jasne",
-    "home": {
-      "report": {
-        "title": "Zacznij od swojej strony",
-        "text": "Zguba czy znalezisko? Jedno i drugie zajmuje minutę i nie wymaga konta."
-      },
-      "search": {
-        "title": "Najpierw sprawdź, czy już się znalazła",
-        "text": "Szukaj po nazwie rzeczy i przybliżonej dacie. To, co ustawisz, trafia do adresu strony, więc wyszukiwanie można zapisać albo komuś wysłać."
-      },
-      "recent": {
-        "title": "Ostatnie znaleziska",
-        "text": "Rzeczy podniesione w ostatnich dniach. Otwórz dowolną, żeby zobaczyć miejsce, datę i sposób kontaktu."
-      },
-      "language": {
-        "title": "Pięć języków",
-        "text": "Ukraiński, angielski, polski, niemiecki i francuski. Wybór jest zapamiętywany i działa też w panelu administracyjnym."
-      }
-    },
-    "report": {
-      "details": {
-        "title": "Nazwij rzecz wprost",
-        "text": "Najlepiej działa krótka, zwyczajna nazwa: rysy, przetarcia i zawartość wpisz w opisie."
-      },
-      "photo": {
-        "title": "Zdjęcie robi najwięcej",
-        "text": "Przeciągnij plik tutaj, a trafi prosto do naszego magazynu. Ogłoszenia o znalezieniu bez zdjęcia nie opublikujesz."
-      },
-      "place": {
-        "title": "Ostatnie miejsce, którego jesteś pewien",
-        "text": "Wybierz je z podpowiedzi, żeby razem z nazwą zapisały się współrzędne."
-      },
-      "contacts": {
-        "title": "Kto widzi Twoje kontakty",
-        "text": "Twoje kontakty pokazujemy tylko częściowo. Kto rozpozna rzecz, wyśle Ci swoje przez ogłoszenie, a Ty dostaniesz je mailem i SMS-em."
-      }
-    }
   },
   "game": {
     "catch": "Złap Znajdę",

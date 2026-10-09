@@ -1,6 +1,6 @@
 "use server"
 
-import { z } from "zod"
+import * as z from "zod"
 import {
   ALLOWED_IMAGE_TYPES,
   createUploadTarget,

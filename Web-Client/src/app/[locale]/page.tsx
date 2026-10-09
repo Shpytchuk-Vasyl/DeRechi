@@ -1,7 +1,6 @@
 import type { Metadata } from "next"
 import { getLocale, getTranslations } from "next-intl/server"
 import { MascotRoamer } from "@/components/mascot/mascot-roamer"
-import { Tour } from "@/components/tour/tour"
 import { absoluteUrl, jsonLd, pageAlternates } from "@/lib/seo"
 import Benefits from "@/screens/home/benefits/benefits"
 import ClosingCall from "@/screens/home/closing-call"
@@ -43,7 +42,6 @@ export default async function HomePage() {
 
   return (
     <>
-      <Tour id="home" />
       <MascotRoamer />
 
       <div className="flex flex-col gap-6">

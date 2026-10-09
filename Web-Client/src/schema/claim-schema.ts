@@ -1,4 +1,4 @@
-import { z } from "zod"
+import * as z from "zod"
 import { consentSchema, MAX_EMAIL, PHONE_PATTERN, SOCIAL_MEDIA } from "@/schema/report-schema"
 
 export const claimSchema = z.object({

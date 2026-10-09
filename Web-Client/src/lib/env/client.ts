@@ -1,26 +1,34 @@
-import { z } from "zod"
+// No zod here: this module reaches every client bundle through fileUrl, and zod would ride along.
 
-const schema = z.object({
-  NEXT_PUBLIC_SITE_URL: z.url(),
-  NEXT_PUBLIC_MAPS_API_KEY: z.string().optional(),
-  NEXT_PUBLIC_FILES_URL: z.url(),
-  NEXT_PUBLIC_SMS_OUTAGE: z.stringbool().default(true),
-  NEXT_PUBLIC_MAINTENANCE: z.stringbool().default(false),
-})
+const TRUE = new Set(["true", "1", "yes", "on", "y", "enabled"])
+const FALSE = new Set(["false", "0", "no", "off", "n", "disabled"])
 
-const parsed = schema.safeParse({
-  NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
-  NEXT_PUBLIC_MAPS_API_KEY: process.env.NEXT_PUBLIC_MAPS_API_KEY,
-  NEXT_PUBLIC_FILES_URL: process.env.NEXT_PUBLIC_FILES_URL,
-  NEXT_PUBLIC_SMS_OUTAGE: process.env.NEXT_PUBLIC_SMS_OUTAGE,
-  NEXT_PUBLIC_MAINTENANCE: process.env.NEXT_PUBLIC_MAINTENANCE,
-})
-
-if (!parsed.success) {
-  throw new Error(`Invalid public environment: ${z.prettifyError(parsed.error)}`)
+function url(name: string, value: string | undefined): string {
+  if (!value || !URL.canParse(value)) {
+    throw new Error(`Invalid public environment: ${name} must be a URL`)
+  }
+  return value
 }
 
-export const clientEnv = parsed.data
+function flag(name: string, value: string | undefined, fallback: boolean): boolean {
+  if (value === undefined) return fallback
+  const normalized = value.trim().toLowerCase()
+  if (TRUE.has(normalized)) return true
+  if (FALSE.has(normalized)) return false
+  throw new Error(`Invalid public environment: ${name} must be a boolean`)
+}
+
+export const clientEnv = {
+  NEXT_PUBLIC_SITE_URL: url("NEXT_PUBLIC_SITE_URL", process.env.NEXT_PUBLIC_SITE_URL),
+  NEXT_PUBLIC_MAPS_API_KEY: process.env.NEXT_PUBLIC_MAPS_API_KEY,
+  NEXT_PUBLIC_FILES_URL: url("NEXT_PUBLIC_FILES_URL", process.env.NEXT_PUBLIC_FILES_URL),
+  NEXT_PUBLIC_SMS_OUTAGE: flag("NEXT_PUBLIC_SMS_OUTAGE", process.env.NEXT_PUBLIC_SMS_OUTAGE, true),
+  NEXT_PUBLIC_MAINTENANCE: flag(
+    "NEXT_PUBLIC_MAINTENANCE",
+    process.env.NEXT_PUBLIC_MAINTENANCE,
+    false,
+  ),
+}
 
 export function fileUrl(key: string): string {
   if (key.startsWith("items"))

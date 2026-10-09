@@ -15,7 +15,6 @@
     "terms": "Terms",
     "privacy": "Privacy",
     "safety": "Safety",
-    "tour": "Show me around",
     "footerNotices": "Notices",
     "footerDocuments": "Documents"
   },
@@ -407,48 +406,6 @@
       "failed": "The notice could not be published. Try again in a moment."
     },
     "pickDate": "Pick a date"
-  },
-  "tour": {
-    "progress": "Step {current} of {total}",
-    "next": "Next",
-    "back": "Back",
-    "done": "Got it",
-    "home": {
-      "report": {
-        "title": "Start from the side you are on",
-        "text": "Lost something, or picked something up? Both take a minute and neither needs an account."
-      },
-      "search": {
-        "title": "Look before you post",
-        "text": "Search by what you lost and roughly when. Whatever you set lands in the address bar, so the search can be bookmarked or sent to someone."
-      },
-      "recent": {
-        "title": "The latest finds",
-        "text": "Things people picked up in the last few days. Open one to see the place, the date and how to reach the finder."
-      },
-      "language": {
-        "title": "Five languages",
-        "text": "Ukrainian, English, Polish, German and French. Your choice is remembered and carries over to the admin panel."
-      }
-    },
-    "report": {
-      "details": {
-        "title": "Describe the thing plainly",
-        "text": "A short, ordinary name works best: scratches, wear and what was inside belong in the description."
-      },
-      "photo": {
-        "title": "A photo does most of the work",
-        "text": "Drop the file here and it goes straight to our storage. A found item cannot be posted without one."
-      },
-      "place": {
-        "title": "The last place you are sure about",
-        "text": "Pick it from the suggestions so the coordinates come along with the name."
-      },
-      "contacts": {
-        "title": "Who sees your contacts",
-        "text": "Your contacts are shown only in part. Whoever recognises the item sends you theirs through the notice, and you get them by email and SMS."
-      }
-    }
   },
   "game": {
     "catch": "Catch Znaida",

@@ -1,5 +1,5 @@
 import "server-only"
-import { z } from "zod"
+import * as z from "zod"
 
 const schema = z.object({
   GRAPHQL_URL: z.url(),

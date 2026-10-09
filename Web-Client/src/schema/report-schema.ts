@@ -1,4 +1,4 @@
-import { z } from "zod"
+import * as z from "zod"
 import type { ItemKind } from "@/api/items"
 import { ISO_DATE_PATTERN, todayIso } from "@/lib/intl/dates"
 
