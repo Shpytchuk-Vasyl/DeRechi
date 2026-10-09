@@ -54,7 +54,7 @@ public final class ItemMapper {
         return new ContactInfoDto(
                 info.getId(),
                 ContactMasker.maskPhone(info.getPhone()),
-                ContactMasker.maskEmail(info.getEmail())
+                info.getEmail() == null ? null : ContactMasker.maskEmail(info.getEmail())
         );
     }
 }

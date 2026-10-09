@@ -7,6 +7,7 @@ import io.notifyhub.core.channel.SendResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
@@ -84,7 +85,7 @@ public class SmsFlyChannel implements NotificationChannel {
 
     private static String text(Notification notification) {
         String text = notification.getRenderedContent();
-        if (text == null || text.isBlank()) {
+        if (!StringUtils.hasText(text)) {
             throw failure("SMS text is empty");
         }
         return text;
@@ -104,7 +105,7 @@ public class SmsFlyChannel implements NotificationChannel {
         } catch (RestClientException e) {
             throw new NotificationSendException(NAME, "SMS-fly call failed: " + e.getMessage(), e);
         }
-        if (body == null || body.isBlank()) {
+        if (!StringUtils.hasText(body)) {
             throw failure("SMS-fly answered with an empty body");
         }
         try {

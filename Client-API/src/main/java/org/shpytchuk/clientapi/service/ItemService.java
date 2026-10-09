@@ -1,6 +1,7 @@
 package org.shpytchuk.clientapi.service;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.shpytchuk.clientapi.config.CountriesProperties;
 import org.shpytchuk.clientapi.dto.ItemDto;
 import org.shpytchuk.clientapi.input.ItemFilterInput;
@@ -22,8 +23,6 @@ import org.shpytchuk.clientapi.repository.thing.ThingCategoryRepository;
 import org.shpytchuk.clientapi.repository.thing.ThingRepository;
 import org.shpytchuk.clientapi.specification.ThingSpecifications;
 import org.shpytchuk.clientapi.util.GeoPoints;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.*;
 import org.springframework.graphql.data.query.ScrollSubrange;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,9 +34,8 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 @AllArgsConstructor
+@Slf4j
 public abstract class ItemService<T extends Thing> {
-
-    private static final Logger log = LoggerFactory.getLogger(ItemService.class);
 
     private final ThingRepository<T> repository;
     private final ThingCategoryRepository categoryRepository;
@@ -89,7 +87,7 @@ public abstract class ItemService<T extends Thing> {
 //    }
 
     private void apply(ItemInput input, T item, ContactInfo info) {
-        if (imageRequired && (input.image() == null || input.image().isBlank())) {
+        if (imageRequired && !StringUtils.hasText(input.image())) {
             throw new IllegalArgumentException("Image is required");
         }
 

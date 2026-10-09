@@ -2,6 +2,7 @@ package org.shpytchuk.worker.language;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import org.springframework.util.StringUtils;
 
 import java.util.Locale;
 
@@ -16,7 +17,7 @@ public final class PhoneLocales {
     }
 
     public static Locale of(String phone) {
-        if (phone == null || phone.isBlank()) {
+        if (!StringUtils.hasText(phone)) {
             return Locale.ENGLISH;
         }
         try {

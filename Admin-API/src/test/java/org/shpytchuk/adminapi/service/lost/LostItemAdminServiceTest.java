@@ -11,8 +11,10 @@ import org.shpytchuk.adminapi.entity.detail.ContactInfo.SocialMediaEnum;
 import org.shpytchuk.adminapi.entity.lost.LostItem;
 import org.shpytchuk.adminapi.entity.lost.LostItemClaim;
 import org.shpytchuk.adminapi.entity.lost.LostItemHistory;
+import org.shpytchuk.adminapi.entity.thing.ThingCategory;
 import org.shpytchuk.adminapi.event.ArchiveRequestedEvent;
 import org.shpytchuk.adminapi.exception.NotFoundException;
+import org.shpytchuk.adminapi.form.ItemForm;
 import org.shpytchuk.adminapi.repository.detail.ContactInfoRepository;
 import org.shpytchuk.adminapi.repository.detail.PlaceRepository;
 import org.shpytchuk.adminapi.repository.thing.ThingCategoryRepository;
@@ -25,6 +27,7 @@ import org.shpytchuk.adminapi.view.matching.ClaimView;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -48,6 +51,8 @@ class LostItemAdminServiceTest {
 
     private LostItemRepository repository;
     private ContactInfoRepository contactInfoRepository;
+    private ThingCategoryRepository categoryRepository;
+    private PlaceRepository placeRepository;
     private SimilarItemRepository similarItemRepository;
     private LostItemClaimRepository claimRepository;
     private RabbitTemplate rabbitTemplate;
@@ -57,13 +62,27 @@ class LostItemAdminServiceTest {
     void setUp() {
         repository = mock(LostItemRepository.class);
         contactInfoRepository = mock(ContactInfoRepository.class);
+        categoryRepository = mock(ThingCategoryRepository.class);
+        placeRepository = mock(PlaceRepository.class);
         similarItemRepository = mock(SimilarItemRepository.class);
         claimRepository = mock(LostItemClaimRepository.class);
         rabbitTemplate = mock(RabbitTemplate.class);
-        service = new LostItemAdminService(repository, mock(ThingCategoryRepository.class),
-                mock(PlaceRepository.class), contactInfoRepository,
+        service = new LostItemAdminService(repository, categoryRepository,
+                placeRepository, contactInfoRepository,
                 new CountriesProperties(List.of("UA", "PL"), "UA"),
                 similarItemRepository, claimRepository, rabbitTemplate, new ArchiveProperties("derechi.items"));
+    }
+
+    @Test
+    void storesABlankEmailAsNull() {
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(new ThingCategory()));
+        when(placeRepository.save(any())).thenAnswer(call -> call.getArgument(0));
+        when(repository.save(any())).thenAnswer(call -> call.getArgument(0));
+
+        LostItem item = service.create(form(" "));
+
+        assertThat(item.getInfo().getEmail()).isNull();
+        assertThat(item.getInfo().getPhone()).isEqualTo("+48501234567");
     }
 
     @Test
@@ -205,5 +224,20 @@ class LostItemAdminServiceTest {
         claim.setAuthorRemindedAt(authorRemindedAt);
         claim.setClaimantRemindedAt(claimantRemindedAt);
         return claim;
+    }
+
+    private static ItemForm form(String email) {
+        ItemForm form = new ItemForm();
+        form.setTitle("Рюкзак");
+        form.setDate(LocalDate.of(2026, 9, 1));
+        form.setCategoryId(1L);
+        form.setPlaceId("ChIJtest");
+        form.setPlaceName("Park");
+        form.setLat(52.2);
+        form.setLon(21.0);
+        form.setCountryCode("PL");
+        form.setPhone("+48501234567");
+        form.setEmail(email);
+        return form;
     }
 }

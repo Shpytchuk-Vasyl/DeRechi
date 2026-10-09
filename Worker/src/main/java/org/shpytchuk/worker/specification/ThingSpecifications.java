@@ -10,6 +10,7 @@ import org.shpytchuk.worker.entity.thing.Thing;
 import org.shpytchuk.worker.event.ItemCreatedEvent;
 import org.shpytchuk.worker.language.SearchLanguage;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -44,7 +45,7 @@ public final class ThingSpecifications {
 
     private static <T extends Thing> Specification<T> orderByRelevance(String title, SearchLanguage language) {
         return (root, query, cb) -> {
-            if (query == null || title == null || title.isBlank()) {
+            if (query == null || !StringUtils.hasText(title)) {
                 return null;
             }
 

@@ -16,7 +16,7 @@ Examples in the tree: `ItemView`, `ItemFilter`, `MatchRow`, `CandidateCount`, `N
 
 Records need `-parameters` to work with Jackson, `@Argument` in GraphQL and constructor binding in `@ConfigurationProperties`. The root `maven-compiler-plugin` sets it; do not override the compiler plugin in a module without keeping it.
 
-Lombok is used only where setters and a no-args constructor are unavoidable: JPA entities and Spring MVC form objects.
+Lombok's data annotations are used only where setters and a no-args constructor are unavoidable: JPA entities and Spring MVC form objects. Beyond that, Lombok only generates constructors for services and controllers (`@AllArgsConstructor`, below) and the logger (`@Slf4j`, see [Logging](#logging)).
 
 ```java
 @Entity
@@ -40,13 +40,22 @@ Lombok is declared with `provided` + `optional` scope and listed in `annotationP
 
 ## Logging
 
-Always a static logger from `LoggerFactory`:
+The preferred way is Lombok's `@Slf4j` on the class, in every module that has Lombok (`Admin-API`, `Client-API`, `Worker`):
 
 ```java
-private static final Logger log = LoggerFactory.getLogger(MatchService.class);
+@Service
+@AllArgsConstructor
+@Slf4j
+public class ItemArchiver {
 ```
 
-`@Slf4j` is not used in this project. One style keeps the codebase greppable and the logger field visible where it is declared. What to log, at which level, and how to log a failure without a stack trace is in [Logging](logging.md).
+It generates the same `private static final Logger log` named after the class. In modules without Lombok (`Notification`, `Getaway`) declare the field by hand, with the same name:
+
+```java
+private static final Logger log = LoggerFactory.getLogger(SmsFlyChannel.class);
+```
+
+Don't add Lombok to a module just for the logger. What to log, at which level, and how to log a failure without a stack trace is in [Logging](logging.md).
 
 ## Blocking code, virtual threads
 

@@ -5,6 +5,7 @@ import jakarta.persistence.criteria.Root;
 import org.hibernate.spatial.predicate.JTSSpatialPredicates;
 import org.locationtech.jts.geom.Point;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -56,7 +57,7 @@ public class SpecificationBuilder<T> {
     }
 
     public SpecificationBuilder<T> likeAny(String value, String... fields) {
-        if (value == null || value.isBlank())
+        if (!StringUtils.hasText(value))
             return this;
 
         String pattern = containsPattern(value);

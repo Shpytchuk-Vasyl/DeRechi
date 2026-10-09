@@ -1,23 +1,21 @@
 package org.shpytchuk.worker.handler;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.shpytchuk.worker.entity.matching.Claim;
 import org.shpytchuk.worker.event.ClaimEvent;
 import org.shpytchuk.worker.repository.ClaimRepository;
 import org.shpytchuk.worker.service.ClaimNotifier;
 import org.shpytchuk.worker.service.ClaimRepositories;
 import org.shpytchuk.worker.service.ItemKind;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.util.Optional;
 
 @AllArgsConstructor
+@Slf4j
 public class PaidHandler implements ClaimHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(PaidHandler.class);
 
     private static final String VERB = "paid";
 

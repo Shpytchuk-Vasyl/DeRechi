@@ -1,20 +1,18 @@
 package org.shpytchuk.worker.handler;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.shpytchuk.worker.entity.matching.Claim;
 import org.shpytchuk.worker.event.ClaimEvent;
 import org.shpytchuk.worker.service.ClaimRepositories;
 import org.shpytchuk.worker.service.ItemArchiver;
 import org.shpytchuk.worker.service.ItemKind;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
 @AllArgsConstructor
+@Slf4j
 public class ReturnedHandler implements ClaimHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(ReturnedHandler.class);
 
     private static final String VERB = "returned";
 

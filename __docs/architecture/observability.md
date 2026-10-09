@@ -75,8 +75,8 @@ caught by Prometheus's `TargetDown` alert instead. Long-running containers resta
 
 ## Logging
 
-Plain SLF4J through Logback, Boot defaults. Loggers are declared as
-`private static final Logger log = LoggerFactory.getLogger(X.class);`; `@Slf4j` is not used
+Plain SLF4J through Logback, Boot defaults. Loggers come from Lombok's `@Slf4j` in modules
+that have Lombok, and from `LoggerFactory.getLogger(X.class)` in the rest
 (see [../conventions/java-code-style.md](../conventions/java-code-style.md)). Logs go to
 stdout, which in Compose means `docker compose logs -f <service>`. There is no log
 aggregation and no tracing; Micrometer tracing is not on the classpath. What and how the

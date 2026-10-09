@@ -1,6 +1,7 @@
 package org.shpytchuk.notification.channel;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.Assert;
 
 import java.time.Duration;
 
@@ -38,14 +39,12 @@ public record SmsFlyProperties(
     }
 
     private static String require(String value, String name) {
-        if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("derechi.sms-fly." + name + " must be set");
-        }
+        Assert.hasText(value, "derechi.sms-fly." + name + " must be set");
         return value.strip();
     }
 
     private static void requirePositive(Duration value, String name) {
-        if (value == null || value.isNegative() || value.isZero()) {
+        if (value == null || !value.isPositive()) {
             throw new IllegalArgumentException("derechi.sms-fly." + name + " must be positive: " + value);
         }
     }

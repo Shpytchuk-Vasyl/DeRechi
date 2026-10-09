@@ -10,6 +10,7 @@ import com.optimaize.langdetect.profiles.LanguageProfileReader;
 import com.optimaize.langdetect.text.CommonTextObjectFactories;
 import com.optimaize.langdetect.text.TextObjectFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class LanguageResolver {
     }
 
     public SearchLanguage resolve(String text) {
-        if (text == null || text.isBlank()) {
+        if (!StringUtils.hasText(text)) {
             return SearchLanguage.SIMPLE;
         }
 

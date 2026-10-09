@@ -10,6 +10,7 @@ import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import static org.springframework.core.NestedExceptionUtils.getMostSpecificCause;
 
@@ -53,10 +54,10 @@ public class NotificationRequestedListener {
 
     static String redact(String text, NotificationRequestedEvent event) {
         String result = text;
-        if (event.email() != null && !event.email().isBlank()) {
+        if (StringUtils.hasText(event.email())) {
             result = result.replace(event.email(), "<email>");
         }
-        if (event.phone() != null && !event.phone().isBlank()) {
+        if (StringUtils.hasText(event.phone())) {
             result = result.replace(event.phone(), "<phone>");
             String digits = event.phone().replaceAll("\\D", "");
             if (digits.length() >= 7) {

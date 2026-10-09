@@ -1,7 +1,6 @@
 package org.shpytchuk.adminapi.security;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
 import org.springframework.security.authentication.event.LogoutSuccessEvent;
@@ -9,9 +8,8 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 
 import static org.springframework.core.NestedExceptionUtils.getMostSpecificCause;
 
+@Slf4j
 public class LoginAudit {
-
-    private static final Logger log = LoggerFactory.getLogger(LoginAudit.class);
 
     @EventListener
     public void loggedIn(InteractiveAuthenticationSuccessEvent event) {

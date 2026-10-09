@@ -1,6 +1,7 @@
 package org.shpytchuk.adminapi.controller;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.shpytchuk.adminapi.config.cache.CachedPage;
 import org.shpytchuk.adminapi.form.ItemFilter;
 import org.shpytchuk.adminapi.form.NotifyChannel;
@@ -13,8 +14,6 @@ import org.shpytchuk.adminapi.service.matching.MatchService;
 import org.shpytchuk.adminapi.view.matching.MatchRow;
 import org.shpytchuk.adminapi.view.matching.NotifiedMatch;
 import org.shpytchuk.adminapi.view.Pager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -26,9 +25,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(MatchController.BASE_PATH)
 @AllArgsConstructor
 @CachedPage
+@Slf4j
 public class MatchController {
-
-    private static final Logger log = LoggerFactory.getLogger(MatchController.class);
 
     static final String BASE_PATH = "/admin/matches";
 

@@ -1,12 +1,11 @@
 package org.shpytchuk.adminapi.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.shpytchuk.adminapi.exception.RejectedUploadException;
 import org.shpytchuk.adminapi.service.ImageStorage;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -23,9 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequestMapping(UploadController.BASE_PATH)
+@Slf4j
 public class UploadController {
-
-    private static final Logger log = LoggerFactory.getLogger(UploadController.class);
 
     public static final String BASE_PATH = "/admin/uploads";
 

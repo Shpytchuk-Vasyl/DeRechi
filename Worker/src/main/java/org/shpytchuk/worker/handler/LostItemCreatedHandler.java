@@ -1,14 +1,13 @@
 package org.shpytchuk.worker.handler;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.shpytchuk.worker.entity.found.FoundItem;
 import org.shpytchuk.worker.entity.thing.Thing;
 import org.shpytchuk.worker.event.ItemCreatedEvent;
 import org.shpytchuk.worker.repository.SimilarItemRepository;
 import org.shpytchuk.worker.service.ItemKind;
 import org.shpytchuk.worker.service.ItemService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,9 +16,8 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class LostItemCreatedHandler implements ItemCreatedHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(LostItemCreatedHandler.class);
 
     private final ItemService<FoundItem> foundItemSearch;
     private final SimilarItemRepository similarItemRepository;

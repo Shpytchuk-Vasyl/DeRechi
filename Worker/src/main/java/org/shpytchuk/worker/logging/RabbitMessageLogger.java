@@ -1,9 +1,8 @@
 package org.shpytchuk.worker.logging;
 
+import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import tools.jackson.core.JacksonException;
@@ -12,9 +11,8 @@ import tools.jackson.databind.json.JsonMapper;
 
 import static org.springframework.core.NestedExceptionUtils.getMostSpecificCause;
 
+@Slf4j
 public class RabbitMessageLogger implements MethodInterceptor {
-
-    private static final Logger log = LoggerFactory.getLogger(RabbitMessageLogger.class);
 
     private static final String TYPE_HEADER = "__TypeId__";
 

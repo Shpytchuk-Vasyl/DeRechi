@@ -7,12 +7,13 @@ Logs are read by a person, usually through `docker compose logs` on a production
 Declare the logger the same way everywhere, and log with placeholders:
 
 ```java
-private static final Logger log = LoggerFactory.getLogger(ClaimService.class);
-
-log.info("Claim {} created on {} item {}", claim.getId(), kind, item.getId());
+@Slf4j
+public abstract class ClaimService<T extends Thing, C extends Claim<T>> {
+    ...
+    log.info("Claim {} created on {} item {}", claim.getId(), kind, item.getId());
 ```
 
-- `@Slf4j` is not used; string concatenation in log calls is not used.
+- The logger is `@Slf4j` where the module has Lombok, otherwise `LoggerFactory.getLogger(X.class)` in a field named `log` (see [Java code style](java-code-style.md#logging)). String concatenation in log calls is not used.
 - **English only.** One language keeps `grep` working across all services.
 - The message names the event and the records it touched: `Claim 42 created on found item 17`, `Fourthwall order 9f3c matched claim 42`, `Archived lost item 17 as history 80: 3 matches deleted, 1 claim moved`. Past tense for something that happened, present for a decision (`Skipping ...`, `Retrying ...`).
 - Log ids, kinds, counts and durations, not objects. An object goes into a message only if its `toString` is ours and prints ids (records do; a class without `toString` prints `ItemCreatedEvent@1a2b`).

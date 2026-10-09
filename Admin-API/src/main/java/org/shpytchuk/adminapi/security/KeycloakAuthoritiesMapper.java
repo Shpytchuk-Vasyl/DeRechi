@@ -1,7 +1,6 @@
 package org.shpytchuk.adminapi.security;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
@@ -20,9 +19,8 @@ import java.util.Set;
  *     <li>{@code resource_access.<client>.roles} → {@code LOST_ITEM:EDIT}</li>
  * </ul>
  */
+@Slf4j
 public class KeycloakAuthoritiesMapper implements GrantedAuthoritiesMapper {
-
-    private static final Logger log = LoggerFactory.getLogger(KeycloakAuthoritiesMapper.class);
 
     private static final String REALM_ACCESS = "realm_access";
     private static final String RESOURCE_ACCESS = "resource_access";

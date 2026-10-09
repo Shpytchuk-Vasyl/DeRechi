@@ -3,6 +3,7 @@ package org.shpytchuk.adminapi.form;
 import lombok.AllArgsConstructor;
 import org.shpytchuk.adminapi.config.property.CountriesProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -27,7 +28,7 @@ public class ItemFormValidator implements Validator {
         ItemForm form = (ItemForm) target;
 
         String country = form.getCountryCode();
-        if (country != null && !country.isBlank() && !countries.supports(country)) {
+        if (StringUtils.hasText(country) && !countries.supports(country)) {
             errors.rejectValue("countryCode", COUNTRY_CODE);
         }
 

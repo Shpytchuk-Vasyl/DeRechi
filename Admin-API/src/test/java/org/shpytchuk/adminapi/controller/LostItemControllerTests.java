@@ -364,7 +364,9 @@ class LostItemControllerTests {
         when(service.create(any())).thenReturn(lostItem());
         when(service.scopeKey()).thenReturn("LOST_ITEM");
 
-        mockMvc.perform(validCreateWithoutEmail().param("email", ""))
+        mockMvc.perform(validCreateWithoutEmail()
+                        .param("countryCode", "PL")
+                        .param("email", ""))
                 .andExpect(status().is3xxRedirection());
 
         verify(service).create(any());
