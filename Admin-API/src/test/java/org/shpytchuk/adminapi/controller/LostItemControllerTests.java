@@ -359,7 +359,22 @@ class LostItemControllerTests {
         assertThat(form.getValue().getCurrency()).as("«за країною» приходить порожнім і стає null").isNull();
     }
 
+    @Test
+    void createsWithoutAnEmail() throws Exception {
+        when(service.create(any())).thenReturn(lostItem());
+        when(service.scopeKey()).thenReturn("LOST_ITEM");
+
+        mockMvc.perform(validCreateWithoutEmail().param("email", ""))
+                .andExpect(status().is3xxRedirection());
+
+        verify(service).create(any());
+    }
+
     private static org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder validCreate() {
+        return validCreateWithoutEmail().param("email", "a@b.test");
+    }
+
+    private static org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder validCreateWithoutEmail() {
         return post("/admin/lost-items")
                 .with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.CREATE)))
                 .with(csrf())
@@ -370,8 +385,7 @@ class LostItemControllerTests {
                 .param("placeName", "Park")
                 .param("lat", "52.2")
                 .param("lon", "21.0")
-                .param("phone", "+48501234567")
-                .param("email", "a@b.test");
+                .param("phone", "+48501234567");
     }
 
     @Test

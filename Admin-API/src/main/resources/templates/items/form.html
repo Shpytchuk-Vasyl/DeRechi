@@ -282,11 +282,12 @@
                             <label class="label" for="email">
                                 <span class="icon has-text-grey mr-1" aria-hidden="true"><i
                                         class="fa-solid fa-envelope"></i></span>
-                                <span>Email</span>
+                                <span th:text="#{field.email}">Email</span>
+                                <span class="has-text-grey has-text-weight-normal" th:text="#{field.optional}">optional</span>
                             </label>
                             <div class="control">
                                 <input class="input" type="email" id="email" th:field="*{email}"
-                                       th:errorclass="is-danger" required maxlength="50" autocomplete="email"
+                                       th:errorclass="is-danger" maxlength="50" autocomplete="email"
                                        inputmode="email" th:placeholder="#{placeholder.email}">
                             </div>
                             <p class="help is-danger" th:if="${#fields.hasErrors('email')}"

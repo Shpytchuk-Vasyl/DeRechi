@@ -48,7 +48,7 @@ type Money {
 type ContactInfo {
     id: ID!
     phone: String!
-    email: String!
+    email: String
 }
 
 "Receipt for contacts handed to the author of a notice"
@@ -124,6 +124,13 @@ input ContactInfoInput {
     socialMedias: [SocialMedia!]
 }
 
+input ItemContactInfoInput {
+    "E.164 format, for example +380671234567"
+    phone: String!
+    email: String
+    socialMedias: [SocialMedia!]
+}
+
 input PlaceInput {
     "ID Google Places"
     id: ID!
@@ -151,7 +158,7 @@ input ItemInput {
     image: String
     categoryId: ID!
     place: PlaceInput!
-    contact: ContactInfoInput!
+    contact: ItemContactInfoInput!
 }
 
 type Query {

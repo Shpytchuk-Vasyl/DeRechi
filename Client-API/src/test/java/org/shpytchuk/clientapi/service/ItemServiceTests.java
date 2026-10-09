@@ -288,7 +288,7 @@ class ItemServiceTests extends AbstractPostgresTests {
                 image,
                 categoryId,
                 new PlaceInput("ChIJplaceId", "Площа Ринок", 49.8419, 24.0315, countryCode),
-                new ContactInfoInput("+380671234567", "finder@example.com",
+                new ItemContactInfoInput("+380671234567", "finder@example.com",
                         List.of(SocialMediaEnum.TELEGRAM)));
     }
 }

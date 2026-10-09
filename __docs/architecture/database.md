@@ -49,7 +49,7 @@ Column types below are what the migrations create. Hibernate validates against t
 |---|---|---|
 | `thing_category` | reference list of categories | `key VARCHAR(100) UNIQUE`; seeded by migration 003 with `DOCUMENTS`, `WALLET`, `ELECTRONICS`, `JEWELRY`, `ANIMALS`, `KEYS`, `BAGS`, `OTHER` |
 | `place` | a Google Places location | PK `google_place_id`, `name`, `coordinate geography(Point,4326) NOT NULL`, `country_code VARCHAR(2) NOT NULL` (ISO 3166-1 alpha-2, added in 005) |
-| `contact_info` | how to reach the person who posted | `phone VARCHAR(16)`, `email VARCHAR(50)`, `social_medias INT2[]` (ordinals of `SocialMediaEnum`, nullable) |
+| `contact_info` | how to reach the person who posted | `phone VARCHAR(16)`, `email VARCHAR(50)` (nullable since migration 011: the author of a notice may leave only a phone; claimants always give one), `social_medias INT2[]` (ordinals of `SocialMediaEnum`, nullable) |
 | `lost_item` | a lost notice | `title VARCHAR(100)`, `description VARCHAR(250)`, `image VARCHAR(200)` (object key in MinIO), `date`, `compensation INTEGER` (whole units, nullable), `currency VARCHAR(3) NOT NULL` (ISO 4217), FKs to category, contact info and place |
 | `found_item` | a found notice | same shape as `lost_item`; the application requires `image` for found items, the schema does not |
 | `lost_item_history`, `found_item_history` | archived notices | same columns plus `archived_at TIMESTAMPTZ NOT NULL`; rows are copied here by `Worker` (`ItemArchiver`) when an administrator asks for the archive, a return is confirmed or a notice with claims goes quiet, and the original row is deleted |

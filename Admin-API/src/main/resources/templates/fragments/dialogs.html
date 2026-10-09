@@ -84,7 +84,7 @@
                                 <p class="numeric" th:text="${fmt.phone(item.phone)}">+380</p>
                             </div>
 
-                            <div class="column is-half py-2">
+                            <div class="column is-half py-2" th:if="${item.email}">
                                 <p class="is-size-7 is-uppercase has-text-weight-semibold has-text-grey" th:text="#{field.email}">Email</p>
                                 <p th:text="${item.email}">mail</p>
                             </div>

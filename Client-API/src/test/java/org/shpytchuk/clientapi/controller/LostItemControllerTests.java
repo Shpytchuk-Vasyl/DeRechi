@@ -244,6 +244,33 @@ class LostItemControllerTests extends AbstractGraphQlTests {
     }
 
     @Test
+    void storesTheContactWithoutAnEmail() {
+        Map<String, Object> input = input("Ключі", documents.getId());
+        input.put("contact", Map.of("phone", "+380671234567"));
+
+        Long id = tester.document(CREATE)
+                .variable("input", input)
+                .execute()
+                .path("createLostItem.contact.email").valueIsNull()
+                .path("createLostItem.id").entity(Long.class).get();
+
+        assertThat(lostItemRepository.findWithDetailsById(id).orElseThrow().getInfo().getEmail()).isNull();
+    }
+
+    @Test
+    void storesABlankEmailAsNull() {
+        Map<String, Object> input = input("Ключі", documents.getId());
+        input.put("contact", Map.of("phone", "+380671234567", "email", ""));
+
+        Long id = tester.document(CREATE)
+                .variable("input", input)
+                .execute()
+                .path("createLostItem.id").entity(Long.class).get();
+
+        assertThat(lostItemRepository.findWithDetailsById(id).orElseThrow().getInfo().getEmail()).isNull();
+    }
+
+    @Test
     void rejectsInvalidEmail() {
         Map<String, Object> input = input("Ключі", documents.getId());
         input.put("contact", Map.of(

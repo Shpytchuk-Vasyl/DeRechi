@@ -262,6 +262,15 @@ class ClaimControllerTests extends AbstractGraphQlTests {
     }
 
     @Test
+    void requiresAnEmailFromTheClaimant() {
+        Long itemId = foundItem("ChIJrynok").getId();
+
+        expectError(claimFound(itemId, Map.of("phone", PHONE)), graphql.ErrorType.ValidationError, "email");
+
+        assertThat(foundClaimRepository.findAll()).isEmpty();
+    }
+
+    @Test
     void confirmsTheReturnOfALostItem() {
         Long claimId = claimLostId(lostItem("ChIJrynok").getId(), claimant(PHONE, EMAIL));
         String token = lostClaimRepository.findById(claimId).orElseThrow().getToken();

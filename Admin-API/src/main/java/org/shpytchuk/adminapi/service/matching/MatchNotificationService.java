@@ -29,6 +29,7 @@ public class MatchNotificationService {
 
     private static final String SUBJECT_KEY = "notification.match.subject";
     private static final String BODY_KEY = "notification.match.body";
+    private static final String BODY_PHONE_ONLY_KEY = "notification.match.bodyPhoneOnly";
 
     private final SimilarItemRepository similarItemRepository;
     private final RabbitTemplate rabbitTemplate;
@@ -58,13 +59,14 @@ public class MatchNotificationService {
         LostItem lost = match.getLostItem();
         FoundItem found = match.getFoundItem();
         ContactInfo owner = lost.getInfo();
+        ContactInfo finder = found.getInfo();
 
         NotificationRequestedEvent event = new NotificationRequestedEvent(
                 text(SUBJECT_KEY),
-                text(BODY_KEY,
+                text(finder.getEmail() == null ? BODY_PHONE_ONLY_KEY : BODY_KEY,
                         lost.getTitle(), formats.date(lost.getDate()),
                         found.getTitle(), found.getPlace().getName(), formats.date(found.getDate()),
-                        formats.phone(found.getInfo().getPhone()), found.getInfo().getEmail()),
+                        formats.phone(finder.getPhone()), finder.getEmail()),
                 notifyChannel.isNeedPhone() ? owner.getPhone() : null,
                 notifyChannel.isNeedEmail() ? owner.getEmail() : null,
                 socialMedias(notifyChannel),

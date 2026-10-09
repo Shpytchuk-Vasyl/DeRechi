@@ -1,5 +1,6 @@
 package org.shpytchuk.clientapi.service.payment;
 
+import lombok.AllArgsConstructor;
 import org.shpytchuk.clientapi.client.FourthwallClient;
 import org.shpytchuk.clientapi.config.SiteProperties;
 import org.shpytchuk.clientapi.controller.payment.FourthwallOrderPlaced;
@@ -27,6 +28,7 @@ import java.util.stream.Stream;
 import static org.springframework.core.NestedExceptionUtils.getMostSpecificCause;
 
 @Service
+@AllArgsConstructor
 public class FourthwallOrderService {
 
     private static final Logger log = LoggerFactory.getLogger(FourthwallOrderService.class);
@@ -41,24 +43,6 @@ public class FourthwallOrderService {
     private final TransactionTemplate transactionTemplate;
     private final FourthwallClient fourthwall;
     private final SiteProperties site;
-
-    public FourthwallOrderService(FourthwallOrderRepository orderRepository,
-                                  LostItemClaimRepository lostClaimRepository,
-                                  FoundItemClaimRepository foundClaimRepository,
-                                  LostClaimService lostClaimService,
-                                  FoundClaimService foundClaimService,
-                                  TransactionTemplate transactionTemplate,
-                                  FourthwallClient fourthwall,
-                                  SiteProperties site) {
-        this.orderRepository = orderRepository;
-        this.lostClaimRepository = lostClaimRepository;
-        this.foundClaimRepository = foundClaimRepository;
-        this.lostClaimService = lostClaimService;
-        this.foundClaimService = foundClaimService;
-        this.transactionTemplate = transactionTemplate;
-        this.fourthwall = fourthwall;
-        this.site = site;
-    }
 
     public void receive(FourthwallOrderPlaced order) {
         Optional<Unpaid> unpaid = transactionTemplate.execute(status -> record(order).map(this::unpaid));

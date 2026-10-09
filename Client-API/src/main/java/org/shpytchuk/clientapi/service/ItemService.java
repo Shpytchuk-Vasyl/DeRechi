@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.*;
 import org.springframework.graphql.data.query.ScrollSubrange;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Locale;
@@ -102,7 +103,7 @@ public abstract class ItemService<T extends Thing> {
 
     private static <T extends Thing> void buildItemFromInput(ItemInput input, T item, ContactInfo info, ThingCategory category, Place place, String currency) {
         info.setPhone(input.contact().phone());
-        info.setEmail(input.contact().email());
+        info.setEmail(StringUtils.hasText(input.contact().email()) ? input.contact().email() : null);
         info.setSocialMedias(toArray(input.contact().socialMedias()));
 
         item.setTitle(input.title());

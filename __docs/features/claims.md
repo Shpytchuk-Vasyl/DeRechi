@@ -68,8 +68,9 @@ the contacts the claimant left.
 Everything that archives goes through Worker, which is why the admin panel also only
 *asks* (see below): one archiver, one place that knows how claims follow a notice into history.
 
-`contact` is the same `ContactInfoInput` as in `ItemInput` (E.164 phone, email, optional
-messengers) with the same validation. Unknown item or token → `NOT_FOUND`.
+`contact` is `ContactInfoInput` (E.164 phone, email, optional messengers). Unlike
+`ItemContactInfoInput` of a notice, the email here is required: the author's phone number is
+sent to it after payment. Unknown item or token → `NOT_FOUND`.
 
 `ClaimService` (one subclass per kind) loads the item with a plain `findById` and looks for an
 existing claim on the item with the same phone **or** email. There is no lock today, so two

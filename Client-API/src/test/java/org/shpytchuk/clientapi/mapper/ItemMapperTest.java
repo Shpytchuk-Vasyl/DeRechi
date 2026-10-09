@@ -45,6 +45,14 @@ class ItemMapperTest {
     }
 
     @Test
+    void leavesAMissingEmailNull() {
+        LostItem item = item(point(49.8419, 24.0315));
+        item.getInfo().setEmail(null);
+
+        assertThat(ItemMapper.toDto(item).contact().email()).isNull();
+    }
+
+    @Test
     void readsLatitudeFromYAndLongitudeFromX() {
         ItemDto dto = ItemMapper.toDto(item(point(49.8419, 24.0315)));
 

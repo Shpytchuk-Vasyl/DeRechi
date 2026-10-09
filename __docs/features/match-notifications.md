@@ -19,7 +19,7 @@ All of them are `hx-post` submits of one form to `POST /admin/matches/notify` (p
 
 1. Loads the `SimilarItem` pair or throws `NotFoundException("entity.match")`.
 2. Builds a `NotificationRequestedEvent` with
-   - `subject` and `message` from the message keys `notification.match.subject` and `notification.match.body`, in the admin's current locale, with the lost title and date, the found title, place and date, and the finder's phone and email;
+   - `subject` and `message` from the message keys `notification.match.subject` and `notification.match.body`, in the admin's current locale, with the lost title and date, the found title, place and date, and the finder's phone and email (`notification.match.bodyPhoneOnly` when the finder left no email);
    - `phone` and `email` of the **owner of the lost item**, each set only if the chosen `NotifyChannel` needs it (`isNeedPhone`, `isNeedEmail`), otherwise `null`;
    - `socialMedias`: the single social network when a messenger channel was chosen, otherwise empty;
    - `deduplicationKey = match:<lostId>:<foundId>`.

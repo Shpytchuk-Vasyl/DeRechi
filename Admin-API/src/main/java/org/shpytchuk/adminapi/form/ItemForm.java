@@ -70,7 +70,6 @@ public class ItemForm {
     @Pattern(regexp = "^\\+[1-9]\\d{7,14}$", message = "{validation.phone}")
     private String phone;
 
-    @NotBlank
     @Email
     @Size(max = 50)
     private String email;

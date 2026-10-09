@@ -11,7 +11,7 @@ import org.shpytchuk.clientapi.dto.ItemDto;
 import org.shpytchuk.clientapi.dto.MoneyDto;
 import org.shpytchuk.clientapi.dto.PlaceDto;
 import org.shpytchuk.clientapi.event.ItemCreatedEvent;
-import org.shpytchuk.clientapi.input.ContactInfoInput;
+import org.shpytchuk.clientapi.input.ItemContactInfoInput;
 import org.shpytchuk.clientapi.input.ItemInput;
 import org.shpytchuk.clientapi.input.MoneyInput;
 import org.shpytchuk.clientapi.input.PlaceInput;
@@ -38,7 +38,7 @@ class ItemEventAspectTest {
     private static final ItemInput INPUT = new ItemInput(
             "Ключі", null, LocalDate.of(2026, 9, 1), new MoneyInput(500, null), "keys.png", 2L,
             new PlaceInput("ChIJplaceId", "Площа Ринок", 49.8419, 24.0315, "UA"),
-            new ContactInfoInput("+380671234567", "finder@example.com", List.of()));
+            new ItemContactInfoInput("+380671234567", "finder@example.com", List.of()));
 
     private static final ItemDto CREATED = new ItemDto(
             1L, "Ключі", null, LocalDate.of(2026, 9, 1), new MoneyDto(500, "UAH"), "keys.png",

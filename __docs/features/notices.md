@@ -28,7 +28,7 @@ The Web-Client consumes exactly this API; it has no private endpoints of its own
 | `image` | storage key, up to 200 characters, required for found items (checked in `ItemService.apply`) |
 | `categoryId` | required, must exist (`NOT_FOUND` otherwise) |
 | `place` | `PlaceInput`: Google place id, name, lat/lon, `countryCode` (two letters, must be supported) |
-| `contact` | `ContactInfoInput`: phone in E.164 (`^\+[1-9]\d{7,14}$`), email up to 50 characters, optional list of `SocialMedia` |
+| `contact` | `ItemContactInfoInput`: phone in E.164 (`^\+[1-9]\d{7,14}$`), optional email up to 50 characters (blank is stored as `null`), optional list of `SocialMedia`. An author without an email gets responses and match notifications by SMS only |
 
 What the client gets back is `ItemDto` built by `ItemMapper`. Contact details are masked by `ContactMasker` so that scraping the API does not yield usable contacts:
 

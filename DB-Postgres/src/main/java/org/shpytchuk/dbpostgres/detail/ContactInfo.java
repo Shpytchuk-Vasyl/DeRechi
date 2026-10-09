@@ -2,7 +2,6 @@ package org.shpytchuk.dbpostgres.detail;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -28,9 +27,8 @@ public class ContactInfo {
     private String phone;
 
     @Email
-    @NotBlank
     @Size(max = 50)
-    @Column(nullable = false, length = 50)
+    @Column(length = 50)
     private String email;
 
 

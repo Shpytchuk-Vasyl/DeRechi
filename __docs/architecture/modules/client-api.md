@@ -68,7 +68,7 @@ Anything else is an `INTERNAL_ERROR` with no detail.
 ### Contact masking
 
 The API never returns a full phone number or email. `ItemMapper.toDto` runs both through
-`ContactMasker` (`+38067*****67`, `f*****r@example.com`). Full contacts are only visible in
+`ContactMasker` (`+38067*****67`, `f*****r@example.com`); a notice without an email returns `email: null`. Full contacts are only visible in
 the admin panel and in the notification sent to the owner.
 
 ## Services

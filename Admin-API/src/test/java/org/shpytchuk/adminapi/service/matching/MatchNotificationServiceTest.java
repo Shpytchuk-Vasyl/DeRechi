@@ -95,6 +95,21 @@ class MatchNotificationServiceTest {
     }
 
     @Test
+    void leavesTheEmailOutOfTheMessageWhenTheFinderHasNone() {
+        SimilarItem match = match();
+        match.getFoundItem().getInfo().setEmail(null);
+        when(repository.findById(new SimilarItem.SimilarItemId(2L, 1L))).thenReturn(Optional.of(match));
+
+        service.notifyOwner(1L, 2L, "admin@derechi.local", NotifyChannel.ALL);
+
+        var event = forClass(NotificationRequestedEvent.class);
+        verify(rabbitTemplate).convertAndSend(eq("derechi.notifications"), eq("notification.match.found"), event.capture());
+        assertThat(event.getValue().message())
+                .contains("Знайдений рюкзак")
+                .doesNotContain("null", " та ", "{6}");
+    }
+
+    @Test
     void failsWhenMatchDoesNotExist() {
         when(repository.findById(any(SimilarItem.SimilarItemId.class))).thenReturn(Optional.empty());
 

@@ -32,7 +32,7 @@ public class ContactInfo {
     @Column(nullable = false)
     private String phone;
 
-    @Column(nullable = false)
+    @Column
     private String email;
 
     @Enumerated(EnumType.ORDINAL)
