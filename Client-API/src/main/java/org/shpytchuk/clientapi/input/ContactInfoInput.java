@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.shpytchuk.clientapi.entity.detail.ContactInfo.SocialMediaEnum;
+import org.shpytchuk.clientapi.util.EmailNormalizer;
 
 import java.util.List;
 
@@ -13,4 +14,7 @@ public record ContactInfoInput(
         @NotBlank @Email @Size(max = 50) String email,
         List<SocialMediaEnum> socialMedias
 ) {
+    public ContactInfoInput {
+        email = EmailNormalizer.normalize(email);
+    }
 }

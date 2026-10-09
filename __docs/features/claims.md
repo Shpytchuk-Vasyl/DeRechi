@@ -70,7 +70,10 @@ Everything that archives goes through Worker, which is why the admin panel also 
 
 `contact` is `ContactInfoInput` (E.164 phone, email, optional messengers). Unlike
 `ItemContactInfoInput` of a notice, the email here is required: the author's phone number is
-sent to it after payment. Unknown item or token → `NOT_FOUND`.
+sent to it after payment. The record normalises the email itself (`EmailNormalizer`: lower case,
+no `+tag` on any domain, and on Gmail no dots and `googlemail.com` as `gmail.com`), and it is stored
+that way, so `vasyl+12@gmail.com` is the same claimant as `vasyl@gmail.com` for repeats and the
+unlock limit. Mail goes to the normalised address, which is the same mailbox. Unknown item or token → `NOT_FOUND`.
 
 `ClaimService` (one subclass per kind) loads the item with a plain `findById` and looks for an
 existing claim on the item with the same phone **or** email. There is no lock today, so two
@@ -226,7 +229,7 @@ The flow:
 
    One claimant opens at most `derechi.claims.unlock-limit` checkouts (1) per
    `derechi.claims.unlock-window` (P7D), so buying authors' numbers in bulk does not pay. The
-   claimant is the phone **or** the email (case-insensitive) of the claim, over both claim tables
+   claimant is the phone **or** the normalised email of the claim, over both claim tables
    and archived claims too. Every checkout counts, paid or not, which also keeps one claimant from
    using up the Fourthwall product limit. Before the product is created, `ClaimService.reserveCheckout` stamps
    the claim's `payment_requested_at`, after `ClaimUnlockLimiter` has counted the claimant's stamps

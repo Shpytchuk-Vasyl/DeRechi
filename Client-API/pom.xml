@@ -54,6 +54,10 @@
             <artifactId>graphql-java-extended-scalars</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.sanctionco.jmail</groupId>
+            <artifactId>jmail</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-spatial</artifactId>
         </dependency>

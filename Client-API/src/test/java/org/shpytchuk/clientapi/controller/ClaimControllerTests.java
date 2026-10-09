@@ -192,6 +192,20 @@ class ClaimControllerTests extends AbstractGraphQlTests {
     }
 
     @Test
+    void storesTheClaimantsEmailNormalisedAndTakesAPlusTagForARepeat() {
+        Long itemId = foundItem("ChIJrynok").getId();
+        Long first = claimFound(itemId, claimant(PHONE, "Olena+1@Example.com"))
+                .path("claimFoundItem.id").entity(Long.class).get();
+
+        claimFound(itemId, claimant("+380501112233", "olena+2@example.com"))
+                .path("claimFoundItem.repeated").entity(Boolean.class).isEqualTo(true)
+                .path("claimFoundItem.id").entity(Long.class).isEqualTo(first);
+
+        assertThat(foundClaimRepository.findWithContactInfoById(first).orElseThrow().getContactInfo().getEmail())
+                .isEqualTo("olena@example.com");
+    }
+
+    @Test
     void answersARepeatByEmailWithTheExistingClaimAndSendsNothing() {
         Long itemId = foundItem("ChIJrynok").getId();
         Long first = claimFound(itemId, claimant(PHONE, EMAIL))
@@ -540,6 +554,20 @@ class ClaimControllerTests extends AbstractGraphQlTests {
         Long second = lostItem("ChIJopera").getId();
         Long firstClaim = claimLostId(first, claimant(PHONE, EMAIL));
         Long secondClaim = claimLostId(second, claimant("+48509876543", EMAIL.toUpperCase()));
+        when(fourthwall.createDigitalProduct(any(), any(), any())).thenReturn(PRODUCT, OTHER_PRODUCT);
+
+        unlockLost(first, firstClaim);
+
+        expectError(unlockLost(second, secondClaim), PaymentErrorType.UNLOCK_LIMIT, "Unlock limit");
+        verify(fourthwall, times(1)).createDigitalProduct(any(), any(), any());
+    }
+
+    @Test
+    void recognisesTheClaimantBehindAPlusTagAndGmailDots() {
+        Long first = lostItem("ChIJrynok").getId();
+        Long second = lostItem("ChIJopera").getId();
+        Long firstClaim = claimLostId(first, claimant(PHONE, "vasyl.s@gmail.com"));
+        Long secondClaim = claimLostId(second, claimant("+48509876543", "Vasyl.S+12@googlemail.com"));
         when(fourthwall.createDigitalProduct(any(), any(), any())).thenReturn(PRODUCT, OTHER_PRODUCT);
 
         unlockLost(first, firstClaim);

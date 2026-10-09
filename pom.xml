@@ -40,6 +40,7 @@
         <graphql-extended-scalars.version>24.0</graphql-extended-scalars.version>
         <language-detector.version>0.6</language-detector.version>
         <libphonenumber.version>9.0.18</libphonenumber.version>
+        <jmail.version>2.2.2</jmail.version>
         <shedlock.version>7.10.1</shedlock.version>
 
         <liquibase.version>5.0.4</liquibase.version>
@@ -90,6 +91,12 @@
                 <groupId>com.googlecode.libphonenumber</groupId>
                 <artifactId>libphonenumber</artifactId>
                 <version>${libphonenumber.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.sanctionco.jmail</groupId>
+                <artifactId>jmail</artifactId>
+                <version>${jmail.version}</version>
             </dependency>
 
             <dependency>
