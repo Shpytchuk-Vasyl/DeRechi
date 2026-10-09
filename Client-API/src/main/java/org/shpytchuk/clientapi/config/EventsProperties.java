@@ -14,7 +14,7 @@ public record EventsProperties(int bufferCapacity, int batchSize, Duration flush
         if (batchSize <= 0) {
             throw new IllegalArgumentException("derechi.events.batch-size must be positive: " + batchSize);
         }
-        if (flushInterval == null || flushInterval.isNegative() || flushInterval.isZero()) {
+        if (flushInterval == null || !flushInterval.isPositive()) {
             throw new IllegalArgumentException("derechi.events.flush-interval must be positive: " + flushInterval);
         }
     }

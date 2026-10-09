@@ -1,6 +1,7 @@
 package org.shpytchuk.worker.cron;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.shpytchuk.worker.config.ClaimsProperties;
 import org.shpytchuk.worker.entity.matching.Claim;
@@ -8,8 +9,6 @@ import org.shpytchuk.worker.repository.ClaimRepository;
 import org.shpytchuk.worker.service.ClaimRepositories;
 import org.shpytchuk.worker.service.ItemArchiver;
 import org.shpytchuk.worker.service.ItemKind;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -23,9 +22,8 @@ import static org.springframework.core.NestedExceptionUtils.getMostSpecificCause
 
 @Component
 @AllArgsConstructor
+@Slf4j
 public class ClaimFollowUpJob {
-
-    private static final Logger log = LoggerFactory.getLogger(ClaimFollowUpJob.class);
 
     private final ClaimRepositories repositories;
     private final ClaimFollowUps followUps;

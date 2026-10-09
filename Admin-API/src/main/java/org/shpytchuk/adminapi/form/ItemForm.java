@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.shpytchuk.adminapi.entity.detail.ContactInfo.SocialMediaEnum;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -77,6 +78,6 @@ public class ItemForm {
     private List<SocialMediaEnum> socialMedias = new ArrayList<>();
 
     public void setCurrency(String currency) {
-        this.currency = currency == null || currency.isBlank() ? null : currency;
+        this.currency = StringUtils.hasText(currency) ? currency : null;
     }
 }

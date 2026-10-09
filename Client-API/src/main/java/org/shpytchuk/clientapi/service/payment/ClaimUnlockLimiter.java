@@ -1,13 +1,12 @@
 package org.shpytchuk.clientapi.service.payment;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.shpytchuk.clientapi.config.ClaimsProperties;
 import org.shpytchuk.clientapi.entity.detail.ContactInfo;
 import org.shpytchuk.clientapi.exeption.UnlockLimitException;
 import org.shpytchuk.clientapi.repository.found.FoundItemClaimRepository;
 import org.shpytchuk.clientapi.repository.lost.LostItemClaimRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,9 +18,8 @@ import java.util.stream.Stream;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ClaimUnlockLimiter {
-
-    private static final Logger log = LoggerFactory.getLogger(ClaimUnlockLimiter.class);
 
     private final LostItemClaimRepository lostClaimRepository;
     private final FoundItemClaimRepository foundClaimRepository;

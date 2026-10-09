@@ -1,5 +1,6 @@
 package org.shpytchuk.adminapi.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.shpytchuk.adminapi.config.cache.CachedPage;
 import org.shpytchuk.adminapi.entity.thing.Thing;
 import org.shpytchuk.adminapi.form.ItemFilter;
@@ -12,8 +13,6 @@ import org.shpytchuk.adminapi.view.DeletedItem;
 import org.shpytchuk.adminapi.view.detail.ItemView;
 import org.shpytchuk.adminapi.view.Pager;
 import org.shpytchuk.adminapi.view.SortView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
@@ -28,9 +27,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Locale;
 
 @CachedPage
+@Slf4j
 public abstract class ItemController<T extends Thing> {
-
-    private static final Logger log = LoggerFactory.getLogger(ItemController.class);
 
     private static final String LIST_VIEW = "items/list";
     private static final String FORM_VIEW = "items/form";

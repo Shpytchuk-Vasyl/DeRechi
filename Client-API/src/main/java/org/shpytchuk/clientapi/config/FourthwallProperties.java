@@ -1,6 +1,8 @@
 package org.shpytchuk.clientapi.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -44,10 +46,10 @@ public record FourthwallProperties(
         }
         requirePositive(connectTimeout, "connect-timeout");
         requirePositive(readTimeout, "read-timeout");
-        if (productImage != null && (productImage.url() == null || productImage.url().isBlank())) {
+        if (productImage != null && !StringUtils.hasText(productImage.url())) {
             productImage = null;
         }
-        if (productFile != null && (productFile.text() == null || productFile.text().isBlank())) {
+        if (productFile != null && !StringUtils.hasText(productFile.text())) {
             productFile = null;
         }
     }
@@ -86,7 +88,7 @@ public record FourthwallProperties(
         public static final String CONTENT_TYPE = "text/plain";
 
         public ProductFile {
-            if (text != null && !text.isBlank() && (name == null || name.isBlank())) {
+            if (StringUtils.hasText(text) && !StringUtils.hasText(name)) {
                 throw new IllegalArgumentException("derechi.fourthwall.product-file needs a name");
             }
             name = name == null ? null : name.strip();
@@ -101,7 +103,7 @@ public record FourthwallProperties(
 
         public ProductImage {
             url = url == null ? null : url.strip();
-            if (url != null && !url.isEmpty()) {
+            if (StringUtils.hasText(url)) {
                 if (width <= 0 || height <= 0) {
                     throw new IllegalArgumentException(
                             "derechi.fourthwall.product-image needs a positive width and height: " + width + "x" + height);
@@ -115,14 +117,12 @@ public record FourthwallProperties(
     }
 
     private static String require(String value, String name) {
-        if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("derechi.fourthwall." + name + " must be set");
-        }
+        Assert.hasText(value, "derechi.fourthwall." + name + " must be set");
         return value.strip();
     }
 
     private static void requirePositive(Duration value, String name) {
-        if (value == null || value.isNegative() || value.isZero()) {
+        if (value == null || !value.isPositive()) {
             throw new IllegalArgumentException("derechi.fourthwall." + name + " must be positive: " + value);
         }
     }

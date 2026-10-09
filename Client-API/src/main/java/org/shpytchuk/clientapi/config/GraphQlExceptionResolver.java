@@ -6,12 +6,11 @@ import graphql.schema.DataFetchingEnvironment;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import graphql.ErrorClassification;
+import lombok.extern.slf4j.Slf4j;
 import org.shpytchuk.clientapi.exeption.NotFoundException;
 import org.shpytchuk.clientapi.exeption.PaymentErrorType;
 import org.shpytchuk.clientapi.exeption.PaymentUnavailableException;
 import org.shpytchuk.clientapi.exeption.UnlockLimitException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.graphql.execution.DataFetcherExceptionResolverAdapter;
 import org.springframework.graphql.execution.ErrorType;
 import org.springframework.stereotype.Component;
@@ -22,9 +21,8 @@ import java.util.stream.Collectors;
 import static org.springframework.core.NestedExceptionUtils.getMostSpecificCause;
 
 @Component
+@Slf4j
 public class GraphQlExceptionResolver extends DataFetcherExceptionResolverAdapter {
-
-    private static final Logger log = LoggerFactory.getLogger(GraphQlExceptionResolver.class);
 
     @Override
     protected GraphQLError resolveToSingleError(Throwable ex, DataFetchingEnvironment env) {

@@ -5,6 +5,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.text.NumberFormat;
 import java.time.Instant;
@@ -44,7 +45,7 @@ public class Formats {
             return "";
         }
         NumberFormat format = NumberFormat.getCurrencyInstance(locale());
-        if (currency != null && !currency.isBlank()) {
+        if (StringUtils.hasText(currency)) {
             format.setCurrency(Currency.getInstance(currency.trim().toUpperCase(Locale.ROOT)));
         }
         format.setMaximumFractionDigits(0);
@@ -52,14 +53,14 @@ public class Formats {
     }
 
     public String country(String code) {
-        if (code == null || code.isBlank()) {
+        if (!StringUtils.hasText(code)) {
             return "";
         }
         return Locale.of("", code.trim().toUpperCase(Locale.ROOT)).getDisplayCountry(locale());
     }
 
     public String phone(String phone) {
-        if (phone == null || phone.isBlank()) {
+        if (!StringUtils.hasText(phone)) {
             return "";
         }
         try {

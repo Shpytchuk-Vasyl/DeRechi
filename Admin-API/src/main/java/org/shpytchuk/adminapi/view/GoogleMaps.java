@@ -2,6 +2,7 @@ package org.shpytchuk.adminapi.view;
 
 import org.shpytchuk.adminapi.config.property.MapsProperties;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
 public class GoogleMaps {
@@ -17,7 +18,7 @@ public class GoogleMaps {
     }
 
     public boolean isEnabled() {
-        return properties.apiKey() != null && !properties.apiKey().isBlank();
+        return StringUtils.hasText(properties.apiKey());
     }
 
     public String getRegion() {

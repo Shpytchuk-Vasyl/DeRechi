@@ -1,9 +1,8 @@
 package org.shpytchuk.clientapi.client;
 
+import lombok.extern.slf4j.Slf4j;
 import org.shpytchuk.clientapi.config.FourthwallProperties;
 import org.shpytchuk.clientapi.exeption.PaymentUnavailableException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
@@ -17,9 +16,8 @@ import java.util.Map;
 
 import static org.springframework.core.NestedExceptionUtils.getMostSpecificCause;
 
+@Slf4j
 public class FourthwallClient {
-
-    private static final Logger log = LoggerFactory.getLogger(FourthwallClient.class);
 
     static final String PRODUCTS = "/products";
     static final String IMAGES = "/images";

@@ -1,6 +1,8 @@
 package org.shpytchuk.clientapi.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import java.util.Collections;
 import java.util.Currency;
@@ -13,16 +15,14 @@ import java.util.Set;
 public record CountriesProperties(List<String> supported, String fallback) {
 
     public CountriesProperties {
-        if (supported == null || supported.isEmpty()) {
-            throw new IllegalArgumentException("derechi.countries.supported must list at least one country");
-        }
+        Assert.notEmpty(supported, "derechi.countries.supported must list at least one country");
         supported = supported.stream()
                 .map(CountriesProperties::normalise)
                 .distinct()
                 .toList();
         supported.forEach(CountriesProperties::requireKnownCountry);
 
-        fallback = fallback == null || fallback.isBlank() ? supported.getFirst() : normalise(fallback);
+        fallback = StringUtils.hasText(fallback) ? normalise(fallback) : supported.getFirst();
         if (!supported.contains(fallback)) {
             throw new IllegalArgumentException(
                     "derechi.countries.fallback " + fallback + " is not among supported " + supported);

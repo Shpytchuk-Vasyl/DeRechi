@@ -1,6 +1,7 @@
 package org.shpytchuk.clientapi.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.Assert;
 
 import java.time.Duration;
 
@@ -8,13 +9,11 @@ import java.time.Duration;
 public record ClaimsProperties(String exchange, int unlockLimit, Duration unlockWindow) {
 
     public ClaimsProperties {
-        if (exchange == null || exchange.isBlank()) {
-            throw new IllegalArgumentException("derechi.claims.exchange must be set");
-        }
+        Assert.hasText(exchange, "derechi.claims.exchange must be set");
         if (unlockLimit <= 0) {
             throw new IllegalArgumentException("derechi.claims.unlock-limit must be positive: " + unlockLimit);
         }
-        if (unlockWindow == null || unlockWindow.isNegative() || unlockWindow.isZero()) {
+        if (unlockWindow == null || !unlockWindow.isPositive()) {
             throw new IllegalArgumentException("derechi.claims.unlock-window must be positive: " + unlockWindow);
         }
     }

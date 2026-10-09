@@ -1,10 +1,9 @@
 package org.shpytchuk.worker.listener;
 
+import lombok.extern.slf4j.Slf4j;
 import org.shpytchuk.worker.event.ArchiveRequestedEvent;
 import org.shpytchuk.worker.service.ItemArchiver;
 import org.shpytchuk.worker.service.ItemKind;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -16,9 +15,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class ArchiveListener {
-
-    private static final Logger log = LoggerFactory.getLogger(ArchiveListener.class);
 
     static final String VERB = "archive";
 

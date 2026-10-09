@@ -3,9 +3,8 @@ package org.shpytchuk.clientapi.event;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.annotation.PreDestroy;
+import lombok.extern.slf4j.Slf4j;
 import org.shpytchuk.clientapi.config.EventsProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.connection.Connection;
 import org.springframework.amqp.rabbit.core.RabbitOperations;
@@ -21,9 +20,8 @@ import java.util.concurrent.LinkedBlockingDeque;
 import static org.springframework.core.NestedExceptionUtils.getMostSpecificCause;
 
 @Component
+@Slf4j
 public class EventPublisher {
-
-    private static final Logger log = LoggerFactory.getLogger(EventPublisher.class);
 
     private final RabbitTemplate rabbitTemplate;
     private final int batchSize;

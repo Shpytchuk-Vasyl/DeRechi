@@ -5,17 +5,17 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.shpytchuk.worker.config.ClaimsProperties;
 import org.shpytchuk.worker.entity.matching.Claim;
 import org.shpytchuk.worker.entity.detail.ContactInfo;
 import org.shpytchuk.worker.entity.thing.Thing;
 import org.shpytchuk.worker.event.NotificationRequestedEvent;
 import org.shpytchuk.worker.language.PhoneLocales;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
 import java.util.Locale;
@@ -23,9 +23,8 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ClaimNotifier {
-
-    private static final Logger log = LoggerFactory.getLogger(ClaimNotifier.class);
 
     public static final String CREATED_ROUTING_KEY = "notification.claim.created";
     public static final String REMINDER_ROUTING_KEY = "notification.claim.reminder";
@@ -141,7 +140,7 @@ public class ClaimNotifier {
     }
 
     private static String formatPhone(String phone) {
-        if (phone == null || phone.isBlank()) {
+        if (!StringUtils.hasText(phone)) {
             return "";
         }
         try {

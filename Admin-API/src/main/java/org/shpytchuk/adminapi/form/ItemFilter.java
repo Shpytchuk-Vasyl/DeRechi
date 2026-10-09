@@ -1,6 +1,7 @@
 package org.shpytchuk.adminapi.form;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.util.StringUtils;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -15,7 +16,7 @@ public record ItemFilter(
 ) {
 
     public ItemFilter {
-        q = q == null || q.isBlank() ? null : q.strip();
+        q = StringUtils.hasText(q) ? q.strip() : null;
 
         if (from != null && to != null && from.isAfter(to)) {
             LocalDate swap = from;

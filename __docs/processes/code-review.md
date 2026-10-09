@@ -32,7 +32,7 @@ keep. Go through it every time:
 - [ ] No secrets or personal API keys in code or configuration. Local defaults in
       `application.yaml` are fine; anything real goes through environment variables.
 - [ ] Follows the [conventions](../conventions/README.md): records for data, Lombok only on
-      entities and forms, no `@Slf4j`, versions only in the root `pom.xml`, blocking code with
+      entities and forms, `@Slf4j` where the module has Lombok, versions only in the root `pom.xml`, blocking code with
       virtual threads rather than WebFlux.
 - [ ] Documentation is updated: the feature page in `features/`, the checklist in `extending/`
       if a procedure changed, the module page, and `.claude/CLAUDE.md` if a rule changed.

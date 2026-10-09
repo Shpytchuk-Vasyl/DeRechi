@@ -28,6 +28,8 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.Collection;
 import java.util.List;
@@ -141,12 +143,12 @@ public abstract class AdminItemService<T extends Thing> {
         Place place = placeRepository.save(toPlace(form, countryCode));
 
         info.setPhone(form.getPhone());
-        info.setEmail(form.getEmail());
+        info.setEmail(StringUtils.hasText(form.getEmail()) ? form.getEmail() : null);
         info.setSocialMedias(toArray(form.getSocialMedias()));
 
         item.setTitle(form.getTitle());
-        item.setDescription(blankToNull(form.getDescription()));
-        item.setImage(blankToNull(form.getImage()));
+        item.setDescription(StringUtils.hasText(form.getDescription()) ? form.getDescription() : null);
+        item.setImage(StringUtils.hasText(form.getImage()) ? form.getImage() : null);
         item.setDate(form.getDate());
         item.setCompensation(form.getCompensation());
         item.setCurrency(currency(form, countryCode));
@@ -184,13 +186,9 @@ public abstract class AdminItemService<T extends Thing> {
     }
 
     private static SocialMediaEnum[] toArray(List<SocialMediaEnum> socialMedias) {
-        return socialMedias == null || socialMedias.isEmpty()
+        return CollectionUtils.isEmpty(socialMedias)
                 ? null
                 : socialMedias.toArray(SocialMediaEnum[]::new);
-    }
-
-    private static String blankToNull(String value) {
-        return value == null || value.isBlank() ? null : value;
     }
 
     private static String upper(String value) {

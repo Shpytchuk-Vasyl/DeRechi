@@ -1,6 +1,7 @@
 package org.shpytchuk.clientapi.service;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.shpytchuk.clientapi.client.FourthwallProduct;
 import org.shpytchuk.clientapi.dto.ClaimDto;
 import org.shpytchuk.clientapi.entity.Claim;
@@ -15,8 +16,6 @@ import org.shpytchuk.clientapi.repository.ClaimRepository;
 import org.shpytchuk.clientapi.repository.detail.ContactInfoRepository;
 import org.shpytchuk.clientapi.repository.thing.ThingRepository;
 import org.shpytchuk.clientapi.service.payment.ClaimUnlockLimiter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
@@ -26,9 +25,8 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 @AllArgsConstructor
+@Slf4j
 public abstract class ClaimService<T extends Thing, C extends Claim<T>> {
-
-    private static final Logger log = LoggerFactory.getLogger(ClaimService.class);
 
     private final ThingRepository<T> itemRepository;
     private final ClaimRepository<C> claimRepository;

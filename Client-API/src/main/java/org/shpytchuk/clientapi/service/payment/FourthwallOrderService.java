@@ -1,6 +1,7 @@
 package org.shpytchuk.clientapi.service.payment;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.shpytchuk.clientapi.client.FourthwallClient;
 import org.shpytchuk.clientapi.config.SiteProperties;
 import org.shpytchuk.clientapi.controller.payment.FourthwallOrderPlaced;
@@ -15,8 +16,6 @@ import org.shpytchuk.clientapi.repository.payment.FourthwallOrderRepository;
 import org.shpytchuk.clientapi.service.ClaimService;
 import org.shpytchuk.clientapi.service.found.FoundClaimService;
 import org.shpytchuk.clientapi.service.lost.LostClaimService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -29,9 +28,8 @@ import static org.springframework.core.NestedExceptionUtils.getMostSpecificCause
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class FourthwallOrderService {
-
-    private static final Logger log = LoggerFactory.getLogger(FourthwallOrderService.class);
 
     static final Set<String> NOT_PAID = Set.of("CANCELLED");
 

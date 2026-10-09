@@ -50,7 +50,7 @@ because skipping it has bitten us in this repository specifically.
 - Make the smallest change that solves the ticket. Refactoring you discovered on the way goes
   into its own PR.
 - Follow the [conventions](../conventions/README.md). The ones most often missed: data as
-  records, Lombok only on entities and forms, `LoggerFactory.getLogger` rather than `@Slf4j`,
+  records, Lombok only on entities and forms, `@Slf4j` for the logger where the module has Lombok,
   dependency versions only in the root `pom.xml`, blocking code on virtual threads rather than
   WebFlux, no text in Thymeleaf templates.
 - Change an entity in `DB-Postgres` **and** in every module that carries a copy.

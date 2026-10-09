@@ -1,6 +1,8 @@
 package org.shpytchuk.worker.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import java.time.Duration;
 
@@ -24,17 +26,15 @@ public record ClaimsProperties(
         requirePositive(claimantReminderAfter, "claimant-reminder-after");
         requirePositive(archiveAfter, "archive-after");
         requirePositive(retention, "retention");
-        siteUrl = siteUrl.strip().replaceAll("/+$", "");
+        siteUrl = StringUtils.trimTrailingCharacter(siteUrl.strip(), '/');
     }
 
     private static void requireText(String value, String name) {
-        if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("derechi.claims." + name + " must not be blank");
-        }
+        Assert.hasText(value, "derechi.claims." + name + " must not be blank");
     }
 
     private static void requirePositive(Duration value, String name) {
-        if (value == null || value.isNegative() || value.isZero()) {
+        if (value == null || !value.isPositive()) {
             throw new IllegalArgumentException("derechi.claims." + name + " must be a positive duration");
         }
     }

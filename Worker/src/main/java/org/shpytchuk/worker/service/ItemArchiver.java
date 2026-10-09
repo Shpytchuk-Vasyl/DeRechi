@@ -1,6 +1,7 @@
 package org.shpytchuk.worker.service;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.shpytchuk.worker.entity.matching.Claim;
 import org.shpytchuk.worker.entity.thing.Thing;
 import org.shpytchuk.worker.entity.found.FoundItemHistory;
@@ -12,8 +13,6 @@ import org.shpytchuk.worker.repository.found.FoundItemRepository;
 import org.shpytchuk.worker.repository.lost.LostItemHistoryRepository;
 import org.shpytchuk.worker.repository.lost.LostItemRepository;
 import org.shpytchuk.worker.repository.SimilarItemRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,9 +23,8 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ItemArchiver {
-
-    private static final Logger log = LoggerFactory.getLogger(ItemArchiver.class);
 
     private final LostItemRepository lostItemRepository;
     private final FoundItemRepository foundItemRepository;

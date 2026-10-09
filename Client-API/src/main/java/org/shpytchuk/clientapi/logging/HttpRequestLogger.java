@@ -4,8 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -13,9 +12,8 @@ import java.io.IOException;
 import java.util.List;
 
 @Component
+@Slf4j
 public class HttpRequestLogger extends OncePerRequestFilter {
-
-    private static final Logger log = LoggerFactory.getLogger(HttpRequestLogger.class);
 
     private static final List<String> SKIPPED = List.of("/graphql", "/graphiql", "/actuator");
 
