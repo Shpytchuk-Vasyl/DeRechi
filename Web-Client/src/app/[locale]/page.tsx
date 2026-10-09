@@ -1,7 +1,8 @@
+import type { Metadata } from "next"
 import { getLocale, getTranslations } from "next-intl/server"
 import { MascotRoamer } from "@/components/mascot/mascot-roamer"
 import { Tour } from "@/components/tour/tour"
-import { absoluteUrl, jsonLd } from "@/lib/seo"
+import { absoluteUrl, jsonLd, pageAlternates } from "@/lib/seo"
 import Benefits from "@/screens/home/benefits/benefits"
 import ClosingCall from "@/screens/home/closing-call"
 import Explainer from "@/screens/home/explainer/explainer"
@@ -25,6 +26,15 @@ function websiteJsonLd(locale: string, name: string) {
       "query-input": "required name=search_term_string",
     },
   }
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  return { alternates: pageAlternates(locale, "") }
 }
 
 export default async function HomePage() {

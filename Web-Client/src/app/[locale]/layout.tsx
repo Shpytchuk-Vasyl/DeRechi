@@ -13,7 +13,7 @@ import { Toaster } from "@/components/pouf/toaster"
 import { TourProvider } from "@/components/tour/tour-context"
 import { routing } from "@/i18n/routing"
 import { clientEnv } from "@/lib/env/client"
-import { INDEXABLE, pageAlternates } from "@/lib/seo"
+import { INDEXABLE } from "@/lib/seo"
 import "../globals.css"
 
 const body = Nunito({
@@ -41,7 +41,6 @@ export async function generateMetadata({
       template: t("titleTemplate", { page: "%s" }),
     },
     description: t("description"),
-    alternates: pageAlternates(locale, ""),
     robots: INDEXABLE ? undefined : { index: false, follow: false },
     openGraph: {
       type: "website",

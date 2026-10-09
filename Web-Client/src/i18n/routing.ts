@@ -10,6 +10,7 @@ export const routing = defineRouting({
   locales,
   defaultLocale,
   localePrefix: "always",
+  alternateLinks: false,
   localeCookie: {
     name: "DERECHI_LOCALE",
     maxAge: 60 * 60 * 24 * 365,

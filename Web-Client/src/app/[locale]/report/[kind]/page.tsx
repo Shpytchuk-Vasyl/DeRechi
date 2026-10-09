@@ -6,6 +6,7 @@ import { fetchCategories, type ItemKind } from "@/api/items"
 import { PageHeader } from "@/components/layout/page-header"
 import { paths } from "@/i18n/paths"
 import { routing } from "@/i18n/routing"
+import { pageAlternates } from "@/lib/seo"
 import { MAX_UPLOAD_BYTES } from "@/lib/uploads/storage"
 import ReportForm from "@/screens/report/report-form"
 
@@ -31,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: kind === "lost" ? t("pageTitleLost") : t("pageTitleFound"),
     description: t("pageDescription"),
-    alternates: { canonical: `/${locale}${paths.report(kind)}` },
+    alternates: pageAlternates(locale, paths.report(kind)),
   }
 }
 

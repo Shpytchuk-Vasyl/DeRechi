@@ -11,6 +11,7 @@ import {
 import { paths } from "@/i18n/paths"
 import type { Locale } from "@/i18n/routing"
 import { fromIsoDate } from "@/lib/intl/dates"
+import { pageAlternates } from "@/lib/seo"
 
 export function generateMetadataFromTemplate(
   locale: Locale,
@@ -23,7 +24,7 @@ export function generateMetadataFromTemplate(
   return {
     title: doc.title,
     description: fill(doc.summary, slots),
-    alternates: { canonical: `/${locale}${paths[kind]}` },
+    alternates: pageAlternates(locale, paths[kind]),
   }
 }
 
