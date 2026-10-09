@@ -1,7 +1,7 @@
 import { initBotId } from "botid/client/core"
 
-// Dev only
-if (process.env.VERCEL) {
+// Dev only: set to false
+if (true) {
   initBotId({
     protect: [
       { path: "/*/report/*", method: "POST" },

@@ -6,6 +6,7 @@ import { getTranslations } from "next-intl/server"
 import { fetchCountries } from "@/api/countries"
 import { CountryProvider } from "@/components/country/country-provider"
 import { MobileNav } from "@/components/layout/mobile-nav"
+import { SiteAnalytics } from "@/components/layout/site-analytics"
 import { SiteFooter } from "@/components/layout/site-footer"
 import { SiteHeader } from "@/components/layout/site-header"
 import { Toaster } from "@/components/pouf/toaster"
@@ -89,6 +90,7 @@ export default async function LocaleLayout({
             </TourProvider>
           </CountryProvider>
         </NextIntlClientProvider>
+        {process.env.VERCEL ? <SiteAnalytics /> : null}
       </body>
     </html>
   )
