@@ -35,6 +35,10 @@ export default function ClaimPrompt({ onSent }: Props) {
       onSent(result)
       return
     }
+    if (result.reason === "disposableEmail") {
+      form.setError("email", { message: "disposableEmail" }, { shouldFocus: true })
+      return
+    }
     setFailure(tc(`error.${result.reason}`))
   })
 

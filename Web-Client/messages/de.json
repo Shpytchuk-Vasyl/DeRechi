@@ -399,6 +399,7 @@
       "outOfRange": "Diese Koordinaten liegen außerhalb des Bereichs.",
       "phoneFormat": "Internationales Format, zum Beispiel +380671234567.",
       "emailFormat": "Diese E-Mail-Adresse sieht nicht richtig aus.",
+      "disposableEmail": "Wegwerf-E-Mail-Adressen werden nicht akzeptiert. Gib eine Adresse an, die du wirklich liest.",
       "consent": "Setze das Häkchen, um den Bedingungen zuzustimmen.",
       "waiver": "Setze das Häkchen, um zur Zahlung weiterzugehen.",
       "validation": "Ein paar Felder müssen noch korrigiert werden.",

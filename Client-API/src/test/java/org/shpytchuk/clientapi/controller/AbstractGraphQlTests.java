@@ -17,7 +17,8 @@ import java.util.List;
 import java.util.Map;
 
 @SpringBootTest(properties = {
-        "spring.jpa.hibernate.ddl-auto=validate"
+        "spring.jpa.hibernate.ddl-auto=validate",
+        "derechi.disposable-emails.url="
 })
 @AutoConfigureGraphQlTester
 public abstract class AbstractGraphQlTests extends AbstractPostgresTests {

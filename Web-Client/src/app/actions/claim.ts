@@ -26,7 +26,7 @@ export type ClaimResult =
       paid: boolean
       contactsSent: boolean
     }
-  | { ok: false; reason: "validation" | "captcha" | "notFound" | "failed" }
+  | { ok: false; reason: "validation" | "captcha" | "notFound" | "disposableEmail" | "failed" }
 
 export type ClaimStatus =
   | { ok: true; checkoutUrl: string | null; paid: boolean; contactsSent: boolean }
@@ -84,6 +84,9 @@ export async function claimNotice(
     if (error instanceof GraphQLRequestError && error.isNotFound) {
       invalidate(CACHE_TAG.item(kind, id), CACHE_TAG.items(kind))
       return { ok: false, reason: "notFound" }
+    }
+    if (error instanceof GraphQLRequestError && error.isDisposableEmail) {
+      return { ok: false, reason: "disposableEmail" }
     }
     console.error("Claim failed", error)
     return { ok: false, reason: "failed" }

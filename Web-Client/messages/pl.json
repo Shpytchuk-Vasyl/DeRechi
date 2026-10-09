@@ -399,6 +399,7 @@
       "outOfRange": "Współrzędne poza zakresem.",
       "phoneFormat": "Użyj formatu międzynarodowego, na przykład +380671234567.",
       "emailFormat": "Ten adres e-mail wygląda nieprawidłowo.",
+      "disposableEmail": "Jednorazowe adresy e-mail nie są akceptowane. Podaj adres, który naprawdę czytasz.",
       "consent": "Zaznacz pole, aby zaakceptować warunki.",
       "waiver": "Zaznacz pole, aby przejść do płatności.",
       "validation": "Niektóre pola wymagają poprawy.",

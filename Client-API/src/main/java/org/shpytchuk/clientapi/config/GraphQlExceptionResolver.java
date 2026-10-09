@@ -7,6 +7,8 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import graphql.ErrorClassification;
 import lombok.extern.slf4j.Slf4j;
+import org.shpytchuk.clientapi.anotation.NotDisposableEmail;
+import org.shpytchuk.clientapi.exeption.ContactErrorType;
 import org.shpytchuk.clientapi.exeption.NotFoundException;
 import org.shpytchuk.clientapi.exeption.PaymentErrorType;
 import org.shpytchuk.clientapi.exeption.PaymentUnavailableException;
@@ -38,6 +40,8 @@ public class GraphQlExceptionResolver extends DataFetcherExceptionResolverAdapte
                     .message(e.getMessage())
                     .extensions(Map.of("retryAfter", e.getRetryAfter().toString()))
                     .build();
+            case ConstraintViolationException e when isDisposableEmail(e) ->
+                    error(ContactErrorType.DISPOSABLE_EMAIL, describe(e), env);
             case ConstraintViolationException e -> error(ErrorType.BAD_REQUEST, describe(e), env);
             case IllegalArgumentException e -> error(ErrorType.BAD_REQUEST, e.getMessage(), env);
             default -> null;
@@ -49,6 +53,11 @@ public class GraphQlExceptionResolver extends DataFetcherExceptionResolverAdapte
                 .errorType(type)
                 .message(message)
                 .build();
+    }
+
+    private static boolean isDisposableEmail(ConstraintViolationException ex) {
+        return ex.getConstraintViolations().stream()
+                .anyMatch(v -> v.getConstraintDescriptor().getAnnotation() instanceof NotDisposableEmail);
     }
 
     private static String describe(ConstraintViolationException ex) {

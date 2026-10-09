@@ -66,6 +66,11 @@ derechi:
     exchange: derechi.items
     unlock-limit: 1
     unlock-window: P7D
+  disposable-emails:
+    # disposable-email-domains blocklist, one domain per line; downloaded on start-up and then
+    url: ${DISPOSABLE_EMAILS_URL:https://raw.githubusercontent.com/disposable-email-domains/disposable-email-domains/main/disposable_email_blocklist.conf}
+    refresh-interval: 48h
+    timeout: 30s
   events:
     buffer-capacity: 10000
     batch-size: 20

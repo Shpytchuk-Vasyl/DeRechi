@@ -399,6 +399,7 @@
       "outOfRange": "Ces coordonnées sont hors limites.",
       "phoneFormat": "Utilisez le format international, par exemple +380671234567.",
       "emailFormat": "Cette adresse e-mail semble incorrecte.",
+      "disposableEmail": "Les adresses e-mail jetables ne sont pas acceptées. Indiquez une adresse que vous consultez vraiment.",
       "consent": "Cochez la case pour accepter les conditions.",
       "waiver": "Cochez la case pour passer au paiement.",
       "validation": "Certains champs sont encore à corriger.",

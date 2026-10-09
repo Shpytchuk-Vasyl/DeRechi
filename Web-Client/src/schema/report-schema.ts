@@ -24,6 +24,7 @@ export const ERROR_KEYS: ReadonlySet<string> = new Set([
   "outOfRange",
   "phoneFormat",
   "emailFormat",
+  "disposableEmail",
   "consent",
   "waiver",
 ])

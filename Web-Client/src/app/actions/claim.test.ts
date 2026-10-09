@@ -22,6 +22,10 @@ const mocks = vi.hoisted(() => {
       return this.errors.some((error) => error.extensions?.classification === "NOT_FOUND")
     }
 
+    get isDisposableEmail(): boolean {
+      return this.errors.some((error) => error.extensions?.classification === "DISPOSABLE_EMAIL")
+    }
+
     get isPaymentUnavailable(): boolean {
       return this.errors.some((error) => error.extensions?.classification === "PAYMENT_UNAVAILABLE")
     }
@@ -185,6 +189,20 @@ describe("claimNotice", () => {
     expect(await claimNotice("lost", "7", contact)).toEqual({ ok: false, reason: "notFound" })
     expect(mocks.revalidateTag).toHaveBeenCalledWith("item:lost:7", "max")
     expect(mocks.revalidateTag).toHaveBeenCalledWith("items:lost", "max")
+    expect(mocks.setCookie).not.toHaveBeenCalled()
+  })
+
+  it("tells a throwaway email apart, so the form can mark the field", async () => {
+    mocks.graphqlRequest.mockRejectedValue(
+      new mocks.GraphQLRequestError("email: Disposable email addresses are not accepted", [
+        { extensions: { classification: "DISPOSABLE_EMAIL" } },
+      ]),
+    )
+
+    expect(await claimNotice("lost", "7", contact)).toEqual({
+      ok: false,
+      reason: "disposableEmail",
+    })
     expect(mocks.setCookie).not.toHaveBeenCalled()
   })
 

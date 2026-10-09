@@ -399,6 +399,7 @@
       "outOfRange": "Those coordinates are out of range.",
       "phoneFormat": "Use the international format, for example +380671234567.",
       "emailFormat": "That email address does not look right.",
+      "disposableEmail": "Disposable email addresses are not accepted. Use one you actually read.",
       "consent": "Tick the box to agree to the terms.",
       "waiver": "Tick the box to continue to payment.",
       "validation": "Some fields still need fixing.",

@@ -73,7 +73,11 @@ Everything that archives goes through Worker, which is why the admin panel also 
 sent to it after payment. The record normalises the email itself (`EmailNormalizer`: lower case,
 no `+tag` on any domain, and on Gmail no dots and `googlemail.com` as `gmail.com`), and it is stored
 that way, so `vasyl+12@gmail.com` is the same claimant as `vasyl@gmail.com` for repeats and the
-unlock limit. Mail goes to the normalised address, which is the same mailbox. Unknown item or token → `NOT_FOUND`.
+unlock limit. Mail goes to the normalised address, which is the same mailbox. A claimant on a
+throwaway domain (`@NotDisposableEmail`, list from disposable-email-domains, subdomains included)
+is rejected with the GraphQL error `DISPOSABLE_EMAIL`, which the web client shows on the email
+field. The list is downloaded by `DisposableEmailDomains` on start-up and refreshed daily, see
+`DISPOSABLE_EMAILS_URL`. Notice authors are not checked. Unknown item or token → `NOT_FOUND`.
 
 `ClaimService` (one subclass per kind) loads the item with a plain `findById` and looks for an
 existing claim on the item with the same phone **or** email. There is no lock today, so two

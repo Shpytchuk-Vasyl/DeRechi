@@ -21,6 +21,10 @@ export class GraphQLRequestError extends Error {
     return this.errors.some((error) => error.extensions?.classification === "NOT_FOUND")
   }
 
+  get isDisposableEmail(): boolean {
+    return this.errors.some((error) => error.extensions?.classification === "DISPOSABLE_EMAIL")
+  }
+
   get isPaymentUnavailable(): boolean {
     return this.errors.some((error) => error.extensions?.classification === "PAYMENT_UNAVAILABLE")
   }
