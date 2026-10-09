@@ -61,7 +61,8 @@ Vitest, colocated as `<name>.test.ts`, no browser and no running backend:
 - `i18n/messages.test.ts`: the five bundles have the same keys and arguments.
 - `schema/report-schema.test.ts`, `schema/claim-schema.test.ts`: the client rules mirror
   Client-API's inputs (E.164 phone, email width, photo on a found notice, date window) and
-  the mapping to `ItemInput` / `ContactInfoInput` sends empty optionals as `null`.
+  the mapping to `ItemInput` / `ContactInfoInput` sends empty optionals as `null`. The
+  notice's email is optional (`ItemContactInfoInput`), the claimant's is not.
 - `app/actions/report.test.ts`, `app/actions/claim.test.ts`: the server actions with
   `@/graphql/client`, `@/lib/bot-check`, `next/headers` and `next/cache` mocked: invalid
   input and bots never reach the API, the mutation variables, the 30-day
@@ -126,7 +127,7 @@ Rewards are displayed in the currency they were posted in (`formatMoney`); nothi
 A viewer who recognises a notice ("it's mine" on a found one, "I found it" on a lost one)
 answers it from the notice page itself: `ClaimCard` sits where the masked contacts are and
 expands into an inline form (phone, email, messengers: the same `ContactFields` the report
-form uses). The detail page also renders inside the modal route's `RouteDialog`, which is why
+form uses, where `emailOptional` marks the email as optional for the notice's author only). The detail page also renders inside the modal route's `RouteDialog`, which is why
 the form is inline and not a nested dialog; the small unlock dialog is the one exception. Nothing the claimant types is shown anywhere;
 `Client-API` stores it and Worker mails and texts it to the notice's author.
 

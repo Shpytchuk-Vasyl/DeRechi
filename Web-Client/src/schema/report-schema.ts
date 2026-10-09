@@ -66,7 +66,7 @@ export function reportSchema(kind: ItemKind) {
     place: placeSchema,
     contact: z.object({
       phone: z.string("phoneFormat").trim().regex(PHONE_PATTERN, "phoneFormat"),
-      email: z.email("emailFormat").max(MAX_EMAIL, "tooLong"),
+      email: z.email("emailFormat").max(MAX_EMAIL, "tooLong").or(z.literal("")).optional(),
       socialMedias: z.array(z.enum(SOCIAL_MEDIA)).optional(),
     }),
   })
@@ -94,7 +94,7 @@ export function toItemInput(values: ReportValues) {
     place: values.place,
     contact: {
       phone: values.contact.phone,
-      email: values.contact.email,
+      email: values.contact.email || null,
       socialMedias: values.contact.socialMedias?.length ? values.contact.socialMedias : null,
     },
   }

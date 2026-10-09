@@ -15,7 +15,7 @@ type Props = {
   kind: ItemKind
   id: string
   countryCode: string
-  contact: { phone: string; email: string }
+  contact: { phone: string; email: string | null }
 }
 
 export default function ClaimCard({ kind, id, countryCode, contact }: Props) {
@@ -38,7 +38,7 @@ export default function ClaimCard({ kind, id, countryCode, contact }: Props) {
           <dt className="text-muted-foreground">{t("phone")}</dt>
           <dd className="font-semibold">{contact.phone}</dd>
           <dt className="text-muted-foreground">{t("email")}</dt>
-          <dd className="font-semibold">{contact.email}</dd>
+          <dd className="font-semibold">{contact.email ?? "-"}</dd>
         </dl>
         <p className="mt-3.5 text-muted-foreground text-sm leading-relaxed">{t("maskedNote")}</p>
 

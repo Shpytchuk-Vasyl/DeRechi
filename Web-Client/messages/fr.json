@@ -364,6 +364,8 @@
     "placeUnavailable": "Les suggestions Google n’ont pas pu être chargées : nous cherchons parmi les lieux déjà utilisés dans les annonces.",
     "phone": "Téléphone",
     "email": "E-mail",
+    "emailOptional": "E-mail (facultatif)",
+    "emailOptionalHint": "Sans lui, les réponses vous arrivent uniquement par SMS.",
     "messengers": "Messageries sur ce numéro",
     "messengersHint": "Nous les transmettons pour qu’on vous joigne comme vous préférez.",
     "publish": "Publier l’annonce",

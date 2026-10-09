@@ -364,6 +364,8 @@
     "placeUnavailable": "Nie udało się wczytać podpowiedzi Google, więc szukamy wśród miejsc, które są już w ogłoszeniach.",
     "phone": "Telefon",
     "email": "E-mail",
+    "emailOptional": "E-mail (opcjonalnie)",
+    "emailOptionalHint": "Bez niego odpowiedzi dotrą do Ciebie tylko SMS-em.",
     "messengers": "Komunikatory na tym numerze",
     "messengersHint": "Przekażemy je, żeby można było się z Tobą skontaktować wygodnie.",
     "publish": "Opublikuj ogłoszenie",

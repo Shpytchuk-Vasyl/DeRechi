@@ -11,6 +11,13 @@ export type ContactInfoInput = {
   socialMedias?: Array<SocialMedia> | null | undefined;
 };
 
+export type ItemContactInfoInput = {
+  email?: string | null | undefined;
+  /** E.164 format, for example +380671234567 */
+  phone: string;
+  socialMedias?: Array<SocialMedia> | null | undefined;
+};
+
 export type ItemFilterInput = {
   categoryId?: string | number | null | undefined;
   dateFrom?: string | null | undefined;
@@ -22,7 +29,7 @@ export type ItemFilterInput = {
 export type ItemInput = {
   categoryId: string | number;
   compensation?: MoneyInput | null | undefined;
-  contact: ContactInfoInput;
+  contact: ItemContactInfoInput;
   date: string;
   description?: string | null | undefined;
   image?: string | null | undefined;
@@ -97,14 +104,14 @@ export type LostItemQueryVariables = Exact<{
 }>;
 
 
-export type LostItemQuery = { lostItem: { id: string, title: string, description: string | null, date: string, image: string | null, compensation: { amount: number, currency: string } | null, category: { id: string, key: string }, place: { id: string, name: string, lat: number | null, lon: number | null, countryCode: string }, contact: { id: string, phone: string, email: string } } | null };
+export type LostItemQuery = { lostItem: { id: string, title: string, description: string | null, date: string, image: string | null, compensation: { amount: number, currency: string } | null, category: { id: string, key: string }, place: { id: string, name: string, lat: number | null, lon: number | null, countryCode: string }, contact: { id: string, phone: string, email: string | null } } | null };
 
 export type FoundItemQueryVariables = Exact<{
   id: string | number;
 }>;
 
 
-export type FoundItemQuery = { foundItem: { id: string, title: string, description: string | null, date: string, image: string, compensation: { amount: number, currency: string } | null, category: { id: string, key: string }, place: { id: string, name: string, lat: number | null, lon: number | null, countryCode: string }, contact: { id: string, phone: string, email: string } } | null };
+export type FoundItemQuery = { foundItem: { id: string, title: string, description: string | null, date: string, image: string, compensation: { amount: number, currency: string } | null, category: { id: string, key: string }, place: { id: string, name: string, lat: number | null, lon: number | null, countryCode: string }, contact: { id: string, phone: string, email: string | null } } | null };
 
 export type CategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 

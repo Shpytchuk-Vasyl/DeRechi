@@ -364,6 +364,8 @@
     "placeUnavailable": "Google suggestions didn't load, so we search the places already used in notices.",
     "phone": "Phone",
     "email": "Email",
+    "emailOptional": "Email (optional)",
+    "emailOptionalHint": "Without it, responses reach you by SMS only.",
     "messengers": "Messengers on this number",
     "messengersHint": "We pass these on so the finder can reach you the way you prefer.",
     "publish": "Publish notice",

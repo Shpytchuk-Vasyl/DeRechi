@@ -72,7 +72,7 @@ export default function StepContacts() {
         />
       </div>
 
-      <ContactFields prefix="contact." />
+      <ContactFields prefix="contact." emailOptional />
 
       <ConsentCheckbox>
         {t.rich("consent", {

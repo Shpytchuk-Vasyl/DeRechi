@@ -36,7 +36,7 @@ export type ItemSummary = {
 }
 
 export type ItemDetail = ItemSummary & {
-  contact: { id: string; phone: string; email: string }
+  contact: { id: string; phone: string; email: string | null }
 }
 
 export type ItemPage = {

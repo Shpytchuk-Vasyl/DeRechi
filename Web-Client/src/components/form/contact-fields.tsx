@@ -14,9 +14,10 @@ type SocialMedia = (typeof SOCIAL_MEDIA)[number]
 
 type Props = {
   prefix?: "" | "contact."
+  emailOptional?: boolean
 }
 
-export function ContactFields({ prefix = "" }: Props) {
+export function ContactFields({ prefix = "", emailOptional = false }: Props) {
   const t = useTranslations("form")
   const message = useFieldMessage(ERROR_KEYS)
   const { control } = useFormContext()
@@ -57,7 +58,11 @@ export function ContactFields({ prefix = "" }: Props) {
           control={control}
           name={`${prefix}email`}
           render={({ field, fieldState }) => (
-            <Field label={t("email")} error={message(fieldState.error?.message)}>
+            <Field
+              label={t(emailOptional ? "emailOptional" : "email")}
+              hint={emailOptional ? t("emailOptionalHint") : undefined}
+              error={message(fieldState.error?.message)}
+            >
               {(id, describedBy) => (
                 <Input
                   ref={field.ref}

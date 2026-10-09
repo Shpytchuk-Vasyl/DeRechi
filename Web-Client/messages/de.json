@@ -364,6 +364,8 @@
     "placeUnavailable": "Die Google-Vorschläge ließen sich nicht laden, deshalb suchen wir unter den Orten, die schon in Anzeigen stehen.",
     "phone": "Telefon",
     "email": "E-Mail",
+    "emailOptional": "E-Mail (optional)",
+    "emailOptionalHint": "Ohne sie erreichen dich Antworten nur per SMS.",
     "messengers": "Messenger unter dieser Nummer",
     "messengersHint": "Wir geben sie weiter, damit man dich so erreicht, wie es dir passt.",
     "publish": "Meldung veröffentlichen",

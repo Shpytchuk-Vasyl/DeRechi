@@ -82,6 +82,23 @@ describe("reportSchema", () => {
   })
 })
 
+describe("reportSchema contact", () => {
+  it("lets the author leave only a phone", () => {
+    const { email, ...phoneOnly } = valid.contact
+    expect(email).toBeTruthy()
+    expect(reportSchema("lost").safeParse({ ...valid, contact: phoneOnly }).success).toBe(true)
+    expect(
+      reportSchema("lost").safeParse({ ...valid, contact: { ...phoneOnly, email: "" } }).success,
+    ).toBe(true)
+  })
+
+  it("still checks an email that was typed", () => {
+    expect(errorFor("lost", { ...valid, contact: { ...valid.contact, email: "olena" } })).toBe(
+      "emailFormat",
+    )
+  })
+})
+
 describe("toItemInput", () => {
   it("sends empty optional fields as null, not as empty strings", () => {
     const parsed = reportSchema("lost").parse({
@@ -89,14 +106,14 @@ describe("toItemInput", () => {
       description: "",
       image: "",
       compensation: undefined,
-      contact: { phone: valid.contact.phone, email: valid.contact.email },
+      contact: { phone: valid.contact.phone, email: "" },
     })
 
     expect(toItemInput(parsed)).toMatchObject({
       description: null,
       image: null,
       compensation: null,
-      contact: { socialMedias: null },
+      contact: { email: null, socialMedias: null },
     })
   })
 
