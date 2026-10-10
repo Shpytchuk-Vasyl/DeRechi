@@ -72,6 +72,7 @@ export function ContactFields({ prefix = "", emailOptional = false }: Props) {
                   name="email"
                   autoComplete="email"
                   inputMode="email"
+                  spellCheck={false}
                   value={field.value ?? ""}
                   onChange={field.onChange}
                   onBlur={field.onBlur}
