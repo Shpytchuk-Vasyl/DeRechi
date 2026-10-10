@@ -24,8 +24,7 @@ options.
 ### Docker build fails with "Non-resolvable" or "Child module ... does not exist"
 
 A module is listed in the root `<modules>` but not copied into the build stage. Every module
-needs its own `COPY <Module> <Module>` line in the root `Dockerfile`. `Launcher` is the
-standing example: it is commented out in `<modules>` for exactly this reason.
+needs its own `COPY <Module> <Module>` line in the root `Dockerfile`.
 
 ### Module builds on Windows, fails on Linux or in Docker
 

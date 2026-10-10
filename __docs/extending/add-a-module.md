@@ -67,9 +67,7 @@ Read [Maven reactor](../architecture/maven-reactor.md), [Maven and modules](../c
 
 11. **Context test.** `src/test/java/.../ReportExportApplicationTests.java` with `@SpringBootTest` and an empty `contextLoads()`; if the module needs the database, extend it with the Testcontainers base from `Client-API` (`AbstractPostgresTests`) rather than pointing tests at a local server.
 
-12. **Launcher.** `Launcher` boots several services in one JVM for local development. It is currently commented out of the root `<modules>`; if you revive it, add the new `*Application` there too, and never add `Launcher` to the `Dockerfile`.
-
-13. **Docs.** Add `..` (what it does, port, queues, config keys) and a row to the module table in [Modules](../architecture/modules/README.md).
+12. **Docs.** Add `..` (what it does, port, queues, config keys) and a row to the module table in [Modules](../architecture/modules/README.md).
 
 ## Tests to add or update
 

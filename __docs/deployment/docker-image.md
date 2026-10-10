@@ -40,8 +40,6 @@ Maven reads `<modules>` from the root POM and expects each folder to exist. A mo
 
 The spelling must match the folder on a case-sensitive filesystem: `COPY Admin-API Admin-API`, not `admin-api`. Windows will not tell you when it is wrong; the Linux build will.
 
-`Launcher` is intentionally absent. It is a local-only module that starts several services in one JVM and has no place in an image. It is also commented out of the root `<modules>` at the moment; if it is re-enabled it must still stay out of the `Dockerfile`, which means the build would fail unless it is moved into a Maven profile that is off by default.
-
 ## Building
 
 Compose passes the argument:

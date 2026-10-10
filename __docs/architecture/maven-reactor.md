@@ -14,13 +14,10 @@ module pom stays a short list of dependencies and nothing else.
     <module>Admin-API</module>
     <module>Worker</module>
     <module>Notification</module>
-<!--    <module>Launcher</module>-->
 </modules>
 ```
 
-`Launcher` is commented out at the moment. It is the only module that depends on other
-service modules, and it is not part of the Docker image; see
-[modules/launcher.md](modules/launcher.md) before re-enabling it.
+No module depends on another service module.
 
 The directory name, the `artifactId` and the `<module>` entry must match character for
 character. Git Bash on Windows hides case differences; the Linux build stage in the

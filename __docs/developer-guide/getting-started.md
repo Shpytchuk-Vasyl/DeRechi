@@ -81,12 +81,6 @@ window:
 ./mvnw -pl Notification spring-boot:run
 ```
 
-The `Launcher` module starts `Getaway`, `Client-API`, `Admin-API` and
-`Worker` as separate contexts in one JVM, which is lighter on a laptop. It is
-currently commented out in the root `pom.xml` `<modules>` list; uncomment it locally if you
-want it, but do not commit that, and note it starts neither `Notification` nor anything in
-Docker. See [architecture/modules/launcher.md](../architecture/modules/launcher.md).
-
 Ports: Getaway 8080, Client-API 8082, Admin-API 8083, Notification 8084, Worker 8085.
 Actuator is on a separate management port, the service port + 1000: each answers
 `/actuator/health` on 9080, 9082, 9083, 9084 or 9085.

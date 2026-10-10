@@ -70,7 +70,7 @@ A nested `.gitignore` would silently change what is tracked under that module, a
 
 Every service module declares `spring-boot-maven-plugin` in its `<build>`; under `spring-boot-starter-parent` that alone binds `repackage`, so `./mvnw package` produces the fat jar the `Dockerfile` copies. `DB-Postgres` does **not**: it is a library that nobody depends on, and `repackage` would hide its classes under `BOOT-INF/classes/`. `spring-boot:run` still works there because the plugin is configured in root `pluginManagement`.
 
-`Launcher` depends on the other service modules and is the only module allowed to. It is currently commented out in the root `<modules>` and absent from the `Dockerfile` on purpose; see [launcher](../architecture/modules/launcher.md).
+Service modules never depend on each other: shared entities are copied into each module, not imported.
 
 ## Build commands
 

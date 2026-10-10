@@ -77,7 +77,6 @@ commits are fine as long as the PR title is a proper subject.
 - `000-delta.postgresql.sql` or any unreviewed diff output under `DB-Postgres/changelog/changes`.
 - Modules' own `mvnw`, `.mvn/`, `HELP.md`, `.gitignore`, `.gitattributes`: Initializr
   generates them, we delete them. The wrapper lives in the root only.
-- The `Launcher` entry in the root `<modules>` uncommented, if you enabled it locally.
 
 ## Line endings and case
 

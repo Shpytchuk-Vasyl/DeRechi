@@ -22,8 +22,6 @@ a staging host, tags). Where something does not exist in the repository yet, it 
   `Client-API`, `Admin-API`, `Worker` and `Notification`.
 - `DB-Postgres` has an image but is not a long-running service: the `db-postgres` container
   applies pending migrations and exits. See [database changes](database-changes.md).
-- `Launcher` is a local-development convenience, is commented out in the root `<modules>`, and
-  is never shipped.
 - Infrastructure configuration that lives in Git and may change with a release:
   `docker/keycloak/realms/derechi-realm.json`, `docker/rabbitmq/definitions.json`,
   `docker/prometheus/*.yml` (scrape configs and `alerts.yml`), `docker/alertmanager/`,

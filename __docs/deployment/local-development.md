@@ -49,7 +49,7 @@ Start only what you need: `Admin-API` alone is enough for admin UI work (it need
 
 Actuator is on a separate management port, the service port + 1000: `http://localhost:9080/actuator/health` for the Gateway, `9082`, `9083`, `9084`, `9085` for the others. The service ports themselves do not serve `/actuator`.
 
-In IDEA, create a Spring Boot run configuration per `*Application` class, or a compound configuration that starts them together. The `Launcher` module exists to start several contexts in one JVM for manual testing but is currently commented out of the reactor; see [launcher](../architecture/modules/launcher.md).
+In IDEA, create a Spring Boot run configuration per `*Application` class, or a compound configuration that starts them together.
 
 ## 4. Open things
 

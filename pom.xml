@@ -25,7 +25,6 @@
         <module>Admin-API</module>
         <module>Worker</module>
         <module>Notification</module>
-<!--        <module>Launcher</module>-->
     </modules>
 
     <properties>
