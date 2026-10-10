@@ -53,6 +53,7 @@ export class ReportForm {
     await expect(this.page).toHaveURL(url, { timeout: 30_000 })
     const id = url.exec(this.page.url())?.[1]
     if (!id) throw new Error(`publish(): no item id in ${this.page.url()}`)
+    await this.page.waitForLoadState("networkidle")
     return id
   }
 

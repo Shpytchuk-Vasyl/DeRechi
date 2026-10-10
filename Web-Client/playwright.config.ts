@@ -31,6 +31,21 @@ const projects: AppProject[] = [
   },
 ]
 
+if (process.env.E2E_SAFARI)
+  projects.push(
+    {
+      name: "safari",
+      use: { ...devices["Desktop Safari"], viewport: { width: 1440, height: 900 }, locale: "uk" },
+      grepInvert: [/@mobile-only/, /@tablet-only/, SWEEP],
+    },
+    {
+      name: "safari-iphone",
+      use: { ...devices["iPhone 14"], locale: "uk" },
+      grep: [/@responsive/, /@mobile-only/],
+      grepInvert: [SWEEP],
+    },
+  )
+
 if (process.env.E2E_LAYOUT_SWEEP)
   projects.push({
     name: "layout-sweep",

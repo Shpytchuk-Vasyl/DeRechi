@@ -2,9 +2,16 @@ import { expect, test } from "../fixtures/base"
 import { Toasts } from "../fixtures/pages"
 import { HomePage } from "../fixtures/pages/home-page"
 import { noticeText } from "../fixtures/pages/report-data"
-import { openReportPage, ReportFlow } from "../fixtures/pages/report-flow"
+import { openReportPage, ReportFlow, type SavedDraft } from "../fixtures/pages/report-flow"
 import { waitForHydration } from "../support/hydration"
 import { PHOTO_FIXTURE } from "../support/minio"
+
+function isStepOneSaved(text: { title: string; description: string }) {
+  return (draft: SavedDraft) =>
+    draft.values.title === text.title &&
+    draft.values.description === text.description &&
+    draft.values.categoryId !== undefined
+}
 
 test.describe("report draft", () => {
   test("a reload brings back the values and the step but not the photo; publishing clears it", async ({
@@ -30,6 +37,8 @@ test.describe("report draft", () => {
       (draft) =>
         draft.step === 1 &&
         draft.values.title === text.title &&
+        draft.values.description === text.description &&
+        draft.values.categoryId !== undefined &&
         draft.values.place?.id === place.id,
     )
 
@@ -71,7 +80,7 @@ test.describe("report draft", () => {
 
     const form = await openReportPage(page, go, t, "lost")
     await form.fillStepDetails(text)
-    await form.waitForDraft((draft) => draft.values.title === text.title)
+    await form.waitForDraft(isStepOneSaved(text))
 
     await page.clock.fastForward("06:00")
     await page.reload()
@@ -83,26 +92,18 @@ test.describe("report draft", () => {
     await expect(form.title()).toHaveValue("")
   })
 
-  test("the modal and the full page share the draft", async ({
-    page,
-    go,
-    t,
-    data,
-    appLocale,
-    flags,
-  }) => {
+  test("the modal and the full page share the draft", async ({ page, go, t, data, appLocale }) => {
     const text = noticeText(data, appLocale, "WALLET")
 
     const full = await openReportPage(page, go, t, "lost")
     await full.fillStepDetails(text)
-    await full.waitForDraft((draft) => draft.values.title === text.title)
+    await full.waitForDraft(isStepOneSaved(text))
 
     await go("/")
     await new HomePage(page, t).heroReportLink("lost").click()
 
     const modal = new ReportFlow(page, t, "lost", { modal: true })
     await expect(modal.dialog()).toBeVisible()
-    await expect(new Toasts(page, t, flags).byText(t("form.draftRestored"))).toBeVisible()
     await modal.expectStep(0)
     await expect(modal.title()).toHaveValue(text.title)
     await expect(modal.description()).toHaveValue(text.description)

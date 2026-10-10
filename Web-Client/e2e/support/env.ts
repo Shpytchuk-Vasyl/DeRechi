@@ -98,6 +98,11 @@ export const allowedConsoleErrors: AllowedConsoleError[] = [
       "@vis.gl/react-google-maps logs the aborted load; PlacePicker falls back to KnownPlaceSearch",
   },
   {
+    pattern: /_rsc=[\w-]+ due to access control checks/,
+    reason:
+      "WebKit reports a Next prefetch (?_rsc=) that a navigation cancelled as an uncaught fetch error; Chromium stays silent and users see nothing",
+  },
+  {
     pattern: /Failed to load resource: .* @ \S*\/_next\/image\?/,
     reason:
       "Somebody else's notice in the shared database may point to a missing photo; ItemPhoto falls back to category art",

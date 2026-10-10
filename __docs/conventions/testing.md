@@ -25,7 +25,7 @@ Tests are JUnit 5 with AssertJ and Spring Boot's test starters. Database-backed 
 
 **Stack tests**: integration (`tests/integration`, JUnit `*IT` against running services) and load (`tests/load`, k6), outside the Maven reactor, run with `tests/run.sh` on an isolated compose stack. See [stack tests](../developer-guide/stack-tests.md).
 
-**Browser tests** (`Web-Client/e2e`, Playwright): the site in a real browser against the running backend, outside the Maven reactor. What they cover and how to run them: [`Web-Client/e2e/README.md`](../../Web-Client/e2e/README.md); the list of tests is `Web-Client/e2e/TESTS.md`.
+**Browser tests** (`Web-Client/e2e`, Playwright): the site in a real browser against the running backend, outside the Maven reactor. What they cover and how to run them: [`Web-Client/e2e/README.md`](../../Web-Client/e2e/README.md).
 
 **Message contract tests**: `RabbitConfigTest` in `Admin-API`, `Worker` and `Notification`. The modules share no event classes, only the `@EventType` id in the `__TypeId__` header; each test pins the ids its module writes or reads through the real `RabbitConfig` converter, so renaming an id on one side fails that side's build.
 
@@ -55,7 +55,7 @@ A test lives in the same package as the class it covers, sub-package included: `
 
 **A feature ships with its tests.** The minimum is a unit test for the logic and a slice test for the entry point (controller, GraphQL operation, listener). A bug fix starts with a failing test that reproduces it.
 
-**A Web-Client feature or change ships with browser tests too.** A new page, form, filter or other user-visible behaviour gets a Playwright test in `Web-Client/e2e/specs`; a change to existing behaviour updates the tests that cover it (find them in `TESTS.md`) and `TESTS.md` itself. Tests for a removed feature are deleted with it. A bug fix starts with a test that fails on the bug.
+**A Web-Client feature or change ships with browser tests too.** A new page, form, filter or other user-visible behaviour gets a Playwright test in `Web-Client/e2e/specs`; a change to existing behaviour updates the tests that cover it (search `Web-Client/e2e/specs` by the page or feature). Tests for a removed feature are deleted with it. A bug fix starts with a test that fails on the bug.
 
 **Test the authority, not just the happy path.** Every new admin handler gets two cases: with the right `SCOPE:ACTION` it works, without it the response is 403. `MatchControllerTests` shows the pattern with `Permissions.authority(scope, action)`.
 

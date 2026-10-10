@@ -13,6 +13,9 @@ pnpm e2e:run --project=desktop        # no build: reuse the last one (after chan
 pnpm e2e:run e2e/specs/lists.spec.ts  # one file
 pnpm e2e:ui                           # Playwright UI
 pnpm e2e:report                       # last HTML report
+# safari
+$env:E2E_SAFARI=1; pnpm e2e:run --project=safari
+
 ```
 
 `pnpm e2e` runs `next build` first, then Playwright starts `next start` on :3000 itself. Stop
@@ -39,13 +42,23 @@ list and where the report preview sits. Everything else (lists, item pages, the 
 claims, SEO, a11y, legal pages, 404) is the same code on every viewport and runs on desktop only.
 `@responsive` tests never publish a notice, so a run creates each notice once.
 
-`playwright test --list`: 178 runs, desktop 149, mobile 17, tablet 12 (3 of them `test.fixme`, all on
-desktop). The catalogue with what each test checks is `e2e/TESTS.md`.
+`playwright test --list` shows the number of runs per project; the `test.fixme` ones are known app bugs.
 
 Ukrainian carries the whole suite (three plural forms, Cyrillic). The other languages are checked by
 **one multilingual spec** that loops over `LOCALES` itself with `test.use({ appLocale, locale })`;
 the `t` and `go` fixtures follow `appLocale`. `layout-sweep` is an extra project that exists only with
 `E2E_LAYOUT_SWEEP=1`.
+
+Two WebKit projects exist only with `E2E_SAFARI=1`, so a normal run uses Chromium alone: `safari`
+(Desktop Safari, 1440×900, the same tests as `desktop`) and `safari-iphone` (iPhone 14, the same tests
+as `mobile`: `@responsive` and `@mobile-only`). Run them from time to time:
+
+```bash
+E2E_SAFARI=1 pnpm e2e:run --project=safari --project=safari-iphone
+E2E_SAFARI=1 pnpm e2e:run --project=desktop --project=safari
+```
+
+Needs the WebKit build once: `pnpm exec playwright install webkit`.
 
 ## Configuration
 
@@ -58,6 +71,7 @@ the `t` and `go` fixtures follow `appLocale`. `layout-sweep` is an extra project
 | `E2E_SHARED_SUFFIX` | empty | appended to the shared dataset's marker: seeds a fresh set (see below) |
 | `E2E_WORKERS` | `2` | Playwright workers |
 | `E2E_LAYOUT_SWEEP` | unset | adds the `layout-sweep` project |
+| `E2E_SAFARI` | unset | adds the `safari` and `safari-iphone` (WebKit) projects |
 
 The photo upload needs `S3_PUBLIC_ENDPOINT`, `S3_ACCESS_KEY` and `S3_SECRET_KEY` in `.env.local`. App
 flags (`NEXT_PUBLIC_SMS_OUTAGE`, `S3_MAX_UPLOAD_BYTES`, `NEXT_PUBLIC_SITE_URL`) come from `.env.local`
@@ -127,8 +141,7 @@ Tests whose point **is** creating data (the report form, claims) create it throu
 
 **Every Web-Client feature or change comes with e2e tests.** A new page, form, filter or other
 visible behaviour gets a test in `specs/`; a changed behaviour updates the tests that cover it
-(find them in `TESTS.md`); a removed feature takes its tests with it. Update `TESTS.md` in the same
-change. Tag a test `@responsive` only if it depends on the viewport; everything else runs on desktop.
+(search `specs/` by the page or feature); a removed feature takes its tests with it. Tag a test `@responsive` only if it depends on the viewport; everything else runs on desktop.
 
 - Import `test` and `expect` from `e2e/fixtures/base.ts`. Fixtures: `appLocale`, `t` (the app's
   bundles, keys checked by `tsc`), `shared`, `token`, `data`, `flags`, `go(path)`, `consoleErrors`.

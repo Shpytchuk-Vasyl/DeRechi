@@ -117,10 +117,13 @@ export class Filters {
       await this.page.getByRole("button", { name: this.t("list.apply"), exact: true }).click()
       return
     }
-    if (await this.sheet().isVisible()) {
-      await this.sheet()
-        .getByRole("button", { name: this.t("list.showResults"), exact: true })
-        .click()
+    const showResults = this.sheet().getByRole("button", {
+      name: this.t("list.showResults"),
+      exact: true,
+    })
+    await expect(showResults.or(this.searchBox())).toBeVisible()
+    if (await showResults.isVisible()) {
+      await showResults.click()
       await expect(this.sheet()).toBeHidden()
       return
     }

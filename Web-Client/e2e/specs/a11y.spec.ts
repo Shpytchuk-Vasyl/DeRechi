@@ -11,8 +11,9 @@ const BLOCKING = new Set(["serious", "critical"])
 const KNOWN: { rule: string; html: RegExp; reason: string }[] = [
   {
     rule: "color-contrast",
-    html: /opacity-70/,
-    reason: "muted text (card meta, list counter, form hints) is drawn at 70% opacity",
+    html: /opacity-70|^<time /,
+    reason:
+      "muted text (card meta and dates, list counter, form hints) is drawn at 70% opacity; axe reports the <time> element itself, the opacity sits on its parent",
   },
 ]
 
