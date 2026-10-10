@@ -125,6 +125,11 @@ Tests whose point **is** creating data (the report form, claims) create it throu
 
 ## Writing tests
 
+**Every Web-Client feature or change comes with e2e tests.** A new page, form, filter or other
+visible behaviour gets a test in `specs/`; a changed behaviour updates the tests that cover it
+(find them in `TESTS.md`); a removed feature takes its tests with it. Update `TESTS.md` in the same
+change. Tag a test `@responsive` only if it depends on the viewport; everything else runs on desktop.
+
 - Import `test` and `expect` from `e2e/fixtures/base.ts`. Fixtures: `appLocale`, `t` (the app's
   bundles, keys checked by `tsc`), `shared`, `token`, `data`, `flags`, `go(path)`, `consoleErrors`.
 - Every test runs the base guard: the BotID script is stubbed, Google Maps is blocked (the place
