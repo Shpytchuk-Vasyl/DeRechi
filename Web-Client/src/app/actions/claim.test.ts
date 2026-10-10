@@ -135,7 +135,7 @@ describe("claimNotice", () => {
   it.each([
     ["a phone that is not E.164", { ...contact, phone: "0671234567" }],
     ["a malformed email", { ...contact, email: "not-an-email" }],
-    ["an unknown messenger", { ...contact, socialMedias: ["SIGNAL"] }],
+    ["an unknown messenger", { ...contact, socialMedias: ["UNKNOWN"] }],
     ["no contacts at all", undefined],
   ])("rejects %s before calling the API", async (_, values) => {
     expect(await claimNotice("lost", "7", values)).toEqual({ ok: false, reason: "validation" })

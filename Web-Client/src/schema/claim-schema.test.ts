@@ -34,7 +34,7 @@ describe("claimSchema", () => {
   })
 
   it("accepts only the messengers the API knows", () => {
-    expect(claimSchema.safeParse({ ...valid, socialMedias: ["SIGNAL"] }).success).toBe(false)
+    expect(claimSchema.safeParse({ ...valid, socialMedias: ["UNKNOWN"] }).success).toBe(false)
     expect(claimSchema.safeParse({ phone: valid.phone, email: valid.email }).success).toBe(true)
   })
 })

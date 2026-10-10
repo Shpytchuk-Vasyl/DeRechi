@@ -4,8 +4,6 @@ enum SocialMedia {
     TELEGRAM
     VIBER
     WHATSAPP
-    SIGNAL
-    MESSENGER
 }
 
 enum ItemSort {

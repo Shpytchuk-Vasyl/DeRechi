@@ -1,7 +1,7 @@
 import { env } from "./env"
 
 export type ItemKind = "lost" | "found"
-export type SocialMedia = "TELEGRAM" | "VIBER" | "WHATSAPP" | "SIGNAL" | "MESSENGER"
+export type SocialMedia = "TELEGRAM" | "VIBER" | "WHATSAPP"
 export type ItemSort = "DATE_DESC" | "DATE_ASC" | "TITLE_DESC" | "TITLE_ASC"
 
 export type Category = { id: string; key: string }

@@ -4,7 +4,7 @@ A new messenger that a person can list in their contact details and that an admi
 
 ## Before you start
 
-Read [Notices](../features/notices.md) (contact input) and [Match notifications](../features/match-notifications.md) (the Notify menu). The example adds Signal.
+Read [Notices](../features/notices.md) (contact input) and [Match notifications](../features/match-notifications.md) (the Notify menu). The example adds LINE.
 
 ## The one rule that matters
 
@@ -29,19 +29,19 @@ Migration `002-init-schema` defines the column without a CHECK constraint, so th
        TELEGRAM,
        VIBER,
        WHATSAPP,
-       SIGNAL
+       LINE
    }
    ```
 
-2. **GraphQL schema.** `Client-API/src/main/resources/graphql/schema.graphqls` has `enum SocialMedia`. Spring for GraphQL maps it by name onto `ContactInfo.SocialMediaEnum`, so the names must match. Note that the schema **already** lists `SIGNAL` and `MESSENGER` while the entity does not; a client sending either today gets a mapping error at `ItemService.toArray`. Adding the constant to the entity closes that gap for `SIGNAL`. Keep the schema order identical to the enum to avoid confusion, even though GraphQL does not care about order.
+2. **GraphQL schema.** `Client-API/src/main/resources/graphql/schema.graphqls` has `enum SocialMedia`. Spring for GraphQL maps it by name onto `ContactInfo.SocialMediaEnum`, so the names must match: a constant that exists only in the schema passes GraphQL validation and then fails with a mapping error at `ItemService.toArray`. Add `LINE` here in the same change. Keep the schema order identical to the enum to avoid confusion, even though GraphQL does not care about order.
 
-3. **Admin Notify menu.** `Admin-API/src/main/java/org/shpytchuk/adminapi/form/NotifyChannel.java`: add `SIGNAL`. `social()` converts any non-`ALL`/`EMAIL`/`PHONE` constant with `SocialMediaEnum.valueOf(name())`, so the name must equal the entity constant. `isNeedPhone()` already returns `true` for everything except `EMAIL`, which is right for a phone-addressed messenger. `NotifyChannelTest.everySocialMediaHasItsOwnChannel` fails until the constant exists.
+3. **Admin Notify menu.** `Admin-API/src/main/java/org/shpytchuk/adminapi/form/NotifyChannel.java`: add `LINE`. `social()` converts any non-`ALL`/`EMAIL`/`PHONE` constant with `SocialMediaEnum.valueOf(name())`, so the name must equal the entity constant. `isNeedPhone()` already returns `true` for everything except `EMAIL`, which is right for a phone-addressed messenger. `NotifyChannelTest.everySocialMediaHasItsOwnChannel` fails until the constant exists.
 
-4. **Icon.** `Admin-API/src/main/java/org/shpytchuk/adminapi/view/detail/SocialMediaIcons.java` maps constants to Font Awesome classes (`fa-brands fa-signal-messenger`); anything missing falls back to a generic comment icon, so this is optional but looks sloppy without it.
+4. **Icon.** `Admin-API/src/main/java/org/shpytchuk/adminapi/view/detail/SocialMediaIcons.java` maps constants to Font Awesome classes (`fa-brands fa-line`); anything missing falls back to a generic comment icon, so this is optional but looks sloppy without it.
 
-5. **Labels.** The form checkboxes (`items/form.html`, iterating `allSocialMedias`) and the Notify dropdown (`fragments/candidates.html`) render `#{social.__${messenger}__}`. Add `social.SIGNAL=Signal` to all five bundles or `MessagesTest` fails and the screen shows the key.
+5. **Labels.** The form checkboxes (`items/form.html`, iterating `allSocialMedias`) and the Notify dropdown (`fragments/candidates.html`) render `#{social.__${messenger}__}`. Add `social.LINE=LINE` to all five bundles or `MessagesTest` fails and the screen shows the key.
 
-6. **Notification module.** `Notification/src/main/java/org/shpytchuk/notification/event/NotificationRequestedEvent.java` has its own `SocialMediaEnum` with a NotifyHub `Channel` per constant. The JSON carries the enum **name**, so add `SIGNAL` there too or deserialisation of an event that mentions it fails and the message dead-letters. NotifyHub has no Signal channel; map it to the closest thing (`Channel.SMS`, like Viber) until the fan-out is implemented.
+6. **Notification module.** `Notification/src/main/java/org/shpytchuk/notification/event/NotificationRequestedEvent.java` has its own `SocialMediaEnum` with a NotifyHub `Channel` per constant. The JSON carries the enum **name**, so add `LINE` there too or deserialisation of an event that mentions it fails and the message dead-letters. NotifyHub has no LINE channel; map it to the closest thing (`Channel.SMS`, like Viber) until the fan-out is implemented.
 
 7. **Admin form.** Nothing else: `ItemModel` puts `SocialMediaEnum.values()` on the model, `ItemForm.socialMedias` binds the list, `ItemMapper` copies it to the entity.
 
@@ -49,8 +49,8 @@ Migration `002-init-schema` defines the column without a CHECK constraint, so th
 
 - `NotifyChannelTest` (both cases pass once the constants line up).
 - `MessagesTest` for the label.
-- `ItemServiceTests` or `LostItemControllerTests` in `Client-API`: one mutation with `socialMedias: [SIGNAL]` round-tripping through the database (`ContactInfoRepositoryTests` shows how the array is asserted).
-- `MatchControllerTests`: the Notify dropdown shows a Signal entry when the owner listed it.
+- `ItemServiceTests` or `LostItemControllerTests` in `Client-API`: one mutation with `socialMedias: [LINE]` round-tripping through the database (`ContactInfoRepositoryTests` shows how the array is asserted).
+- `MatchControllerTests`: the Notify dropdown shows a LINE entry when the owner listed it.
 
 ## Migration needed?
 
@@ -58,7 +58,7 @@ No. The column is an array of small integers and the new ordinal fits. Do not ru
 
 ## Web-Client impact
 
-The web team runs `pnpm codegen` to pick up the enum (the schema already contains `SIGNAL`, so the generated type may not even change), and adds the label and icon for the checkbox in the notice form and in the notice view.
+The web team runs `pnpm codegen` to pick up the enum and adds the label and icon for the checkbox in the notice form and in the notice view.
 
 ## Checklist
 

@@ -73,8 +73,6 @@ export type PlaceInput = {
 };
 
 export type SocialMedia =
-  | 'MESSENGER'
-  | 'SIGNAL'
   | 'TELEGRAM'
   | 'VIBER'
   | 'WHATSAPP';
