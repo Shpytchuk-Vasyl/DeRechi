@@ -17,11 +17,13 @@ export default function HeroSearch() {
   const hintId = useId()
 
   const placeholder = t("searchWhatPlaceholder")
-  // Precompiled catalogs turn arrays into index-keyed objects (next.config.ts, messages.precompile).
-  const examples = useMemo(
-    () => Object.values(t.raw("searchExamples") as Record<string, string>),
-    [t],
-  )
+  const examples = useMemo(() => {
+    const phrases: string[] = []
+    for (let i = 0; t.has(`searchExamples.${i}`); i++) {
+      phrases.push(t(`searchExamples.${i}`))
+    }
+    return phrases
+  }, [t])
   useTypewriter(inputRef, examples, placeholder, !reduceMotion && query === "")
 
   function submit(event: React.SubmitEvent) {

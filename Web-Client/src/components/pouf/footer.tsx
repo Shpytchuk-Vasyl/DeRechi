@@ -28,6 +28,7 @@ export function Footer({ brand, tagline, columns = [] }: FooterProps) {
                   key={`${l.href}-${l.label}`}
                   href={l.href}
                   className="font-extrabold no-underline hover:text-muted transition-colors"
+                  prefetch={false}
                 >
                   {l.label}
                 </Link>

@@ -54,7 +54,6 @@ export default async function HeroScene() {
             src={piece.src}
             alt=""
             sizes={piece.size}
-            priority
             placeholder="blur"
             className="h-auto w-full"
           />

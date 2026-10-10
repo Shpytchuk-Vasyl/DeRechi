@@ -37,6 +37,9 @@ jobs:
           - name: client-api
             context: .
             build-args: MODULE=Client-API
+          - name: admin-api
+            context: .
+            build-args: MODULE=Admin-API
           - name: worker
             context: .
             build-args: MODULE=Worker

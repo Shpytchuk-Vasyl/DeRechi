@@ -8,6 +8,7 @@ export function formatMoney(format: NumberFormatter, money: Money): string {
   return format.number(money.amount, {
     style: "currency",
     currency: money.currency,
+    currencyDisplay: "narrowSymbol",
     maximumFractionDigits: 0,
   })
 }

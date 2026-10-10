@@ -39,6 +39,7 @@ export function SafetyLink({
     <Link
       href={paths.safety}
       className="whitespace-nowrap font-bold underline"
+      prefetch={false}
       {...(newTab ? { target: "_blank", rel: "noopener" } : {})}
     >
       {children}

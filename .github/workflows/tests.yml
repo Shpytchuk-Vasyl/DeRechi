@@ -30,6 +30,9 @@ jobs:
           - module: Client-API
             postgres: true
             rabbitmq: true
+          - module: Admin-API
+            postgres: true
+            rabbitmq: true
           - module: Worker
             rabbitmq: true
           - module: Notification

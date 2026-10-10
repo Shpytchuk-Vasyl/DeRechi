@@ -12,6 +12,8 @@ scrape_configs:
         labels: { application: Getaway }
       - targets: ["client-api:9082"]
         labels: { application: Client-API }
+      - targets: ["admin-api:9083"]
+        labels: { application: Admin-API }
     metric_relabel_configs:
       - source_labels: [__name__]
         regex: "spring_data_repository_invocations_.*|graphql_datafetcher_.*|.+_active_seconds_.*|tomcat_sessions_.*"
