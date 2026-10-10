@@ -37,7 +37,10 @@ default when `env.prod` lacks it. Before a release make sure `env.prod` sets at 
 `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY`, `ALERT_EMAIL_TO`, `ALERT_SMTP_HOST` and
 `ALERT_SMTP_REQUIRE_TLS=true`, `NOTIFY_EMAIL_HOST` / `_PORT` / `_USERNAME` / `_PASSWORD` /
 `_FROM` (the defaults point at Mailpit, which production does not run), besides the database,
-RabbitMQ and Fourthwall secrets.
+RabbitMQ and Fourthwall secrets. On the machine that runs Telegram-Ingest also `TELEGRAM_API_ID` /
+`TELEGRAM_API_HASH`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_PUBLISH_CHAT`, `TELEGRAM_REVIEW_CHAT`,
+`OPENROUTER_API_KEY`, `GOOGLE_PLACES_API_KEY`, a random `INGEST_HASH_KEY` and the public
+`DERECHI_API_URI`; see [Telegram-Ingest](#telegram-ingest).
 
 `COMPOSE_PROFILES=dev` in `env.local` turns on the development-only containers (Mailpit, pgAdmin);
 `env.prod` leaves it unset.
@@ -70,7 +73,7 @@ local tool and runs only with the `dev` profile.
 
 | Variable | YAML default | Compose default | Read by | Purpose |
 |---|---|---|---|---|
-| `POSTGRES_HOST` | `localhost` | `postgres` | Client-API, Admin-API, Worker, DB-Postgres, Keycloak | database host |
+| `POSTGRES_HOST` | `localhost` | `postgres` | Client-API, Admin-API, Worker, Telegram-Ingest, DB-Postgres, Keycloak | database host |
 | `POSTGRES_PORT` | `5432` | `5432` | same | database port inside the network |
 | `POSTGRES_DB` | `derechi` | `derechi` | same, and the `postgres` container | application database |
 | `POSTGRES_USER` / `POSTGRES_PASSWORD` | `derechi` / `derechi` | same | same, and the `postgres` container | database credentials |
@@ -79,8 +82,8 @@ local tool and runs only with the `dev` profile.
 | `RABBITMQ_USER` / `RABBITMQ_PASSWORD` | `derechi` / `derechi` | same | the services, `rabbitmq-init`, and the `rabbitmq` container | broker credentials |
 | `RABBITMQ_VHOST` | `/` | `/` | the services | virtual host; on a hosted broker (CloudAMQP) it is the username, not `/` |
 | `RABBITMQ_SSL` | `false` | `false` | the services | AMQP over TLS; `true` with port `5671` for a hosted broker |
-| `JAVA_OPTS` | empty | `-Xms64m -Xmx256m ... -XX:+UseSerialGC` | every service | JVM flags; the default is laptop sizing |
-| `MANAGEMENT_PORT` | service port + 1000 (`9080`, `9082`, `9083`, `9084`, `9085`) | not set | every service | actuator port (`health`, `info`, `prometheus`); not published by compose, see [monitoring](monitoring.md#actuator) |
+| `JAVA_OPTS` | empty | `-Xms64m -Xmx256m ... -XX:+UseSerialGC` | every service except Telegram-Ingest (`TELEGRAM_INGEST_JAVA_OPTS`) | JVM flags; the default is laptop sizing |
+| `MANAGEMENT_PORT` | service port + 1000 (`9080`, `9082`, `9083`, `9084`, `9085`, `9086`) | not set | every service | actuator port (`health`, `info`, `prometheus`); not published by compose, see [monitoring](monitoring.md#actuator) |
 | `SERVICE_MEMORY` | n/a | `512m` | compose | memory limit of each service container |
 
 `spring.datasource.*` and `spring.rabbitmq.*` are
@@ -159,6 +162,68 @@ not NotifyHub's, and it registers only when `SMS_FLY_API_KEY` is non-blank. Othe
 (Telegram bot token) are added as new placeholders when they are enabled; see
 [add-a-notification-channel](../extending/add-a-notification-channel.md).
 
+## Telegram-Ingest
+
+Imports lost-and-found notices from Telegram chats. Compose defaults equal the YAML defaults
+except where the table says otherwise. An empty `TELEGRAM_API_ID`/`TELEGRAM_API_HASH`,
+`OPENROUTER_API_KEY` or `GOOGLE_PLACES_API_KEY` fails the start. Durations are ISO-8601.
+
+| Variable | YAML default | Compose default | Purpose |
+|---|---|---|---|
+| `POSTGRES_*` | see above | see above | the `telegram_post` table; no RabbitMQ |
+| `TELEGRAM_INGEST_JAVA_OPTS` | n/a | `-Xms64m -Xmx384m -XX:MaxMetaspaceSize=192m -XX:-UseG1GC -XX:+UseSerialGC --enable-native-access=ALL-UNNAMED` | this service's `JAVA_OPTS` instead of the shared one. TDLib, ONNX Runtime and Tesseract are native and live outside the heap, so keep `-Xmx` well below the memory limit. `--enable-native-access` silences the JDK's warnings for JNI/JNA |
+| `TELEGRAM_INGEST_MEMORY` | n/a | `1g` | memory limit of the container, instead of `SERVICE_MEMORY` |
+| `INGEST_MODE` | `DRY_RUN` | same | `DRY_RUN`: everything up to geocoding, then a preview in `TELEGRAM_REVIEW_CHAT`, nothing is published. `AUTO`: publishes to the site and to the channel |
+| `INGEST_HASH_KEY` | `dev-hash-key-change-me` | same | HMAC key of `telegram_post.phone_hash`, used to spot duplicates; a random secret in production. Changing it forgets every phone seen so far |
+| `INGEST_DUPLICATE_WINDOW` | `P14D` | same | how long a contact phone marks later posts as duplicates |
+| `INGEST_MAX_PHOTOS` | `3` | same | photos per post that are downloaded, redacted and published |
+| `INGEST_MAX_AGE` | `P30D` | same | older notices are skipped (`too_old`); Client-API accepts 30 days |
+| `INGEST_SITE_LOCALE` | `uk` | same | locale segment of the notice links in captions |
+| `INGEST_MIN_CONFIDENCE` | `0.6` | same | extractions with a lower model confidence are skipped as `rejected` |
+| `DERECHI_SITE_URL` | `http://localhost:3000` | same | base of the notice links in captions |
+| `TELEGRAM_API_ID` / `TELEGRAM_API_HASH` | `0` / empty | same | the application from my.telegram.org; `0` means not configured |
+| `TELEGRAM_PHONE` | empty | same | phone of the Telegram account, needed only by the one-off `--login` |
+| `TDLIB_DATA_DIR` | `tdlib` (relative to the working directory, git-ignored) | `/app/tdlib` (fixed, the `tdlib-data` volume) | TDLib database: the session and downloads. Losing it means another `--login` |
+| `TELEGRAM_FOLDER` | `DeRechi` | same | name of the account's chat folder whose channels and groups are read |
+| `TELEGRAM_CHATS` | empty | same | per-chat overrides, `username=city[\|region[\|locale]]` separated by `;` or new lines, e.g. `zagubleno911=Львів` |
+| `TELEGRAM_DEFAULT_REGION` | `UA` | same | region for chats without an override |
+| `TELEGRAM_DEFAULT_LOCALE` | `uk` | same | geocoding language for chats without an override |
+| `TELEGRAM_ALBUM_WAIT` | `PT3S` | same | how long to wait for the rest of an album after its last part |
+| `TELEGRAM_FOLDER_REFRESH` | `PT10M` | same | how often the folder's chat list is re-read |
+| `TELEGRAM_CATCH_UP_MAX_AGE` / `TELEGRAM_CATCH_UP_MAX_MESSAGES` | `PT48H` / `200` | same | on start, history read back per chat to pick up posts missed while down |
+| `TELEGRAM_BOT_API_URL` | `https://api.telegram.org` | same | Bot API base URL |
+| `TELEGRAM_BOT_TOKEN` | empty | same | the bot that posts to our channel and sends `DRY_RUN` previews |
+| `TELEGRAM_PUBLISH_CHAT` | empty | same | our public channel: id (`-100...`) or `@username` |
+| `TELEGRAM_REVIEW_CHAT` | empty | same | private chat or group for previews |
+| `TELEGRAM_PUBLISH_LOCALE` | `uk` | same | language of the captions in the public channel |
+| `TELEGRAM_BOT_TIMEOUT` / `TELEGRAM_BOT_MAX_ATTEMPTS` | `PT30S` / `3` | same | Bot API timeout and attempts |
+| `OPENROUTER_URL` | `https://openrouter.ai/api/v1` | same | OpenRouter API base URL |
+| `OPENROUTER_API_KEY` | empty | same | OpenRouter key |
+| `OPENROUTER_MODEL` | `google/gemini-3.1-flash-lite` | same | extraction model |
+| `OPENROUTER_FALLBACK_MODEL` | `qwen/qwen3.5-flash-02-23` | same | sent after `OPENROUTER_MODEL` in OpenRouter's `models` list; empty for none |
+| `OPENROUTER_TIMEOUT` / `OPENROUTER_MAX_ATTEMPTS` | `PT60S` / `3` | same | model call timeout and attempts |
+| `OPENROUTER_DAILY_LIMIT` | `300` | same | model calls per UTC day, a safety net; over it posts are skipped (`budget`) |
+| `GOOGLE_PLACES_URL` | `https://places.googleapis.com/v1` | same | Places API (New) base URL |
+| `GOOGLE_PLACES_API_KEY` | empty | same | a server key restricted by IP, not the admin panel's browser key (`GOOGLE_MAPS_API_KEY`) |
+| `GOOGLE_PLACES_TIMEOUT` / `GOOGLE_PLACES_MAX_ATTEMPTS` | `PT10S` / `3` | same | geocoding timeout and attempts |
+| `DERECHI_API_URI` | `http://localhost:8080` | `http://getaway:8080` | the Gateway; notices go to its `/graphql`. On a machine without the Gateway, its public address |
+| `DERECHI_API_TIMEOUT` / `DERECHI_API_MAX_ATTEMPTS` | `PT15S` / `3` | same | API timeout and attempts |
+| `DERECHI_API_REFERENCE_TTL` | `1h` | same | how long categories and countries from the API are cached; Caffeine spec format (`30m`, `1h`, `1d`) |
+| `MINIO_ENDPOINT`, `MINIO_REGION`, `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` | as in Admin-API | as in Admin-API | S3 client for the photos (the application's account) |
+| `MINIO_BUCKET` | `derechi-files` | same | bucket the photos go to |
+| `MINIO_MAX_UPLOAD` | `5MB` | same | largest photo uploaded |
+| `TESSDATA_PREFIX` | empty, OCR off (development only) | set by the image: `/usr/share/tesseract-ocr/5/tessdata` | Tesseract's `*.traineddata` directory; not in compose |
+| `REDACTION_OCR_LANGUAGES` | `ukr+pol+eng` | same | Tesseract languages; each needs its package in the image |
+| `REDACTION_MIN_WORDS` | `6` | same | a document photo with fewer recognized words is blurred entirely |
+| `REDACTION_DOCUMENT_KEYWORDS` | `паспорт,passport,...` (comma-separated, see `application.yaml`) | same list | words that mark a document, in the post text or on the photo, case-insensitive |
+| `REDACTION_FACE_MODEL` | `classpath:models/face_detection_yunet_2023mar.onnx` | same | YuNet ONNX model, a Spring resource location |
+| `REDACTION_FACE_SCORE` | `0.6` | same | minimum face score |
+| `REDACTION_DOCUMENT_MODE` | `PARTIAL` | same | `PARTIAL`: blur the text and faces of a document; `FULL`: blur every document photo entirely |
+
+The first start needs the Telegram session: stop the service and run
+`docker compose -f docker-compose.yml -f docker-compose.services.yml run --rm -it telegram-ingest --login`
+(add `--env-file`), which asks for the code Telegram sends to `TELEGRAM_PHONE`.
+
 ## Infrastructure containers
 
 | Container | Reads |
@@ -178,4 +243,4 @@ Every long-running container has a memory limit, overridable per environment:
 `POSTGRES_MEMORY` (1g), `PGADMIN_MEMORY` (512m), `RABBITMQ_MEMORY` (512m), `KEYCLOAK_MEMORY`
 (768m), `PROMETHEUS_MEMORY` (512m), `ALERTMANAGER_MEMORY` (128m), `GRAFANA_MEMORY` (256m),
 `MINIO_MEMORY` (512m), `MAILPIT_MEMORY` (128m), and `SERVICE_MEMORY` (512m) for each Spring
-service. See [docker-compose](docker-compose.md#healthchecks-restarts-and-memory).
+service except Telegram-Ingest, which has `TELEGRAM_INGEST_MEMORY` (1g). See [docker-compose](docker-compose.md#healthchecks-restarts-and-memory).

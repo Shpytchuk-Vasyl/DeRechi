@@ -50,3 +50,6 @@ build/
 ### Environments: credentials, never committed ###
 /env.test
 /env.prod
+
+/tdlib/
+/Telegram-Ingest/tdlib/

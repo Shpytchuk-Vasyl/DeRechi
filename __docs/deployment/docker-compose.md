@@ -5,7 +5,7 @@ A base file and one override, one project named `derechi`. Production runs the s
 | File | Contains | Command |
 |---|---|---|
 | `docker-compose.yml` | infrastructure only | `docker compose --profile dev up -d` |
-| `docker-compose.services.yml` | the five Spring services, the one-shot `db-postgres` migration job, and an override for Prometheus | `docker compose --profile dev -f docker-compose.yml -f docker-compose.services.yml up -d --build` |
+| `docker-compose.services.yml` | the six Spring services, the one-shot `db-postgres` migration job, and an override for Prometheus | `docker compose --profile dev -f docker-compose.yml -f docker-compose.services.yml up -d --build` |
 
 ## Why the second file is an override
 
@@ -82,8 +82,9 @@ A healthcheck exists only where a `depends_on: condition: service_healthy` waits
 | grafana | none | `GRAFANA_MEMORY`, 256m |
 | minio | `mc ready local` (`minio-init`, Getaway) | `MINIO_MEMORY`, 512m |
 | mailpit | `mailpit readyz` (Notification) | `MAILPIT_MEMORY`, 128m |
-| db-postgres (one-shot) | none; Client-API, Admin-API and Worker wait for it to exit with 0 | `SERVICE_MEMORY`, 512m |
+| db-postgres (one-shot) | none; Client-API, Admin-API, Worker and Telegram-Ingest wait for it to exit with 0 | `SERVICE_MEMORY`, 512m |
 | the five services | none | `SERVICE_MEMORY`, 512m each |
+| telegram-ingest | none | `TELEGRAM_INGEST_MEMORY`, 1g (TDLib, ONNX Runtime and Tesseract are native memory); its heap is `TELEGRAM_INGEST_JAVA_OPTS`, not `x-jvm` |
 
 The memory limits and the `x-jvm` heap belong together: a container limit below what the JVM is allowed to take gets the service killed instead of throwing `OutOfMemoryError`.
 
@@ -99,6 +100,7 @@ The memory limits and the `x-jvm` heap belong together: a container limit below 
 | `grafanadata` | dashboards and users created in the UI |
 | `miniodata` | uploaded images in `derechi-files` |
 | `mailpitdata` | captured e-mails |
+| `tdlib-data` | Telegram-Ingest's TDLib session (declared in `docker-compose.services.yml`); losing it means another `run --rm -it telegram-ingest --login` |
 
 `docker compose down -v` removes all of them. The Keycloak realm is re-imported on the next start. The schema is re-created by `db-postgres` on the next `up` with `docker-compose.services.yml`; with the base file alone, run `./mvnw -pl DB-Postgres liquibase:update`.
 

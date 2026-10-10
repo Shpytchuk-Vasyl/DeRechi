@@ -2,7 +2,7 @@
 
 One `Dockerfile` in the repository root builds every Spring service and the one-shot `db-postgres` migration job (`MODULE=DB-Postgres`). Which module ends up in the image is decided by the `MODULE` build argument.
 
-## Two stages
+## Stages
 
 ```dockerfile
 FROM eclipse-temurin:26-jdk AS build
@@ -16,7 +16,11 @@ COPY Client-API Client-API
 COPY Admin-API Admin-API
 COPY Worker Worker
 COPY Notification Notification
+COPY Telegram-Ingest Telegram-Ingest
 RUN --mount=type=cache,target=/root/.m2,sharing=locked ./mvnw -B --strict-checksums -DskipTests package
+
+FROM eclipse-temurin:26-jre AS telegram-ingest
+# ... Tesseract, /app/tdlib, argument-forwarding entrypoint, see below
 
 FROM eclipse-temurin:26-jre
 ARG MODULE
@@ -28,9 +32,22 @@ ENV JAVA_OPTS=""
 ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar"]
 ```
 
-**Build stage.** Identical for every service: it copies the whole reactor and runs `package` once. Because the stage does not depend on `MODULE`, Docker reuses its layer for all six images, so building the stack compiles the reactor one time, not six. The `--mount=type=cache` keeps `~/.m2` between builds, which is what makes a rebuild after a one-line change take seconds instead of downloading every dependency again. `sharing=locked` stops the parallel image builds from writing to that cache at the same time. `--strict-checksums` fails a download whose checksum does not match. Without it, Maven only warns and keeps the broken jar in the cache, and every later build fails with `ZipException ... zip END header not found`. If that error appears anyway, clear the cache with `docker builder prune --filter type=exec.cachemount -f`.
+**Build stage.** Identical for every service: it copies the whole reactor and runs `package` once. Because the stage does not depend on `MODULE`, Docker reuses its layer for all seven images, so building the stack compiles the reactor one time, not seven. The `--mount=type=cache` keeps `~/.m2` between builds, which is what makes a rebuild after a one-line change take seconds instead of downloading every dependency again. `sharing=locked` stops the parallel image builds from writing to that cache at the same time. `--strict-checksums` fails a download whose checksum does not match. Without it, Maven only warns and keeps the broken jar in the cache, and every later build fails with `ZipException ... zip END header not found`. If that error appears anyway, clear the cache with `docker builder prune --filter type=exec.cachemount -f`.
 
-**Runtime stage.** A JRE-only image, a non-root `spring` user and the single fat jar of the requested module. `JAVA_OPTS` is empty by default and is where compose injects heap limits and any `-D` flags.
+**Runtime stage.** A JRE-only image, a non-root `spring` user and the single fat jar of the requested module. `JAVA_OPTS` is empty by default and is where compose injects heap limits and any `-D` flags. It must stay the **last** stage: a compose service without `build.target` gets the last stage, and every service except `telegram-ingest` relies on that.
+
+**`telegram-ingest` stage.** Telegram-Ingest has its own final stage, picked by `build.target: telegram-ingest` in compose, for two reasons:
+
+- It needs native packages the other images should not carry: `tesseract-ocr` (brings English), `tesseract-ocr-ukr` and `tesseract-ocr-pol` from Ubuntu, with `TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata`, which is what `derechi.redaction.tessdata` reads. It also creates `/app/tdlib`, owned by `spring`, where the `tdlib-data` volume with the TDLib session is mounted.
+- Its entrypoint forwards arguments to the jar, so the one-off session login works: `docker compose run --rm -it telegram-ingest --login`.
+
+  ```dockerfile
+  ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar \"$@\"", "--"]
+  ```
+
+  The trailing `"--"` becomes `$0` of the shell, so everything after the service name lands in `"$@"`. The generic stage drops arguments, and nothing else needs them.
+
+BuildKit only builds the stages the requested target needs, so the other images never run the `apt-get` of this stage. The build stage still needs `https://mvn.mchv.eu/repository/mchv/` (TDLight is not on Maven Central, the repository is declared in `Telegram-Ingest/pom.xml`). It serves `.sha1` files, so `--strict-checksums` checks TDLight too.
 
 Tests are skipped in the image build (`-DskipTests`); they run in CI and locally, not during packaging.
 

@@ -31,6 +31,8 @@ scrape_configs:
         labels: { application: Worker }
       - targets: ["host.docker.internal:9084"]
         labels: { application: Notification }
+      - targets: ["host.docker.internal:9086"]
+        labels: { application: Telegram-Ingest }
 
   - job_name: keycloak
     metrics_path: /metrics

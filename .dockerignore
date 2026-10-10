@@ -9,3 +9,5 @@ docker/
 docker-compose*.yml
 Dockerfile
 .dockerignore
+tdlib/
+Telegram-Ingest/tdlib/

@@ -22,3 +22,27 @@ groups:
         annotations:
           summary: "{{ with $labels.application }}{{ . }}{{ else }}{{ $labels.job }}{{ end }} ({{ $labels.instance }}) is down"
           description: Prometheus has not reached the target for two minutes.
+
+      - alert: IngestUnauthorized
+        expr: max(derechi_ingest_telegram_authorized) == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: Telegram-Ingest's Telegram session is not authorized
+          description: >-
+            TDLib is waiting for a login, so no posts are read. On the machine that runs the service, with
+            the same -f files and --env-file as the stack: docker compose stop telegram-ingest, then
+            docker compose run --rm -it telegram-ingest --login, then docker compose start telegram-ingest
+            (two TDLib instances cannot share the session directory).
+
+      - alert: IngestStalled
+        expr: time() - max(derechi_ingest_last_received_seconds) > 6 * 3600
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Telegram-Ingest has received nothing for {{ $value | humanizeDuration }}
+          description: >-
+            No post has come from the source chats for 6 hours: the Telegram folder is empty or renamed,
+            the session was revoked, or the chats are simply silent.

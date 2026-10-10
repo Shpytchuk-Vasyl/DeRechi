@@ -31,6 +31,8 @@ scrape_configs:
         labels: { application: Worker }
       - targets: ["notification:9084"]
         labels: { application: Notification }
+      - targets: ["telegram-ingest:9086"]
+        labels: { application: Telegram-Ingest }
 
   - job_name: keycloak
     metrics_path: /metrics

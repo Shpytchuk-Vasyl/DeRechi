@@ -182,3 +182,89 @@ services:
       mailpit:
         condition: service_healthy
         required: false
+
+  #   docker compose -f docker-compose.yml -f docker-compose.services.yml run --rm -it telegram-ingest --login
+  telegram-ingest:
+    <<: *service-base
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: telegram-ingest
+      args:
+        MODULE: Telegram-Ingest
+    container_name: derechi-telegram-ingest
+    ports:
+      - "8086:8086"
+    deploy:
+      resources:
+        limits:
+          memory: ${TELEGRAM_INGEST_MEMORY:-1g}
+    volumes:
+      - tdlib-data:/app/tdlib
+    environment:
+      <<: *postgres
+      # Tesseract, ONNX Runtime and TDLib live outside the heap: keep -Xmx well below the memory limit
+      JAVA_OPTS: ${TELEGRAM_INGEST_JAVA_OPTS:--Xms64m -Xmx384m -XX:MaxMetaspaceSize=192m -XX:-UseG1GC -XX:+UseSerialGC --enable-native-access=ALL-UNNAMED}
+      TDLIB_DATA_DIR: /app/tdlib
+      DERECHI_SITE_URL: ${DERECHI_SITE_URL:-http://localhost:3000}
+      DERECHI_API_URI: ${DERECHI_API_URI:-http://getaway:8080}
+      DERECHI_API_TIMEOUT: ${DERECHI_API_TIMEOUT:-PT15S}
+      DERECHI_API_MAX_ATTEMPTS: ${DERECHI_API_MAX_ATTEMPTS:-3}
+      DERECHI_API_REFERENCE_TTL: ${DERECHI_API_REFERENCE_TTL:-1h}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:-http://minio:9000}
+      MINIO_REGION: ${MINIO_REGION:-us-east-1}
+      MINIO_BUCKET: ${MINIO_BUCKET:-derechi-files}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-derechi-app}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-derechi-app-secret}
+      MINIO_MAX_UPLOAD: ${MINIO_MAX_UPLOAD:-5MB}
+      INGEST_MODE: ${INGEST_MODE:-DRY_RUN}
+      INGEST_HASH_KEY: ${INGEST_HASH_KEY:-dev-hash-key-change-me}
+      INGEST_DUPLICATE_WINDOW: ${INGEST_DUPLICATE_WINDOW:-P14D}
+      INGEST_MAX_PHOTOS: ${INGEST_MAX_PHOTOS:-3}
+      INGEST_MAX_AGE: ${INGEST_MAX_AGE:-P30D}
+      INGEST_SITE_LOCALE: ${INGEST_SITE_LOCALE:-uk}
+      INGEST_MIN_CONFIDENCE: ${INGEST_MIN_CONFIDENCE:-0.6}
+      TELEGRAM_API_ID: ${TELEGRAM_API_ID:-0}
+      TELEGRAM_API_HASH: ${TELEGRAM_API_HASH:-}
+      TELEGRAM_PHONE: ${TELEGRAM_PHONE:-}
+      TELEGRAM_FOLDER: ${TELEGRAM_FOLDER:-DeRechi}
+      TELEGRAM_CHATS: ${TELEGRAM_CHATS:-}
+      TELEGRAM_DEFAULT_REGION: ${TELEGRAM_DEFAULT_REGION:-UA}
+      TELEGRAM_DEFAULT_LOCALE: ${TELEGRAM_DEFAULT_LOCALE:-uk}
+      TELEGRAM_ALBUM_WAIT: ${TELEGRAM_ALBUM_WAIT:-PT3S}
+      TELEGRAM_FOLDER_REFRESH: ${TELEGRAM_FOLDER_REFRESH:-PT10M}
+      TELEGRAM_CATCH_UP_MAX_AGE: ${TELEGRAM_CATCH_UP_MAX_AGE:-PT48H}
+      TELEGRAM_CATCH_UP_MAX_MESSAGES: ${TELEGRAM_CATCH_UP_MAX_MESSAGES:-200}
+      TELEGRAM_BOT_API_URL: ${TELEGRAM_BOT_API_URL:-https://api.telegram.org}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_PUBLISH_CHAT: ${TELEGRAM_PUBLISH_CHAT:-}
+      TELEGRAM_REVIEW_CHAT: ${TELEGRAM_REVIEW_CHAT:-}
+      TELEGRAM_PUBLISH_LOCALE: ${TELEGRAM_PUBLISH_LOCALE:-uk}
+      TELEGRAM_BOT_TIMEOUT: ${TELEGRAM_BOT_TIMEOUT:-PT30S}
+      TELEGRAM_BOT_MAX_ATTEMPTS: ${TELEGRAM_BOT_MAX_ATTEMPTS:-3}
+      OPENROUTER_URL: ${OPENROUTER_URL:-https://openrouter.ai/api/v1}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      OPENROUTER_MODEL: ${OPENROUTER_MODEL:-google/gemini-3.1-flash-lite}
+      OPENROUTER_FALLBACK_MODEL: ${OPENROUTER_FALLBACK_MODEL:-qwen/qwen3.5-flash-02-23}
+      OPENROUTER_TIMEOUT: ${OPENROUTER_TIMEOUT:-PT60S}
+      OPENROUTER_MAX_ATTEMPTS: ${OPENROUTER_MAX_ATTEMPTS:-3}
+      OPENROUTER_DAILY_LIMIT: ${OPENROUTER_DAILY_LIMIT:-300}
+      GOOGLE_PLACES_URL: ${GOOGLE_PLACES_URL:-https://places.googleapis.com/v1}
+      GOOGLE_PLACES_API_KEY: ${GOOGLE_PLACES_API_KEY:-}
+      GOOGLE_PLACES_TIMEOUT: ${GOOGLE_PLACES_TIMEOUT:-PT10S}
+      GOOGLE_PLACES_MAX_ATTEMPTS: ${GOOGLE_PLACES_MAX_ATTEMPTS:-3}
+      REDACTION_OCR_LANGUAGES: ${REDACTION_OCR_LANGUAGES:-ukr+pol+eng}
+      REDACTION_MIN_WORDS: ${REDACTION_MIN_WORDS:-6}
+      # unset unless overridden: the default list lives in application.yaml only
+      REDACTION_DOCUMENT_KEYWORDS:
+      REDACTION_FACE_MODEL: ${REDACTION_FACE_MODEL:-classpath:models/face_detection_yunet_2023mar.onnx}
+      REDACTION_FACE_SCORE: ${REDACTION_FACE_SCORE:-0.6}
+      REDACTION_DOCUMENT_MODE: ${REDACTION_DOCUMENT_MODE:-PARTIAL}
+    depends_on:
+      db-postgres:
+        condition: service_completed_successfully
+      minio-init:
+        condition: service_completed_successfully
+
+volumes:
+  tdlib-data:    # TDLib session of Telegram-Ingest; losing it means another --login

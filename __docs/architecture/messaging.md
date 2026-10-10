@@ -1,8 +1,9 @@
 # Messaging
 
-RabbitMQ is the only way services talk to each other asynchronously. There are no
-service-to-service HTTP calls today; the gateway forwards browser traffic to `Client-API`,
-and everything else goes through a queue.
+RabbitMQ is the only way services talk to each other asynchronously. The only
+service-to-service HTTP call is `Telegram-Ingest` creating notices through the Gateway's public
+GraphQL, exactly like a browser; the gateway forwards browser traffic to `Client-API`, and
+everything else goes through a queue.
 
 ## Topology
 

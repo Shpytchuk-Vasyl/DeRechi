@@ -14,3 +14,4 @@ What the system does today, feature by feature. Each page covers the user-facing
 - [Countries and currencies](countries-and-currencies.md): supported countries, reward currency rules.
 - [Image uploads](image-uploads.md): photo storage in MinIO from the admin panel and from the web client.
 - [Places](places.md): the Place entity, Google Places autocomplete and geo queries.
+- [Telegram import](telegram-ingest.md): notices read from Telegram channels, extracted by a model and reposted to our channel.

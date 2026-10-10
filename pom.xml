@@ -7,7 +7,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>4.1.1</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
 
     <groupId>org.shpytchuk</groupId>
@@ -25,6 +25,7 @@
         <module>Admin-API</module>
         <module>Worker</module>
         <module>Notification</module>
+        <module>Telegram-Ingest</module>
     </modules>
 
     <properties>
@@ -41,6 +42,10 @@
         <libphonenumber.version>9.0.18</libphonenumber.version>
         <jmail.version>2.2.2</jmail.version>
         <shedlock.version>7.10.1</shedlock.version>
+        <tdlight.version>3.5.5+td.1.8.66</tdlight.version>
+        <tdlight-natives.version>4.0.591</tdlight-natives.version>
+        <tess4j.version>5.20.0</tess4j.version>
+        <onnxruntime.version>1.31.0</onnxruntime.version>
 
         <liquibase.version>5.0.4</liquibase.version>
         <liquibase-hibernate.version>5.0.4</liquibase-hibernate.version>
@@ -123,6 +128,48 @@
                 <groupId>net.javacrumbs.shedlock</groupId>
                 <artifactId>shedlock-provider-jdbc-template</artifactId>
                 <version>${shedlock.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.tdlight</groupId>
+                <artifactId>tdlight-java</artifactId>
+                <version>${tdlight.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>it.tdlight</groupId>
+                <artifactId>tdlight-natives</artifactId>
+                <version>${tdlight-natives.version}</version>
+                <classifier>linux_arm64_gnu_ssl3</classifier>
+            </dependency>
+            <dependency>
+                <groupId>it.tdlight</groupId>
+                <artifactId>tdlight-natives</artifactId>
+                <version>${tdlight-natives.version}</version>
+                <classifier>linux_amd64_gnu_ssl3</classifier>
+            </dependency>
+            <dependency>
+                <groupId>it.tdlight</groupId>
+                <artifactId>tdlight-natives</artifactId>
+                <version>${tdlight-natives.version}</version>
+                <classifier>windows_amd64</classifier>
+            </dependency>
+            <dependency>
+                <groupId>it.tdlight</groupId>
+                <artifactId>tdlight-natives</artifactId>
+                <version>${tdlight-natives.version}</version>
+                <classifier>macos_arm64</classifier>
+            </dependency>
+
+            <dependency>
+                <groupId>net.sourceforge.tess4j</groupId>
+                <artifactId>tess4j</artifactId>
+                <version>${tess4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.microsoft.onnxruntime</groupId>
+                <artifactId>onnxruntime</artifactId>
+                <version>${onnxruntime.version}</version>
             </dependency>
 
             <dependency>
