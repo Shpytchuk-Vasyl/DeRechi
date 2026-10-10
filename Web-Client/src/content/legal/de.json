@@ -43,44 +43,33 @@
       {
         "heading": "4. Kontaktdaten",
         "body": [
-          "In der Anzeige sind Ihre Telefonnummer und E-Mail-Adresse nur teilweise sichtbar, um Sie vor Spam zu schützen. Ihre vollständige Telefonnummer erhält nur, wer auf Ihre Anzeige geantwortet hat (siehe Abschnitt 5); Ihre E-Mail-Adresse geben wir an niemanden weiter.",
+          "In der Anzeige sind Ihre Telefonnummer und E-Mail-Adresse nur teilweise sichtbar, um Sie vor Spam zu schützen. Ihre vollständige Telefonnummer und Ihre E-Mail-Adresse geben wir an niemanden weiter: Wer antwortet, schickt Ihnen seine eigenen Kontaktdaten, und Sie entscheiden, mit wem Sie Kontakt aufnehmen.",
           "Wer den Gegenstand wiedererkennt, kann dem Verfasser der Anzeige über die Website die eigenen Kontaktdaten senden. Wir leiten sie per E-Mail und SMS weiter und zeigen sie nie öffentlich. Mit dem Senden bestätigen Sie, dass es Ihre eigenen Kontaktdaten sind und dass Sie den Verfasser nur wegen dieses Gegenstands kontaktieren."
         ]
       },
       {
-        "id": "author-number",
-        "heading": "5. Telefonnummer des Verfassers",
-        "body": [
-          "Die Telefonnummer des Verfassers einer Anzeige erhält ausschließlich eine Person, die auf diese Anzeige geantwortet und ihre eigenen Kontaktdaten hinterlassen hat. Diese Kontaktdaten leiten wir an den Verfasser weiter, bevor seine Nummer versandt wird. Der Verfasser verfügt daher bereits über die Kontaktdaten aller, die seine Nummer erhalten können, und Personen, die keine Kontaktdaten hinterlassen haben, können sie nicht erhalten.",
-          "Der Erhalt der Nummer kostet 1 $; dies ist die einzige kostenpflichtige Funktion von DeRechi, aus der sich der Dienst finanziert. Sie zahlen auf einer Bezahlseite von Fourthwall, die sich in einem neuen Tab öffnet; Ihre Karten- oder Wallet-Daten gehen an Fourthwall, nie an uns. Sobald Fourthwall uns die Zahlung bestätigt, senden wir die Nummer per SMS und E-Mail an die Kontaktdaten, die Sie in Ihrer Antwort angegeben haben. Die E-Mail-Adresse des Verfassers wird nicht versandt.",
-          "Eine Person kann die Nummer eines Verfassers höchstens einmal pro Woche erhalten.",
-          "Steht Ihnen als Verbraucher ein Recht zu, einen im Fernabsatz geschlossenen Vertrag binnen 14 Tagen zu widerrufen, erlischt dieses Recht für die Nummer des Verfassers, sobald die Nummer versandt wurde. Vor der Zahlung setzen Sie ein Häkchen, mit dem Sie ausdrücklich zustimmen, dass die Nummer sofort nach der Zahlung und damit vor Ablauf der Widerrufsfrist versandt wird, und bestätigen, dass Ihnen bekannt ist, dass Sie dadurch Ihr Widerrufsrecht verlieren. {withdrawalLaw} Deshalb wird die Zahlung nicht erstattet, sobald die Nummer versandt wurde.",
-          "Ist die Nummer nicht innerhalb von 24 Stunden nach der Zahlung bei Ihnen angekommen, schreiben Sie an {email}: Wir senden sie erneut oder erstatten die Zahlung."
-        ]
-      },
-      {
-        "heading": "6. Rechte an Inhalten",
+        "heading": "5. Rechte an Inhalten",
         "body": [
           "Text und Fotos der Anzeige bleiben Ihr Eigentum. Mit ihrer Veröffentlichung gestatten Sie uns, sie unentgeltlich auf der Website anzuzeigen, solange die Anzeige veröffentlicht ist.",
           "Der Name DeRechi, das Design und der Programmcode der Website gehören dem Betreiber."
         ]
       },
       {
-        "heading": "7. Fund und Finderlohn",
+        "heading": "6. Fund und Finderlohn",
         "body": [
           "{findersLaw}",
           "Die in der Anzeige angegebene Höhe des Finderlohns ist ein Angebot des Verfassers. DeRechi garantiert weder dessen Zahlung noch ist es an der Abrechnung beteiligt."
         ]
       },
       {
-        "heading": "8. Sicherheit",
+        "heading": "7. Sicherheit",
         "body": [
           "Hinweise, wie Sie einen Gegenstand sicher zurückgeben und nicht auf Betrüger hereinfallen, finden Sie auf der Seite „Sicherheit“. Zahlen Sie niemals im Voraus an jemanden, der behauptet, Ihren Gegenstand gefunden zu haben, und geben Sie niemandem Ihre Kartendaten oder SMS-Codes weiter. Wenden Sie sich im Betrugsfall an die Polizei und informieren Sie uns unter {email}.",
           "DeRechi überprüft nicht die Identität der Nutzer und haftet nicht für deren Handlungen während eines Treffens."
         ]
       },
       {
-        "heading": "9. Änderung und Löschung von Anzeigen",
+        "heading": "8. Änderung und Löschung von Anzeigen",
         "body": [
           "Anzeigen selbst zu ändern ist derzeit nicht möglich: Für Korrekturen schreiben Sie an {email}.",
           "Nach einer Antwort senden wir dem Verfasser und der antwortenden Person eine Erinnerung mit einem Link, über den sich die Anzeige schließen lässt, sobald der Gegenstand zurück ist. Bestätigt niemand die Rückgabe, wird die Anzeige eine Woche nach der letzten Antwort archiviert. Sie können eine Anzeige auch mit einer E-Mail an {email} schließen lassen.",
@@ -88,18 +77,18 @@
         ]
       },
       {
-        "heading": "10. Haftung",
+        "heading": "9. Haftung",
         "body": [
           "Der Dienst wird „wie besehen“ bereitgestellt. Wir garantieren nicht, dass ein Gegenstand gefunden wird, und haften nicht für die Richtigkeit der Anzeigen: Für deren Inhalt sind die Verfasser verantwortlich.",
           "Wir haften nicht für Unterbrechungen im Betrieb der Website, technische Störungen oder Datenverluste, die durch Umstände verursacht werden, auf die wir keinen Einfluss haben."
         ]
       },
       {
-        "heading": "11. Streitigkeiten",
+        "heading": "10. Streitigkeiten",
         "body": ["{governingLaw}"]
       },
       {
-        "heading": "12. Änderungen der Bedingungen",
+        "heading": "11. Änderungen der Bedingungen",
         "body": [
           "Wir können diese Bedingungen aktualisieren. Das Datum der letzten Fassung ist oben auf der Seite angegeben. Wenn Sie die Website nach Änderungen weiter nutzen, erklären Sie sich mit der neuen Fassung einverstanden.",
           "Fragen zu den Bedingungen senden Sie bitte an {email}."
@@ -130,10 +119,6 @@
           [
             "Kontaktdaten: Telefonnummer, E-Mail-Adresse und Messenger, die Sie dem Verfasser der Anzeige senden."
           ],
-          "Wenn Sie für die Telefonnummer eines Verfassers bezahlen:",
-          [
-            "Bestelldaten, die uns Fourthwall übermittelt: die E-Mail-Adresse und der Name, die Sie bei Fourthwall angegeben haben, Betrag, Währung, Status, Zeitpunkt und Bestellnummer; damit ordnen wir die Zahlung Ihrer Antwort zu."
-          ],
           "Wir haben keine Konten und Passwörter, daher speichern wir keine weiteren Daten über Sie.",
           "Fügen Sie Ihrer Anzeige keine Angaben zu Gesundheit, Religion, biometrischen Merkmalen oder andere sensible Daten hinzu, weder über sich selbst noch über andere.",
           "Beim Besuch der Website kann der Server, wie jeder Webserver, technische Daten der Anfrage erfassen, nämlich IP-Adresse, Browsertyp und Zeitpunkt des Zugriffs, um Missbrauch abzuwehren."
@@ -142,7 +127,7 @@
       {
         "heading": "3. Was andere sehen",
         "body": [
-          "Die Beschreibung des Gegenstands, der Ort mit Koordinaten und das Foto werden öffentlich angezeigt. Telefonnummer und E-Mail-Adresse werden in der Anzeige nur teilweise dargestellt (zum Beispiel +38067*****67), Messenger werden überhaupt nicht angezeigt. Die vollständige Telefonnummer des Verfassers erhält nur, wer auf die Anzeige geantwortet und dafür bezahlt hat; die E-Mail-Adresse des Verfassers wird an niemanden versandt.",
+          "Die Beschreibung des Gegenstands, der Ort mit Koordinaten und das Foto werden öffentlich angezeigt. Telefonnummer und E-Mail-Adresse werden in der Anzeige nur teilweise dargestellt (zum Beispiel +38067*****67), Messenger werden überhaupt nicht angezeigt. Die vollständige Telefonnummer und die E-Mail-Adresse des Verfassers werden an niemanden versandt.",
           "Kontaktdaten, die Sie als Antwort auf eine Anzeige senden, sieht nur der Verfasser dieser Anzeige, und zwar in der Nachricht, die wir ihm schicken; veröffentlicht werden sie nirgends."
         ]
       },
@@ -151,13 +136,12 @@
         "body": [
           [
             "um die Anzeige anderen Menschen zu zeigen und sie über die Suche auffindbar zu machen;",
-            "um Ihre Kontaktdaten an den Verfasser der Anzeige weiterzugeben, auf die Sie geantwortet haben, und Ihnen nach der Zahlung die Telefonnummer des Verfassers zu senden;",
-            "um eine Zahlung Ihrer Antwort zuzuordnen und die erhaltenen Zahlungen nachzuweisen;",
+            "um Ihre Kontaktdaten an den Verfasser der Anzeige weiterzugeben, auf die Sie geantwortet haben;",
             "um beide Seiten daran zu erinnern, die Anzeige zu schließen, sobald der Gegenstand zurück ist;",
             "um die Website vor Spam und Missbrauch zu schützen;",
             "[SIMILAR FINDS NOTIFICATIONS: TO BE DESCRIBED]"
           ],
-          "Rechtsgrundlage der Verarbeitung ist Ihre Einwilligung, die Sie mit der Veröffentlichung einer Anzeige oder mit einer Antwort darauf erteilen. Zahlungsdaten verarbeiten wir, um die Bestellung zu erfüllen, die Sie bei Fourthwall aufgeben, also um Ihnen die Telefonnummer des Verfassers zu senden."
+          "Rechtsgrundlage der Verarbeitung ist Ihre Einwilligung, die Sie mit der Veröffentlichung einer Anzeige oder mit einer Antwort darauf erteilen."
         ]
       },
       {
@@ -173,7 +157,6 @@
           [
             "Google Maps Platform: Karte, Adressvorschläge und Ermittlung der Adresse anhand von Koordinaten im Anzeigenformular; der Text, den Sie in das Ortsfeld eingeben, und die Koordinaten werden an Google übermittelt;",
             "Vercel BotID: Prüfung, dass das Formular von einem Menschen und nicht von einem Bot gesendet wird;",
-            "Fourthwall: Abwicklung der Zahlung; Ihre Karten- oder Wallet-Daten verarbeiten Fourthwall und seine Zahlungsdienstleister, und wir erhalten E-Mail-Adresse und Name der zahlenden Person, Betrag und Bestellnummer, um die Zahlung Ihrer Antwort zuzuordnen;",
             "[EMAIL AND SMS PROVIDER, HOSTING: TO BE ADDED]"
           ],
           "Diese Dienste verarbeiten Daten nach ihren eigenen Datenschutzrichtlinien, auch in anderen Ländern. Wir verkaufen Ihre Daten nicht und geben sie nicht an Werbetreibende weiter."
@@ -186,7 +169,7 @@
           [
             "das Cookie DERECHI_LOCALE: speichert die gewählte Sprache für ein Jahr;",
             "das Cookie DERECHI_COUNTRY: speichert Ihr Land für ein Jahr, damit Währung und Rechtstexte passen;",
-            "die Cookies DERECHI_CLAIM_*: speichern für 30 Tage, dass Sie auf eine Anzeige geantwortet haben, und die Nummer dieser Antwort, damit die Website anzeigen kann, ob die Zahlung eingegangen ist;",
+            "die Cookies DERECHI_CLAIM_*: speichern für 30 Tage, dass Sie auf eine Anzeige geantwortet haben, und die Nummer dieser Antwort, damit die Website Ihnen das Formular nicht erneut anbietet;",
             "der lokale Speicher Ihres Browsers: speichert, welche Hinweise auf der Website Sie schon gesehen haben, und den Spielstand mit dem Maskottchen; personenbezogene Daten enthält er nicht."
           ],
           "Analyse- oder Werbe-Cookies gibt es auf der Website nicht."
@@ -196,8 +179,7 @@
         "heading": "8. Wie lange Daten gespeichert werden",
         "body": [
           "Eine Anzeige wird gespeichert, bis sie von der Veröffentlichung genommen wird. Danach wird sie ins Archiv verschoben und auf der Website nicht mehr angezeigt. Im Archiv wird die Anzeige ein Jahr lang aufbewahrt und danach zusammen mit den Kontaktdaten des Verfassers gelöscht.",
-          "Kontaktdaten, die als Antwort auf eine Anzeige gesendet wurden, werden ein Jahr ab der Antwort gespeichert, egal ob die Anzeige noch veröffentlicht oder schon archiviert ist; danach werden sie gelöscht. Eine Anzeige mit Antworten wird geschlossen, sobald eine Seite die Rückgabe bestätigt, oder etwa eine Woche nach der letzten Antwort.",
-          "Die Angaben zu einer Fourthwall-Bestellung (E-Mail, Name, Betrag, Bestellnummer) werden als Nachweis der erhaltenen Zahlung gespeichert; wird die Antwort gelöscht, der sie zugeordnet waren, entfällt die Verknüpfung, und der Eintrag bleibt ohne Bezug zu einer Anzeige bestehen."
+          "Kontaktdaten, die als Antwort auf eine Anzeige gesendet wurden, werden ein Jahr ab der Antwort gespeichert, egal ob die Anzeige noch veröffentlicht oder schon archiviert ist; danach werden sie gelöscht. Eine Anzeige mit Antworten wird geschlossen, sobald eine Seite die Rückgabe bestätigt, oder etwa eine Woche nach der letzten Antwort."
         ]
       },
       {

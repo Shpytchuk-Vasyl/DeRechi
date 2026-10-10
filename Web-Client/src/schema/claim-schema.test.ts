@@ -1,11 +1,5 @@
 import { describe, expect, it } from "vitest"
-import {
-  CLAIM_ID,
-  claimFormSchema,
-  claimSchema,
-  toContactInput,
-  waiverSchema,
-} from "./claim-schema"
+import { claimFormSchema, claimSchema, toContactInput } from "./claim-schema"
 
 const valid = { phone: "+380671234567", email: "olena@example.com", socialMedias: ["TELEGRAM"] }
 
@@ -57,37 +51,6 @@ describe("claimFormSchema", () => {
 
   it("keeps consent out of what the server action sends to Client-API", () => {
     expect(claimSchema.parse({ ...valid, consent: true })).not.toHaveProperty("consent")
-  })
-})
-
-describe("waiverSchema", () => {
-  it("accepts a ticked waiver", () => {
-    expect(waiverSchema.safeParse({ consent: true }).success).toBe(true)
-  })
-
-  it.each([false, undefined])("requires the waiver box to be ticked, not %s", (consent) => {
-    const result = waiverSchema.safeParse({ consent })
-    expect(result.success ? undefined : result.error.issues[0]?.message).toBe("waiver")
-  })
-})
-
-describe("CLAIM_ID", () => {
-  it("accepts the numeric id Client-API issues", () => {
-    expect(CLAIM_ID.test("11")).toBe(true)
-    expect(CLAIM_ID.test("123456789012345678")).toBe(true)
-  })
-
-  it.each([
-    ["an old token", "6f1c2a52-0d7e-4c1e-9a43-6f0d4f3a9b11"],
-    ["an old payment code", "DR-7K3M9Q"],
-    ["zero", "0"],
-    ["a leading zero", "011"],
-    ["a negative id", "-1"],
-    ["an id with trailing text", "11; Path=/"],
-    ["an id longer than a Long", "1234567890123456789"],
-    ["an empty string", ""],
-  ])("rejects %s", (_, value) => {
-    expect(CLAIM_ID.test(value)).toBe(false)
   })
 })
 

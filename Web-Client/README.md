@@ -128,16 +128,17 @@ A viewer who recognises a notice ("it's mine" on a found one, "I found it" on a 
 answers it from the notice page itself: `ClaimCard` sits where the masked contacts are and
 expands into an inline form (phone, email, messengers: the same `ContactFields` the report
 form uses, where `emailOptional` marks the email as optional for the notice's author only). The detail page also renders inside the modal route's `RouteDialog`, which is why
-the form is inline and not a nested dialog; the small unlock dialog is the one exception. Nothing the claimant types is shown anywhere;
+the form is inline and not a nested dialog. Nothing the claimant types is shown anywhere;
 `Client-API` stores it and Worker mails and texts it to the notice's author.
 
 `claimNotice(kind, id, values)` in `src/app/actions/claim.ts` validates with `claimSchema`,
 runs the same BotID check as `createNotice` (`src/lib/bot-check.ts`; the claim posts to the
 notice page, so `/*/lost/*` and `/*/found/*` are in `instrumentation-client.ts`'s `protect`
 list), calls `claimLostItem`/`claimFoundItem` and sets `DERECHI_CLAIM_<kind>_<id>` to the
-claim's token (a UUID, `CLAIM_TOKEN` in `claim-schema.ts`) for 30 days. The cookie is readable
+claim's id for 30 days. The cookie is readable
 by script on purpose: the page stays cacheable, the server render always shows the button, and
-`ClaimCard` swaps in the "already sent" state on mount. A second claim with the same phone or
+`ClaimCard` swaps in the "already sent" state on mount (`useClaim`, `hasClaimCookie`). Any value
+counts, so old cookies holding `1`, a `DR-` payment code or a token still mean "already responded". A second claim with the same phone or
 email comes back as `repeated: true`, and nothing is sent again.
 
 BotID's client starts only in a secure context (`window.isSecureContext`): its challenge needs
@@ -157,9 +158,9 @@ that notice's tag.
 ### SMS outage notice
 
 `NEXT_PUBLIC_SMS_OUTAGE=true` is a feature flag for when the SMS channel is down: opening the
-claim form and opening the unlock dialog each show a warning toast once ("SMS is temporarily
+claim form shows a warning toast once ("SMS is temporarily
 unavailable, emails arrive as usual", `smsOutage.*` in the bundles, `useSmsOutageNotice`).
-Nothing is blocked; the claim and the payment go through as usual. Unset or `false` turns it
+Nothing is blocked; the claim goes through as usual. Unset or `false` turns it
 off. Being `NEXT_PUBLIC_`, it is inlined at build time, so flipping it needs a rebuild.
 
 ### Maintenance mode
@@ -175,67 +176,22 @@ to a closed page get 405. `/api/*` and files are outside the proxy matcher and k
 the flag off the route is a 404.
 Same as the SMS flag, it is inlined at build time and needs a rebuild.
 
-### Unlocking the author's phone number (Fourthwall)
+### The author's phone number (switched off)
 
-After a claim, the "done" state offers the author's phone number (only the number, not the
-email) for about $1 paid on Fourthwall (`ClaimUnlock` in
-`src/screens/found_lost/claim/claim-unlock.tsx`). Nothing on the site ever shows the number: the
-Fourthwall webhook marks the claim paid, and Worker sends the number to the claimant by email
-and SMS.
-
-- Opening the dialog calls `unlockClaim(kind, itemId, claimId)` (`src/app/actions/claim.ts`, behind the same
-  BotID check as the claim itself). Client-API creates a hidden digital product on Fourthwall
-  for this claim and answers with its `checkoutUrl`
-  (`https://derechi-shop.fourthwall.com/cart/checkout?products=<variantId>:1`); the dialog
-  shows it as a "Continue to payment" link that opens in a new tab, where Apple Pay, Google Pay
-  and cards are available. A `PAYMENT_UNAVAILABLE` error (Fourthwall rate-limits product
-  creation) reads as "try again in a minute" with a retry button; `UNLOCK_LIMIT` (one checkout
-  per claimant a week, by phone or email) shows the date from `extensions.retryAfter` and no
-  retry button; any other failure gets a generic retry. There is no code to type and no environment variable on this side.
-- Above the payment link sits a required waiver checkbox (`claim.unlock.waiver`): the buyer
-  expressly agrees that the number is sent right after payment and acknowledges losing the right
-  of withdrawal, which EU law (PL, DE, FR) asks for before payment for digital content. Both
-  elements stay in the label itself, because a general "I accept the terms" does not count as
-  that consent; the details (the 14 days, the statute per country, what happens if the number
-  does not arrive) are in the terms, section 5, linked from the label with `#author-number`. Clicking
-  "Continue to payment" unticked does not open the checkout: the box is a small react-hook-form
-  form (`waiverSchema` in `claim-schema.ts`, field `consent`), and submitting it shows
-  `form.error.waiver` under the box, marks it invalid and focuses it. Until the tick the button is
-  a submit button with no `href`, so a middle click or "open in new tab" cannot skip it either. The tick lives only in the dialog's state, is
-  cleared every time the dialog opens and never reaches the server. Creating the checkout on open
-  is not a payment, so it does not wait for the tick. Paid claims show no checkbox.
-- The claim cookie holds the claim id, for 30 days, so a returning claimant sees the button
-  and how far the unlock got (`PhoneUnlock`); `useClaim` reads it with `readClaimCookie` and asks
-  `claimStatus(kind, itemId, claimId)` on mount, which also returns the `checkoutUrl` once it
-  exists. The claim token never reaches the site: it lives only in the reminder links for
-  `confirmReturn`. Old cookies holding `1`, a `DR-` payment code or a token still mean "already
-  responded" and simply show no unlock block.
-- While the dialog is open, it polls `claimStatus` every 20 s until the number is sent, and
-  gives up after 15 minutes; reopening the dialog starts a new window. The webhook is the only
-  source of truth, so there is no "I paid" button.
-
-- Paying for real is not needed in development: `/<locale>/playground` has a "Fourthwall" bench
-  that posts a fake `ORDER_PLACED` for the variant from a checkout URL to Client-API's webhook,
-  signed with `FOURTHWALL_WEBHOOK_SECRET` (must equal Client-API's
-  `derechi.fourthwall.webhook-secret`, default `dev-secret`). Everything for it lives in
-  `src/app/[locale]/playground/` (the bench, the `sendFakePayment` action, the signing helpers and
-  their test); the playground folder is the home of such local test tools, nothing of it goes
-  elsewhere in the project. The bench can also read the claim token from the `DERECHI_CLAIM_*`
-  cookie and show `claimStatus` for it. The page and the action refuse in production.
+The paid "Get the author's phone number" dialog (Fourthwall checkout) is removed from the web
+client for now; Client-API and Worker still have the whole flow. What was removed and how to
+bring it back: [`__docs/features/paid-author-number.md`](../__docs/features/paid-author-number.md).
 
 ## Legal texts per country
 
 `src/content/legal/<locale>.json` holds the documents; the sentences that depend on the
 country are slots: `{findersLaw}` (finder's duties and fee), `{governingLaw}`, `{dataLaw}`,
-`{rightsBasis}`, `{complaintRight}` and `{withdrawalLaw}` (the consumer law under which the
-right of withdrawal ends for the author's number: the statute and article in PL, DE, FR; only the
-law's name for UA, whose new consumer law with the digital content article is not in force yet).
+`{rightsBasis}` and `{complaintRight}`.
 They are filled from `src/content/legal/jurisdictions/<CC>.json`, one file per supported country
-with the six sentences in every locale and that country's `updated` date. Adding a country to
+with the five sentences in every locale and that country's `updated` date. Adding a country to
 `derechi.countries.supported` therefore means adding one jurisdiction file; without it the
 page falls back to the first jurisdiction and warns in the server log. A section may carry an
-`id`, rendered as the `<section>`'s anchor: the terms' section 5 is `author-number`, which the
-unlock dialog's waiver links to.
+`id`, rendered as the `<section>`'s anchor.
 
 `/terms` and `/privacy` read the viewer's country (cookie, then geo header) on the server, so
 only those two pages are dynamic. `?country=XX` overrides it: the consent checkbox in the notice
@@ -249,7 +205,7 @@ the server actions validate with `reportSchema`/`claimSchema`, which strip it, s
 never sees it. A restored report draft never brings the tick back: consent is given anew.
 `ConsentCheckbox` is only the react-hook-form binding: the label with links and the field error
 are the pouf `Checkbox`'s own (`label` takes rich content, `error` renders the standard
-`FieldError`). The unlock dialog's withdrawal waiver uses the same `ConsentCheckbox`. The texts are drafts for a lawyer; the operator and contact
+`FieldError`). The texts are drafts for a lawyer; the operator and contact
 email they name come from `LEGAL_CONTACT` in `src/content/legal/types.ts`. The privacy policy
 still carries two placeholders, `[EMAIL AND SMS PROVIDER, HOSTING: TO BE ADDED]` and
 `[SIMILAR FINDS NOTIFICATIONS: TO BE DESCRIBED]`, to be written once those are settled.

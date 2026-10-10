@@ -57,9 +57,9 @@
     "benefit1Title": "Contact direct",
     "benefit1Text": "La personne qui répond laisse ses coordonnées, et nous les transmettons à l’auteur de l’annonce par SMS ou e-mail.",
     "benefit2Title": "Coordonnées protégées",
-    "benefit2Text": "Sur l’annonce, le numéro n’est visible qu’en partie et l’e-mail pas du tout. Seule la personne qui a répondu reçoit le numéro complet.",
+    "benefit2Text": "Sur l’annonce, le numéro n’est visible qu’en partie et l’e-mail pas du tout. La personne qui répond vous envoie ses coordonnées, et c’est vous qui décidez qui rappeler.",
     "benefit3Title": "Protection contre le spam",
-    "benefit3Text": "Une même personne peut obtenir le numéro d’un auteur au plus une fois par semaine : vos coordonnées ne finiront pas dans des listes de spam.",
+    "benefit3Text": "Le site ne montre à personne votre numéro complet ni votre e-mail : les robots ne peuvent pas les collecter pour des listes de spam.",
     "benefit4Title": "Modération",
     "benefit4Text": "L’annonce paraît tout de suite. Un modérateur la vérifie et retire ce qui n’a pas sa place ici.",
     "benefit5Title": "Sans compte",
@@ -188,26 +188,6 @@
     "doneOwner": "Nous avons transmis vos coordonnées à la personne qui l’a perdu. Elle vous contactera.",
     "repeated": "Vous avez déjà répondu à cette annonce : son auteur a vos coordonnées.",
     "orPost": "Ou publiez votre propre annonce :",
-    "unlock": {
-      "button": "Obtenir le numéro de l’auteur de l’annonce",
-      "title": "Le numéro de téléphone de l’auteur de l’annonce",
-      "text": "Nous enverrons le numéro de téléphone de l’auteur par SMS et par e-mail aux coordonnées que vous avez données dans votre réponse.",
-      "support": "Votre paiement de 1 $ aide DeRechi à rester gratuit pour tous. Vous pouvez payer avec Apple Pay, Google Pay ou une carte bancaire.",
-      "safety": "Nous n’envoyons jamais de lien de paiement par SMS ni par messagerie.",
-      "pay": "Passer au paiement",
-      "waiver": "J’accepte expressément de recevoir le numéro dès le paiement et je reconnais perdre ainsi mon droit de rétractation. <terms>Détails dans les conditions</terms>",
-      "preparing": "Préparation du paiement…",
-      "unavailable": "Les paiements sont saturés pour le moment. Réessayez dans une minute.",
-      "failed": "Impossible de préparer le paiement. Réessayez.",
-      "limited": "Vous pouvez obtenir le numéro d’un auteur une fois par semaine, et vous l’avez déjà fait cette semaine. Réessayez plus tard.",
-      "limitedUntil": "Vous pouvez obtenir le numéro d’un auteur une fois par semaine. Réessayez à partir du {date}.",
-      "retry": "Réessayer",
-      "timing": "Cela prend généralement quelques minutes après le paiement.",
-      "waiting": "Cette fenêtre se met à jour toute seule ; vous pouvez aussi la fermer, le numéro arrivera quand même.",
-      "stopped": "Toujours pas de paiement ? Rouvrez cette fenêtre plus tard pour vérifier.",
-      "paid": "Paiement reçu, le numéro est en route.",
-      "sent": "Le numéro de téléphone a été envoyé à votre e-mail et à votre téléphone."
-    },
     "confirm": {
       "title": "L’objet est-il revenu à son propriétaire ?",
       "text": "Confirmer ferme l’annonce pour tout le monde : elle disparaît du tableau et passe aux archives.",
@@ -227,13 +207,13 @@
   },
   "safety": {
     "title": "Sécurité",
-    "metaDescription": "Comment DeRechi protège vos coordonnées et vos paiements, et comment rendre un objet perdu en toute sécurité.",
+    "metaDescription": "Comment DeRechi protège vos coordonnées, et comment rendre un objet perdu en toute sécurité.",
     "intro": "DeRechi met en relation des inconnus : nous veillons donc à ce que vos coordonnées ne tombent pas entre de mauvaises mains, et nous vous aidons à éviter les escrocs.",
     "protectTitle": "Comment DeRechi vous protège",
     "protect": {
       "contacts": {
         "title": "Vos coordonnées ne sont pas publiées",
-        "text": "Sur une annonce, le téléphone et l’e-mail ne sont visibles qu’en partie. Seule la personne qui a répondu à l’annonce et payé obtient le numéro complet, et l’e-mail n’est envoyé à personne."
+        "text": "Sur une annonce, le téléphone et l’e-mail ne sont visibles qu’en partie. Personne n’obtient le numéro complet ni l’e-mail via le site : l’auteur décide lui-même qui rappeler."
       },
       "replies": {
         "title": "Seul l’auteur voit votre réponse",
@@ -241,7 +221,7 @@
       },
       "limit": {
         "title": "Impossible de collecter les numéros en masse",
-        "text": "Une même personne ne peut obtenir le numéro d’un auteur qu’une fois par semaine : vos coordonnées ne finissent pas dans des listes de spam ou d’appels frauduleux."
+        "text": "Les coordonnées complètes n’apparaissent nulle part sur le site : les robots ne peuvent pas les rassembler dans des listes de spam ou d’appels frauduleux."
       },
       "accounts": {
         "title": "Aucun mot de passe à voler",
@@ -400,7 +380,6 @@
       "emailFormat": "Cette adresse e-mail semble incorrecte.",
       "disposableEmail": "Les adresses e-mail jetables ne sont pas acceptées. Indiquez une adresse que vous consultez vraiment.",
       "consent": "Cochez la case pour accepter les conditions.",
-      "waiver": "Cochez la case pour passer au paiement.",
       "validation": "Certains champs sont encore à corriger.",
       "captcha": "La vérification anti-spam n’est pas passée. Réessayez.",
       "failed": "L’annonce n’a pas pu être publiée. Réessayez dans un instant."

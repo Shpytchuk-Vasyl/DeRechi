@@ -43,44 +43,33 @@
       {
         "heading": "4. Coordonnées",
         "body": [
-          "Sur l’annonce, votre téléphone et votre adresse e-mail ne sont visibles que partiellement, afin de vous protéger du spam. Votre numéro complet n’est transmis qu’à la personne qui a répondu à votre annonce (voir la section 5) ; votre adresse e-mail n’est transmise à personne.",
+          "Sur l’annonce, votre téléphone et votre adresse e-mail ne sont visibles que partiellement, afin de vous protéger du spam. Nous ne transmettons à personne votre numéro complet ni votre adresse e-mail : la personne qui répond vous envoie ses propres coordonnées, et c’est vous qui décidez qui contacter.",
           "Toute personne qui reconnaît l’objet peut envoyer ses propres coordonnées à l’auteur de l’annonce via le site. Nous les transmettons par e-mail et SMS et ne les affichons jamais publiquement. En envoyant vos coordonnées, vous confirmez qu’elles sont les vôtres et que vous ne contactez l’auteur qu’au sujet de cet objet."
         ]
       },
       {
-        "id": "author-number",
-        "heading": "5. Numéro de téléphone de l’auteur",
-        "body": [
-          "Le numéro de téléphone de l’auteur d’une annonce n’est fourni qu’à une personne qui a répondu à cette annonce et laissé ses propres coordonnées. Nous transmettons ces coordonnées à l’auteur avant l’envoi de son numéro. L’auteur dispose donc déjà des coordonnées de toute personne susceptible de recevoir son numéro, et une personne qui n’a pas laissé ses coordonnées ne peut pas l’obtenir.",
-          "L’obtention du numéro coûte 1 $ ; c’est la seule fonction payante de DeRechi, celle qui finance le service. Vous payez sur une page de paiement Fourthwall qui s’ouvre dans un nouvel onglet ; les données de votre carte ou de votre portefeuille vont à Fourthwall, jamais à nous. Dès que Fourthwall nous confirme le paiement, nous envoyons le numéro par SMS et par e-mail aux coordonnées que vous avez indiquées dans votre réponse. L’adresse e-mail de l’auteur n’est pas envoyée.",
-          "Une même personne ne peut obtenir le numéro d’un auteur qu’une fois par semaine.",
-          "Si la loi vous accorde, en tant que consommateur, le droit de vous rétracter d’un achat à distance dans un délai de 14 jours, ce droit prend fin, pour le numéro de l’auteur, dès l’envoi du numéro. Avant de payer, vous cochez une case par laquelle vous acceptez expressément que le numéro soit envoyé dès le paiement, avant la fin du délai de rétractation, et reconnaissez perdre ainsi votre droit de rétractation. {withdrawalLaw} C’est pourquoi le paiement n’est pas remboursé une fois le numéro envoyé.",
-          "Si le numéro ne vous est pas parvenu dans les 24 heures suivant le paiement, écrivez à {email} : nous vous le renverrons ou rembourserons le paiement."
-        ]
-      },
-      {
-        "heading": "6. Droits sur le contenu",
+        "heading": "5. Droits sur le contenu",
         "body": [
           "Le texte et les photos de l’annonce restent les vôtres. En les publiant, vous nous autorisez à les afficher gratuitement sur le site tant que l’annonce est publiée.",
           "Le nom DeRechi, le design et le code du site appartiennent à l’opérateur."
         ]
       },
       {
-        "heading": "7. Objet trouvé et récompense",
+        "heading": "6. Objet trouvé et récompense",
         "body": [
           "{findersLaw}",
           "Le montant de la récompense indiqué dans l’annonce est une proposition de son auteur. DeRechi n’en garantit pas le versement et ne participe à aucun règlement."
         ]
       },
       {
-        "heading": "8. Sécurité",
+        "heading": "7. Sécurité",
         "body": [
           "Des conseils pour restituer un objet en toute sécurité et éviter les arnaques sont réunis sur la page « Sécurité ». Ne payez jamais à l’avance une personne qui affirme avoir trouvé votre objet, et ne communiquez à personne les données de votre carte bancaire ni les codes reçus par SMS. En cas d’escroquerie, adressez-vous à la police et prévenez-nous à {email}.",
           "DeRechi ne vérifie pas l’identité des utilisateurs et n’est pas responsable de leurs actes lors de la rencontre."
         ]
       },
       {
-        "heading": "9. Modification et suppression des annonces",
+        "heading": "8. Modification et suppression des annonces",
         "body": [
           "Il n’est pas encore possible de modifier une annonce soi-même : pour la corriger, écrivez à {email}.",
           "Après une réponse, nous envoyons à l’auteur et à la personne qui a répondu un rappel avec un lien permettant de fermer l’annonce une fois l’objet restitué. Si personne ne confirme la restitution, l’annonce est archivée une semaine après la dernière réponse. Vous pouvez aussi fermer une annonce en écrivant à {email}.",
@@ -88,18 +77,18 @@
         ]
       },
       {
-        "heading": "10. Responsabilité",
+        "heading": "9. Responsabilité",
         "body": [
           "Le service est fourni « en l’état ». Nous ne garantissons pas que l’objet sera retrouvé et ne sommes pas responsables de l’exactitude des annonces : leur contenu relève de la responsabilité de leurs auteurs.",
           "Nous ne sommes pas responsables des interruptions du site, des pannes techniques ou des pertes de données dues à des circonstances indépendantes de notre volonté."
         ]
       },
       {
-        "heading": "11. Litiges",
+        "heading": "10. Litiges",
         "body": ["{governingLaw}"]
       },
       {
-        "heading": "12. Modification des conditions",
+        "heading": "11. Modification des conditions",
         "body": [
           "Nous pouvons mettre à jour ces conditions. La date de la dernière version est indiquée en haut de la page. En continuant d’utiliser le site après une modification, vous acceptez la nouvelle version.",
           "Envoyez vos questions concernant les conditions à {email}."
@@ -130,10 +119,6 @@
           [
             "vos coordonnées : le numéro de téléphone, l’adresse e-mail et les messageries que vous envoyez à l’auteur de l’annonce."
           ],
-          "Lorsque vous payez pour le numéro de téléphone d’un auteur :",
-          [
-            "les données de commande que Fourthwall nous transmet : l’adresse e-mail et le nom que vous avez indiqués sur Fourthwall, le montant, la devise, le statut, l’heure et le numéro de commande, qui nous servent à relier le paiement à votre réponse."
-          ],
           "Nous n’avons ni comptes ni mots de passe, nous ne conservons donc aucune autre donnée vous concernant.",
           "N’ajoutez pas à l’annonce d’informations sur la santé, la religion, des données biométriques ou d’autres données sensibles, ni sur vous-même ni sur d’autres personnes.",
           "Lors de la visite du site, le serveur, comme tout serveur web, peut enregistrer des données techniques de la requête (adresse IP, type de navigateur et heure de la requête) afin de se protéger contre les abus."
@@ -142,7 +127,7 @@
       {
         "heading": "3. Ce que les autres peuvent voir",
         "body": [
-          "La description de l’objet, le lieu avec ses coordonnées et la photo sont publiés ouvertement. Le téléphone et l’adresse e-mail figurant sur l’annonce ne sont affichés que partiellement (par exemple, +38067*****67), et les messageries ne sont pas affichées du tout. Le numéro complet de l’auteur n’est envoyé qu’à la personne qui a répondu à l’annonce et payé pour l’obtenir ; l’adresse e-mail de l’auteur n’est envoyée à personne.",
+          "La description de l’objet, le lieu avec ses coordonnées et la photo sont publiés ouvertement. Le téléphone et l’adresse e-mail figurant sur l’annonce ne sont affichés que partiellement (par exemple, +38067*****67), et les messageries ne sont pas affichées du tout. Le numéro complet et l’adresse e-mail de l’auteur ne sont envoyés à personne.",
           "Les coordonnées envoyées en réponse à une annonce ne sont montrées qu’à l’auteur de cette annonce, dans le message que nous lui envoyons ; elles ne sont jamais publiées."
         ]
       },
@@ -151,13 +136,12 @@
         "body": [
           [
             "pour montrer l’annonce à d’autres personnes et permettre de la trouver par la recherche ;",
-            "pour transmettre vos coordonnées à l’auteur de l’annonce à laquelle vous avez répondu et, après paiement, vous envoyer le numéro de téléphone de l’auteur ;",
-            "pour relier un paiement à votre réponse et garder une trace des paiements reçus ;",
+            "pour transmettre vos coordonnées à l’auteur de l’annonce à laquelle vous avez répondu ;",
             "pour rappeler aux deux parties de fermer l’annonce une fois l’objet restitué ;",
             "pour protéger le site contre le spam et les abus ;",
             "[SIMILAR FINDS NOTIFICATIONS: TO BE DESCRIBED]"
           ],
-          "La base du traitement est votre consentement, que vous donnez en publiant une annonce ou en y répondant. Les données de paiement sont traitées pour exécuter la commande que vous passez sur Fourthwall, c’est-à-dire vous envoyer le numéro de téléphone de l’auteur."
+          "La base du traitement est votre consentement, que vous donnez en publiant une annonce ou en y répondant."
         ]
       },
       {
@@ -173,7 +157,6 @@
           [
             "Google Maps Platform : carte, suggestions d’adresses et détermination de l’adresse à partir des coordonnées dans le formulaire d’annonce ; le texte que vous saisissez dans le champ du lieu et les coordonnées sont transmis à Google ;",
             "Vercel BotID : vérification que le formulaire est envoyé par un humain et non par un robot ;",
-            "Fourthwall : encaissement du paiement ; les données de votre carte ou de votre portefeuille sont traitées par Fourthwall et ses prestataires de paiement, et nous recevons l’adresse e-mail et le nom du payeur, le montant et le numéro de commande afin de relier le paiement à votre réponse ;",
             "[EMAIL AND SMS PROVIDER, HOSTING: TO BE ADDED]"
           ],
           "Ces services traitent les données selon leurs propres politiques de confidentialité, y compris dans d’autres pays. Nous ne vendons pas vos données et ne les transmettons pas à des annonceurs."
@@ -186,7 +169,7 @@
           [
             "le cookie DERECHI_LOCALE : il mémorise la langue choisie pendant un an ;",
             "le cookie DERECHI_COUNTRY : il mémorise votre pays pendant un an, pour afficher la bonne devise et les bons textes juridiques ;",
-            "les cookies DERECHI_CLAIM_* : ils mémorisent pendant 30 jours que vous avez répondu à une annonce, ainsi que le numéro de cette réponse, pour que le site puisse indiquer si le paiement est arrivé ;",
+            "les cookies DERECHI_CLAIM_* : ils mémorisent pendant 30 jours que vous avez répondu à une annonce, ainsi que le numéro de cette réponse, pour que le site ne vous propose pas le formulaire une seconde fois ;",
             "le stockage local de votre navigateur : il mémorise les astuces du site que vous avez déjà vues et le score du jeu avec la mascotte ; il ne contient aucune donnée personnelle."
           ],
           "Il n’y a sur le site aucun cookie d’analyse ni de publicité."
@@ -196,8 +179,7 @@
         "heading": "8. Durée de conservation des données",
         "body": [
           "Une annonce est conservée jusqu’à ce qu’elle soit retirée de la publication. Elle est ensuite déplacée dans les archives et n’est plus affichée sur le site. Elle est conservée dans les archives pendant un an, puis supprimée avec les coordonnées de son auteur.",
-          "Les coordonnées envoyées en réponse à une annonce sont conservées un an à compter de la réponse, que l’annonce soit encore publiée ou déjà archivée ; elles sont ensuite supprimées. Une annonce ayant reçu des réponses est fermée lorsque l’une des parties confirme la restitution de l’objet, ou environ une semaine après la dernière réponse.",
-          "Les informations d’une commande Fourthwall (e-mail, nom, montant, numéro de commande) sont conservées comme trace du paiement reçu ; lorsque la réponse à laquelle elles étaient associées est supprimée, le lien est retiré et l’enregistrement subsiste sans rattachement à une annonce."
+          "Les coordonnées envoyées en réponse à une annonce sont conservées un an à compter de la réponse, que l’annonce soit encore publiée ou déjà archivée ; elles sont ensuite supprimées. Une annonce ayant reçu des réponses est fermée lorsque l’une des parties confirme la restitution de l’objet, ou environ une semaine après la dernière réponse."
         ]
       },
       {

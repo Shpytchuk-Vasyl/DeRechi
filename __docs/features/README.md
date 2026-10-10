@@ -7,6 +7,7 @@ What the system does today, feature by feature. Each page covers the user-facing
 - [Automatic matching](automatic-matching.md): how a new notice is matched against the opposite kind in the background.
 - [Match notifications](match-notifications.md): the admin "Matches" page and the path from the Notify button to an email.
 - [Claims](claims.md): "it's mine" / "I found it" on a notice, contacts passed to the author, reminders and automatic archiving.
+- [Paid author's number](paid-author-number.md): the Fourthwall checkout for an author's phone number; switched off in the web client, with the steps to bring it back.
 - [Admin panel](admin-panel.md): pages, forms, archive versus delete, caching and error pages.
 - [Permissions](permissions.md): the Scope × Action model, Keycloak roles and how a request is checked.
 - [Localization](localization.md): five UI languages, the locale cookie, plurals and formats.

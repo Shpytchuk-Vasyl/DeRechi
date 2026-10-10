@@ -43,44 +43,33 @@
       {
         "heading": "4. Dane kontaktowe",
         "body": [
-          "W ogłoszeniu Twój telefon i e-mail są widoczne tylko częściowo, żeby chronić Cię przed spamem. Pełny numer telefonu otrzymuje tylko osoba, która odpowiedziała na Twoje ogłoszenie (zob. punkt 5); Twojego e-maila nie przekazujemy nikomu.",
+          "W ogłoszeniu Twój telefon i e-mail są widoczne tylko częściowo, żeby chronić Cię przed spamem. Pełnego numeru telefonu ani e-maila nie przekazujemy nikomu: osoba, która odpowiada, przesyła Ci swoje dane, a Ty decydujesz, z kim się skontaktować.",
           "Każdy, kto rozpozna rzecz, może przez stronę wysłać autorowi ogłoszenia swoje dane kontaktowe. Przekazujemy je e-mailem i SMS-em i nigdy nie pokazujemy publicznie. Wysyłając dane kontaktowe, potwierdzasz, że są Twoje i że kontaktujesz się z autorem wyłącznie w sprawie tej rzeczy."
         ]
       },
       {
-        "id": "author-number",
-        "heading": "5. Numer telefonu autora",
-        "body": [
-          "Numer telefonu autora ogłoszenia udostępniamy wyłącznie osobie, która odpowiedziała na to ogłoszenie i zostawiła swoje dane kontaktowe. Dane te przekazujemy autorowi, zanim wyślemy jego numer. Autor ma więc już dane kontaktowe każdego, kto może otrzymać jego numer, a osoby, które nie zostawiły swoich danych, nie mogą go otrzymać.",
-          "Uzyskanie numeru kosztuje 1 $; to jedyna płatna funkcja DeRechi, z której utrzymuje się serwis. Płacisz na stronie płatności Fourthwall, która otwiera się w nowej karcie; dane karty lub portfela trafiają do Fourthwall, nie do nas. Gdy Fourthwall potwierdzi płatność, wyślemy numer SMS-em i e-mailem na dane z Twojej odpowiedzi. E-maila autora nie wysyłamy.",
-          "Jedna osoba może uzyskać numer autora najwyżej raz w tygodniu.",
-          "Jeżeli przepisy przyznają Ci jako konsumentowi prawo odstąpienia od umowy zawartej na odległość w ciągu 14 dni, w przypadku numeru autora prawo to wygasa z chwilą wysłania numeru. Przed płatnością zaznaczasz pole, którym wyraźnie zgadzasz się na wysłanie numeru zaraz po płatności, przed upływem terminu do odstąpienia od umowy, i przyjmujesz do wiadomości, że tracisz w ten sposób prawo odstąpienia od umowy. {withdrawalLaw} Dlatego po wysłaniu numeru płatność nie podlega zwrotowi.",
-          "Jeśli numer nie dotrze do Ciebie w ciągu 24 godzin od płatności, napisz na {email}: wyślemy go ponownie lub zwrócimy płatność."
-        ]
-      },
-      {
-        "heading": "6. Prawa do treści",
+        "heading": "5. Prawa do treści",
         "body": [
           "Tekst i zdjęcia ogłoszenia pozostają Twoje. Publikując je, pozwalasz nam nieodpłatnie pokazywać je na stronie, dopóki ogłoszenie jest opublikowane.",
           "Nazwa DeRechi, projekt graficzny i kod strony należą do operatora."
         ]
       },
       {
-        "heading": "7. Znalezisko i nagroda",
+        "heading": "6. Znalezisko i nagroda",
         "body": [
           "{findersLaw}",
           "Wysokość nagrody podana w ogłoszeniu to propozycja autora. DeRechi nie gwarantuje jej wypłaty i nie uczestniczy w rozliczeniach."
         ]
       },
       {
-        "heading": "8. Bezpieczeństwo",
+        "heading": "7. Bezpieczeństwo",
         "body": [
           "Wskazówki, jak bezpiecznie oddać rzecz i nie dać się oszukać, znajdziesz na stronie „Bezpieczeństwo”. Nigdy nie płać z góry komuś, kto twierdzi, że znalazł Twoją rzecz, i nikomu nie podawaj danych karty ani kodów z SMS-ów. W razie oszustwa zgłoś się na policję i daj nam znać na {email}.",
           "DeRechi nie weryfikuje tożsamości użytkowników i nie odpowiada za ich działania podczas spotkania."
         ]
       },
       {
-        "heading": "9. Zmiana i usuwanie ogłoszeń",
+        "heading": "8. Zmiana i usuwanie ogłoszeń",
         "body": [
           "Na razie nie możesz samodzielnie zmienić ogłoszenia: w sprawie poprawek napisz na {email}.",
           "Po odpowiedzi na ogłoszenie wysyłamy autorowi i osobie, która odpowiedziała, przypomnienie z linkiem do zamknięcia ogłoszenia, gdy rzecz wróci do właściciela. Jeśli nikt nie potwierdzi zwrotu, ogłoszenie trafia do archiwum tydzień po ostatniej odpowiedzi. Ogłoszenie możesz też zamknąć, pisząc na {email}.",
@@ -88,18 +77,18 @@
         ]
       },
       {
-        "heading": "10. Odpowiedzialność",
+        "heading": "9. Odpowiedzialność",
         "body": [
           "Serwis jest udostępniany „tak, jak jest”. Nie gwarantujemy, że rzecz się odnajdzie, i nie odpowiadamy za prawdziwość ogłoszeń: za ich treść odpowiadają autorzy.",
           "Nie odpowiadamy za przerwy w działaniu strony, awarie techniczne ani utratę danych spowodowane okolicznościami, na które nie mamy wpływu."
         ]
       },
       {
-        "heading": "11. Spory",
+        "heading": "10. Spory",
         "body": ["{governingLaw}"]
       },
       {
-        "heading": "12. Zmiany regulaminu",
+        "heading": "11. Zmiany regulaminu",
         "body": [
           "Możemy aktualizować ten regulamin. Data ostatniej wersji jest podana na górze strony. Korzystając ze strony po zmianach, akceptujesz nową wersję.",
           "Pytania dotyczące regulaminu wysyłaj na {email}."
@@ -130,10 +119,6 @@
           [
             "dane kontaktowe: numer telefonu, adres e-mail i komunikatory, które wysyłasz autorowi ogłoszenia."
           ],
-          "Gdy płacisz za numer telefonu autora:",
-          [
-            "dane zamówienia, które przesyła nam Fourthwall: e-mail i imię (lub nazwę) podane w Fourthwall, kwotę, walutę, status, czas i numer zamówienia; służą nam do połączenia płatności z Twoją odpowiedzią."
-          ],
           "Nie mamy kont ani haseł, więc nie przechowujemy o Tobie żadnych innych danych.",
           "Nie umieszczaj w ogłoszeniu informacji o zdrowiu, wyznaniu, danych biometrycznych ani innych danych wrażliwych, ani o sobie, ani o innych.",
           "Podczas odwiedzin strony serwer, jak każdy serwer WWW, może rejestrować dane techniczne żądania: adres IP, typ przeglądarki i czas wejścia, aby chronić serwis przed nadużyciami."
@@ -142,7 +127,7 @@
       {
         "heading": "3. Co widzą inni",
         "body": [
-          "Opis rzeczy, miejsce ze współrzędnymi i zdjęcie są publikowane jawnie. Telefon i e-mail są widoczne w ogłoszeniu tylko częściowo (np. +38067*****67), a komunikatory nie są pokazywane wcale. Pełny numer telefonu autora wysyłamy tylko osobie, która odpowiedziała na ogłoszenie i zapłaciła za jego uzyskanie; e-maila autora nie wysyłamy nikomu.",
+          "Opis rzeczy, miejsce ze współrzędnymi i zdjęcie są publikowane jawnie. Telefon i e-mail są widoczne w ogłoszeniu tylko częściowo (np. +38067*****67), a komunikatory nie są pokazywane wcale. Pełnego numeru telefonu ani e-maila autora nie wysyłamy nikomu.",
           "Dane kontaktowe wysłane w odpowiedzi na ogłoszenie widzi tylko autor tego ogłoszenia, w wiadomości, którą mu wysyłamy; nigdzie ich nie publikujemy."
         ]
       },
@@ -151,13 +136,12 @@
         "body": [
           [
             "aby pokazać ogłoszenie innym osobom i umożliwić znalezienie go w wyszukiwarce;",
-            "aby przekazać Twoje dane kontaktowe autorowi ogłoszenia, na które odpowiadasz, a po opłaceniu wysłać Ci numer telefonu autora;",
-            "aby połączyć płatność z Twoją odpowiedzią i prowadzić ewidencję otrzymanych płatności;",
+            "aby przekazać Twoje dane kontaktowe autorowi ogłoszenia, na które odpowiadasz;",
             "aby przypomnieć obu stronom o zamknięciu ogłoszenia, gdy rzecz wróci do właściciela;",
             "aby chronić stronę przed spamem i nadużyciami;",
             "[SIMILAR FINDS NOTIFICATIONS: TO BE DESCRIBED]"
           ],
-          "Podstawą przetwarzania jest Twoja zgoda, której udzielasz, publikując ogłoszenie lub odpowiadając na nie. Dane płatności przetwarzamy, aby zrealizować zamówienie złożone w Fourthwall, czyli wysłać Ci numer telefonu autora."
+          "Podstawą przetwarzania jest Twoja zgoda, której udzielasz, publikując ogłoszenie lub odpowiadając na nie."
         ]
       },
       {
@@ -173,7 +157,6 @@
           [
             "Google Maps Platform: mapa, podpowiedzi adresów i ustalanie adresu na podstawie współrzędnych w formularzu ogłoszenia; tekst, który wpisujesz w pole miejsca, oraz współrzędne są przekazywane Google;",
             "Vercel BotID: sprawdzenie, czy formularz wysyła człowiek, a nie bot;",
-            "Fourthwall: przyjmowanie płatności; dane karty lub portfela przetwarza Fourthwall i jego dostawcy płatności, a my otrzymujemy e-mail i imię płacącego, kwotę i numer zamówienia, aby połączyć płatność z Twoją odpowiedzią;",
             "[EMAIL AND SMS PROVIDER, HOSTING: TO BE ADDED]"
           ],
           "Usługi te przetwarzają dane zgodnie z własnymi politykami prywatności, w tym również w innych krajach. Nie sprzedajemy Twoich danych ani nie przekazujemy ich reklamodawcom."
@@ -186,7 +169,7 @@
           [
             "cookie DERECHI_LOCALE: zapamiętuje wybrany język na rok;",
             "cookie DERECHI_COUNTRY: zapamiętuje Twój kraj na rok, żeby pokazywać właściwą walutę i dokumenty prawne;",
-            "cookie DERECHI_CLAIM_*: przez 30 dni pamiętają, że ogłoszenie ma już Twoją odpowiedź, oraz numer tej odpowiedzi, aby strona mogła pokazać, czy płatność dotarła;",
+            "cookie DERECHI_CLAIM_*: przez 30 dni pamiętają, że ogłoszenie ma już Twoją odpowiedź, oraz numer tej odpowiedzi, aby strona nie proponowała Ci formularza ponownie;",
             "pamięć lokalna przeglądarki: zapamiętuje, które podpowiedzi na stronie już widziałeś, oraz wynik gry z maskotką; nie ma w niej danych osobowych."
           ],
           "Na stronie nie ma analitycznych ani reklamowych plików cookie."
@@ -196,8 +179,7 @@
         "heading": "8. Jak długo przechowujemy dane",
         "body": [
           "Ogłoszenie jest przechowywane, dopóki nie zostanie zdjęte z publikacji. Następnie trafia do archiwum i nie jest już wyświetlane na stronie. W archiwum ogłoszenie jest przechowywane przez rok, po czym usuwamy je wraz z danymi kontaktowymi autora.",
-          "Dane kontaktowe wysłane w odpowiedzi na ogłoszenie przechowujemy przez rok od odpowiedzi, niezależnie od tego, czy ogłoszenie jest nadal opublikowane, czy już zarchiwizowane; potem je usuwamy. Ogłoszenie z odpowiedziami zostaje zamknięte, gdy jedna ze stron potwierdzi zwrot rzeczy, albo około tygodnia po ostatniej odpowiedzi.",
-          "Dane zamówienia w Fourthwall (e-mail, imię, kwota, numer zamówienia) przechowujemy jako zapis otrzymanej płatności; gdy odpowiedź, z którą je powiązano, zostaje usunięta, powiązanie znika, a zapis pozostaje bez związku z żadnym ogłoszeniem."
+          "Dane kontaktowe wysłane w odpowiedzi na ogłoszenie przechowujemy przez rok od odpowiedzi, niezależnie od tego, czy ogłoszenie jest nadal opublikowane, czy już zarchiwizowane; potem je usuwamy. Ogłoszenie z odpowiedziami zostaje zamknięte, gdy jedna ze stron potwierdzi zwrot rzeczy, albo około tygodnia po ostatniej odpowiedzi."
         ]
       },
       {

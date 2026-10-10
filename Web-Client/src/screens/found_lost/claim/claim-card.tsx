@@ -22,7 +22,7 @@ export default function ClaimCard({ kind, id, countryCode, contact }: Props) {
   const t = useTranslations("item")
   const tc = useTranslations("claim")
   const tn = useTranslations("nav")
-  const { sent, unlock, markSent, updateUnlock } = useClaim(kind, id)
+  const { sent, markSent } = useClaim(kind, id)
   const item = useMemo(() => ({ kind, itemId: id, countryCode }), [kind, id, countryCode])
   const otherKind: ItemKind = kind === "lost" ? "found" : "lost"
 
@@ -45,11 +45,7 @@ export default function ClaimCard({ kind, id, countryCode, contact }: Props) {
         <ClaimItemProvider value={item}>
           <section aria-live="polite" className="mt-6 border-border border-t pt-5">
             {sent ? (
-              <ClaimDone
-                repeated={sent === "repeated"}
-                unlock={unlock}
-                onUnlockChange={updateUnlock}
-              />
+              <ClaimDone repeated={sent === "repeated"} />
             ) : (
               <ClaimPrompt onSent={markSent} />
             )}

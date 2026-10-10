@@ -1,46 +1,41 @@
 {
   "code": "FR",
-  "updated": "2026-10-07",
+  "updated": "2026-10-10",
   "texts": {
     "en": {
       "findersLaw": "Under French law, a found item must be handed in to the town hall or the police of the place where it was found (objets trouvés); the finder may keep it only if nobody claims it within the legal period (Civil Code, art. 2276). French law sets no statutory finder's fee: a reward is at the owner's discretion.",
       "governingLaw": "These terms are governed by the law of France. We first offer to settle any dispute by writing to {email}; if that fails, it goes to court under French law.",
       "dataLaw": "This policy follows the General Data Protection Regulation (GDPR) and the French Data Protection Act (loi Informatique et Libertés).",
       "rightsBasis": "Under Articles 15–21 of the GDPR you have the right to:",
-      "complaintRight": "complain to the CNIL (Commission nationale de l’informatique et des libertés).",
-      "withdrawalLaw": "In France, this follows Article L221-28, 13° of the Consumer Code."
+      "complaintRight": "complain to the CNIL (Commission nationale de l’informatique et des libertés)."
     },
     "uk": {
       "findersLaw": "За французьким правом знайдену річ треба здати до мерії або поліції за місцем знахідки (objets trouvés); залишити її собі можна лише якщо ніхто не заявив про неї протягом установленого законом строку (Цивільний кодекс, ст. 2276). Законної винагороди за знахідку у Франції немає: вона на розсуд власника.",
       "governingLaw": "До цих умов застосовується право Франції. Спірні питання ми спершу пропонуємо вирішити листуванням на {email}; якщо домовитися не вдасться, то в суді відповідно до законодавства Франції.",
       "dataLaw": "Політика відповідає Загальному регламенту про захист даних (GDPR) і французькому Закону про інформатику та свободи (loi Informatique et Libertés).",
       "rightsBasis": "Відповідно до статей 15–21 GDPR ви маєте право:",
-      "complaintRight": "поскаржитися до CNIL (Національної комісії з інформатики та свобод).",
-      "withdrawalLaw": "У Франції це передбачено ст. L221-28, п. 13° Кодексу споживачів Франції."
+      "complaintRight": "поскаржитися до CNIL (Національної комісії з інформатики та свобод)."
     },
     "pl": {
       "findersLaw": "Zgodnie z prawem francuskim znalezioną rzecz należy oddać do merostwa lub na policję w miejscu znalezienia (objets trouvés); znalazca może ją zatrzymać tylko wtedy, gdy nikt nie zgłosi się po nią w ustawowym terminie (Kodeks cywilny, art. 2276). Prawo francuskie nie przewiduje ustawowego znaleźnego: nagroda zależy od właściciela.",
       "governingLaw": "Do niniejszego regulaminu stosuje się prawo francuskie. Sporne kwestie proponujemy najpierw rozwiązać drogą korespondencji na {email}; jeśli nie uda się dojść do porozumienia, przed sądem zgodnie z prawem francuskim.",
       "dataLaw": "Polityka jest zgodna z ogólnym rozporządzeniem o ochronie danych (RODO) i francuską ustawą o informatyce i wolnościach (loi Informatique et Libertés).",
       "rightsBasis": "Zgodnie z art. 15–21 RODO masz prawo:",
-      "complaintRight": "złożyć skargę do CNIL (Krajowej Komisji ds. Informatyki i Wolności).",
-      "withdrawalLaw": "We Francji wynika to z art. L221-28 pkt 13° francuskiego kodeksu konsumenckiego."
+      "complaintRight": "złożyć skargę do CNIL (Krajowej Komisji ds. Informatyki i Wolności)."
     },
     "de": {
       "findersLaw": "Nach französischem Recht ist eine gefundene Sache beim Rathaus oder bei der Polizei des Fundorts abzugeben (objets trouvés); der Finder darf sie nur behalten, wenn sie innerhalb der gesetzlichen Frist niemand beansprucht (Code civil, Art. 2276). Einen gesetzlichen Finderlohn kennt das französische Recht nicht: eine Belohnung liegt im Ermessen des Eigentümers.",
       "governingLaw": "Auf diese Bedingungen ist französisches Recht anwendbar. Streitfragen schlagen wir vor, zunächst im Schriftverkehr unter {email} zu klären; gelingt keine Einigung, entscheidet ein Gericht nach französischem Recht.",
       "dataLaw": "Die Erklärung entspricht der Datenschutz-Grundverordnung (DSGVO) und dem französischen Datenschutzgesetz (loi Informatique et Libertés).",
       "rightsBasis": "Gemäß Artikel 15–21 DSGVO haben Sie das Recht:",
-      "complaintRight": "sich bei der CNIL (Commission nationale de l’informatique et des libertés) zu beschweren.",
-      "withdrawalLaw": "In Frankreich ergibt sich dies aus Art. L221-28 Nr. 13 des französischen Verbrauchergesetzbuchs (Code de la consommation)."
+      "complaintRight": "sich bei der CNIL (Commission nationale de l’informatique et des libertés) zu beschweren."
     },
     "fr": {
       "findersLaw": "En droit français, un objet trouvé doit être remis à la mairie ou à la police du lieu de la découverte (service des objets trouvés) ; la personne qui l’a trouvé ne peut le conserver que si personne ne le réclame dans le délai légal (Code civil, art. 2276). La loi ne prévoit pas de récompense obligatoire : elle reste à la discrétion du propriétaire.",
       "governingLaw": "Ces conditions sont régies par le droit français. Nous proposons d’abord de régler tout différend par échange de courriers à {email} ; à défaut d’accord, le litige est porté devant les tribunaux conformément au droit français.",
       "dataLaw": "Cette politique est conforme au règlement général sur la protection des données (RGPD) et à la loi Informatique et Libertés.",
       "rightsBasis": "Conformément aux articles 15 à 21 du RGPD, vous avez le droit :",
-      "complaintRight": "de déposer une plainte auprès de la CNIL (Commission nationale de l’informatique et des libertés).",
-      "withdrawalLaw": "Cela découle de l’article L221-28, 13° du Code de la consommation."
+      "complaintRight": "de déposer une plainte auprès de la CNIL (Commission nationale de l’informatique et des libertés)."
     }
   }
 }

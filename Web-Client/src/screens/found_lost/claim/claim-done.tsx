@@ -3,15 +3,12 @@ import { useTranslations } from "next-intl"
 import { Blob } from "@/components/pouf/media"
 import { Heading, Text } from "@/components/pouf/text"
 import { useClaimItem } from "./claim-item"
-import ClaimUnlock, { type PhoneUnlock, type PhoneUnlockUpdate } from "./claim-unlock"
 
 type Props = {
   repeated: boolean
-  unlock: PhoneUnlock | null
-  onUnlockChange: (update: PhoneUnlockUpdate) => void
 }
 
-export default function ClaimDone({ repeated, unlock, onUnlockChange }: Props) {
+export default function ClaimDone({ repeated }: Props) {
   const { kind } = useClaimItem()
   const tc = useTranslations("claim")
 
@@ -25,7 +22,6 @@ export default function ClaimDone({ repeated, unlock, onUnlockChange }: Props) {
         <Text muted className="mt-1 block leading-relaxed">
           {repeated ? tc("repeated") : kind === "lost" ? tc("doneOwner") : tc("doneFinder")}
         </Text>
-        {unlock ? <ClaimUnlock unlock={unlock} onChange={onUnlockChange} /> : null}
       </div>
     </div>
   )

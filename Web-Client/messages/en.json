@@ -57,9 +57,9 @@
     "benefit1Title": "Direct contact",
     "benefit1Text": "Whoever responds leaves their contacts, and we pass them to the author of the notice by SMS or email.",
     "benefit2Title": "Contacts protected",
-    "benefit2Text": "On a notice, the number is only partly visible and the email not at all. Only someone who responded gets the full number.",
+    "benefit2Text": "On a notice, the number is only partly visible and the email not at all. Whoever responds sends you their contacts, and you decide whom to call back.",
     "benefit3Title": "Spam protection",
-    "benefit3Text": "One person can get an author's number at most once a week, so your contacts don't end up on spam lists.",
+    "benefit3Text": "The site never shows anyone your full number or email, so bots can't collect them for spam lists.",
     "benefit4Title": "Moderated",
     "benefit4Text": "Notices go live at once. A moderator reviews them and removes what does not belong here.",
     "benefit5Title": "No account",
@@ -188,26 +188,6 @@
     "doneOwner": "We passed your contacts to the owner. They'll get in touch.",
     "repeated": "You already responded to this notice; the author has your contacts.",
     "orPost": "Or post your own notice:",
-    "unlock": {
-      "button": "Get the author's phone number",
-      "title": "The author's phone number",
-      "text": "We'll send the author's phone number by SMS and email to the contacts you gave in your response.",
-      "support": "Your $1 payment helps keep DeRechi free for everyone. You can pay with Apple Pay, Google Pay or a bank card.",
-      "safety": "We never send payment links by SMS or messenger.",
-      "pay": "Continue to payment",
-      "waiver": "I expressly agree to get the number right after payment and acknowledge that I thereby lose my right of withdrawal. <terms>Details in the terms</terms>",
-      "preparing": "Preparing the payment…",
-      "unavailable": "Payments are busy right now. Try again in a minute.",
-      "failed": "Couldn't prepare the payment. Try again.",
-      "limited": "You can get an author's number once a week, and you have already done so this week. Please try again later.",
-      "limitedUntil": "You can get an author's number once a week. You can try again on {date}.",
-      "retry": "Try again",
-      "timing": "It usually takes a few minutes after the payment.",
-      "waiting": "This window updates by itself; you can also close it, the number will arrive anyway.",
-      "stopped": "Still no payment? Open this window again later to check.",
-      "paid": "Payment received, the phone number is on its way.",
-      "sent": "The phone number was sent to your email and phone."
-    },
     "confirm": {
       "title": "Is the item back with its owner?",
       "text": "Confirming closes the notice for everyone: it leaves the board and moves to the archive.",
@@ -227,13 +207,13 @@
   },
   "safety": {
     "title": "Safety",
-    "metaDescription": "How DeRechi protects your contacts and payments, and how to return a lost item safely.",
+    "metaDescription": "How DeRechi protects your contacts, and how to return a lost item safely.",
     "intro": "DeRechi brings strangers together, so we make sure your contacts don't end up in the wrong hands, and we show you how to steer clear of scammers.",
     "protectTitle": "How DeRechi protects you",
     "protect": {
       "contacts": {
         "title": "Contacts are not published",
-        "text": "A notice shows its phone and email only in part. Only someone who responded to the notice and paid gets the full number, and nobody gets the email."
+        "text": "A notice shows its phone and email only in part. Nobody gets the full number or the email through the site: the author decides whom to call back."
       },
       "replies": {
         "title": "Only the author sees your response",
@@ -241,7 +221,7 @@
       },
       "limit": {
         "title": "Numbers can't be collected in bulk",
-        "text": "One person can get an author's number at most once a week, so your contacts don't end up on spam or scam-call lists."
+        "text": "Full contacts never appear on the site, so bots can't gather them into spam or scam-call lists."
       },
       "accounts": {
         "title": "No passwords to leak",
@@ -400,7 +380,6 @@
       "emailFormat": "That email address does not look right.",
       "disposableEmail": "Disposable email addresses are not accepted. Use one you actually read.",
       "consent": "Tick the box to agree to the terms.",
-      "waiver": "Tick the box to continue to payment.",
       "validation": "Some fields still need fixing.",
       "captcha": "The anti-spam check did not pass. Try again.",
       "failed": "The notice could not be published. Try again in a moment."

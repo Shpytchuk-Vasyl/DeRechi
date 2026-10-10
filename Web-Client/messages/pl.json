@@ -57,9 +57,9 @@
     "benefit1Title": "Kontakt bezpośredni",
     "benefit1Text": "Kto odpowie, zostawia swoje kontakty, a my przekazujemy je autorowi ogłoszenia SMS-em lub e-mailem.",
     "benefit2Title": "Kontakty pod ochroną",
-    "benefit2Text": "W ogłoszeniu numer jest widoczny tylko częściowo, a e-mail wcale. Pełny numer dostaje tylko ten, kto odpowiedział.",
+    "benefit2Text": "W ogłoszeniu numer jest widoczny tylko częściowo, a e-mail wcale. Kto odpowie, przesyła Ci swoje dane, a Ty decydujesz, do kogo oddzwonić.",
     "benefit3Title": "Ochrona przed spamem",
-    "benefit3Text": "Jedna osoba może otrzymać numer autora najwyżej raz w tygodniu, więc Twoje kontakty nie trafią do baz spamerów.",
+    "benefit3Text": "Strona nikomu nie pokazuje Twojego pełnego numeru ani e-maila, więc boty nie zbiorą ich do baz spamerów.",
     "benefit4Title": "Moderacja",
     "benefit4Text": "Ogłoszenie pojawia się od razu. Moderator je sprawdza i usuwa to, co tu nie pasuje.",
     "benefit5Title": "Bez konta",
@@ -188,26 +188,6 @@
     "doneOwner": "Przekazaliśmy Twoje dane właścicielowi. Ta osoba się z Tobą skontaktuje.",
     "repeated": "To ogłoszenie ma już Twoją odpowiedź: autor ma Twoje dane.",
     "orPost": "Albo dodaj własne ogłoszenie:",
-    "unlock": {
-      "button": "Uzyskaj numer autora ogłoszenia",
-      "title": "Numer telefonu autora ogłoszenia",
-      "text": "Numer telefonu autora wyślemy SMS-em i e-mailem na dane z Twojej odpowiedzi.",
-      "support": "Twoja płatność w wysokości 1 $ pomaga, by DeRechi pozostał bezpłatny dla wszystkich. Możesz zapłacić przez Apple Pay, Google Pay lub kartą płatniczą.",
-      "safety": "Nigdy nie wysyłamy linków do płatności SMS-em ani przez komunikatory.",
-      "pay": "Przejdź do płatności",
-      "waiver": "Wyrażam zgodę na wysłanie numeru zaraz po płatności i przyjmuję do wiadomości, że tracę wtedy prawo odstąpienia od umowy. <terms>Szczegóły w regulaminie</terms>",
-      "preparing": "Przygotowujemy płatność…",
-      "unavailable": "Płatności są teraz przeciążone. Spróbuj ponownie za minutę.",
-      "failed": "Nie udało się przygotować płatności. Spróbuj ponownie.",
-      "limited": "Numer autora można uzyskać raz w tygodniu, a w tym tygodniu ten limit jest już wykorzystany. Spróbuj później.",
-      "limitedUntil": "Numer autora można uzyskać raz w tygodniu. Spróbuj ponownie {date}.",
-      "retry": "Spróbuj ponownie",
-      "timing": "Zwykle trwa to kilka minut od płatności.",
-      "waiting": "To okno odświeża się samo; można je też zamknąć, numer i tak dotrze.",
-      "stopped": "Płatność jeszcze nie dotarła? Otwórz to okno później, aby sprawdzić.",
-      "paid": "Płatność otrzymana, numer jest w drodze.",
-      "sent": "Numer telefonu wysłano na Twój e-mail i telefon."
-    },
     "confirm": {
       "title": "Czy rzecz wróciła do właściciela?",
       "text": "Potwierdzenie zamyka ogłoszenie dla wszystkich: zniknie z tablicy i trafi do archiwum.",
@@ -227,13 +207,13 @@
   },
   "safety": {
     "title": "Bezpieczeństwo",
-    "metaDescription": "Jak DeRechi chroni Twoje dane kontaktowe i płatności oraz jak bezpiecznie oddać zgubioną rzecz.",
+    "metaDescription": "Jak DeRechi chroni Twoje dane kontaktowe oraz jak bezpiecznie oddać zgubioną rzecz.",
     "intro": "DeRechi łączy nieznajomych, dlatego dbamy, by Twoje dane kontaktowe nie trafiły w niepowołane ręce, i podpowiadamy, jak nie dać się oszukać.",
     "protectTitle": "Jak DeRechi Cię chroni",
     "protect": {
       "contacts": {
         "title": "Kontakty nie są publikowane",
-        "text": "W ogłoszeniu telefon i e-mail widać tylko częściowo. Pełny numer dostaje wyłącznie osoba, która odpowiedziała na ogłoszenie i za niego zapłaciła, a e-maila nie dostaje nikt."
+        "text": "W ogłoszeniu telefon i e-mail widać tylko częściowo. Pełnego numeru ani e-maila nikt nie dostaje przez stronę: autor sam decyduje, do kogo oddzwonić."
       },
       "replies": {
         "title": "Odpowiedź widzi tylko autor",
@@ -241,7 +221,7 @@
       },
       "limit": {
         "title": "Numerów nie da się zebrać hurtowo",
-        "text": "Jedna osoba może uzyskać numer autora najwyżej raz w tygodniu, więc Twoje dane nie trafią do baz spamerów ani oszustów telefonicznych."
+        "text": "Pełne dane kontaktowe nigdzie na stronie się nie pojawiają, więc boty nie zbiorą ich do baz spamerów ani oszustów telefonicznych."
       },
       "accounts": {
         "title": "Brak haseł, które mogą wyciec",
@@ -400,7 +380,6 @@
       "emailFormat": "Ten adres e-mail wygląda nieprawidłowo.",
       "disposableEmail": "Jednorazowe adresy e-mail nie są akceptowane. Podaj adres, który naprawdę czytasz.",
       "consent": "Zaznacz pole, aby zaakceptować warunki.",
-      "waiver": "Zaznacz pole, aby przejść do płatności.",
       "validation": "Niektóre pola wymagają poprawy.",
       "captcha": "Weryfikacja antyspamowa nie powiodła się. Spróbuj ponownie.",
       "failed": "Nie udało się opublikować ogłoszenia. Spróbuj za chwilę."

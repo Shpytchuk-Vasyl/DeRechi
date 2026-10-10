@@ -43,44 +43,33 @@
       {
         "heading": "4. Contacts",
         "body": [
-          "Your phone and email are only partly visible on a notice, to keep you safe from spam. Your full phone number goes only to someone who has responded to your notice (see section 5); your email is never passed on to anyone.",
+          "Your phone and email are only partly visible on a notice, to keep you safe from spam. We don't pass your full phone number or your email to anyone: whoever responds sends you their own contacts, and you decide whom to get in touch with.",
           "Anyone who recognises the item can send the notice's author their own contacts through the site. We pass them on by email and SMS and never show them publicly. By sending your contacts you confirm that they are your own and that you contact the author about this item only."
         ]
       },
       {
-        "id": "author-number",
-        "heading": "5. The author's phone number",
-        "body": [
-          "A notice author's phone number is provided only to a person who has responded to that notice and left their own contacts. We pass those contacts to the author before the number is sent. The author therefore already has the contacts of everyone who may receive their number, and people who have not left their contacts cannot receive it.",
-          "Getting the number costs $1; it is the only paid feature of DeRechi and the way the service is funded. You pay on a Fourthwall checkout page that opens in a new tab; your card or wallet details go to Fourthwall, never to us. Once Fourthwall confirms the payment, we send the number by SMS and email to the contacts you gave in your response. The author's email is not sent.",
-          "One person can get an author's number at most once a week.",
-          "If the law gives you, as a consumer, the right to withdraw from a distance purchase within 14 days, for the author's number that right ends once the number has been sent. Before paying, you tick a box by which you expressly agree that the number is sent immediately after payment, before the withdrawal period ends, and acknowledge that you thereby lose your right of withdrawal. {withdrawalLaw} For this reason the payment is not refunded once the number has been sent.",
-          "If the number has not reached you within 24 hours of the payment, write to {email}: we will send it again or refund the payment."
-        ]
-      },
-      {
-        "heading": "6. Rights to content",
+        "heading": "5. Rights to content",
         "body": [
           "The text and photo of your notice remain yours. By publishing them you let us show them on the site free of charge for as long as the notice is published.",
           "The DeRechi name, the site's design and its code belong to the operator."
         ]
       },
       {
-        "heading": "7. Finds and rewards",
+        "heading": "6. Finds and rewards",
         "body": [
           "{findersLaw}",
           "A reward stated in a notice is the author's offer. DeRechi doesn't guarantee it is paid and takes no part in any payment."
         ]
       },
       {
-        "heading": "8. Safety",
+        "heading": "7. Safety",
         "body": [
           "Tips on returning an item safely and avoiding scammers are collected on the Safety page. Never pay in advance to someone who says they found your item, and never give anyone your card details or SMS codes. In case of fraud, contact the police and let us know at {email}.",
           "DeRechi doesn't verify users' identity and isn't responsible for what they do when they meet."
         ]
       },
       {
-        "heading": "9. Changing and removing notices",
+        "heading": "8. Changing and removing notices",
         "body": [
           "You can't edit a notice yourself yet: to correct it, write to {email}.",
           "After someone responds, we send the author and the respondent a reminder with a link to close the notice once the item is back. If nobody confirms the return, the notice is archived a week after the last response. You can also close a notice by writing to {email}.",
@@ -88,18 +77,18 @@
         ]
       },
       {
-        "heading": "10. Liability",
+        "heading": "9. Liability",
         "body": [
           "The service is provided “as is”. We don't guarantee that an item will be found and aren't responsible for the accuracy of notices: their authors are.",
           "We aren't responsible for interruptions, technical failures or loss of data caused by circumstances beyond our control."
         ]
       },
       {
-        "heading": "11. Disputes",
+        "heading": "10. Disputes",
         "body": ["{governingLaw}"]
       },
       {
-        "heading": "12. Changes to these terms",
+        "heading": "11. Changes to these terms",
         "body": [
           "We may update these terms. The date of the latest version is shown at the top of the page. By using the site after a change you accept the new version.",
           "Send questions about these terms to {email}."
@@ -130,10 +119,6 @@
           [
             "your contacts: the phone number, email address and messengers you send to the notice's author."
           ],
-          "When you pay for an author's phone number:",
-          [
-            "the order details Fourthwall sends us: the email and name you give Fourthwall, the amount, the currency, the status, the time and the order number, which we use to match the payment to your response."
-          ],
           "We have no accounts or passwords, so we keep no other data about you.",
           "Don't put information about health, religion, biometrics or other sensitive data in a notice, about yourself or anyone else.",
           "When you visit the site, the server, like any web server, may record technical details of the request, such as the IP address, browser type and time, to protect against abuse."
@@ -142,7 +127,7 @@
       {
         "heading": "3. What others can see",
         "body": [
-          "The item's description, the place with its coordinates and the photo are public. The phone and email on a notice are only partly shown (for example, +38067*****67); messengers aren't shown at all. An author's full phone number is sent only to someone who has responded to the notice and paid for it; an author's email is never sent to anyone.",
+          "The item's description, the place with its coordinates and the photo are public. The phone and email on a notice are only partly shown (for example, +38067*****67); messengers aren't shown at all. An author's full phone number and email are never sent to anyone.",
           "Contacts you send in response to a notice are shown only to that notice's author, in the message we send them, and are never published."
         ]
       },
@@ -151,13 +136,12 @@
         "body": [
           [
             "to show your notice to other people and let them find it by search;",
-            "to pass your contacts to the author of the notice you responded to and, once you have paid, to send you the author's phone number;",
-            "to match a payment to your response and keep a record of the payments we receive;",
+            "to pass your contacts to the author of the notice you responded to;",
             "to remind both sides to close the notice once the item is back;",
             "to protect the site from spam and abuse;",
             "[SIMILAR FINDS NOTIFICATIONS: TO BE DESCRIBED]"
           ],
-          "The legal basis is your consent, which you give by posting a notice or by responding to one. Payment details are processed to fulfil the order you place on Fourthwall, that is, to send you the author's phone number."
+          "The legal basis is your consent, which you give by posting a notice or by responding to one."
         ]
       },
       {
@@ -173,7 +157,6 @@
           [
             "Google Maps Platform: the map, address suggestions and looking up an address from coordinates in the notice form; what you type into the place field, and the coordinates, are sent to Google;",
             "Vercel BotID: checks that the form is sent by a person, not a bot;",
-            "Fourthwall: takes the payment; your card or wallet details are processed by Fourthwall and its payment providers, and we receive the payer's email, name, amount and order number to match the payment to your response;",
             "[EMAIL AND SMS PROVIDER, HOSTING: TO BE ADDED]"
           ],
           "These services process data under their own privacy policies, including in other countries. We don't sell your data or pass it to advertisers."
@@ -186,7 +169,7 @@
           [
             "the DERECHI_LOCALE cookie: remembers your language for a year;",
             "the DERECHI_COUNTRY cookie: remembers your country for a year, to show the right currency and legal texts;",
-            "DERECHI_CLAIM_* cookies: remember for 30 days that you have responded to a notice, together with that response's number, so the site can show whether the payment has arrived;",
+            "DERECHI_CLAIM_* cookies: remember for 30 days that you have responded to a notice, together with that response's number, so the site doesn't offer you the form again;",
             "your browser's local storage: remembers which site tips you have already seen and the score of the mascot game; it holds no personal data."
           ],
           "There are no analytics or advertising cookies on the site."
@@ -196,8 +179,7 @@
         "heading": "8. How long we keep data",
         "body": [
           "A notice is kept until it is taken down. After that it moves to an archive and is no longer shown on the site. It is kept in the archive for one year and then deleted together with the author's contacts.",
-          "Contacts sent in response to a notice are kept for one year from the response, whether the notice is still published or archived; after that they are deleted. A notice with responses is closed when either side confirms that the item is back, or about a week after the last response.",
-          "The details of a Fourthwall order (email, name, amount, order number) are kept as a record of the payment we received; when the response it was matched to is deleted, the link to it is removed, and the record stays without any connection to a notice."
+          "Contacts sent in response to a notice are kept for one year from the response, whether the notice is still published or archived; after that they are deleted. A notice with responses is closed when either side confirms that the item is back, or about a week after the last response."
         ]
       },
       {

@@ -26,7 +26,6 @@ export type JurisdictionTexts = {
   dataLaw: string
   rightsBasis: string
   complaintRight: string
-  withdrawalLaw: string
 }
 
 export type Jurisdiction = {

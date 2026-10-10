@@ -57,9 +57,9 @@
     "benefit1Title": "Direkter Kontakt",
     "benefit1Text": "Wer sich meldet, hinterlässt seine Kontaktdaten, und wir leiten sie per SMS oder E-Mail an den Verfasser der Meldung weiter.",
     "benefit2Title": "Kontakte geschützt",
-    "benefit2Text": "In der Meldung ist die Nummer nur teilweise sichtbar, die E-Mail gar nicht. Die volle Nummer bekommt nur, wer sich gemeldet hat.",
+    "benefit2Text": "In der Meldung ist die Nummer nur teilweise sichtbar, die E-Mail gar nicht. Wer sich meldet, schickt dir seine Kontaktdaten, und du entscheidest, wen du zurückrufst.",
     "benefit3Title": "Schutz vor Spam",
-    "benefit3Text": "Eine Person kann die Nummer eines Verfassers höchstens einmal pro Woche erhalten, damit deine Kontaktdaten nicht in Spam-Listen landen.",
+    "benefit3Text": "Die Website zeigt niemandem deine vollständige Nummer oder E-Mail, daher können Bots sie nicht für Spam-Listen sammeln.",
     "benefit4Title": "Moderiert",
     "benefit4Text": "Die Meldung erscheint sofort. Ein Moderator prüft sie und entfernt, was hier nichts zu suchen hat.",
     "benefit5Title": "Ohne Konto",
@@ -188,26 +188,6 @@
     "doneOwner": "Wir haben deine Kontaktdaten an die Person weitergegeben, der die Sache gehört. Sie meldet sich bei dir.",
     "repeated": "Du hast auf diese Meldung schon geantwortet; deine Kontaktdaten sind bereits angekommen.",
     "orPost": "Oder gib selbst eine Meldung auf:",
-    "unlock": {
-      "button": "Telefonnummer der Person hinter der Meldung bekommen",
-      "title": "Telefonnummer der Person hinter der Meldung",
-      "text": "Die Telefonnummer schicken wir per SMS und E-Mail an die Kontaktdaten aus deiner Antwort.",
-      "support": "Mit deiner Zahlung von 1 $ hilfst du, DeRechi für alle kostenlos zu halten. Bezahlen kannst du mit Apple Pay, Google Pay oder Bankkarte.",
-      "safety": "Zahlungslinks per SMS oder Messenger verschicken wir nie.",
-      "pay": "Weiter zur Zahlung",
-      "waiver": "Ich stimme ausdrücklich zu, dass mir die Nummer sofort nach der Zahlung geschickt wird, und mir ist bekannt, dass ich damit mein Widerrufsrecht verliere. <terms>Mehr in den Nutzungsbedingungen</terms>",
-      "preparing": "Zahlung wird vorbereitet…",
-      "unavailable": "Die Zahlungen sind gerade überlastet. Versuche es in einer Minute noch einmal.",
-      "failed": "Die Zahlung konnte nicht vorbereitet werden. Versuche es noch einmal.",
-      "limited": "Die Nummer eines Verfassers kannst du einmal pro Woche erhalten, und diese Woche hast du das schon getan. Versuche es später erneut.",
-      "limitedUntil": "Die Nummer eines Verfassers kannst du einmal pro Woche erhalten. Versuche es wieder am {date}.",
-      "retry": "Noch einmal versuchen",
-      "timing": "Nach der Zahlung dauert es meist ein paar Minuten.",
-      "waiting": "Dieses Fenster aktualisiert sich von selbst; du kannst es auch schließen, die Nummer kommt trotzdem an.",
-      "stopped": "Noch keine Zahlung angekommen? Öffne dieses Fenster später noch einmal.",
-      "paid": "Zahlung erhalten, die Telefonnummer ist unterwegs.",
-      "sent": "Die Telefonnummer wurde an deine E-Mail-Adresse und Telefonnummer gesendet."
-    },
     "confirm": {
       "title": "Ist die Sache wieder da, wo sie hingehört?",
       "text": "Wenn du bestätigst, wird die Meldung für alle geschlossen: Sie verschwindet vom Brett und wandert ins Archiv.",
@@ -227,13 +207,13 @@
   },
   "safety": {
     "title": "Sicherheit",
-    "metaDescription": "Wie DeRechi deine Kontaktdaten und Zahlungen schützt und wie du einen verlorenen Gegenstand sicher zurückgibst.",
+    "metaDescription": "Wie DeRechi deine Kontaktdaten schützt und wie du einen verlorenen Gegenstand sicher zurückgibst.",
     "intro": "DeRechi bringt Fremde zusammen. Deshalb sorgen wir dafür, dass deine Kontaktdaten nicht in falsche Hände geraten, und zeigen dir, wie du Betrügern aus dem Weg gehst.",
     "protectTitle": "So schützt dich DeRechi",
     "protect": {
       "contacts": {
         "title": "Kontaktdaten werden nicht veröffentlicht",
-        "text": "In der Anzeige sind Telefonnummer und E-Mail nur teilweise sichtbar. Die volle Nummer erhält nur, wer auf die Anzeige geantwortet und dafür bezahlt hat, die E-Mail niemand."
+        "text": "In der Anzeige sind Telefonnummer und E-Mail nur teilweise sichtbar. Über die Website erhält niemand die volle Nummer oder die E-Mail: Der Verfasser entscheidet selbst, wen er zurückruft."
       },
       "replies": {
         "title": "Deine Antwort sieht nur der Verfasser",
@@ -241,7 +221,7 @@
       },
       "limit": {
         "title": "Nummern lassen sich nicht massenhaft sammeln",
-        "text": "Eine Person kann die Nummer eines Verfassers höchstens einmal pro Woche erhalten. So landen deine Kontaktdaten nicht in Spam- oder Betrugslisten."
+        "text": "Vollständige Kontaktdaten erscheinen nirgends auf der Website, daher können Bots sie nicht für Spam- oder Betrugslisten sammeln."
       },
       "accounts": {
         "title": "Keine Passwörter, die abhandenkommen können",
@@ -400,7 +380,6 @@
       "emailFormat": "Diese E-Mail-Adresse sieht nicht richtig aus.",
       "disposableEmail": "Wegwerf-E-Mail-Adressen werden nicht akzeptiert. Gib eine Adresse an, die du wirklich liest.",
       "consent": "Setze das Häkchen, um den Bedingungen zuzustimmen.",
-      "waiver": "Setze das Häkchen, um zur Zahlung weiterzugehen.",
       "validation": "Ein paar Felder müssen noch korrigiert werden.",
       "captcha": "Die Spam-Prüfung ist nicht durchgegangen. Versuch es noch einmal.",
       "failed": "Die Meldung konnte nicht veröffentlicht werden. Versuch es gleich noch einmal."

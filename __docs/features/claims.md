@@ -179,6 +179,10 @@ the claims **and their contact infos** (`deleteClaims`, next to `deleteMatches`)
 
 ## Getting the author's phone number (paid, through Fourthwall)
 
+> **Switched off in the web client since 2026-10-10.** Everything below still runs in Client-API
+> and Worker, but the site no longer offers the dialog, so nobody reaches the checkout. What was
+> removed and how to bring it back: [Paid author's number](paid-author-number.md).
+
 A responder never sees the author's contacts for free; the author decides whom to call back.
 After responding, the notice page offers "Get the author's phone number": a small dialog explains
 that the number will be sent by SMS and email to the contacts the responder gave, that this is how

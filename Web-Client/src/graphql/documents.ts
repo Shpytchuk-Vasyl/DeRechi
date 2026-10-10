@@ -184,9 +184,6 @@ export const ClaimLostItemMutation = graphql(`
     claimLostItem(id: $id, contact: $contact) {
       id
       repeated
-      checkoutUrl
-      paid
-      contactsSent
     }
   }
 `)
@@ -196,53 +193,6 @@ export const ClaimFoundItemMutation = graphql(`
     claimFoundItem(id: $id, contact: $contact) {
       id
       repeated
-      checkoutUrl
-      paid
-      contactsSent
-    }
-  }
-`)
-
-export const LostItemClaimQuery = graphql(`
-  query LostItemClaim($itemId: ID!, $id: ID!) {
-    lostItemClaim(itemId: $itemId, id: $id) {
-      id
-      checkoutUrl
-      paid
-      contactsSent
-    }
-  }
-`)
-
-export const FoundItemClaimQuery = graphql(`
-  query FoundItemClaim($itemId: ID!, $id: ID!) {
-    foundItemClaim(itemId: $itemId, id: $id) {
-      id
-      checkoutUrl
-      paid
-      contactsSent
-    }
-  }
-`)
-
-export const UnlockLostItemClaimMutation = graphql(`
-  mutation UnlockLostItemClaim($itemId: ID!, $id: ID!) {
-    unlockLostItemClaim(itemId: $itemId, id: $id) {
-      id
-      checkoutUrl
-      paid
-      contactsSent
-    }
-  }
-`)
-
-export const UnlockFoundItemClaimMutation = graphql(`
-  mutation UnlockFoundItemClaim($itemId: ID!, $id: ID!) {
-    unlockFoundItemClaim(itemId: $itemId, id: $id) {
-      id
-      checkoutUrl
-      paid
-      contactsSent
     }
   }
 `)
