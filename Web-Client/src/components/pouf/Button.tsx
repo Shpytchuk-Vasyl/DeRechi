@@ -22,7 +22,6 @@ interface ButtonProps
   disabled?: boolean
   loading?: boolean
   type?: 'button' | 'submit'
-  label?: string
 }
 
 const button = cva(
@@ -93,7 +92,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     disabled,
     loading,
     type = 'button',
-    label,
     className,
     ...nativeProps
   },
@@ -108,7 +106,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       onClick={onClick}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
-      aria-label={label}
     >
       {loading && <LoadingSpinner />}
       {children}
@@ -119,7 +116,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
 interface IconButtonProps
   extends Omit<
     ButtonHTMLAttributes<HTMLButtonElement>,
-    'children' | 'style' | 'onClick' | 'type' | 'disabled' | 'aria-label'
+    'children' | 'style' | 'onClick' | 'type' | 'disabled' 
   > {
   icon: ReactNode
   label: string
@@ -157,7 +154,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(functio
       onClick={onClick}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
-      aria-label={label}
+      aria-label={nativeProps['aria-label'] ?? label}
       title={nativeProps.title ?? label}
     >
       {loading ? <LoadingSpinner /> : <span aria-hidden="true">{icon}</span>}

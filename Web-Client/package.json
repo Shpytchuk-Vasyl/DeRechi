@@ -12,7 +12,11 @@
     "lint": "biome check .",
     "format": "biome check --write .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "e2e": "next build && playwright test",
+    "e2e:run": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "e2e:report": "playwright show-report"
   },
   "dependencies": {
     "@fontsource-variable/nunito": "^5.3.0",
@@ -55,10 +59,13 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@biomejs/biome": "^2.5.14",
     "@graphql-codegen/cli": "^7.4.2",
     "@graphql-codegen/client-preset": "^6.2.0",
     "@graphql-typed-document-node/core": "^3.2.0",
+    "@next/env": "16.3.6",
+    "@playwright/test": "^1.64.0",
     "@tailwindcss/postcss": "^4",
     "@types/google.maps": "^3.66.3",
     "@types/node": "^20",
@@ -68,6 +75,7 @@
     "shadcn": "^4.21.0",
     "tailwindcss": "^4",
     "typescript": "^5",
+    "use-intl": "4.14.7",
     "vitest": "^5.0.1"
   },
   "packageManager": "pnpm@12.3.4"

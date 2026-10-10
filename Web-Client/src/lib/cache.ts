@@ -1,4 +1,4 @@
-import { revalidateTag } from "next/cache"
+import { updateTag } from "next/cache"
 import type { ItemKind } from "@/api/items"
 
 export const CACHE_TTL = {
@@ -42,6 +42,6 @@ export const NO_STORE = { cache: "no-store" } as const
 
 export function invalidate(...tags: string[]): void {
   for (const tag of tags) {
-    revalidateTag(tag, "max")
+    updateTag(tag)
   }
 }

@@ -4,6 +4,10 @@
     "titleTemplate": "{page} · DeRechi",
     "description": "Objets perdus et trouvés de votre ville. Une annonce en une minute, sans compte."
   },
+  "common": {
+    "close": "Fermer",
+    "dismissNotification": "Fermer la notification"
+  },
   "nav": {
     "home": "Accueil",
     "lost": "Perdus",
@@ -308,6 +312,7 @@
       "contacts": "Récompense et contact"
     },
     "stepOf": "Étape {current} sur {total}",
+    "stepLabel": "Étape {number} : {title}",
     "next": "Suivant",
     "back": "Retour",
     "draftRestored": "Votre brouillon est de retour : ce que vous aviez saisi a été conservé.",
@@ -385,6 +390,16 @@
       "failed": "L’annonce n’a pas pu être publiée. Réessayez dans un instant."
     },
     "pickDate": "Choisissez une date"
+  },
+  "calendar": {
+    "previousMonth": "Mois précédent",
+    "nextMonth": "Mois suivant",
+    "monthDropdown": "Choisir le mois",
+    "yearDropdown": "Choisir l’année",
+    "weekNumber": "Semaine {week}",
+    "weekNumberHeader": "Numéro de semaine",
+    "today": "Aujourd’hui, {date}",
+    "selected": "{date}, sélectionné"
   },
   "game": {
     "catch": "Attraper Znaïda",

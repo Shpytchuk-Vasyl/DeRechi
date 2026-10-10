@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import { useTranslations } from 'next-intl'
 import { Icon } from './Icon'
 import type { IconName } from './Icon'
 
@@ -102,6 +103,7 @@ function toastMotion(reduce: boolean) {
 function ToastItem({ t, onDismiss }: { t: ToastEntry; onDismiss: (id: string) => void }) {
   const sticky = t.duration === Infinity
   const reduce = useReducedMotion() ?? false
+  const tc = useTranslations('common')
 
   useEffect(() => {
     if (sticky) return
@@ -129,7 +131,7 @@ function ToastItem({ t, onDismiss }: { t: ToastEntry; onDismiss: (id: string) =>
           </button>
         )}
       </div>
-      <button type="button" className="pouf-toast__close" onClick={() => onDismiss(t.id)} aria-label="Dismiss notification">
+      <button type="button" className="pouf-toast__close" onClick={() => onDismiss(t.id)} aria-label={tc('dismissNotification')}>
         <Icon name="close" size="sm" />
       </button>
     </motion.div>

@@ -4,6 +4,10 @@
     "titleTemplate": "{page} · DeRechi",
     "description": "Ogłoszenia o rzeczach zgubionych i znalezionych. Dodasz w minutę, bez konta."
   },
+  "common": {
+    "close": "Zamknij",
+    "dismissNotification": "Zamknij powiadomienie"
+  },
   "nav": {
     "home": "Strona główna",
     "lost": "Zgubione",
@@ -308,6 +312,7 @@
       "contacts": "Nagroda i kontakt"
     },
     "stepOf": "Krok {current} z {total}",
+    "stepLabel": "Krok {number}: {title}",
     "next": "Dalej",
     "back": "Wstecz",
     "draftRestored": "Przywrócono szkic: wpisane dane zostały zachowane.",
@@ -385,6 +390,16 @@
       "failed": "Nie udało się opublikować ogłoszenia. Spróbuj za chwilę."
     },
     "pickDate": "Wybierz datę"
+  },
+  "calendar": {
+    "previousMonth": "Poprzedni miesiąc",
+    "nextMonth": "Następny miesiąc",
+    "monthDropdown": "Wybierz miesiąc",
+    "yearDropdown": "Wybierz rok",
+    "weekNumber": "Tydzień {week}",
+    "weekNumberHeader": "Numer tygodnia",
+    "today": "Dziś, {date}",
+    "selected": "{date}, wybrano"
   },
   "game": {
     "catch": "Złap Znajdę",

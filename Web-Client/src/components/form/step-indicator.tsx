@@ -62,6 +62,7 @@ function Step({
   state: State
   onSelect: () => void
 }) {
+  const t = useTranslations("form")
   const active = state === "active"
 
   return (
@@ -71,6 +72,7 @@ function Step({
         disabled={state !== "done"}
         onClick={onSelect}
         aria-current={active ? "step" : undefined}
+        aria-label={t("stepLabel", { number, title: label })}
         className="group flex items-center gap-2 rounded-pill disabled:cursor-default"
       >
         <StepBadge number={number} state={state} />

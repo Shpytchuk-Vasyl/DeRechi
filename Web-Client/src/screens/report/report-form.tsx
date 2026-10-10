@@ -157,7 +157,6 @@ export default function ReportForm({ kind, categories, maxUploadBytes, compact =
             : "grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]"
         }
       >
-
         <Shell className={cx("flex h-fit flex-col gap-5", compact && "min-h-0 flex-1")}>
           <StepIndicator
             steps={STEPS.map((it) => t(`steps.${it.label}`))}

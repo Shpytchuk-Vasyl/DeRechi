@@ -15,23 +15,28 @@ type Props = {
 
 export default async function RecentRail({ kind }: Props) {
   const t = await getTranslations("home")
+  const headingId = `recent-${kind}-heading`
 
   return (
-    <Stack gap={3}>
-      <Row gap={3} align="center">
-        <Heading level={2}>{t(kind === "found" ? "recentFound" : "recentLost")}</Heading>
-        <Spacer />
-        <SeeAllLink kind={kind}>{t(kind === "found" ? "seeAllFound" : "seeAllLost")}</SeeAllLink>
-      </Row>
-      <ErrorBoundary
-        fallback={
-          <ErrorNote className="self-center!">
-            {t(kind === "found" ? "recentFoundError" : "recentLostError")}
-          </ErrorNote>
-        }
-      >
-        <RailItems kind={kind} />
-      </ErrorBoundary>
+    <Stack asChild gap={3}>
+      <section aria-labelledby={headingId}>
+        <Row gap={3} align="center">
+          <Heading level={2} id={headingId}>
+            {t(kind === "found" ? "recentFound" : "recentLost")}
+          </Heading>
+          <Spacer />
+          <SeeAllLink kind={kind}>{t(kind === "found" ? "seeAllFound" : "seeAllLost")}</SeeAllLink>
+        </Row>
+        <ErrorBoundary
+          fallback={
+            <ErrorNote className="self-center!">
+              {t(kind === "found" ? "recentFoundError" : "recentLostError")}
+            </ErrorNote>
+          }
+        >
+          <RailItems kind={kind} />
+        </ErrorBoundary>
+      </section>
     </Stack>
   )
 }

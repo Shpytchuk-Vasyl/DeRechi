@@ -1,11 +1,11 @@
 import { cn } from "cn"
-import type { ReactElement } from "react"
+import type { ReactElement, ReactNode } from "react"
 import { Row } from "@/components/pouf/layout"
 import { Text } from "@/components/pouf/text"
 
 type Props = {
   icon: ReactElement
-  children: string
+  children: ReactNode
   faint?: boolean
   truncate?: boolean
 }

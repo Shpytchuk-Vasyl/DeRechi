@@ -7,6 +7,8 @@ import { jsonLd } from "@/lib/seo"
 import FaqAccordion from "./faq-accordion"
 import { FAQ_COUNT, FINDERS_LAW_QUESTION } from "./faq-count"
 
+const HEADING_ID = "home-faq-heading"
+
 export default async function HomeFaq() {
   const t = await getTranslations("home")
   const locale = (await getLocale()) as Locale
@@ -27,9 +29,13 @@ export default async function HomeFaq() {
 
   return (
     <>
-      <Stack gap={3}>
-        <Heading level={2}>{t("faqTitle")}</Heading>
-        <FaqAccordion findersLaw={findersLaw} />
+      <Stack asChild gap={3}>
+        <section aria-labelledby={HEADING_ID}>
+          <Heading level={2} id={HEADING_ID}>
+            {t("faqTitle")}
+          </Heading>
+          <FaqAccordion findersLaw={findersLaw} />
+        </section>
       </Stack>
 
       <script

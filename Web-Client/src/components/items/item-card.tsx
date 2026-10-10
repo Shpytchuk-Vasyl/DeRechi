@@ -11,7 +11,7 @@ import { Heading } from "@/components/pouf/text"
 import { Link } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
 import type { Money } from "@/lib/intl/country"
-import { formatNoticeDate, fromIsoDate, todayIso } from "@/lib/intl/dates"
+import { formatNoticeDate, fromIsoDate, todayIso, toIsoDate } from "@/lib/intl/dates"
 import { formatMoney } from "@/lib/intl/money"
 import { Stack } from "../pouf/layout"
 
@@ -94,9 +94,9 @@ export function NoticeCard({ title, place, date, compensation, media }: NoticeCa
         <MetaRow icon={<MapPin />} truncate>
           {place}
         </MetaRow>
-        {when ? (
+        {day && when ? (
           <MetaRow icon={<CalendarDays />} faint>
-            {when}
+            <time dateTime={toIsoDate(day)}>{when}</time>
           </MetaRow>
         ) : null}
       </Stack>

@@ -2,8 +2,17 @@
 
 import { cn } from "cn"
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
+import { useTranslations } from "next-intl"
 import * as React from "react"
-import { type DayButton, DayPicker, getDefaultClassNames, type Locale } from "react-day-picker"
+import {
+  DateLib,
+  type DateLibOptions,
+  type DayButton,
+  DayPicker,
+  getDefaultClassNames,
+  type Labels,
+  type Locale,
+} from "react-day-picker"
 
 const GHOST_BUTTON =
   "inline-flex size-8 shrink-0 select-none items-center justify-center whitespace-nowrap rounded-lg border border-transparent font-medium text-sm outline-none transition-all hover:bg-muted hover:text-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0"
@@ -16,9 +25,30 @@ function Calendar({
   locale,
   formatters,
   components,
+  labels,
   ...props
 }: React.ComponentProps<typeof DayPicker> & { locale?: Partial<Locale> }) {
   const defaultClassNames = getDefaultClassNames()
+  const t = useTranslations("calendar")
+
+  const day = (date: Date, today?: boolean, options?: DateLibOptions, dateLib?: DateLib) => {
+    const label = (dateLib ?? new DateLib(options)).format(date, "PPPP")
+    return today ? t("today", { date: label }) : label
+  }
+  const localLabels: Partial<Labels> = {
+    labelPrevious: () => t("previousMonth"),
+    labelNext: () => t("nextMonth"),
+    labelMonthDropdown: () => t("monthDropdown"),
+    labelYearDropdown: () => t("yearDropdown"),
+    labelWeekNumber: (week) => t("weekNumber", { week }),
+    labelWeekNumberHeader: () => t("weekNumberHeader"),
+    labelGridcell: (date, modifiers, options, dateLib) =>
+      day(date, modifiers?.today, options, dateLib),
+    labelDayButton: (date, modifiers, options, dateLib) => {
+      const label = day(date, modifiers.today, options, dateLib)
+      return modifiers.selected ? t("selected", { date: label }) : label
+    },
+  }
 
   return (
     <DayPicker
@@ -31,6 +61,7 @@ function Calendar({
       )}
       captionLayout={captionLayout}
       locale={locale}
+      labels={{ ...localLabels, ...labels }}
       formatters={{
         formatMonthDropdown: (date) => date.toLocaleString(locale?.code, { month: "short" }),
         ...formatters,

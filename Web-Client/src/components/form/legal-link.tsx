@@ -13,7 +13,13 @@ type Props = {
 
 export function LegalLink({ href, children }: Props) {
   return (
-    <Link href={href} target="_blank" rel="noopener" className="font-bold underline" prefetch={false}>
+    <Link
+      href={href}
+      target="_blank"
+      rel="noopener"
+      className="font-bold underline"
+      prefetch={false}
+    >
       {children}
     </Link>
   )

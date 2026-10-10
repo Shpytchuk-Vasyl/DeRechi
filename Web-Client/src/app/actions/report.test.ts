@@ -5,12 +5,12 @@ import { todayIso } from "@/lib/intl/dates"
 const mocks = vi.hoisted(() => ({
   graphqlRequest: vi.fn(),
   passesBotCheck: vi.fn(),
-  revalidateTag: vi.fn(),
+  updateTag: vi.fn(),
 }))
 
 vi.mock("@/graphql/client", () => ({ graphqlRequest: mocks.graphqlRequest }))
 vi.mock("@/lib/bot-check", () => ({ passesBotCheck: mocks.passesBotCheck }))
-vi.mock("next/cache", () => ({ revalidateTag: mocks.revalidateTag }))
+vi.mock("next/cache", () => ({ updateTag: mocks.updateTag }))
 
 const { createNotice } = await import("./report")
 
@@ -61,9 +61,9 @@ describe("createNotice", () => {
 
     await createNotice("lost", notice)
 
-    expect(mocks.revalidateTag).toHaveBeenCalledWith("items:lost", "max")
-    expect(mocks.revalidateTag).toHaveBeenCalledWith("places", "max")
-    expect(mocks.revalidateTag).not.toHaveBeenCalledWith("stats", "max")
+    expect(mocks.updateTag).toHaveBeenCalledWith("items:lost")
+    expect(mocks.updateTag).toHaveBeenCalledWith("places")
+    expect(mocks.updateTag).not.toHaveBeenCalledWith("stats")
   })
 
   it("refreshes the home page figures after a new find", async () => {
@@ -71,7 +71,7 @@ describe("createNotice", () => {
 
     await createNotice("found", notice)
 
-    expect(mocks.revalidateTag).toHaveBeenCalledWith("stats", "max")
+    expect(mocks.updateTag).toHaveBeenCalledWith("stats")
   })
 
   it("rejects a found notice without a photo before calling the API", async () => {
@@ -94,6 +94,6 @@ describe("createNotice", () => {
     mocks.graphqlRequest.mockRejectedValue(new Error("Unsupported country: PL"))
 
     expect(await createNotice("lost", notice)).toEqual({ ok: false, reason: "failed" })
-    expect(mocks.revalidateTag).not.toHaveBeenCalled()
+    expect(mocks.updateTag).not.toHaveBeenCalled()
   })
 })

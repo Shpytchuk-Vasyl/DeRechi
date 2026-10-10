@@ -27,7 +27,7 @@ const mocks = vi.hoisted(() => {
     GraphQLRequestError,
     graphqlRequest: vi.fn(),
     passesBotCheck: vi.fn(),
-    revalidateTag: vi.fn(),
+    updateTag: vi.fn(),
     setCookie: vi.fn(),
   }
 })
@@ -37,7 +37,7 @@ vi.mock("@/graphql/client", () => ({
   graphqlRequest: mocks.graphqlRequest,
 }))
 vi.mock("@/lib/bot-check", () => ({ passesBotCheck: mocks.passesBotCheck }))
-vi.mock("next/cache", () => ({ revalidateTag: mocks.revalidateTag }))
+vi.mock("next/cache", () => ({ updateTag: mocks.updateTag }))
 vi.mock("next/headers", () => ({ cookies: async () => ({ set: mocks.setCookie }) }))
 
 const { claimNotice, confirmReturn } = await import("./claim")
@@ -169,8 +169,8 @@ describe("claimNotice", () => {
     mocks.graphqlRequest.mockRejectedValue(notFound())
 
     expect(await claimNotice("lost", "7", contact)).toEqual({ ok: false, reason: "notFound" })
-    expect(mocks.revalidateTag).toHaveBeenCalledWith("item:lost:7", "max")
-    expect(mocks.revalidateTag).toHaveBeenCalledWith("items:lost", "max")
+    expect(mocks.updateTag).toHaveBeenCalledWith("item:lost:7")
+    expect(mocks.updateTag).toHaveBeenCalledWith("items:lost")
     expect(mocks.setCookie).not.toHaveBeenCalled()
   })
 
@@ -192,7 +192,7 @@ describe("claimNotice", () => {
     mocks.graphqlRequest.mockRejectedValue(new mocks.GraphQLRequestError("boom", []))
 
     expect(await claimNotice("found", "8", contact)).toEqual({ ok: false, reason: "failed" })
-    expect(mocks.revalidateTag).not.toHaveBeenCalled()
+    expect(mocks.updateTag).not.toHaveBeenCalled()
     expect(mocks.setCookie).not.toHaveBeenCalled()
   })
 })
@@ -209,15 +209,15 @@ describe("confirmReturn", () => {
       { token },
       { cache: "no-store" },
     )
-    expect(mocks.revalidateTag).toHaveBeenCalledWith("items:lost", "max")
-    expect(mocks.revalidateTag).toHaveBeenCalledWith("items:found", "max")
+    expect(mocks.updateTag).toHaveBeenCalledWith("items:lost")
+    expect(mocks.updateTag).toHaveBeenCalledWith("items:found")
   })
 
   it("answers an unknown or spent token with notFound", async () => {
     mocks.graphqlRequest.mockRejectedValue(notFound())
 
     expect(await confirmReturn(token)).toEqual({ ok: false, reason: "notFound" })
-    expect(mocks.revalidateTag).not.toHaveBeenCalled()
+    expect(mocks.updateTag).not.toHaveBeenCalled()
   })
 
   it.each([
@@ -232,6 +232,6 @@ describe("confirmReturn", () => {
     mocks.graphqlRequest.mockRejectedValue(new Error("connection refused"))
 
     expect(await confirmReturn(token)).toEqual({ ok: false, reason: "failed" })
-    expect(mocks.revalidateTag).not.toHaveBeenCalled()
+    expect(mocks.updateTag).not.toHaveBeenCalled()
   })
 })

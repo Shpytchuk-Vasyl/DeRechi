@@ -4,6 +4,10 @@
     "titleTemplate": "{page} · DeRechi",
     "description": "Fundsachen und Verlustmeldungen für deine Stadt. In einer Minute aufgegeben, ohne Konto."
   },
+  "common": {
+    "close": "Schließen",
+    "dismissNotification": "Benachrichtigung schließen"
+  },
   "nav": {
     "home": "Startseite",
     "lost": "Verloren",
@@ -308,6 +312,7 @@
       "contacts": "Finderlohn & Kontakt"
     },
     "stepOf": "Schritt {current} von {total}",
+    "stepLabel": "Schritt {number}: {title}",
     "next": "Weiter",
     "back": "Zurück",
     "draftRestored": "Dein Entwurf ist wieder da: was du eingegeben hattest, blieb erhalten.",
@@ -385,6 +390,16 @@
       "failed": "Die Meldung konnte nicht veröffentlicht werden. Versuch es gleich noch einmal."
     },
     "pickDate": "Datum wählen"
+  },
+  "calendar": {
+    "previousMonth": "Vorheriger Monat",
+    "nextMonth": "Nächster Monat",
+    "monthDropdown": "Monat auswählen",
+    "yearDropdown": "Jahr auswählen",
+    "weekNumber": "Woche {week}",
+    "weekNumberHeader": "Kalenderwoche",
+    "today": "Heute, {date}",
+    "selected": "{date}, ausgewählt"
   },
   "game": {
     "catch": "Znaida fangen",

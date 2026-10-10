@@ -1,5 +1,6 @@
 import { cva } from 'class-variance-authority'
 import { cn } from 'cn'
+import { Slot } from 'radix-ui'
 import type { ReactNode } from 'react'
 
 type Gap = 1 | 2 | 3 | 4 | 5 | 6
@@ -19,15 +20,14 @@ const stack = cva('pouf-stack flex flex-col min-w-0', {
   defaultVariants: { gap: 4 },
 })
 
-interface StackProps extends React.HTMLAttributes<HTMLDivElement> {
-  children: ReactNode
+type StackProps = React.ComponentProps<'div'> & {
   gap?: Gap
+  asChild?: boolean
 }
 
-export function Stack({ children, gap, className, ...props }: StackProps) {
-  return <div className={cn(stack({ gap }), className)} {...props}>
-    {children}
-  </div>
+export function Stack({ gap, asChild = false, className, ...props }: StackProps) {
+  const Comp = asChild ? Slot.Root : 'div'
+  return <Comp data-slot="stack" className={cn(stack({ gap }), className)} {...props} />
 }
 
 const row = cva('pouf-row flex flex-row min-w-0', {

@@ -4,6 +4,10 @@
     "titleTemplate": "{page} · DeRechi",
     "description": "Оголошення про загублені та знайдені речі. Публікація за хвилину, без реєстрації."
   },
+  "common": {
+    "close": "Закрити",
+    "dismissNotification": "Закрити сповіщення"
+  },
   "nav": {
     "home": "Головна",
     "lost": "Загублені",
@@ -308,6 +312,7 @@
       "contacts": "Винагорода й контакти"
     },
     "stepOf": "Крок {current} з {total}",
+    "stepLabel": "Крок {number}: {title}",
     "next": "Далі",
     "back": "Назад",
     "draftRestored": "Чернетку відновлено: те, що ви вже ввели, збережено.",
@@ -385,6 +390,16 @@
       "failed": "Не вдалося опублікувати оголошення. Спробуйте за мить."
     },
     "pickDate": "Оберіть дату"
+  },
+  "calendar": {
+    "previousMonth": "Попередній місяць",
+    "nextMonth": "Наступний місяць",
+    "monthDropdown": "Виберіть місяць",
+    "yearDropdown": "Виберіть рік",
+    "weekNumber": "Тиждень {week}",
+    "weekNumberHeader": "Номер тижня",
+    "today": "Сьогодні, {date}",
+    "selected": "{date}, вибрано"
   },
   "game": {
     "catch": "Впіймати Знайду",

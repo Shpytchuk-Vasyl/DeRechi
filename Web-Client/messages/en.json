@@ -4,6 +4,10 @@
     "titleTemplate": "{page} · DeRechi",
     "description": "Lost and found notices for your city. Post in a minute, no account needed."
   },
+  "common": {
+    "close": "Close",
+    "dismissNotification": "Dismiss notification"
+  },
   "nav": {
     "home": "Home",
     "lost": "Lost",
@@ -308,6 +312,7 @@
       "contacts": "Reward & contacts"
     },
     "stepOf": "Step {current} of {total}",
+    "stepLabel": "Step {number}: {title}",
     "next": "Next",
     "back": "Back",
     "draftRestored": "Your draft is back: what you had typed was kept.",
@@ -385,6 +390,16 @@
       "failed": "The notice could not be published. Try again in a moment."
     },
     "pickDate": "Pick a date"
+  },
+  "calendar": {
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "monthDropdown": "Choose a month",
+    "yearDropdown": "Choose a year",
+    "weekNumber": "Week {week}",
+    "weekNumberHeader": "Week number",
+    "today": "Today, {date}",
+    "selected": "{date}, selected"
   },
   "game": {
     "catch": "Catch Znaida",

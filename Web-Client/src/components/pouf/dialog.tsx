@@ -2,6 +2,7 @@
 
 import { cn } from "cn"
 import { XIcon } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { Dialog as DialogPrimitive } from "radix-ui"
 import type * as React from "react"
 import { Button, IconButton } from "./Button"
@@ -68,6 +69,8 @@ function DialogContent({
   showCloseButton?: boolean
   size?: "md" | "lg"
 }) {
+  const t = useTranslations("common")
+
   return (
     <DialogPortal>
       <DialogOverlay />
@@ -83,7 +86,7 @@ function DialogContent({
             variant="quiet" 
             className="absolute top-2 right-2"
             size="sm" 
-            label="Close" />
+            label={t("close")} />
           </DialogPrimitive.Close>
         )}
       </ContentInner>
@@ -105,6 +108,8 @@ function DialogFooter({
 }: React.ComponentProps<"div"> & {
   showCloseButton?: boolean
 }) {
+  const t = useTranslations("common")
+
   return (
     <div
       data-slot="dialog-footer"
@@ -117,7 +122,7 @@ function DialogFooter({
       {children}
       {showCloseButton && (
         <DialogPrimitive.Close asChild>
-          <Button variant="quiet" size="sm" label="Close">Close</Button>
+          <Button variant="quiet" size="sm">{t("close")}</Button>
         </DialogPrimitive.Close>
       )}
     </div>

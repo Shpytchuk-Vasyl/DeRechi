@@ -5,7 +5,7 @@ import { clientEnv } from "@/lib/env/client"
 
 export const SITE_URL = clientEnv.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "")
 
-export const INDEXABLE = !!process.env.VERCEL;
+export const INDEXABLE = !!process.env.VERCEL
 
 export const STALE_AFTER_DAYS = 14
 
