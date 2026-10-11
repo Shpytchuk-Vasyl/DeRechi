@@ -17,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-/** What can be checked without the native library and without a Telegram session. */
 class TdlightTelegramSourceTest {
 
     private final TaskScheduler scheduler = mock(TaskScheduler.class);

@@ -9,10 +9,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * TDLib objects are plain Java objects, but their {@code toString()} is native: assertions here
- * only ever look at {@link IncomingPost} and its records.
- */
 class MessageMapperTest {
 
     private static final long CHAT_ID = -1001234567890L;
@@ -85,7 +81,6 @@ class MessageMapperTest {
 
     @Test
     void extractsUsernameMentionsWithoutAtAndWithoutRepeats() {
-        // the post from @zagubleno911 that has no phone in the text
         String body = "Загублено паспорт. Контакт: @finder_example / Автор: @Finder_Example, ще @other_one";
         TdApi.Message message = message(1, text(body,
                 mention(body, "@finder_example"), mention(body, "@Finder_Example"), mention(body, "@other_one")));
@@ -98,7 +93,6 @@ class MessageMapperTest {
 
     @Test
     void entityOffsetsCountUtf16UnitsLikeJavaStrings() {
-        // 🔴 takes two UTF-16 units; TDLib offsets count them the same way
         String body = "🔴 Загублено 🐕 собаку, пишіть @owner_name";
         TdApi.Message message = message(1, text(body, mention(body, "@owner_name")));
 

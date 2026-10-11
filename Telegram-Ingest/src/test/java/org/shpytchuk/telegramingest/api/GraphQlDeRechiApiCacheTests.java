@@ -27,7 +27,6 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withServiceUnavailable;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-/** The {@code @Cacheable} reference lookups through the Spring proxy, as the pipeline calls them. */
 @SpringJUnitConfig(GraphQlDeRechiApiCacheTests.Config.class)
 class GraphQlDeRechiApiCacheTests {
 

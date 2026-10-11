@@ -15,7 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class MessagesTest {
 
-    /** Every language of the channel has its own bundle; {@code messages.properties} is English. */
     private static final List<String> TRANSLATIONS = List.of("messages_uk.properties");
     private static final List<String> ALL = Stream.concat(Stream.of("messages.properties"), TRANSLATIONS.stream()).toList();
 

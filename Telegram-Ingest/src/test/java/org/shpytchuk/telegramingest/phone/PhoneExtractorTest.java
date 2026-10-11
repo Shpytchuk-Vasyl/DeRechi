@@ -9,7 +9,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/** The table of spec 6.2: numbers written the way people write them in Ukrainian channels. */
 class PhoneExtractorTest {
 
     private final PhoneExtractor extractor = new PhoneExtractor();

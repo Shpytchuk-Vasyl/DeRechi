@@ -105,7 +105,7 @@ public class DefaultImageRedactor implements ImageRedactor {
         return new RedactedImage(encode(Blur.whole(picture)), RedactionMode.FULL);
     }
 
-    private boolean hasContact(OcrLine line) {
+    boolean hasContact(OcrLine line) {
         String text = line.text();
         return text.chars().filter(Character::isDigit).count() >= PHONE_DIGITS
                 || EMAIL.matcher(text).find()
@@ -120,7 +120,7 @@ public class DefaultImageRedactor implements ImageRedactor {
                 .count();
     }
 
-    private static BufferedImage decode(byte[] image) {
+    static BufferedImage decode(byte[] image) {
         BufferedImage source;
         try {
             source = ImageIO.read(new ByteArrayInputStream(image));

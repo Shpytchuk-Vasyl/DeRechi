@@ -51,7 +51,6 @@ class AuthorPhoneResolverTest {
 
     @Test
     void contactMentionedByUsernameIsResolvedThroughTheProfile() {
-        // "Контакт: @finder_example" on @zagubleno911, no phone in the text
         telegram.users.put("finder_example", 4242L);
         telegram.phones.put(4242L, "380501112233");
 

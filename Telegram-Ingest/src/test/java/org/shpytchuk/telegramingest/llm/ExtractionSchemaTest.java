@@ -113,7 +113,6 @@ class ExtractionSchemaTest {
 
         assertThat(strings(schema.path("properties").path("category").path("enum")))
                 .containsExactly("DOCUMENTS", "BICYCLES", null);
-        // The template stays as it was for the next request
         assertThat(strings(prompts.schema(List.of("KEYS")).path("properties").path("category").path("enum")))
                 .containsExactly("KEYS", null);
         assertThat(schema.path("properties").propertyNames()).containsExactlyElementsOf(names(Extraction.class));

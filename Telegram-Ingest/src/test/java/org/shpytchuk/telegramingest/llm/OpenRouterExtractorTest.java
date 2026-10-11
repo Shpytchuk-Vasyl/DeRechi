@@ -294,7 +294,6 @@ class OpenRouterExtractorTest {
     @Test
     void stopsAtTheDailyLimitAndStartsAgainOnTheNextUtcDay() {
         extractor = extractor(properties("secret-key", FALLBACK, 1));
-        // A retried call is still one call of the limit
         server.expect(requestTo(COMPLETIONS)).andRespond(withServerError());
         server.expect(ExpectedCount.times(2), requestTo(COMPLETIONS))
                 .andRespond(withSuccess(response(ANSWER, MAIN, 0.001), MediaType.APPLICATION_JSON));

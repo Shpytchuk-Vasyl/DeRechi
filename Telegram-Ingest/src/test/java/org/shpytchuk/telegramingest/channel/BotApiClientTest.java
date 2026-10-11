@@ -148,7 +148,6 @@ class BotApiClientTest {
 
     @Test
     void tokenNeverAppearsInExceptionMessagesOrLogs(CapturedOutput output) {
-        // ResourceAccessException quotes the full URL, token included
         server.expect(requestTo(BASE + "/sendPhoto")).andRespond(withException(new ConnectException("Connection refused")));
         server.expect(requestTo(BASE + "/sendPhoto"))
                 .andRespond(withStatus(HttpStatus.SERVICE_UNAVAILABLE).body("upstream " + BASE + " is down"));

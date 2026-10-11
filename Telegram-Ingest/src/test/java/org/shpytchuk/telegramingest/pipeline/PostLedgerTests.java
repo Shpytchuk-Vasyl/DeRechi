@@ -25,7 +25,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/** The ledger on the real schema from the changelog, with {@code ddl-auto=validate} checking the entity copy. */
 @DataJpaTest(properties = "spring.jpa.hibernate.ddl-auto=validate")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import({PostLedger.class, PostLedgerTests.FixedClock.class})

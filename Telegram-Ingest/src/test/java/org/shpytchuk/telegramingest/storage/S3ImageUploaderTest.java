@@ -28,7 +28,6 @@ import static org.mockito.Mockito.when;
 class S3ImageUploaderTest {
 
     private final S3Operations storage = mock(S3Operations.class);
-    // Already November 1st in Kyiv, still October in UTC: the folder follows UTC
     private final Clock clock = Clock.fixed(Instant.parse("2026-10-31T23:30:00Z"), ZoneId.of("Europe/Kyiv"));
     private final S3ImageUploader uploader = new S3ImageUploader(storage,
             new StorageProperties("derechi-files", DataSize.ofBytes(10)), clock);

@@ -15,7 +15,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 
-/** Fixtures shared by the {@link NoticeOutput} tests. */
 final class Outputs {
 
     static final String PHONE = "+380671234567";
