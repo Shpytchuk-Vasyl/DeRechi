@@ -38,7 +38,7 @@ ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar"]
 
 **`telegram-ingest` stage.** Telegram-Ingest has its own final stage, picked by `build.target: telegram-ingest` in compose, for two reasons:
 
-- It needs native packages the other images should not carry: `tesseract-ocr` (brings English), `tesseract-ocr-ukr` and `tesseract-ocr-pol` from Ubuntu, with `TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata`, which is what `derechi.redaction.tessdata` reads. It also creates `/app/tdlib`, owned by `spring`, where the `tdlib-data` volume with the TDLib session is mounted.
+- It needs native packages the other images should not carry: `tesseract-ocr` (brings English) and `tesseract-ocr-ukr` from Ubuntu, with `TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata`, which is what `derechi.redaction.tessdata` reads. It also creates `/app/tdlib`, owned by `spring`, where the `tdlib-data` volume with the TDLib session is mounted.
 - Its entrypoint forwards arguments to the jar, so the one-off session login works: `docker compose run --rm -it telegram-ingest --login`.
 
   ```dockerfile

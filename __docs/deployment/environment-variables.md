@@ -213,7 +213,7 @@ except where the table says otherwise. An empty `TELEGRAM_API_ID`/`TELEGRAM_API_
 | `MINIO_BUCKET` | `derechi-files` | same | bucket the photos go to |
 | `MINIO_MAX_UPLOAD` | `5MB` | same | largest photo uploaded |
 | `TESSDATA_PREFIX` | empty, OCR off (development only) | set by the image: `/usr/share/tesseract-ocr/5/tessdata` | Tesseract's `*.traineddata` directory; not in compose |
-| `REDACTION_OCR_LANGUAGES` | `ukr+pol+eng` | same | Tesseract languages; each needs its package in the image |
+| `REDACTION_OCR_LANGUAGES` | `ukr+eng` | same | Tesseract languages; each needs its `tesseract-ocr-<lang>` package in the `telegram-ingest` stage of the `Dockerfile`, or the start fails. Polish (`pol`) is not installed yet |
 | `REDACTION_MIN_WORDS` | `6` | same | a document photo with fewer recognized words is blurred entirely |
 | `REDACTION_DOCUMENT_KEYWORDS` | `паспорт,passport,...` (comma-separated, see `application.yaml`) | same list | words that mark a document, in the post text or on the photo, case-insensitive |
 | `REDACTION_FACE_MODEL` | `classpath:models/face_detection_yunet_2023mar.onnx` | same | YuNet ONNX model, a Spring resource location |
