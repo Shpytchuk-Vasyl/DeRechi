@@ -1,0 +1,86 @@
+{
+  "type": "object",
+  "properties": {
+    "isNotice": {
+      "type": "boolean",
+      "description": "true only for a notice about one lost or found item"
+    },
+    "kind": {
+      "type": ["string", "null"],
+      "enum": ["LOST", "FOUND", null],
+      "description": "LOST: the author lost it and searches; FOUND: the author found it"
+    },
+    "title": {
+      "type": ["string", "null"],
+      "description": "at most 100 characters, in the language of the post"
+    },
+    "description": {
+      "type": ["string", "null"],
+      "description": "at most 250 characters, in the language of the post, neutral, no contacts and no names of people"
+    },
+    "category": {
+      "type": ["string", "null"],
+      "enum": ["DOCUMENTS", "WALLET", "ELECTRONICS", "JEWELRY", "ANIMALS", "KEYS", "BAGS", "OTHER", null]
+    },
+    "date": {
+      "type": ["string", "null"],
+      "description": "yyyy-MM-dd, when the item was lost or found"
+    },
+    "placeText": {
+      "type": ["string", "null"],
+      "description": "the most specific place as written, without the city"
+    },
+    "city": {
+      "type": ["string", "null"]
+    },
+    "compensation": {
+      "type": ["object", "null"],
+      "properties": {
+        "amount": {
+          "type": "integer",
+          "description": "whole units"
+        },
+        "currency": {
+          "type": ["string", "null"],
+          "description": "ISO 4217 code"
+        }
+      },
+      "required": ["amount", "currency"],
+      "additionalProperties": false
+    },
+    "contactPhoneRef": {
+      "type": ["string", "null"],
+      "description": "the PHONE_n placeholder that is the contact for this notice"
+    },
+    "socialMedias": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "string",
+        "enum": ["TELEGRAM", "VIBER", "WHATSAPP"]
+      }
+    },
+    "confidence": {
+      "type": ["number", "null"],
+      "description": "0 to 1"
+    },
+    "rejectReason": {
+      "type": ["string", "null"]
+    }
+  },
+  "required": [
+    "isNotice",
+    "kind",
+    "title",
+    "description",
+    "category",
+    "date",
+    "placeText",
+    "city",
+    "compensation",
+    "contactPhoneRef",
+    "socialMedias",
+    "confidence",
+    "rejectReason"
+  ],
+  "additionalProperties": false
+}

@@ -6,7 +6,7 @@ import { CACHE } from "@/lib/cache"
 import { toIsoDate } from "@/lib/intl/dates"
 import { absoluteUrl, isStale, SITEMAP_KINDS as KINDS, sitemapIds } from "@/lib/seo"
 
-export const revalidate = 86400
+export const revalidate = 3600
 
 const PAGE_SIZE = 100
 
