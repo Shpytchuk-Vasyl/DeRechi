@@ -2,10 +2,35 @@ package org.shpytchuk.telegramingest.telegram;
 
 import org.jspecify.annotations.Nullable;
 
+import java.time.ZoneId;
+import java.util.Map;
+
 /**
  * Per-source defaults: {@code region} is the ISO 3166-1 alpha-2 used to read phone numbers written
- * without a country code and to bias geocoding, {@code defaultCity} is appended to places that
- * name no city, {@code locale} is the language of geocoding results.
+ * without a country code, to bias geocoding and to pick the time zone of the authors,
+ * {@code defaultCity} is appended to places that name no city, {@code locale} is the language of
+ * geocoding results.
  */
 public record ChatSettings(String region, @Nullable String defaultCity, String locale) {
+
+    private static final Map<String, ZoneId> ZONES = Map.of(
+            "UA", ZoneId.of("Europe/Kyiv"),
+            "PL", ZoneId.of("Europe/Warsaw"),
+            "DE", ZoneId.of("Europe/Berlin"),
+            "FR", ZoneId.of("Europe/Paris"));
+
+    public ChatSettings {
+        requireKnownRegion(region);
+    }
+
+    public static void requireKnownRegion(String region) {
+        if (!ZONES.containsKey(region)) {
+            throw new IllegalArgumentException("No time zone known for region " + region + ", expected one of "
+                    + ZONES.keySet());
+        }
+    }
+
+    public ZoneId zone() {
+        return ZONES.get(region);
+    }
 }

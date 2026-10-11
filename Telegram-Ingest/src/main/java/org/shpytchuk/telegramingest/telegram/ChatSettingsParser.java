@@ -35,9 +35,6 @@ public final class ChatSettingsParser {
             String city = parts[0].trim();
             String region = parts.length > 1 && !parts[1].isBlank() ? parts[1].trim().toUpperCase(Locale.ROOT) : defaultRegion;
             String locale = parts.length > 2 && !parts[2].isBlank() ? parts[2].trim() : defaultLocale;
-            if (region.length() != 2) {
-                throw new IllegalArgumentException("derechi.telegram.chats: region of '" + key + "' must be two letters");
-            }
             result.put(key, new ChatSettings(region, city.isEmpty() ? null : city, locale));
         }
         return result;

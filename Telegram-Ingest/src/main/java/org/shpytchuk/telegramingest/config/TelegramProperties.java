@@ -47,6 +47,7 @@ public record TelegramProperties(
         folderRefresh = folderRefresh == null ? Duration.ofMinutes(10) : folderRefresh;
         catchUpMaxAge = catchUpMaxAge == null ? Duration.ofHours(48) : catchUpMaxAge;
         catchUpMaxMessages = catchUpMaxMessages <= 0 ? 200 : catchUpMaxMessages;
+        ChatSettings.requireKnownRegion(defaultRegion);
         ChatSettingsParser.parse(chats, defaultRegion, defaultLocale);
     }
 

@@ -1,0 +1,24 @@
+query Categories {
+    categories {
+        id
+        key
+    }
+}
+
+query Countries {
+    countries {
+        code
+    }
+}
+
+mutation CreateLostItem($input: ItemInput!) {
+    createLostItem(input: $input) {
+        id
+    }
+}
+
+mutation CreateFoundItem($input: ItemInput!) {
+    createFoundItem(input: $input) {
+        id
+    }
+}

@@ -186,7 +186,7 @@ except where the table says otherwise. An empty `TELEGRAM_API_ID`/`TELEGRAM_API_
 | `TDLIB_DATA_DIR` | `tdlib` (relative to the working directory, git-ignored) | `/app/tdlib` (fixed, the `tdlib-data` volume) | TDLib database: the session and downloads. Losing it means another `--login` |
 | `TELEGRAM_FOLDER` | `DeRechi` | same | name of the account's chat folder whose channels and groups are read |
 | `TELEGRAM_CHATS` | empty | same | per-chat overrides, `username=city[\|region[\|locale]]` separated by `;` or new lines, e.g. `zagubleno911=Львів` |
-| `TELEGRAM_DEFAULT_REGION` | `UA` | same | region for chats without an override |
+| `TELEGRAM_DEFAULT_REGION` | `UA` | same | region for chats without an override. The region also gives the authors' time zone (`UA` Kyiv, `PL` Warsaw, `DE` Berlin, `FR` Paris) for dates like "yesterday"; any other region fails the start |
 | `TELEGRAM_DEFAULT_LOCALE` | `uk` | same | geocoding language for chats without an override |
 | `TELEGRAM_ALBUM_WAIT` | `PT3S` | same | how long to wait for the rest of an album after its last part |
 | `TELEGRAM_FOLDER_REFRESH` | `PT10M` | same | how often the folder's chat list is re-read |

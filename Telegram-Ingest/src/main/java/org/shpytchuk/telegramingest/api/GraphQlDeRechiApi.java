@@ -15,6 +15,7 @@ import org.springframework.graphql.ResponseError;
 import org.springframework.graphql.client.ClientGraphQlResponse;
 import org.springframework.graphql.client.HttpSyncGraphQlClient;
 import org.springframework.graphql.execution.ErrorType;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,6 +28,8 @@ public class GraphQlDeRechiApi implements DeRechiApi {
 
     public static final String CATEGORIES_CACHE = "categories";
     public static final String COUNTRIES_CACHE = "countries";
+
+    private static final String DOCUMENT = "client-api";
 
     private static final Set<ErrorType> REJECTED = Set.of(ErrorType.BAD_REQUEST, ErrorType.NOT_FOUND);
 
@@ -65,23 +68,25 @@ public class GraphQlDeRechiApi implements DeRechiApi {
         return Objects.requireNonNull(id, operation + " returned no id");
     }
 
-    private ClientGraphQlResponse execute(String document, Map<String, Object> variables, RetryTemplate retry) {
+    private ClientGraphQlResponse execute(String field, Map<String, Object> variables, RetryTemplate retry) {
         ClientGraphQlResponse response;
         try {
-            response = HttpCalls.execute(retry, document,
-                    () -> client.documentName(document).variables(variables).executeSync());
+            response = HttpCalls.execute(retry, field, () -> client.documentName(DOCUMENT)
+                    .operationName(StringUtils.capitalize(field))
+                    .variables(variables)
+                    .executeSync());
         } catch (RuntimeException e) {
-            throw new IngestException(document + " failed: " + HttpCalls.describe(e));
+            throw new IngestException(field + " failed: " + HttpCalls.describe(e));
         }
         List<ResponseError> errors = response.getErrors();
         if (errors.isEmpty()) {
             return response;
         }
         if (errors.stream().allMatch(error -> REJECTED.contains(error.getErrorType()))) {
-            throw new RejectedItemException(document + " rejected: "
+            throw new RejectedItemException(field + " rejected: "
                     + errors.stream().map(ResponseError::getMessage).collect(Collectors.joining("; ")));
         }
-        throw new IngestException(document + " failed with GraphQL errors "
+        throw new IngestException(field + " failed with GraphQL errors "
                 + errors.stream().map(error -> error.getErrorType().toString()).distinct().toList());
     }
 
