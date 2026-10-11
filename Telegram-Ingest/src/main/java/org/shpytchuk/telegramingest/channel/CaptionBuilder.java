@@ -27,10 +27,6 @@ public class CaptionBuilder {
         this.messages = new MessageSourceAccessor(messages, Locale.forLanguageTag(properties.locale()));
     }
 
-    /**
-     * The caption within {@code limit} characters of HTML: the description is shortened first, then
-     * the title. The fixed parts are built once and only their lengths are reused for the fitting.
-     */
     public String caption(ChannelPost post, int limit) {
         boolean lost = post.kind() == ItemKind.LOST;
         String label = new StringBuilder(lost ? "🔴 " : "🟢 ")
@@ -56,7 +52,6 @@ public class CaptionBuilder {
         return html.append(footer).toString();
     }
 
-    /** Place, date and the reward, each on its own line after the title. */
     private String details(ChannelPost post) {
         StringBuilder html = new StringBuilder()
                 .append("\n📍 ").append(escape(post.placeName()))
@@ -71,7 +66,6 @@ public class CaptionBuilder {
         return html.toString();
     }
 
-    /** The call to action with the link (or the DRY_RUN note) and the source. */
     private String footer(ChannelPost post, boolean lost) {
         StringBuilder html = new StringBuilder("\n\n");
         if (post.itemUrl() != null) {
@@ -103,7 +97,6 @@ public class CaptionBuilder {
             return "";
         }
         StringBuilder cut = new StringBuilder(room).append(escaped, 0, room - ELLIPSIS.length());
-        // never end inside an entity (&amp;) or between the two halves of an emoji
         int entity = cut.lastIndexOf("&");
         if (entity > cut.lastIndexOf(";")) {
             cut.setLength(entity);
