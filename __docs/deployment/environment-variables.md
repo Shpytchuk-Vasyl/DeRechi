@@ -196,18 +196,18 @@ except where the table says otherwise. An empty `TELEGRAM_API_ID`/`TELEGRAM_API_
 | `TELEGRAM_PUBLISH_CHAT` | empty | same | our public channel: id (`-100...`) or `@username` |
 | `TELEGRAM_REVIEW_CHAT` | empty | same | private chat or group for previews |
 | `TELEGRAM_PUBLISH_LOCALE` | `uk` | same | language of the captions in the public channel |
-| `TELEGRAM_BOT_TIMEOUT` / `TELEGRAM_BOT_MAX_ATTEMPTS` | `PT30S` / `3` | same | Bot API timeout and attempts |
+| `TELEGRAM_BOT_TIMEOUT` / `TELEGRAM_BOT_MAX_ATTEMPTS` / `TELEGRAM_BOT_RETRY_DELAY` | `PT30S` / `3` / `PT3S` | same | Bot API timeout, attempts and the first back-off (doubled each retry); retried only when the message certainly did not arrive |
 | `OPENROUTER_URL` | `https://openrouter.ai/api/v1` | same | OpenRouter API base URL |
 | `OPENROUTER_API_KEY` | empty | same | OpenRouter key |
 | `OPENROUTER_MODEL` | `google/gemini-3.1-flash-lite` | same | extraction model |
 | `OPENROUTER_FALLBACK_MODEL` | `qwen/qwen3.5-flash-02-23` | same | sent after `OPENROUTER_MODEL` in OpenRouter's `models` list; empty for none |
-| `OPENROUTER_TIMEOUT` / `OPENROUTER_MAX_ATTEMPTS` | `PT60S` / `3` | same | model call timeout and attempts |
+| `OPENROUTER_TIMEOUT` / `OPENROUTER_MAX_ATTEMPTS` / `OPENROUTER_RETRY_DELAY` | `PT60S` / `3` / `PT1S` | same | model call timeout, attempts and the first back-off |
 | `OPENROUTER_DAILY_LIMIT` | `300` | same | model calls per UTC day, a safety net; over it posts are skipped (`budget`) |
 | `GOOGLE_PLACES_URL` | `https://places.googleapis.com/v1` | same | Places API (New) base URL |
 | `GOOGLE_PLACES_API_KEY` | empty | same | a server key restricted by IP, not the admin panel's browser key (`GOOGLE_MAPS_API_KEY`) |
-| `GOOGLE_PLACES_TIMEOUT` / `GOOGLE_PLACES_MAX_ATTEMPTS` | `PT10S` / `3` | same | geocoding timeout and attempts |
+| `GOOGLE_PLACES_TIMEOUT` / `GOOGLE_PLACES_MAX_ATTEMPTS` / `GOOGLE_PLACES_RETRY_DELAY` | `PT10S` / `3` / `PT1S` | same | geocoding timeout, attempts and the first back-off |
 | `DERECHI_API_URI` | `http://localhost:8080` | `http://getaway:8080` | the Gateway; notices go to its `/graphql`. On a machine without the Gateway, its public address |
-| `DERECHI_API_TIMEOUT` / `DERECHI_API_MAX_ATTEMPTS` | `PT15S` / `3` | same | API timeout and attempts |
+| `DERECHI_API_TIMEOUT` / `DERECHI_API_MAX_ATTEMPTS` / `DERECHI_API_RETRY_DELAY` | `PT15S` / `3` / `PT1S` | same | API timeout, attempts and the first back-off; creating a notice is retried only when the request certainly did not arrive |
 | `DERECHI_API_REFERENCE_TTL` | `1h` | same | how long categories and countries from the API are cached; Caffeine spec format (`30m`, `1h`, `1d`) |
 | `MINIO_ENDPOINT`, `MINIO_REGION`, `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` | as in Admin-API | as in Admin-API | S3 client for the photos (the application's account) |
 | `MINIO_BUCKET` | `derechi-files` | same | bucket the photos go to |
