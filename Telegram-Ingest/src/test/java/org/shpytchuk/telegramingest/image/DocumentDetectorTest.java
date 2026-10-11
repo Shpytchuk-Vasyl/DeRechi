@@ -93,11 +93,33 @@ class DocumentDetectorTest {
         assertThat(bare.looksLikeDocument(List.of(line("P<UKRSHEVCHENKO<<TARAS<<<<<<<<<<<<<<<<<<<<<")))).isTrue();
     }
 
+    @Test
+    void largestFaceOnTheLeftLooksLikeADocumentPortrait() {
+        List<Rectangle> mainPhotoAndGhost = List.of(new Rectangle(60, 200, 150, 190), new Rectangle(820, 400, 50, 60));
+
+        assertThat(detector.portraitOnTheLeft(mainPhotoAndGhost, 1000)).isTrue();
+    }
+
+    @Test
+    void faceInTheMiddleOrOnTheRightIsNotAPortrait() {
+        assertThat(detector.portraitOnTheLeft(List.of(new Rectangle(420, 200, 160, 200)), 1000)).isFalse();
+        assertThat(detector.portraitOnTheLeft(List.of(new Rectangle(700, 200, 160, 200)), 1000)).isFalse();
+    }
+
+    @Test
+    void tinyFaceOrAGroupIsNotAPortrait() {
+        Rectangle left = new Rectangle(60, 200, 150, 190);
+
+        assertThat(detector.portraitOnTheLeft(List.of(new Rectangle(60, 200, 40, 50)), 1000)).isFalse();
+        assertThat(detector.portraitOnTheLeft(List.of(left, left, left, left), 1000)).isFalse();
+        assertThat(detector.portraitOnTheLeft(List.of(), 1000)).isFalse();
+    }
+
     static OcrLine line(String text) {
         return new OcrLine(text, new Rectangle(0, 0, 10, 10), 0.9);
     }
 
     static RedactionProperties properties(List<String> keywords) {
-        return new RedactionProperties("", null, 0, keywords, null, 0, null);
+        return new RedactionProperties("", null, keywords, null, 0, null);
     }
 }

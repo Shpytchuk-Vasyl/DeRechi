@@ -5,6 +5,7 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 
 final class Blur {
@@ -24,7 +25,34 @@ final class Blur {
     }
 
     static void region(BufferedImage image, Rectangle box) {
+        blurArea(image, expand(box, image.getWidth(), image.getHeight()));
+    }
+
+    static void regionUpToRightEdge(BufferedImage image, Rectangle box) {
         Rectangle area = expand(box, image.getWidth(), image.getHeight());
+        area.width = Math.min(area.width, box.x + box.width - area.x);
+        blurArea(image, area);
+    }
+
+    static BufferedImage whole(BufferedImage image) {
+        double cell = Math.max(MIN_CELL, Math.max(image.getWidth(), image.getHeight()) / (double) WHOLE_CELLS);
+        return blurred(image, cell);
+    }
+
+    static BufferedImage allBut(BufferedImage image, List<Rectangle> kept) {
+        BufferedImage blurred = whole(image);
+        Graphics2D g = blurred.createGraphics();
+        for (Rectangle box : kept) {
+            Rectangle area = expand(box, image.getWidth(), image.getHeight());
+            if (!area.isEmpty()) {
+                g.drawImage(image.getSubimage(area.x, area.y, area.width, area.height), area.x, area.y, null);
+            }
+        }
+        g.dispose();
+        return blurred;
+    }
+
+    private static void blurArea(BufferedImage image, Rectangle area) {
         if (area.isEmpty()) {
             return;
         }
@@ -33,11 +61,6 @@ final class Blur {
         Graphics2D g = image.createGraphics();
         g.drawImage(blurred, area.x, area.y, null);
         g.dispose();
-    }
-
-    static BufferedImage whole(BufferedImage image) {
-        double cell = Math.max(MIN_CELL, Math.max(image.getWidth(), image.getHeight()) / (double) WHOLE_CELLS);
-        return blurred(image, cell);
     }
 
     private static BufferedImage blurred(BufferedImage source, double cell) {

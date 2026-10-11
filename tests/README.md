@@ -13,6 +13,6 @@ tests/run.sh --only integration  # or --only load; --keep leaves the stack up (G
 | `integration/` | JUnit `*IT` tests across services |
 | `load/` | k6 scripts and the seed |
 | `infra/` | migrations image, Prometheus config, report generator |
-| `redaction/` | photos for the Telegram-Ingest OCR, face detection and blur; `redaction/run.sh` writes `tests/reports/redaction/index.html` |
+| `redaction/` | Telegram-Ingest OCR, face detection and blur on local photos from `redaction/input/` (not in git); `redaction/run.sh` writes `tests/reports/redaction/index.html` |
 
 Details: [`__docs/developer-guide/stack-tests.md`](../__docs/developer-guide/stack-tests.md).

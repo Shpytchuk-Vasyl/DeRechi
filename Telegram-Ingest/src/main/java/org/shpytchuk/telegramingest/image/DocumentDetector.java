@@ -3,6 +3,8 @@ package org.shpytchuk.telegramingest.image;
 import org.shpytchuk.telegramingest.config.RedactionProperties;
 import org.springframework.stereotype.Component;
 
+import java.awt.Rectangle;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -16,6 +18,9 @@ public class DocumentDetector {
     private static final List<String> MRZ_PREFIXES = List.of("P<", "ID", "I<", "AC", "C<", "V<");
     private static final Pattern WHITESPACE = Pattern.compile("\\s+");
     private static final Pattern APOSTROPHES = Pattern.compile("[’ʼ‘`´′]");
+    private static final int MAX_DOCUMENT_FACES = 3;
+    private static final double PORTRAIT_MAX_CENTER = 0.4;
+    private static final double PORTRAIT_MIN_WIDTH = 0.06;
 
     private final List<String> keywords;
 
@@ -31,6 +36,14 @@ public class DocumentDetector {
     public boolean looksLikeDocument(List<OcrLine> lines) {
         List<String> texts = lines.stream().map(OcrLine::text).toList();
         return texts.stream().anyMatch(DocumentDetector::isMrzLine) || mentionsDocument(String.join("\n", texts));
+    }
+
+    public boolean portraitOnTheLeft(List<Rectangle> faces, int imageWidth) {
+        if (faces.isEmpty() || faces.size() > MAX_DOCUMENT_FACES) {
+            return false;
+        }
+        Rectangle largest = faces.stream().max(Comparator.comparingInt(face -> face.width * face.height)).orElseThrow();
+        return largest.width >= imageWidth * PORTRAIT_MIN_WIDTH && largest.getCenterX() < imageWidth * PORTRAIT_MAX_CENTER;
     }
 
     /**

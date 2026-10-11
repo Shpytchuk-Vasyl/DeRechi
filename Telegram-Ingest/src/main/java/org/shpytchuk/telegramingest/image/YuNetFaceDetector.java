@@ -130,7 +130,7 @@ public class YuNetFaceDetector implements FaceDetector, AutoCloseable {
             log.info("Face model {} loaded", location);
             return session;
         } catch (IOException | OrtException | LinkageError e) {
-            log.error("Face model {} is not available, document photos will be blurred entirely: {}",
+            log.error("Face model {} is not available, every photo will be blurred entirely: {}",
                     location, getMostSpecificCause(e).toString());
             return null;
         }

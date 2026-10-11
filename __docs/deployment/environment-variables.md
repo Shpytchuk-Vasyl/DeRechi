@@ -214,11 +214,10 @@ except where the table says otherwise. An empty `TELEGRAM_API_ID`/`TELEGRAM_API_
 | `MINIO_MAX_UPLOAD` | `5MB` | same | largest photo uploaded |
 | `TESSDATA_PREFIX` | empty, OCR off (development only) | set by the image: `/usr/share/tesseract-ocr/5/tessdata` | Tesseract's `*.traineddata` directory; not in compose |
 | `REDACTION_OCR_LANGUAGES` | `ukr+eng` | same | Tesseract languages; each needs its `tesseract-ocr-<lang>` package in the `telegram-ingest` stage of the `Dockerfile`, or the start fails. Polish (`pol`) is not installed yet |
-| `REDACTION_MIN_WORDS` | `6` | same | a document photo with fewer recognized words is blurred entirely |
 | `REDACTION_DOCUMENT_KEYWORDS` | `паспорт,passport,...` (comma-separated, see `application.yaml`) | same list | words that mark a document, in the post text or on the photo, case-insensitive |
 | `REDACTION_FACE_MODEL` | `classpath:models/face_detection_yunet_2023mar.onnx` | same | YuNet ONNX model, a Spring resource location |
 | `REDACTION_FACE_SCORE` | `0.6` | same | minimum face score |
-| `REDACTION_DOCUMENT_MODE` | `PARTIAL` | same | `PARTIAL`: blur the text and faces of a document; `FULL`: blur every document photo entirely |
+| `REDACTION_DOCUMENT_MODE` | `PARTIAL` | same | `PARTIAL`: blur a document except its faces (no face found: blur it entirely); `FULL`: blur every document photo entirely |
 
 The first start needs the Telegram session: stop the service and run
 `docker compose -f docker-compose.yml -f docker-compose.services.yml run --rm -it telegram-ingest --login`

@@ -20,7 +20,7 @@ class TesseractOcrEngineIT {
 
     private final TesseractOcrEngine engine = new TesseractOcrEngine(new RedactionProperties(
             System.getenv("TESSDATA_PREFIX"), System.getenv().getOrDefault("REDACTION_OCR_LANGUAGES", "eng"),
-            0, List.of(), null, 0, null));
+            List.of(), null, 0, null));
 
     @Test
     void readsAPhoneNumberAndItsLine() {

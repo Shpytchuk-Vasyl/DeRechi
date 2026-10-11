@@ -31,6 +31,8 @@ class DefaultImageRedactorTest {
     private static final Rectangle PHONE_BOX = new Rectangle(100, 100, 300, 40);
     private static final Rectangle TEXT_BOX = new Rectangle(100, 300, 300, 40);
     private static final Rectangle FACE_BOX = new Rectangle(550, 150, 120, 150);
+    private static final Rectangle PORTRAIT_BOX = new Rectangle(80, 150, 120, 150);
+    private static final Rectangle CARD_BOX = new Rectangle(100, 200, 380, 40);
     private static final Rectangle UNTOUCHED = new Rectangle(500, 420, 250, 120);
 
     private final FakeFaces faces = new FakeFaces();
@@ -45,7 +47,6 @@ class DefaultImageRedactorTest {
         assertThat(BlurTest.variance(out, PHONE_BOX)).isLessThan(BLURRED);
         assertThat(BlurTest.variance(out, TEXT_BOX)).isGreaterThan(SHARP);
         assertThat(BlurTest.variance(out, UNTOUCHED)).isGreaterThan(SHARP);
-        assertThat(faces.calls).isZero();
     }
 
     @Test
@@ -76,7 +77,25 @@ class DefaultImageRedactorTest {
     }
 
     @Test
-    void documentNamedInThePostGetsTextAndFacesBlurred() {
+    void cardNumberKeepsOnlyTheLastFourDigits() {
+        RedactedImage result = redactor(ocr(line("4111 1111 1111 1234", CARD_BOX))).redact(stripes(), false);
+
+        assertThat(result.mode()).isEqualTo(RedactionMode.PHONES);
+        BufferedImage out = decode(result);
+        assertThat(BlurTest.variance(out, new Rectangle(100, 200, 280, 40))).isLessThan(BLURRED);
+        assertThat(BlurTest.variance(out, new Rectangle(405, 200, 75, 40))).isGreaterThan(SHARP);
+    }
+
+    @Test
+    void misreadCardNumberIsBlurredWhole() {
+        RedactedImage result = redactor(ocr(line("4111 1111 ТОР", CARD_BOX))).redact(stripes(), false);
+
+        assertThat(result.mode()).isEqualTo(RedactionMode.PHONES);
+        assertThat(BlurTest.variance(decode(result), CARD_BOX)).isLessThan(BLURRED);
+    }
+
+    @Test
+    void documentNamedInThePostIsBlurredExceptTheFace() {
         faces.found = List.of(FACE_BOX);
 
         RedactedImage result = redactor(ocr(documentLines())).redact(stripes(), true);
@@ -85,24 +104,46 @@ class DefaultImageRedactorTest {
         BufferedImage out = decode(result);
         assertThat(BlurTest.variance(out, PHONE_BOX)).isLessThan(BLURRED);
         assertThat(BlurTest.variance(out, TEXT_BOX)).isLessThan(BLURRED);
-        assertThat(BlurTest.variance(out, FACE_BOX)).isLessThan(BLURRED);
-        assertThat(BlurTest.variance(out, UNTOUCHED)).isGreaterThan(SHARP);
-        assertThat(faces.calls).isEqualTo(1);
+        assertThat(BlurTest.variance(out, UNTOUCHED)).isLessThan(BLURRED);
+        assertThat(BlurTest.variance(out, FACE_BOX)).isGreaterThan(SHARP);
+    }
+
+    @Test
+    void portraitOnTheLeftMakesADocument() {
+        faces.found = List.of(PORTRAIT_BOX);
+
+        RedactedImage result = redactor(ocr(line("Mustermann Erika 12.08.64", TEXT_BOX))).redact(stripes(), false);
+
+        assertThat(result.mode()).isEqualTo(RedactionMode.DOCUMENT);
+        BufferedImage out = decode(result);
+        assertThat(BlurTest.variance(out, UNTOUCHED)).isLessThan(BLURRED);
+        assertThat(BlurTest.variance(out, PORTRAIT_BOX)).isGreaterThan(SHARP);
+    }
+
+    @Test
+    void faceOnTheRightIsAnOrdinaryPhoto() {
+        faces.found = List.of(FACE_BOX);
+
+        RedactedImage result = redactor(ocr(line("Знайдено гаманець", TEXT_BOX))).redact(stripes(), false);
+
+        assertThat(result.mode()).isEqualTo(RedactionMode.NONE);
+        assertThat(BlurTest.variance(decode(result), FACE_BOX)).isGreaterThan(SHARP);
     }
 
     @Test
     void documentRecognizedByOcrKeyword() {
+        faces.found = List.of(FACE_BOX);
         List<OcrLine> lines = List.of(line("ПАСПОРТ ГРОМАДЯНИНА УКРАЇНИ", PHONE_BOX),
                 line("Прізвище Імʼя По батькові Дата", TEXT_BOX));
 
         RedactedImage result = redactor(ocr(lines)).redact(stripes(), false);
 
         assertThat(result.mode()).isEqualTo(RedactionMode.DOCUMENT);
-        assertThat(faces.calls).isEqualTo(1);
     }
 
     @Test
     void documentRecognizedByMachineReadableZone() {
+        faces.found = List.of(FACE_BOX);
         List<OcrLine> lines = List.of(line("P<UKRSHEVCHENKO<<TARAS<<<<<<<<<<<<<<<<<<<<<", PHONE_BOX),
                 line("one two three four five six", TEXT_BOX));
 
@@ -110,7 +151,7 @@ class DefaultImageRedactorTest {
     }
 
     @Test
-    void documentWithTooFewWordsIsBlurredEntirely() {
+    void documentWithoutAFaceIsBlurredEntirely() {
         RedactedImage result = redactor(ocr(line("ПАСПОРТ", TEXT_BOX))).redact(stripes(), false);
 
         assertThat(result.mode()).isEqualTo(RedactionMode.FULL);
@@ -118,19 +159,13 @@ class DefaultImageRedactorTest {
     }
 
     @Test
-    void lowConfidenceLinesDoNotCountAsWords() {
-        List<OcrLine> lines = List.of(new OcrLine("a b c d e f g h", TEXT_BOX, 0.2), line("ПАСПОРТ", PHONE_BOX));
-
-        assertThat(redactor(ocr(lines)).redact(stripes(), false).mode()).isEqualTo(RedactionMode.FULL);
-    }
-
-    @Test
     void fullDocumentModeBlursEveryDocumentEntirely() {
+        faces.found = List.of(FACE_BOX);
+
         RedactedImage result = redactor(ocr(documentLines()), DocumentMode.FULL).redact(stripes(), true);
 
         assertThat(result.mode()).isEqualTo(RedactionMode.FULL);
         assertWhollyBlurred(result);
-        assertThat(faces.calls).isZero();
     }
 
     @Test
@@ -139,7 +174,6 @@ class DefaultImageRedactorTest {
 
         assertThat(result.mode()).isEqualTo(RedactionMode.FULL);
         assertWhollyBlurred(result);
-        assertThat(faces.calls).isZero();
     }
 
     @Test
@@ -148,10 +182,10 @@ class DefaultImageRedactorTest {
     }
 
     @Test
-    void failedFaceDetectionBlursTheDocumentEntirely() {
+    void failedFaceDetectionBlursThePhotoEntirely() {
         faces.failure = new IllegalStateException("face model is not loaded");
 
-        RedactedImage result = redactor(ocr(documentLines())).redact(stripes(), true);
+        RedactedImage result = redactor(ocr(line("Знайдено гаманець", TEXT_BOX))).redact(stripes(), false);
 
         assertThat(result.mode()).isEqualTo(RedactionMode.FULL);
         assertWhollyBlurred(result);
@@ -208,7 +242,7 @@ class DefaultImageRedactorTest {
     }
 
     private DefaultImageRedactor redactor(OcrEngine ocr, DocumentMode mode) {
-        RedactionProperties properties = new RedactionProperties("/tessdata", null, 6,
+        RedactionProperties properties = new RedactionProperties("/tessdata", null,
                 DocumentDetectorTest.KEYWORDS, null, 0, mode);
         TelegramProperties telegram = new TelegramProperties(0, null, null, null, null, null,
                 "UA", "uk", null, null, null, 0);
@@ -285,11 +319,9 @@ class DefaultImageRedactorTest {
     private static final class FakeFaces implements FaceDetector {
         private List<Rectangle> found = List.of();
         private @Nullable RuntimeException failure;
-        private int calls;
 
         @Override
         public List<Rectangle> faces(BufferedImage image) {
-            calls++;
             if (failure != null) {
                 throw failure;
             }

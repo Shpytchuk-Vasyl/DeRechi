@@ -45,19 +45,25 @@ public class TesseractOcrEngine implements OcrEngine {
     @Override
     public synchronized List<OcrLine> lines(BufferedImage image) {
         BufferedImage gray = ImageHelper.convertImageToGrayscale(image);
+        Rectangle bounds = new Rectangle(image.getWidth(), image.getHeight());
+        List<OcrLine> asIs = read(gray, new AffineTransform(), bounds);
         double skew = new ImageDeskew(gray).getSkewAngle();
-        boolean straighten = Math.abs(skew) > MIN_DESKEW_DEGREES && Math.abs(skew) <= MAX_DESKEW_DEGREES;
-        AffineTransform rotation = straighten ? rotation(gray, Math.toRadians(-skew)) : new AffineTransform();
+        if (Math.abs(skew) <= MIN_DESKEW_DEGREES || Math.abs(skew) > MAX_DESKEW_DEGREES) {
+            return asIs;
+        }
+        AffineTransform rotation = rotation(gray, Math.toRadians(-skew));
+        List<OcrLine> straightened = read(rotate(gray, rotation), rotation, bounds);
+        return recognized(straightened) > recognized(asIs) ? straightened : asIs;
+    }
 
+    private List<OcrLine> read(BufferedImage gray, AffineTransform rotation, Rectangle bounds) {
         List<Word> words;
         try {
-            words = tesseract.getWords(List.of(straighten ? rotate(gray, rotation) : gray), TessPageIteratorLevel.RIL_TEXTLINE);
+            words = tesseract.getWords(List.of(gray), TessPageIteratorLevel.RIL_TEXTLINE);
         } catch (LinkageError e) {
             throw new IllegalStateException("Tesseract is not available", e);
         }
-
         AffineTransform back = inverse(rotation);
-        Rectangle bounds = new Rectangle(image.getWidth(), image.getHeight());
         List<OcrLine> lines = new ArrayList<>(words.size());
         for (Word word : words) {
             String text = word.getText().strip();
@@ -67,6 +73,12 @@ public class TesseractOcrEngine implements OcrEngine {
             }
         }
         return lines;
+    }
+
+    private static double recognized(List<OcrLine> lines) {
+        return lines.stream()
+                .mapToDouble(line -> line.text().codePoints().filter(Character::isLetterOrDigit).count() * line.confidence())
+                .sum();
     }
 
     private static AffineTransform rotation(BufferedImage image, double radians) {

@@ -61,7 +61,7 @@ class YuNetFaceDetectorTest {
     }
 
     private static YuNetFaceDetector detector(String model) {
-        RedactionProperties properties = new RedactionProperties("", null, 0, List.of(), model, 0, null);
+        RedactionProperties properties = new RedactionProperties("", null, List.of(), model, 0, null);
         return new YuNetFaceDetector(properties, new DefaultResourceLoader());
     }
 }

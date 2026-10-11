@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.List;
 import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -101,6 +102,32 @@ class BlurTest {
         assertThat(changed).isGreaterThan(WIDTH * HEIGHT * 95 / 100);
         Rectangle all = new Rectangle(0, 0, WIDTH, HEIGHT);
         assertThat(variance(blurred, all)).isLessThan(variance(image, all) / 50);
+    }
+
+    @Test
+    void allButKeepsTheBoxesWithTheirMargin() {
+        BufferedImage image = noise(WIDTH, HEIGHT, 7);
+        Rectangle face = new Rectangle(40, 60, 80, 100);
+
+        BufferedImage blurred = Blur.allBut(image, List.of(face));
+
+        Rectangle kept = Blur.expand(face, WIDTH, HEIGHT);
+        assertThat(sameAs(blurred.getSubimage(kept.x, kept.y, kept.width, kept.height),
+                image.getSubimage(kept.x, kept.y, kept.width, kept.height))).isTrue();
+        Rectangle rest = new Rectangle(200, 0, 200, HEIGHT);
+        assertThat(variance(blurred, rest)).isLessThan(variance(image, rest) / 50);
+    }
+
+    @Test
+    void regionUpToRightEdgeDoesNotSpillToTheRight() {
+        BufferedImage image = noise(WIDTH, HEIGHT, 8);
+        BufferedImage original = copy(image);
+
+        Blur.regionUpToRightEdge(image, new Rectangle(100, 100, 150, 40));
+
+        assertThat(image.getRGB(260, 120)).isEqualTo(original.getRGB(260, 120));
+        assertThat(variance(image, new Rectangle(100, 100, 150, 40)))
+                .isLessThan(variance(original, new Rectangle(100, 100, 150, 40)) / 50);
     }
 
     @Test

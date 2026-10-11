@@ -23,10 +23,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import static org.springframework.core.NestedExceptionUtils.getMostSpecificCause;
 
@@ -38,10 +37,11 @@ public class DefaultImageRedactor implements ImageRedactor {
     private static final int MAX_SIDE = 1600;
     private static final float JPEG_QUALITY = 0.88f;
     private static final int PHONE_DIGITS = 9;
-    private static final double COUNTED_WORD_CONFIDENCE = 0.5;
+    private static final int CARD_VISIBLE_DIGITS = 4;
     private static final Pattern EMAIL = Pattern.compile("[\\p{L}0-9._%+-]+\\s?@\\s?[\\p{L}0-9-]+(\\.[\\p{L}0-9-]+)*\\.\\p{L}{2,}");
-    private static final Pattern WHITESPACE = Pattern.compile("\\s+");
-    private static final Pattern WORD = Pattern.compile("[\\p{L}\\p{N}]");
+    private static final Pattern CARD_NUMBER = Pattern.compile(
+            "(?<!\\d)(\\d{4}(?:[ -]?\\d{4}){2}[ -]?\\d{1,7}|\\d{4}[ -]?\\d{6}[ -]?\\d{5})(?!\\d)");
+    private static final Pattern CARD_FRAGMENT = Pattern.compile("(?<!\\d)\\d{4}[ -]\\d{4}(?!\\d)");
 
     private final RedactionProperties properties;
     private final TelegramProperties telegram;
@@ -60,13 +60,25 @@ public class DefaultImageRedactor implements ImageRedactor {
             log.warn("OCR failed, the photo is blurred entirely: {}", getMostSpecificCause(e).toString());
             return full(picture, "ocr failed");
         }
-        if (documentHint || documentDetector.looksLikeDocument(lines)) {
-            return document(picture, lines);
+        List<Rectangle> faces;
+        try {
+            faces = faceDetector.faces(picture);
+        } catch (RuntimeException e) {
+            log.warn("Face detection failed, the photo is blurred entirely: {}", getMostSpecificCause(e).toString());
+            return full(picture, "face detection failed");
         }
-        List<OcrLine> contactLines = lines.stream().filter(this::hasContact).toList();
-        contactLines.forEach(line -> Blur.region(picture, line.box()));
-        RedactionMode mode = contactLines.isEmpty() ? RedactionMode.NONE : RedactionMode.PHONES;
-        log.debug("Redacted photo: mode {}, {} lines, {} contact lines", mode, lines.size(), contactLines.size());
+        if (documentHint || documentDetector.looksLikeDocument(lines)
+                || documentDetector.portraitOnTheLeft(faces, picture.getWidth())) {
+            return document(picture, faces);
+        }
+        int hidden = 0;
+        for (OcrLine line : lines) {
+            if (hideCardNumber(picture, line) || hideContact(picture, line)) {
+                hidden++;
+            }
+        }
+        RedactionMode mode = hidden == 0 ? RedactionMode.NONE : RedactionMode.PHONES;
+        log.debug("Redacted photo: mode {}, {} lines, {} hidden", mode, lines.size(), hidden);
         return new RedactedImage(encode(picture), mode);
     }
 
@@ -80,24 +92,15 @@ public class DefaultImageRedactor implements ImageRedactor {
         return documentDetector.mentionsDocument(text);
     }
 
-    private RedactedImage document(BufferedImage picture, List<OcrLine> lines) {
+    private RedactedImage document(BufferedImage picture, List<Rectangle> faces) {
         if (properties.documentMode() == DocumentMode.FULL) {
             return full(picture, "document, full mode");
         }
-        long words = countWords(lines);
-        if (words < properties.minWords()) {
-            return full(picture, "document, %d words".formatted(words));
+        if (faces.isEmpty()) {
+            return full(picture, "document without a face");
         }
-        List<Rectangle> faces;
-        try {
-            faces = faceDetector.faces(picture);
-        } catch (RuntimeException e) {
-            log.warn("Face detection failed, the photo is blurred entirely: {}", getMostSpecificCause(e).toString());
-            return full(picture, "face detection failed");
-        }
-        Stream.concat(lines.stream().map(OcrLine::box), faces.stream()).forEach(box -> Blur.region(picture, box));
-        log.debug("Redacted photo: mode {}, {} lines, {} words, {} faces", RedactionMode.DOCUMENT, lines.size(), words, faces.size());
-        return new RedactedImage(encode(picture), RedactionMode.DOCUMENT);
+        log.debug("Redacted photo: mode {}, {} faces kept", RedactionMode.DOCUMENT, faces.size());
+        return new RedactedImage(encode(Blur.allBut(picture, faces)), RedactionMode.DOCUMENT);
     }
 
     private RedactedImage full(BufferedImage picture, String reason) {
@@ -105,19 +108,44 @@ public class DefaultImageRedactor implements ImageRedactor {
         return new RedactedImage(encode(Blur.whole(picture)), RedactionMode.FULL);
     }
 
+    private boolean hideCardNumber(BufferedImage picture, OcrLine line) {
+        Matcher card = CARD_NUMBER.matcher(line.text());
+        if (!card.find()) {
+            return false;
+        }
+        Rectangle box = line.box();
+        double characterWidth = box.width / (double) line.text().length();
+        int hiddenWidth = (int) Math.round(firstVisibleDigit(line.text(), card.end()) * characterWidth);
+        Blur.regionUpToRightEdge(picture, new Rectangle(box.x, box.y, hiddenWidth, box.height));
+        return true;
+    }
+
+    private static int firstVisibleDigit(String text, int end) {
+        int digits = 0;
+        int index = end;
+        while (digits < CARD_VISIBLE_DIGITS) {
+            index--;
+            if (Character.isDigit(text.charAt(index))) {
+                digits++;
+            }
+        }
+        return index;
+    }
+
+    private boolean hideContact(BufferedImage picture, OcrLine line) {
+        if (!hasContact(line)) {
+            return false;
+        }
+        Blur.region(picture, line.box());
+        return true;
+    }
+
     boolean hasContact(OcrLine line) {
         String text = line.text();
         return text.chars().filter(Character::isDigit).count() >= PHONE_DIGITS
                 || EMAIL.matcher(text).find()
+                || CARD_FRAGMENT.matcher(text).find()
                 || !phoneExtractor.find(text, telegram.defaultRegion()).isEmpty();
-    }
-
-    private static long countWords(List<OcrLine> lines) {
-        return lines.stream()
-                .filter(line -> line.confidence() >= COUNTED_WORD_CONFIDENCE)
-                .flatMap(line -> Arrays.stream(WHITESPACE.split(line.text())))
-                .filter(token -> WORD.matcher(token).find())
-                .count();
     }
 
     static BufferedImage decode(byte[] image) {
