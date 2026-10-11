@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.shpytchuk.clientapi.entity.ItemKind;
 import org.shpytchuk.clientapi.entity.detail.ContactInfo;
 import org.shpytchuk.clientapi.entity.detail.Place;
 
@@ -47,4 +48,6 @@ public abstract class Thing {
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private ThingCategory category;
+
+    public abstract ItemKind kind();
 }

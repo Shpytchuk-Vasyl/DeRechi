@@ -29,12 +29,18 @@ built.
 | `MatchController` | `/admin/matches` | `MATCH` (`VIEW` for the list and `/{lostItemId}/candidates`, `NOTIFY` for `POST /notify`) |
 | `UploadController` | `/admin/uploads` | any item `CREATE` or `EDIT` |
 
-The four item controllers extend `ItemController<T>`, which carries the shared list, form,
-archive and delete handling; the subclasses add the mappings and the `@RequirePermission`
-annotations, because the annotation needs a constant scope. Actions follow one pattern:
-`GET` list, `GET /new`, `POST` create, `GET /{id}/edit`, `POST /{id}` update,
-`POST /{id}/archive`, `POST /{id}/delete`. Forms are `POST` only; there is no `PUT` or
-`DELETE` from HTML.
+The four item controllers extend `ItemController<T>`, which carries the handlers, their
+mappings and their `@RequireAction(Action.X)` once: the scope comes from the controller
+(`scope()`), the action from the method. `LostItemController` and `FoundItemController` go
+through `ArchivableItemController<T>`, which adds the archive route; the two history
+controllers do not have it. A subclass is a `@RequestMapping` plus a constructor naming its
+`ItemKind` (`service/ItemKind`: the `Scope`, the base path, and the `page.*`, `entity.*` and
+`flash.*` keys derived from the scope name; the path constants for `@RequestMapping` live in
+`ItemKind.Path`). Actions follow one pattern: `GET` list, `GET /new`, `POST` create,
+`GET /{id}/edit`, `POST /{id}` update, `POST /{id}/archive` (live kinds only),
+`POST /{id}/delete`. Forms are `POST` only; there is no `PUT` or `DELETE` from HTML.
+`AdminItemService<T>` runs the transactions; `mapper/ItemFormApplier` copies the form onto
+the entity (category lookup, place upsert, the country and currency guard).
 
 Templates: `items/list.html` and `items/form.html` are shared by all four item kinds,
 `matches.html` is the match page, `fragments/` holds the layout, filters, sorting, dialogs
@@ -58,6 +64,12 @@ Permissions are two-dimensional, `Scope` × `Action`
   `@PreAuthorize("@perm.can(authentication, '{scope}', '{action}')")`. The `{scope}`
   placeholders work because `SecurityConfig` registers
   `AnnotationTemplateExpressionDefaults`.
+- `@RequireAction(Action.X)` is the same thing for the handlers `ItemController` shares
+  between the four item kinds: `@PreAuthorize("@perm.can(authentication, this.scope().name(), '{value}')")`,
+  where `this` is the controller instance Spring Security puts on the expression root, so the
+  scope is the concrete controller's. `ItemController` has no interface on purpose: with one,
+  method security could wrap the controller in a JDK proxy, which is no longer a
+  `@Controller` and registers no routes.
 - `perm` is the `PermissionChecker` bean; `AdminPermissions` is the per-request view of the
   authorities and is also put into every model as `perms`, so templates can write
   `${perms.can('LOST_ITEM', 'EDIT')}` to hide a button.
@@ -127,10 +139,10 @@ re-rendering the row. The htmx choreography around it is in
 
 The lost and found lists and both archives show how many people responded to a notice and
 the item dialog lists them (phone, email, when, status); the archives look claims up by the
-history copy. `AdminItemService.deleteClaims` runs next to `deleteMatches` on delete, removing
-the claims and their contact infos. Archive does not touch rows at all: it publishes
-`ArchiveRequestedEvent` (`derechi.archive.exchange`, `item.<kind>.archive`) and
-`Worker` archives the notice. See [../../features/claims.md](../../features/claims.md).
+history copy. `AdminItemService.delete` drops the claims and their contact infos (`ItemClaims`) next to
+`deleteMatches`. Archive does not touch rows at all: `ArchivableAdminItemService.archive`
+publishes `ArchiveRequestedEvent` (`derechi.archive.exchange`, `item.<kind>.archive`) and
+`Worker` archives the notice; the history services do not have the method. See [../../features/claims.md](../../features/claims.md).
 
 ## Uploads and maps
 
@@ -167,10 +179,10 @@ compression is on for text and JSON.
 | Test | Kind |
 |---|---|
 | `LostItemControllerTests`, `LostItemHistoryControllerTests`, `MatchControllerTests`, `ItemFormPlaceSearchTests`, `UploadControllerTests`, `GlobalExceptionHandlerTests` | `@WebMvcTest` slices importing `SecurityConfig` and the view helpers, services and `ImageStorage` mocked (the real one would pull in the S3 client) |
-| `ItemControllerPermissionsTests` | one `@WebMvcTest` over the four item controllers: every route opens with its own `SCOPE:ACTION` and answers 403 to the same action on the neighbouring scope |
+| `ItemControllerPermissionsTests` | one `@WebMvcTest` over the four item controllers: every route opens with its own `SCOPE:ACTION` and answers 403 to the same action on the neighbouring scope; the archive route answers 404 on the two history controllers |
 | `service/AdminItemServiceTests`, `service/ItemClaimsTests`, `service/matching/MatchServiceTests` | `@DataJpaTest` on the Testcontainers database (`support/AbstractPostgresTests` + `repository/AbstractRepositoryTests`, copied from `Client-API`): create/update/delete against the real foreign keys, the claim lookups, the top-three candidate query and the totals |
 | `service/matching/MatchNotificationServiceTest`, `service/lost/LostItemAdminServiceTest` | unit tests with mocked repositories and `RabbitTemplate`, next to the services they cover |
-| `PermissionsTest`, `KeycloakAuthoritiesMapperTest`, `NotifyChannelTest`, `ItemFilterTest`, `PagesTest`, `FormatsTest`, `CountriesPropertiesTest` | plain unit tests |
+| `PermissionsTest`, `KeycloakAuthoritiesMapperTest`, `NotifyChannelTest`, `ItemKindTest` (the derived message keys exist in the base bundle), `ItemFilterTest`, `PagesTest`, `FormatsTest`, `CountriesPropertiesTest` | plain unit tests |
 | `RabbitConfigTest` | the `NOTIFICATION` and `ARCHIVE_REQUESTED` type ids on outgoing messages |
 | `MessagesTest` | bundle parity across the five languages |
 | `ImageStorageIT` | `@SpringBootTest` against a live MinIO on `localhost:9000`, enabled only when its health endpoint answers |

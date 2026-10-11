@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.shpytchuk.clientapi.entity.Claim;
+import org.shpytchuk.clientapi.entity.ItemKind;
 
 @Entity
 @Getter
@@ -16,4 +17,9 @@ public class LostItemClaim extends Claim<LostItem> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private LostItem item;
+
+    @Override
+    public ItemKind kind() {
+        return ItemKind.LOST;
+    }
 }

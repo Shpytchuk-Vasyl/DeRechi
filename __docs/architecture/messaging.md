@@ -51,8 +51,8 @@ sends nothing. See [../features/claims.md](../features/claims.md).
 
 The producer side of `Admin-API` is a plain `RabbitTemplate.convertAndSend(exchange, key,
 event)`. In `Client-API` the publish is an AspectJ `@AfterReturning` advice on every
-`ItemService.create(..)`, which picks the routing key by the concrete service class
-(`LostItemService` or not). The reason it is an aspect rather than a line in the service is
+`ItemService.create(..)`, which takes the routing key from the advised service's kind
+(`service.kind().routingKey("created")`, bound with `target(service)`; `ItemKind` in `entity/`). The reason it is an aspect rather than a line in the service is
 that the event must not be published when the transaction fails, and the advice runs only on
 a normal return.
 

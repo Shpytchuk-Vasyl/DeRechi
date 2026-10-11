@@ -19,4 +19,8 @@ public enum ItemKind {
     public String routingKey(String verb) {
         return "item." + segment + "." + verb;
     }
+
+    public ItemKind opposite() {
+        return this == LOST ? FOUND : LOST;
+    }
 }

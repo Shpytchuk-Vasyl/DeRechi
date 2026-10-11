@@ -12,9 +12,10 @@ import org.shpytchuk.worker.event.NotificationRequestedEvent;
 import org.shpytchuk.worker.repository.found.FoundItemClaimRepository;
 import org.shpytchuk.worker.repository.lost.LostItemClaimRepository;
 import org.shpytchuk.worker.service.ClaimNotifier;
-import org.shpytchuk.worker.service.ClaimRepositories;
 import org.shpytchuk.worker.service.ItemKind;
+import org.shpytchuk.worker.service.ItemKinds;
 import org.shpytchuk.worker.support.Fixtures;
+import org.shpytchuk.worker.support.Kinds;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import java.time.Clock;
@@ -47,11 +48,11 @@ class PaidHandlerTest {
         lostClaims = mock(LostItemClaimRepository.class);
         foundClaims = mock(FoundItemClaimRepository.class);
         rabbitTemplate = mock(RabbitTemplate.class);
-        ClaimRepositories repositories = new ClaimRepositories(lostClaims, foundClaims);
+        ItemKinds kinds = Kinds.of(lostClaims, foundClaims);
         ClaimNotifier notifier = new ClaimNotifier(rabbitTemplate, Fixtures.PROPERTIES, Fixtures.messages());
         Clock clock = Clock.fixed(NOW, ZoneOffset.UTC);
-        lostHandler = new PaidHandler(ItemKind.LOST, repositories, notifier, clock);
-        foundHandler = new PaidHandler(ItemKind.FOUND, repositories, notifier, clock);
+        lostHandler = new PaidHandler(ItemKind.LOST, kinds, notifier, clock);
+        foundHandler = new PaidHandler(ItemKind.FOUND, kinds, notifier, clock);
     }
 
     @Test

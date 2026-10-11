@@ -6,9 +6,9 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.shpytchuk.worker.config.ClaimsProperties;
 import org.shpytchuk.worker.entity.matching.Claim;
 import org.shpytchuk.worker.repository.ClaimRepository;
-import org.shpytchuk.worker.service.ClaimRepositories;
 import org.shpytchuk.worker.service.ItemArchiver;
 import org.shpytchuk.worker.service.ItemKind;
+import org.shpytchuk.worker.service.ItemKinds;
 import org.springframework.amqp.AmqpException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,9 @@ import org.springframework.stereotype.Component;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static org.springframework.core.NestedExceptionUtils.getMostSpecificCause;
 
@@ -25,7 +27,7 @@ import static org.springframework.core.NestedExceptionUtils.getMostSpecificCause
 @Slf4j
 public class ClaimFollowUpJob {
 
-    private final ClaimRepositories repositories;
+    private final ItemKinds kinds;
     private final ClaimFollowUps followUps;
     private final ItemArchiver archiver;
     private final ClaimsProperties properties;
@@ -41,34 +43,37 @@ public class ClaimFollowUpJob {
     }
 
     void followUp(ItemKind kind, Instant now) {
-        ClaimRepository<? extends Claim> claims = repositories.of(kind);
+        ClaimRepository<? extends Claim> claims = kinds.claims(kind);
 
-        int authorReminders = each(kind, "author reminder for claim",
-                ids(claims.findByItemNotNullAndConfirmedAtNullAndAuthorRemindedAtNullAndCreatedAtLessThanEqualOrderByIdAsc(
-                        now.minus(properties.authorReminderAfter()))),
-                id -> followUps.remindAuthor(kind, id));
+        List<Step> steps = List.of(
+                new Step("author reminder for claim", "author reminders",
+                        () -> ids(claims.findByItemNotNullAndConfirmedAtNullAndAuthorRemindedAtNullAndCreatedAtLessThanEqualOrderByIdAsc(
+                                now.minus(properties.authorReminderAfter()))),
+                        id -> followUps.remindAuthor(kind, id)),
+                new Step("claimant reminder for claim", "claimant reminders",
+                        () -> ids(claims.findByItemNotNullAndConfirmedAtNullAndClaimantRemindedAtNullAndAuthorRemindedAtLessThanEqualOrderByIdAsc(
+                                now.minus(properties.claimantReminderAfter()))),
+                        id -> followUps.remindClaimant(kind, id)),
+                new Step("archive of confirmed item", "confirmed items archived",
+                        () -> itemIds(claims.findByItemNotNullAndConfirmedAtNotNull()),
+                        id -> archiver.archive(kind, id)),
+                new Step("archive of quiet item", "quiet items archived",
+                        () -> quietItems(claims, now.minus(properties.archiveAfter())),
+                        id -> archiver.archive(kind, id)),
+                new Step("deletion of expired claim", "expired claims deleted",
+                        () -> ids(claims.findByCreatedAtLessThanEqualOrderByIdAsc(now.minus(properties.retention()))),
+                        id -> followUps.purge(kind, id)));
 
-        int claimantReminders = each(kind, "claimant reminder for claim",
-                ids(claims.findByItemNotNullAndConfirmedAtNullAndClaimantRemindedAtNullAndAuthorRemindedAtLessThanEqualOrderByIdAsc(
-                        now.minus(properties.claimantReminderAfter()))),
-                id -> followUps.remindClaimant(kind, id));
+        int total = 0;
+        StringJoiner summary = new StringJoiner(", ");
+        for (Step step : steps) {
+            int done = each(kind, step);
+            total += done;
+            summary.add(done + " " + step.summary());
+        }
 
-        int confirmed = each(kind, "archive of confirmed item",
-                itemIds(claims.findByItemNotNullAndConfirmedAtNotNull()),
-                id -> archiver.archive(kind, id));
-
-        int quiet = each(kind, "archive of quiet item",
-                quietItems(claims, now.minus(properties.archiveAfter())),
-                id -> archiver.archive(kind, id));
-
-        int purged = each(kind, "deletion of expired claim",
-                ids(claims.findByCreatedAtLessThanEqualOrderByIdAsc(now.minus(properties.retention()))),
-                id -> followUps.purge(kind, id));
-
-        if (authorReminders + claimantReminders + confirmed + quiet + purged > 0) {
-            log.info("{} claims: {} author reminders, {} claimant reminders, {} confirmed and {} quiet items "
-                            + "archived, {} expired claims deleted",
-                    kind, authorReminders, claimantReminders, confirmed, quiet, purged);
+        if (total > 0) {
+            log.info("{} claims: {}", kind, summary);
         } else {
             log.debug("{} claims: nothing to follow up", kind);
         }
@@ -88,22 +93,25 @@ public class ClaimFollowUpJob {
         return claims.stream().map(claim -> claim.getItem().getId()).distinct().toList();
     }
 
-    private static int each(ItemKind kind, String step, List<Long> ids, Predicate<Long> action) {
+    private static int each(ItemKind kind, Step step) {
         int done = 0;
-        for (Long id : ids) {
+        for (Long id : step.find().get()) {
             try {
-                if (action.test(id)) {
+                if (step.act().test(id)) {
                     done++;
                 }
             } catch (AmqpException unavailable) {
                 log.warn("{} claims: {} {} failed, the broker is unavailable; the rest waits for the next run: {}",
-                        kind, step, id, getMostSpecificCause(unavailable).toString());
+                        kind, step.name(), id, getMostSpecificCause(unavailable).toString());
                 break;
             } catch (RuntimeException failed) {
                 log.warn("{} claims: {} {} failed, retrying on the next run: {}",
-                        kind, step, id, getMostSpecificCause(failed).toString());
+                        kind, step.name(), id, getMostSpecificCause(failed).toString());
             }
         }
         return done;
+    }
+
+    private record Step(String name, String summary, Supplier<List<Long>> find, Predicate<Long> act) {
     }
 }

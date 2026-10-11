@@ -28,7 +28,7 @@ What each role can do is in [Permissions](permissions.md).
 | Found archive | `/admin/found-items-history` | `FoundItemHistoryController` | `FOUND_ITEM_HISTORY` |
 | Uploads (XHR only) | `/admin/uploads` | `UploadController` | any item CREATE or EDIT |
 
-`/admin` itself redirects to `/admin/matches`. The four item pages share `ItemController<T>` (list, new, create, edit, update, archive, delete) and `AdminItemService<T>`; only the entity type, the scope and the templates differ.
+`/admin` itself redirects to `/admin/matches`. The four item pages share `ItemController<T>` (list, new, create, edit, update, delete) and `AdminItemService<T>`; the live kinds add archive through `ArchivableItemController<T>` and `ArchivableAdminItemService<T>`. A concrete controller only names its `ItemKind` (scope, base path, message keys); beyond that only the entity type and the templates differ.
 
 ### Lists
 
@@ -52,7 +52,7 @@ Delete is synchronous and final: it removes the row from `lost_item` or `found_i
 <a th:if="${perms.can('LOST_ITEM', 'CREATE')}" ...>
 ```
 
-The controller method carries the matching `@RequirePermission`, so a hand-crafted request without the button still gets 403.
+The controller method carries the matching `@RequirePermission` (or `@RequireAction`, on the handlers the item controllers share through `ItemController`), so a hand-crafted request without the button still gets 403.
 
 ## Language
 
@@ -76,7 +76,7 @@ htmx is loaded from a CDN in `fragments/layout :: head`. The Matches page uses i
 ## Where to look
 
 - `Admin-API/src/main/java/org/shpytchuk/adminapi/controller/`
-- `Admin-API/src/main/java/org/shpytchuk/adminapi/service/AdminItemService.java`
+- `Admin-API/src/main/java/org/shpytchuk/adminapi/service/AdminItemService.java`, `ArchivableAdminItemService.java`, `ItemKind.java`; the form-to-entity copy is `mapper/ItemFormApplier.java`
 - `Admin-API/src/main/java/org/shpytchuk/adminapi/config/SecurityConfig.java`, `LocaleConfig.java`, `cache/`
 - `Admin-API/src/main/resources/templates/`
 - Tests: `LostItemControllerTests`, `LostItemHistoryControllerTests`, `ItemControllerPermissionsTests`, `ItemFormPlaceSearchTests`, `MatchControllerTests`, `UploadControllerTests`, `GlobalExceptionHandlerTests`, `AdminItemServiceTests`, `MatchServiceTests`, `PagesTest`, `MessagesTest`

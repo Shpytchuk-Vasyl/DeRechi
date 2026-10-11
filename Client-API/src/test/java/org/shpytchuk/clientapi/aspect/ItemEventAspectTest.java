@@ -1,5 +1,6 @@
 package org.shpytchuk.clientapi.aspect;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -10,6 +11,7 @@ import org.shpytchuk.clientapi.dto.ContactInfoDto;
 import org.shpytchuk.clientapi.dto.ItemDto;
 import org.shpytchuk.clientapi.dto.MoneyDto;
 import org.shpytchuk.clientapi.dto.PlaceDto;
+import org.shpytchuk.clientapi.entity.ItemKind;
 import org.shpytchuk.clientapi.event.ItemCreatedEvent;
 import org.shpytchuk.clientapi.input.ItemContactInfoInput;
 import org.shpytchuk.clientapi.input.ItemInput;
@@ -27,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -54,6 +57,13 @@ class ItemEventAspectTest {
 
     @Mock
     private FoundItemService foundItemService;
+
+    /** The aspect reads the kind only when it publishes, so the stub stays unused when create throws. */
+    @BeforeEach
+    void kinds() {
+        lenient().when(lostItemService.kind()).thenReturn(ItemKind.LOST);
+        lenient().when(foundItemService.kind()).thenReturn(ItemKind.FOUND);
+    }
 
     @Test
     void publishesLostItemsUnderTheirOwnRoutingKey() {

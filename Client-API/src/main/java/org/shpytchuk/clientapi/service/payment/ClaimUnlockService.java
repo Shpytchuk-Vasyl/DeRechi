@@ -6,10 +6,10 @@ import org.shpytchuk.clientapi.client.FourthwallClient;
 import org.shpytchuk.clientapi.client.FourthwallProduct;
 import org.shpytchuk.clientapi.config.FourthwallProperties;
 import org.shpytchuk.clientapi.dto.ClaimDto;
+import org.shpytchuk.clientapi.entity.ItemKind;
 import org.shpytchuk.clientapi.exeption.NotFoundException;
 import org.shpytchuk.clientapi.service.ClaimService;
-import org.shpytchuk.clientapi.service.found.FoundClaimService;
-import org.shpytchuk.clientapi.service.lost.LostClaimService;
+import org.shpytchuk.clientapi.service.ClaimServices;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,22 +17,14 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ClaimUnlockService {
 
-    private final LostClaimService lostClaimService;
-    private final FoundClaimService foundClaimService;
+    private final ClaimServices claimServices;
     private final FourthwallClient fourthwall;
     private final FourthwallProperties properties;
 
-    public ClaimDto unlockLost(Long itemId, Long claimId) {
-        return unlock(lostClaimService, itemId, claimId, "lost");
-    }
-
-    public ClaimDto unlockFound(Long itemId, Long claimId) {
-        return unlock(foundClaimService, itemId, claimId, "found");
-    }
-
-    private ClaimDto unlock(ClaimService<?, ?> service, Long itemId, Long claimId, String kind) {
+    public ClaimDto unlock(ItemKind kind, Long itemId, Long claimId) {
+        ClaimService<?, ?> service = claimServices.of(kind);
         ClaimDto claim = service.find(itemId, claimId)
-                .orElseThrow(() -> new NotFoundException(service.claimEntityName(), claimId));
+                .orElseThrow(() -> new NotFoundException(kind.claimEntityName(), claimId));
         if (claim.paid() || claim.paymentVariantId() != null) {
             return claim;
         }
@@ -40,7 +32,7 @@ public class ClaimUnlockService {
         FourthwallProduct product;
         try {
             product = fourthwall.createDigitalProduct(
-                    properties.productName().formatted(kind + "-" + claim.id()),
+                    properties.productName().formatted(kind.label() + "-" + claim.id()),
                     properties.productDescription(),
                     properties.price());
         } catch (RuntimeException e) {
@@ -50,10 +42,10 @@ public class ClaimUnlockService {
         ClaimDto attached = service.attachProduct(claim.id(), product);
         if (product.variantId().equals(attached.paymentVariantId())) {
             log.info("Checkout created for {} claim {}: Fourthwall product {}, variant {}",
-                    kind, claim.id(), product.productId(), product.variantId());
+                    kind.label(), claim.id(), product.productId(), product.variantId());
         } else {
             log.warn("Fourthwall product {} is orphaned: {} claim {} already had variant {}",
-                    product.productId(), kind, claim.id(), attached.paymentVariantId());
+                    product.productId(), kind.label(), claim.id(), attached.paymentVariantId());
         }
         return attached;
     }

@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * keys from similar_item and the claims, and the order in which Hibernate flushes the changes.
  * {@link ItemArchiverTest} covers the same flow with mocks.
  */
-@Import({ItemArchiver.class, ClaimRepositories.class, ItemArchiverTests.FixedClock.class})
+@Import({ItemArchiver.class, ItemKinds.class, ItemArchiverTests.FixedClock.class})
 class ItemArchiverTests extends AbstractRepositoryTests {
 
     private static final Instant NOW = Instant.parse("2026-10-01T12:00:00Z");

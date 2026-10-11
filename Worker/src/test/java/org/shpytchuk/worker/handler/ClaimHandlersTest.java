@@ -10,10 +10,11 @@ import org.shpytchuk.worker.event.ClaimEvent;
 import org.shpytchuk.worker.repository.found.FoundItemClaimRepository;
 import org.shpytchuk.worker.repository.lost.LostItemClaimRepository;
 import org.shpytchuk.worker.service.ClaimNotifier;
-import org.shpytchuk.worker.service.ClaimRepositories;
 import org.shpytchuk.worker.service.ItemArchiver;
 import org.shpytchuk.worker.service.ItemKind;
+import org.shpytchuk.worker.service.ItemKinds;
 import org.shpytchuk.worker.support.Fixtures;
+import org.shpytchuk.worker.support.Kinds;
 
 import java.util.Optional;
 
@@ -32,7 +33,7 @@ class ClaimHandlersTest {
     private FoundItemClaimRepository foundClaims;
     private ClaimNotifier notifier;
     private ItemArchiver archiver;
-    private ClaimRepositories repositories;
+    private ItemKinds kinds;
 
     @BeforeEach
     void setUp() {
@@ -40,13 +41,13 @@ class ClaimHandlersTest {
         foundClaims = mock(FoundItemClaimRepository.class);
         notifier = mock(ClaimNotifier.class);
         archiver = mock(ItemArchiver.class);
-        repositories = new ClaimRepositories(lostClaims, foundClaims);
+        kinds = Kinds.of(lostClaims, foundClaims);
     }
 
     @Test
     void routingKeysFollowTheKindAndTheVerb() {
-        assertThat(new ClaimedHandler(ItemKind.LOST, repositories, notifier).routingKey()).isEqualTo("item.lost.claimed");
-        assertThat(new ReturnedHandler(ItemKind.FOUND, repositories, archiver).routingKey()).isEqualTo("item.found.returned");
+        assertThat(new ClaimedHandler(ItemKind.LOST, kinds, notifier).routingKey()).isEqualTo("item.lost.claimed");
+        assertThat(new ReturnedHandler(ItemKind.FOUND, kinds, archiver).routingKey()).isEqualTo("item.found.returned");
     }
 
     @Test
@@ -54,7 +55,7 @@ class ClaimHandlersTest {
         FoundItemClaim claim = Fixtures.foundClaim("+380671234567");
         when(foundClaims.findWithDetailsById(43L)).thenReturn(Optional.of(claim));
 
-        new ClaimedHandler(ItemKind.FOUND, repositories, notifier).handle(event(43L));
+        new ClaimedHandler(ItemKind.FOUND, kinds, notifier).handle(event(43L));
 
         verify(notifier).notifyAuthor(ItemKind.FOUND, claim);
         verify(lostClaims, never()).findWithDetailsById(any());
@@ -66,7 +67,7 @@ class ClaimHandlersTest {
         archived.moveToArchive(new LostItemHistory());
         when(lostClaims.findWithDetailsById(42L)).thenReturn(Optional.of(archived));
         when(lostClaims.findWithDetailsById(404L)).thenReturn(Optional.empty());
-        ClaimedHandler handler = new ClaimedHandler(ItemKind.LOST, repositories, notifier);
+        ClaimedHandler handler = new ClaimedHandler(ItemKind.LOST, kinds, notifier);
 
         handler.handle(event(42L));
         handler.handle(event(404L));
@@ -78,7 +79,7 @@ class ClaimHandlersTest {
     void aConfirmedReturnArchivesTheNoticeOfTheClaim() {
         when(lostClaims.findWithDetailsById(42L)).thenReturn(Optional.of(Fixtures.lostClaim("+380671234567")));
 
-        new ReturnedHandler(ItemKind.LOST, repositories, archiver).handle(event(42L));
+        new ReturnedHandler(ItemKind.LOST, kinds, archiver).handle(event(42L));
 
         verify(archiver).archive(ItemKind.LOST, 1L);
     }
@@ -89,7 +90,7 @@ class ClaimHandlersTest {
         archived.moveToArchive(new FoundItemHistory());
         when(foundClaims.findWithDetailsById(43L)).thenReturn(Optional.of(archived));
         when(foundClaims.findWithDetailsById(404L)).thenReturn(Optional.empty());
-        ReturnedHandler handler = new ReturnedHandler(ItemKind.FOUND, repositories, archiver);
+        ReturnedHandler handler = new ReturnedHandler(ItemKind.FOUND, kinds, archiver);
 
         handler.handle(event(43L));
         handler.handle(event(404L));

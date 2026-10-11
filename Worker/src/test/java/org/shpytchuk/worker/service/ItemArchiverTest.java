@@ -7,15 +7,13 @@ import org.mockito.InOrder;
 import org.shpytchuk.worker.entity.lost.LostItemClaim;
 import org.shpytchuk.worker.entity.lost.LostItem;
 import org.shpytchuk.worker.entity.lost.LostItemHistory;
-import org.shpytchuk.worker.repository.found.FoundItemClaimRepository;
-import org.shpytchuk.worker.repository.found.FoundItemHistoryRepository;
-import org.shpytchuk.worker.repository.found.FoundItemRepository;
 import org.shpytchuk.worker.repository.lost.LostItemClaimRepository;
 import org.shpytchuk.worker.repository.lost.LostItemHistoryRepository;
 import org.shpytchuk.worker.repository.lost.LostItemRepository;
 import org.shpytchuk.worker.repository.SimilarItemRepository;
 
 import org.shpytchuk.worker.support.Fixtures;
+import org.shpytchuk.worker.support.Kinds;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -48,9 +46,7 @@ class ItemArchiverTest {
         lostHistory = mock(LostItemHistoryRepository.class);
         lostClaims = mock(LostItemClaimRepository.class);
         similarItems = mock(SimilarItemRepository.class);
-        archiver = new ItemArchiver(lostItems, mock(FoundItemRepository.class), lostHistory,
-                mock(FoundItemHistoryRepository.class), similarItems,
-                new ClaimRepositories(lostClaims, mock(FoundItemClaimRepository.class)),
+        archiver = new ItemArchiver(Kinds.lost(lostItems, lostHistory, lostClaims, similarItems),
                 Clock.fixed(NOW, ZoneOffset.UTC));
     }
 

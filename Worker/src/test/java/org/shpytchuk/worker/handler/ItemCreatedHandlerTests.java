@@ -10,6 +10,7 @@ import org.shpytchuk.worker.entity.thing.ThingCategory;
 import org.shpytchuk.worker.event.ItemCreatedEvent;
 import org.shpytchuk.worker.language.LanguageResolver;
 import org.shpytchuk.worker.repository.AbstractRepositoryTests;
+import org.shpytchuk.worker.service.ItemKinds;
 import org.shpytchuk.worker.support.Fixtures;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
@@ -20,8 +21,8 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/** Both handlers on the real schema: the query, the rank and the {@code INSERT ... unnest} into similar_item. */
-@Import({ItemSearchConfig.class, LanguageResolver.class, LostItemCreatedHandler.class, FoundItemCreatedHandler.class})
+/** Both handler beans on the real schema: the query, the rank and the {@code INSERT ... unnest} into similar_item. */
+@Import({ItemSearchConfig.class, ItemKinds.class, LanguageResolver.class})
 class ItemCreatedHandlerTests extends AbstractRepositoryTests {
 
     private static final LocalDate DATE = LocalDate.of(2026, 9, 10);
@@ -29,10 +30,10 @@ class ItemCreatedHandlerTests extends AbstractRepositoryTests {
     private static final double LON = 24.0315;
 
     @Autowired
-    private LostItemCreatedHandler lostItemCreated;
+    private ItemMatchHandler<FoundItem> lostItemCreated;
 
     @Autowired
-    private FoundItemCreatedHandler foundItemCreated;
+    private ItemMatchHandler<LostItem> foundItemCreated;
 
     private ThingCategory wallets;
     private Place rynok;

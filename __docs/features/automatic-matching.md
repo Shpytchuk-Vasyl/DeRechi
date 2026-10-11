@@ -5,10 +5,10 @@ Every new notice is compared in the background against notices of the opposite k
 ## Flow
 
 1. `Client-API` publishes `ItemCreatedEvent` (`id`, `date`, `category`, `lat`, `lon`, `title`) to the `derechi.items` exchange with key `item.lost.created` or `item.found.created`.
-2. The queue `worker.items` is bound with `item.*.created`. `ItemCreatedListener` reads the routing key from the message and dispatches to the `ItemCreatedHandler` registered for it. An unknown key is rejected without requeue.
-3. `LostItemCreatedHandler` searches `found_item`; `FoundItemCreatedHandler` searches `lost_item`. Both delegate to an `ItemService<T>` bean (two instances, wired in `ItemSearchConfig`).
+2. The queue `worker.items` is bound with `item.*.created`. `ItemCreatedListener` dispatches by the routing key of the message (`RoutingKeyDispatcher`, shared by all Worker listeners) to the `ItemCreatedHandler` registered for it. An unknown key is rejected without requeue.
+3. `ItemMatchHandler<T>` is one class with two beans wired in `ItemSearchConfig`: `lostItemCreatedHandler` searches `found_item`, `foundItemCreatedHandler` searches `lost_item`. Each delegates to the `ItemService<T>` bean of the opposite kind and holds the `KindOps` of the kind that arrived.
 4. `ItemService.findAllMostSuitable` builds the candidate query, takes the first page and asks the repository to rank the candidates.
-5. The handler inserts the pairs into `similar_item` with `SimilarItemRepository.insertAll` (one statement with arrays). The pair `(found_item_id, lost_item_id)` is the primary key.
+5. The handler writes the pairs with `KindOps.insertMatches`, which calls `SimilarItemRepository.insertForLost` or `insertForFound` so the new notice lands in its own column; both wrap `insertAll` (one statement with arrays). The pair `(found_item_id, lost_item_id)` is the primary key.
 
 ## Candidate rules
 
@@ -59,10 +59,10 @@ The `ukrainian` and `polish` configurations are not built into PostgreSQL. `dock
 
 ## Where to look
 
-- `Worker/src/main/java/org/shpytchuk/worker/listener/ItemCreatedListener.java`
-- `Worker/src/main/java/org/shpytchuk/worker/service/ItemService.java`, `handler/LostItemCreatedHandler.java`, `handler/FoundItemCreatedHandler.java`
+- `Worker/src/main/java/org/shpytchuk/worker/listener/ItemCreatedListener.java`, `listener/RoutingKeyDispatcher.java`
+- `Worker/src/main/java/org/shpytchuk/worker/service/ItemService.java`, `handler/ItemMatchHandler.java`, `config/ItemSearchConfig.java`, `service/KindOps.java`, `repository/SimilarItemRepository.java`
 - `Worker/src/main/java/org/shpytchuk/worker/specification/ThingSpecifications.java`
 - `Worker/src/main/java/org/shpytchuk/worker/language/`
 - `Worker/src/main/java/org/shpytchuk/worker/config/FullTextFunctionContributor.java`
 - `DB-Postgres/changelog/changes/001-extentions-and-configuration.sql`, `004-similar_item.postgresql.sql`
-- Tests: `ItemServiceTests` and `ItemCreatedHandlerTests` (Worker, on the Testcontainers database), `LanguageResolverTest`, `ItemCreatedListenerTest`, `RabbitConfigTest`; `MatchServiceTests` in Admin-API for the page that shows the result
+- Tests: `ItemServiceTests` and `ItemCreatedHandlerTests` (Worker, on the Testcontainers database), `ItemMatchHandlerTest`, `KindOpsTest`, `LanguageResolverTest`, `ItemCreatedListenerTest`, `RoutingKeyDispatcherTest`, `RabbitConfigTest`; `MatchServiceTests` in Admin-API for the page that shows the result

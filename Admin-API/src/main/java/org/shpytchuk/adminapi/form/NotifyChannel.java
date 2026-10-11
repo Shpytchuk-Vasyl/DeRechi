@@ -5,31 +5,32 @@ import org.shpytchuk.adminapi.entity.detail.ContactInfo.SocialMediaEnum;
 
 public enum NotifyChannel {
 
-    ALL,
-    EMAIL,
-    PHONE,
-    TELEGRAM,
-    VIBER,
-    WHATSAPP;
+    ALL(true, true, null),
+    EMAIL(false, true, null),
+    PHONE(true, false, null),
+    TELEGRAM(true, false, SocialMediaEnum.TELEGRAM),
+    VIBER(true, false, SocialMediaEnum.VIBER),
+    WHATSAPP(true, false, SocialMediaEnum.WHATSAPP);
+
+    private final boolean needPhone;
+    private final boolean needEmail;
+    private final @Nullable SocialMediaEnum social;
+
+    NotifyChannel(boolean needPhone, boolean needEmail, @Nullable SocialMediaEnum social) {
+        this.needPhone = needPhone;
+        this.needEmail = needEmail;
+        this.social = social;
+    }
 
     public @Nullable SocialMediaEnum social() {
-        return switch (this) {
-            case ALL, EMAIL, PHONE -> null;
-            default -> SocialMediaEnum.valueOf(name());
-        };
+        return social;
     }
 
     public boolean isNeedPhone() {
-        return switch (this) {
-            case EMAIL -> false;
-            default -> true;
-        };
+        return needPhone;
     }
 
     public boolean isNeedEmail() {
-        return switch (this) {
-            case ALL, EMAIL -> true;
-            default -> false;
-        };
+        return needEmail;
     }
 }

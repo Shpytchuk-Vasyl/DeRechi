@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.shpytchuk.clientapi.entity.ItemKind;
 import org.shpytchuk.clientapi.entity.thing.Thing;
 
 @Entity
@@ -12,4 +13,8 @@ import org.shpytchuk.clientapi.entity.thing.Thing;
 @NoArgsConstructor
 public class LostItem extends Thing {
 
+    @Override
+    public ItemKind kind() {
+        return ItemKind.LOST;
+    }
 }

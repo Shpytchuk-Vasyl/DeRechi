@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Arrays;
+
 public interface SimilarItemRepository extends JpaRepository<SimilarItem, SimilarItem.SimilarItemId> {
 
     @Modifying
@@ -21,6 +23,20 @@ public interface SimilarItemRepository extends JpaRepository<SimilarItem, Simila
     int insertAll(@Param("foundItemIds") Long[] foundItemIds,
                   @Param("lostItemIds") Long[] lostItemIds,
                   @Param("matchOrders") Double[] matchOrders);
+
+    default int insertForLost(Long lostItemId, Long[] foundItemIds, Double[] matchOrders) {
+        return insertAll(foundItemIds, repeat(lostItemId, foundItemIds.length), matchOrders);
+    }
+
+    default int insertForFound(Long foundItemId, Long[] lostItemIds, Double[] matchOrders) {
+        return insertAll(repeat(foundItemId, lostItemIds.length), lostItemIds, matchOrders);
+    }
+
+    private static Long[] repeat(Long id, int times) {
+        Long[] ids = new Long[times];
+        Arrays.fill(ids, id);
+        return ids;
+    }
 
     @Modifying
     @Query("delete from SimilarItem s where s.id.lostItemId = :lostItemId")

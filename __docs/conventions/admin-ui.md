@@ -66,7 +66,7 @@ The category reference list is cached in Caffeine (`categories`, one hour). A ne
 
 ## Permissions
 
-Every handler method carries `@RequirePermission(scope = Scope.X, action = Action.Y)`; `UploadController` uses `@PreAuthorize("@perm.canManageItems(authentication)")` because it serves several scopes. In templates, hide what the user cannot do with `${perms.can('LOST_ITEM', 'EDIT')}` (or `perms.can(scope, 'EDIT')` when the scope is a model attribute). Hiding a button is a courtesy; the annotation is the actual check, and a missing annotation is a security bug. See [permissions](../features/permissions.md).
+Every handler method carries `@RequirePermission(scope = Scope.X, action = Action.Y)`, except the shared handlers of `ItemController`, which carry `@RequireAction(Action.Y)` and take the scope from the concrete controller (`this.scope()`; keep `ItemController` free of interfaces, or method security proxies it with a JDK proxy and its routes disappear); `UploadController` uses `@PreAuthorize("@perm.canManageItems(authentication)")` because it serves several scopes. In templates, hide what the user cannot do with `${perms.can('LOST_ITEM', 'EDIT')}` (or `perms.can(scope, 'EDIT')` when the scope is a model attribute). Hiding a button is a courtesy; the annotation is the actual check, and a missing annotation is a security bug. See [permissions](../features/permissions.md).
 
 ## Lists, sorting, paging
 
@@ -85,7 +85,7 @@ Image upload is FilePond (`image-upload.js`), posting to `/admin/uploads` and re
 
 ## Checklist for a new screen
 
-1. Controller: `@RequirePermission` on every method, `@CachedPage` if it is a read-only list, `Pages.safe` on the `Pageable`.
+1. Controller: `@RequirePermission` on every method (`@RequireAction` on `ItemController` handlers), `@CachedPage` if it is a read-only list, `Pages.safe` on the `Pageable`.
 2. Service returns records (`*View`), never entities, and runs in a read-only transaction.
 3. Template: `layout :: head` + `navbar`, text only from `#{...}`, keys added to five bundles.
 4. Any htmx control: `hx-target` an element with a stable id, `hx-swap="outerHTML"`, `th:data-error`.

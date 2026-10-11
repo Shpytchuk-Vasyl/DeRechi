@@ -79,35 +79,45 @@ is rejected with the GraphQL error `DISPOSABLE_EMAIL`, which the web client show
 field. The list is downloaded by `DisposableEmailDomains` on start-up and refreshed daily, see
 `DISPOSABLE_EMAILS_URL`. Notice authors are not checked. Unknown item or token → `NOT_FOUND`.
 
-`ClaimService` (one subclass per kind) loads the item with a plain `findById` and looks for an
-existing claim on the item with the same phone **or** email. There is no lock today, so two
-concurrent identical claims can both miss each other and both be created. Planned: a
-`PESSIMISTIC_WRITE` lock on the item row (a unique index cannot do it, the phone and email live in
-`contact_info`). If a matching claim exists it returns its id with `repeated: true` and publishes nothing.
-Otherwise it saves a new `contact_info` row, the claim (`token` = random UUID, `created_at`), and
-returns `ClaimDto(id, repeated = false)`. `ClaimEventAspect`, an `@AfterReturning` advice on
+`ClaimService` (one subclass per kind, each answering `kind()` with its `ItemKind`) loads the item
+with a plain `findById` and looks for an existing claim on the item with the same phone **or**
+email. There is no lock today, so two concurrent identical claims can both miss each other and both
+be created. Planned: a `PESSIMISTIC_WRITE` lock on the item row (a unique index cannot do it, the
+phone and email live in `contact_info`). If a matching claim exists it returns its id with
+`repeated: true` and publishes nothing. Otherwise it saves a new `contact_info` row (built by
+`ContactInfoMapper`, the same mapper notices use), the claim (`token` = random UUID, `created_at`),
+and returns `ClaimDto(id, repeated = false)`. `ClaimEventAspect`, an `@AfterReturning` advice on
 `ClaimService+.claim(..)` and `confirm(..)` with `@Order(0)` (outside the transaction proxy, like
 `ItemEventAspect`), publishes `ClaimEvent { id }` on `derechi.items` with `item.lost.claimed` or
-`item.found.claimed` once the transaction has committed; a `repeated` result publishes nothing.
-The consumer reads the row, so publishing before the commit would race it. `confirm(token)`
-returns the claim the same way, with `repeated = true` for a token that was already confirmed,
-and the aspect turns a fresh confirmation into `item.<kind>.returned`. `ReturnService`, which
-tries both kinds, deliberately has no transaction of its own: the per-kind transaction must be
-the outermost one, or the advice would fire before the commit.
+`item.found.claimed` once the transaction has committed; the key is `kind().routingKey("claimed")`
+of the advised service, and a `repeated` result publishes nothing. The consumer reads the row, so
+publishing before the commit would race it. `confirm(token)` returns the claim the same way, with
+`repeated = true` for a token that was already confirmed (`confirm` and `markPaid` share one
+"stamp once" step inside the service), and the aspect turns a fresh confirmation into
+`item.<kind>.returned`. `ReturnService` asks each kind's service in turn through `ClaimServices`
+(the registry of `ClaimService` by `ItemKind`, lost first) and deliberately has no transaction of
+its own: the per-kind transaction must be the outermost one, or the advice would fire before the
+commit.
 
 ### Worker
 
 The worker gained a second queue, `worker.claims`, bound with `item.*.claimed`,
 `item.*.returned` and `item.*.paid` (dead letters to `worker.claims.dlq`), and a scheduled job.
 
-- `ClaimListener` dispatches by routing key like `ItemCreatedListener`. `claimed` loads the claim
-  with both contact infos and calls `ClaimNotifier.notifyAuthor`; `returned` calls
-  `ItemArchiver.archive`. Both are harmless on replay: a missing claim or item is logged and
-  skipped.
+- `ClaimListener` dispatches by routing key like `ItemCreatedListener` (the same
+  `RoutingKeyDispatcher`). The handlers are `ClaimedHandler`, `ReturnedHandler` and
+  `PaidHandler`, one bean per kind, registered by `ClaimsConfig.ClaimHandlers` (a Spring
+  `BeanRegistrar` looping over `ItemKind`); each reaches its tables through `ItemKinds`.
+  `claimed` loads the claim with both contact infos and calls `ClaimNotifier.notifyAuthor`;
+  `returned` calls `ItemArchiver.archive`. Both are harmless on replay: a missing claim or item
+  is logged and skipped.
 - `ClaimNotifier` builds `NotificationRequestedEvent`s from this module's own message bundles
-  (`messages*.properties`, five languages) and publishes them to `derechi.notifications`:
-  `notification.claim.created` with the claimant's contacts, `notification.claim.reminder` for
-  both reminders. Dedup keys: `claim:<kind>:<id>`, `...:author-reminder`, `...:claimant-reminder`.
+  (`messages*.properties`, five languages) and publishes them to `derechi.notifications`. The
+  four messages are the enum `ClaimMessage`, each with its routing key, bundle key, recipient and
+  dedup key: `notification.claim.created` with the claimant's contacts (`claim:<kind>:<id>`),
+  `notification.claim.reminder` for both reminders (`...:author-reminder`,
+  `...:claimant-reminder`) and `notification.claim.unlocked` (`...:unlocked`). One method renders
+  and publishes; the public methods only supply the placeholders of the body.
 - **Language comes from the recipient's phone number**, not from any UI locale: `PhoneLocales`
   maps the libphonenumber region to a language (UA → uk, PL → pl, DE/AT/CH → de, FR/BE/LU/MC → fr,
   anything else → en). A Ukrainian with a German number gets German, which is the decision: the
@@ -119,9 +129,12 @@ The worker gained a second queue, `worker.claims`, bound with `item.*.claimed`,
   4. archives items whose **newest** claim is older than `archive-after` (7 days);
   5. deletes claims older than `retention` (1 year), archived or not, with their contact infos:
      this is what keeps the privacy policy's "one year at most" true.
-  Each claim is handled in its own transaction, publish first and stamp second: a RabbitMQ outage
-  is retried on the next run, and a stamp failure at worst repeats a message inside NotifyHub's
-  one-hour dedup window (in memory, per `Notification` instance, lost on restart).
+  The five steps are a list of `Step(name, summary, find, act)` run in that order; each finder
+  runs when its turn comes, so a step sees what the previous ones wrote, and the summary log line
+  is built from the steps. Each claim is handled in its own transaction (`ClaimFollowUps`),
+  publish first and stamp second: a RabbitMQ outage is retried on the next run, and a stamp
+  failure at worst repeats a message inside NotifyHub's one-hour dedup window (in memory, per
+  `Notification` instance, lost on restart).
   `run()` carries `@SchedulerLock(name = "claim-follow-up")` (ShedLock, JDBC provider, table
   `shedlock` from migration `009-shedlock`), so with several Worker instances only one runs the job
   at a time.
@@ -130,9 +143,11 @@ The worker gained a second queue, `worker.claims`, bound with `item.*.claimed`,
   `ArchiveListener`) and this class runs it, as it does for a confirmed return and for the job.
   It copies the item into `*_item_history` with `archived_at`, deletes its `similar_item` rows,
   re-points its claims at the history copy (`item_id` → `null`, `archived_item_id` →
-  the new id) and deletes the item. The claimants' contacts stay for the retention period. To do
-  this the module carries `LostItemHistory`/`FoundItemHistory` and `Thing` has `compensation`
-  and `currency` like the other copies.
+  the new id) and deletes the item. The claimants' contacts stay for the retention period. What
+  differs per kind (the three repositories, the history class, the `similar_item` column) sits in
+  `KindOps`, one instance per `ItemKind` held by `ItemKinds`, so the archiver itself has no
+  `switch`. To do this the module carries `LostItemHistory`/`FoundItemHistory` and `Thing` has
+  `compensation` and `currency` like the other copies.
 
 Config, `Worker/src/main/resources/application.yaml`:
 
@@ -207,7 +222,8 @@ code, and the payer's email does not matter.
 The flow:
 
 1. Opening the dialog calls `unlockLostItemClaim` or `unlockFoundItemClaim` with the notice id and
-   the claim id. `ClaimUnlockService` finds the claim on that notice, and if it is unpaid and has no product yet, asks
+   the claim id; both end in `ClaimUnlockService.unlock(kind, itemId, claimId)`, which takes the
+   kind's service from `ClaimServices`, finds the claim on that notice, and if it is unpaid and has no product yet, asks
    `FourthwallClient` for one: `POST /open-api/v1.0/products` with `type: digital`,
    `publishOnCreate: false`, the name `derechi.fourthwall.product-name` with the claim reference
    (`lost-42`), then, if `derechi.fourthwall.product-image.url` (`FOURTHWALL_PRODUCT_IMAGE_URL`) is
@@ -256,6 +272,11 @@ The flow:
    the items bought (`offers[].id`, `offers[].variant.id`, `variants[].id`), skips `CANCELLED`
    orders, and leaves anything else unmatched with a warning in the log. Orders sent from the
    dashboard's "Send test notification" carry `testMode: true` and are stored with that flag.
+   Everything kind-specific sits on the per-kind `ClaimService` reached through `ClaimServices`:
+   `findByPaymentIds` runs the lookup in that kind's claim table, `link(order, claim)` fills the
+   kind's foreign key on `fourthwall_order`, and `claimOf(order)` reads it back for a redelivered
+   webhook. The services are asked in kind order and the first match wins, so a lost claim is
+   found before the found table is queried.
 4. A match stamps `paid_at` through `ClaimService.markPaid`, and `ClaimEventAspect` publishes
    `item.<kind>.paid` after the commit, exactly like `claimed` and `returned`. A second order for
    an already paid claim is stored but publishes nothing.
@@ -334,11 +355,11 @@ check details before meeting.
 
 ## Where to look
 
-- `Client-API/src/main/java/org/shpytchuk/clientapi/service/ClaimService.java`, `ReturnService.java`, `controller/ClaimController.java`, `aspect/ClaimEventAspect.java`, `service/payment/ClaimUnlockService.java`, `service/payment/FourthwallOrderService.java`, `controller/payment/FourthwallWebhookController.java`, `client/FourthwallClient.java`, `config/FourthwallProperties.java`
-- `Worker/src/main/java/org/shpytchuk/worker/listener/ClaimListener.java`, `listener/ArchiveListener.java`, `handler/ClaimedHandler.java`, `handler/ReturnedHandler.java`, `service/ClaimNotifier.java`, `cron/ClaimFollowUpJob.java` (+ `ClaimFollowUps`, one transaction per claim), `service/ItemArchiver.java`, `language/PhoneLocales.java`, `src/main/resources/messages*.properties`
+- `Client-API/src/main/java/org/shpytchuk/clientapi/service/ClaimService.java`, `ClaimServices.java`, `ReturnService.java`, `entity/ItemKind.java`, `mapper/ContactInfoMapper.java`, `controller/ClaimController.java`, `aspect/ClaimEventAspect.java`, `service/payment/ClaimUnlockService.java`, `service/payment/FourthwallOrderService.java`, `controller/payment/FourthwallWebhookController.java`, `client/FourthwallClient.java`, `config/FourthwallProperties.java`
+- `Worker/src/main/java/org/shpytchuk/worker/listener/ClaimListener.java`, `listener/ArchiveListener.java`, `listener/RoutingKeyDispatcher.java`, `config/ClaimsConfig.java` (the handler registrar), `handler/ClaimedHandler.java`, `handler/ReturnedHandler.java`, `handler/PaidHandler.java`, `service/ClaimNotifier.java`, `service/ClaimMessage.java`, `cron/ClaimFollowUpJob.java` (+ `ClaimFollowUps`, one transaction per claim), `service/ItemArchiver.java`, `service/KindOps.java`, `service/ItemKinds.java`, `language/PhoneLocales.java`, `src/main/resources/messages*.properties`
 - `Notification/src/main/java/org/shpytchuk/notification/service/NotificationSender.java`
 - `Admin-API/src/main/java/org/shpytchuk/adminapi/service/AdminItemService.java`, `templates/fragments/dialogs.html`
 - `Web-Client/src/screens/found_lost/claim-card.tsx`, `src/screens/claims/confirm-return.tsx`, `src/app/actions/claim.ts`
 - `DB-Postgres/changelog/changes/006-item-claims.postgresql.sql`, `007-claim-payment.postgresql.sql`, `008-claim-unlock-limit.postgresql.sql`, `009-shedlock.postgresql.sql`
 - `docker/rabbitmq/definitions.json`
-- Tests: `ClaimControllerTests`, `FourthwallWebhookControllerTests`, `FourthwallClientTest`, `FourthwallOrderPlacedTest`, `FourthwallPropertiesTest`, `ClaimEventAspectTest`, `ClaimNotifierTest`, `ClaimFollowUpJobTest`, `ClaimFollowUpsTests`, `ClaimRepositoryTests` (Worker), `ClaimHandlersTest`, `ItemArchiverTest`, `ItemArchiverTests`, `ArchiveListenerTest`, `PhoneLocalesTest`, `NotificationSenderTest`, `LostItemAdminServiceTest`, `AdminItemServiceTests`, `ItemClaimsTests`, and in `Web-Client` `claim.test.ts`, `claim-schema.test.ts`, `claim-cookie.test.ts`
+- Tests: `ClaimControllerTests`, `FourthwallWebhookControllerTests`, `FourthwallClientTest`, `FourthwallOrderPlacedTest`, `FourthwallPropertiesTest`, `ClaimEventAspectTest`, `ClaimServicesTest`, `ReturnServiceTest`, `ContactInfoMapperTest`, `ItemKindTest`, `ClaimNotifierTest`, `ClaimMessageTest`, `ClaimFollowUpJobTest`, `ClaimFollowUpsTests`, `ClaimRepositoryTests` (Worker), `ClaimHandlersTest`, `PaidHandlerTest`, `ClaimsConfigTests`, `ItemArchiverTest`, `ItemArchiverTests`, `KindOpsTest`, `ItemKindsTest`, `ArchiveListenerTest`, `ClaimListenerTest`, `RoutingKeyDispatcherTest`, `PhoneLocalesTest`, `NotificationSenderTest`, `LostItemAdminServiceTest`, `AdminItemServiceTests`, `ItemClaimsTests`, and in `Web-Client` `claim.test.ts`, `claim-schema.test.ts`, `claim-cookie.test.ts`

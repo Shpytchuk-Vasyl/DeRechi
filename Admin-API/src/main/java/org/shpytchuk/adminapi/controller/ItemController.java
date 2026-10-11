@@ -1,5 +1,6 @@
 package org.shpytchuk.adminapi.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.shpytchuk.adminapi.config.cache.CachedPage;
 import org.shpytchuk.adminapi.entity.thing.Thing;
@@ -7,12 +8,15 @@ import org.shpytchuk.adminapi.form.ItemFilter;
 import org.shpytchuk.adminapi.form.ItemForm;
 import org.shpytchuk.adminapi.form.ItemFormValidator;
 import org.shpytchuk.adminapi.model.ItemModel;
+import org.shpytchuk.adminapi.security.Action;
+import org.shpytchuk.adminapi.security.RequireAction;
 import org.shpytchuk.adminapi.security.Scope;
 import org.shpytchuk.adminapi.service.AdminItemService;
+import org.shpytchuk.adminapi.service.ItemKind;
 import org.shpytchuk.adminapi.view.DeletedItem;
-import org.shpytchuk.adminapi.view.detail.ItemView;
 import org.shpytchuk.adminapi.view.Pager;
 import org.shpytchuk.adminapi.view.SortView;
+import org.shpytchuk.adminapi.view.detail.ItemView;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
@@ -21,11 +25,22 @@ import org.springframework.security.core.Authentication;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Locale;
-
+/**
+ * The pages of one kind of notice: list, create and edit forms, delete. The subclass only names its
+ * {@link ItemKind} and carries the {@code @RequestMapping}; the handlers, their mappings and their
+ * {@link RequireAction} live here once, and the scope they require comes from {@link #scope()}.
+ * Live kinds extend {@link ArchivableItemController}, which adds the archive route.
+ * <p>
+ * Deliberately no interface: with one, method security could proxy the controller through a JDK proxy
+ * that is no longer a {@code @Controller}, and the routes would vanish.
+ */
 @CachedPage
 @Slf4j
 public abstract class ItemController<T extends Thing> {
@@ -37,26 +52,26 @@ public abstract class ItemController<T extends Thing> {
     private final ItemModel itemModel;
     private final ItemFormValidator formValidator;
     private final MessageSource messages;
-    private final Scope scope;
-    private final String basePath;
-    private final String titleKey;
-    private final String kind;
+    private final ItemKind kind;
 
     protected ItemController(AdminItemService<T> service,
                              ItemModel itemModel,
                              ItemFormValidator formValidator,
                              MessageSource messages,
-                             Scope scope,
-                             String basePath,
-                             String titleKey) {
+                             ItemKind kind) {
         this.service = service;
         this.itemModel = itemModel;
         this.formValidator = formValidator;
         this.messages = messages;
-        this.scope = scope;
-        this.basePath = basePath;
-        this.titleKey = titleKey;
-        this.kind = scope.name().toLowerCase(Locale.ROOT).replace('_', ' ');
+        this.kind = kind;
+    }
+
+    public Scope scope() {
+        return kind.scope();
+    }
+
+    protected ItemKind kind() {
+        return kind;
     }
 
     @InitBinder("form")
@@ -64,7 +79,11 @@ public abstract class ItemController<T extends Thing> {
         binder.addValidators(formValidator);
     }
 
-    protected String list(Pageable pageable, ItemFilter filter, Model model) {
+    @GetMapping
+    @RequireAction(Action.VIEW)
+    public String list(Pageable pageable,
+                       @ModelAttribute("filter") ItemFilter filter,
+                       Model model) {
         describe(model);
         Page<ItemView> items = service.page(pageable, filter);
         model.addAttribute("items", items);
@@ -78,7 +97,9 @@ public abstract class ItemController<T extends Thing> {
         return LIST_VIEW;
     }
 
-    protected String createForm(Model model) {
+    @GetMapping("/new")
+    @RequireAction(Action.CREATE)
+    public String createForm(Model model) {
         describe(model);
         itemModel.forForm(model, true);
 
@@ -86,11 +107,13 @@ public abstract class ItemController<T extends Thing> {
         return FORM_VIEW;
     }
 
-    protected String create(ItemForm form,
-                            BindingResult binding,
-                            Model model,
-                            Authentication authentication,
-                            RedirectAttributes redirectAttributes) {
+    @PostMapping
+    @RequireAction(Action.CREATE)
+    public String create(@Valid @ModelAttribute("form") ItemForm form,
+                         BindingResult binding,
+                         Model model,
+                         Authentication authentication,
+                         RedirectAttributes redirectAttributes) {
         if (binding.hasErrors()) {
             describe(model);
             itemModel.forForm(model, true);
@@ -98,23 +121,27 @@ public abstract class ItemController<T extends Thing> {
         }
 
         Long id = service.create(form).getId();
-        log.info("{} created {} {}", authentication.getName(), kind, id);
+        log.info("{} created {} {}", authentication.getName(), kind.label(), id);
         return redirectWithMessage(redirectAttributes, id, "created");
     }
 
-    protected String editForm(Long id, Model model) {
+    @GetMapping("/{id}/edit")
+    @RequireAction(Action.EDIT)
+    public String editForm(@PathVariable Long id, Model model) {
         describe(model);
         itemModel.forForm(model, false);
         model.addAttribute("form", service.form(id));
         return FORM_VIEW;
     }
 
-    protected String update(Long id,
-                            ItemForm form,
-                            BindingResult binding,
-                            Model model,
-                            Authentication authentication,
-                            RedirectAttributes redirectAttributes) {
+    @PostMapping("/{id}")
+    @RequireAction(Action.EDIT)
+    public String update(@PathVariable Long id,
+                         @Valid @ModelAttribute("form") ItemForm form,
+                         BindingResult binding,
+                         Model model,
+                         Authentication authentication,
+                         RedirectAttributes redirectAttributes) {
         if (binding.hasErrors()) {
             describe(model);
             itemModel.forForm(model, false);
@@ -122,31 +149,27 @@ public abstract class ItemController<T extends Thing> {
         }
 
         service.update(id, form);
-        log.info("{} updated {} {}", authentication.getName(), kind, id);
+        log.info("{} updated {} {}", authentication.getName(), kind.label(), id);
         return redirectWithMessage(redirectAttributes, id, "updated");
     }
 
-    protected String archive(Long id, Authentication authentication, RedirectAttributes redirectAttributes) {
-        service.archive(id, authentication.getName());
-        log.info("{} requested archiving of {} {}", authentication.getName(), kind, id);
-        return redirectWithMessage(redirectAttributes, id, "archived");
-    }
-
-    protected String delete(Long id, Authentication authentication, RedirectAttributes redirectAttributes) {
+    @PostMapping("/{id}/delete")
+    @RequireAction(Action.DELETE)
+    public String delete(@PathVariable Long id, Authentication authentication,
+                         RedirectAttributes redirectAttributes) {
         DeletedItem deleted = service.delete(id);
         log.info("{} deleted {} {} with {} matches and {} claims",
-                authentication.getName(), kind, id, deleted.matches(), deleted.claims());
+                authentication.getName(), kind.label(), id, deleted.matches(), deleted.claims());
         return redirectWithMessage(redirectAttributes, id, "deleted");
     }
 
     private void describe(Model model) {
-        itemModel.describe(model, scope, basePath, titleKey);
+        itemModel.describe(model, kind);
     }
 
-    private String redirectWithMessage(RedirectAttributes redirectAttributes, Long id, String action) {
-        String key = "flash.%s.%s".formatted(service.scopeKey().toLowerCase(), action);
+    protected String redirectWithMessage(RedirectAttributes redirectAttributes, Long id, String action) {
         redirectAttributes.addFlashAttribute("message",
-                messages.getMessage(key, new Object[]{id}, LocaleContextHolder.getLocale()));
-        return "redirect:" + basePath;
+                messages.getMessage(kind.flashKey(action), new Object[]{id}, LocaleContextHolder.getLocale()));
+        return "redirect:" + kind.basePath();
     }
 }

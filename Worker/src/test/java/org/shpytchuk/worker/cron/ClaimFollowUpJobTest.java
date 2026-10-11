@@ -8,10 +8,11 @@ import org.shpytchuk.worker.repository.ContactInfoRepository;
 import org.shpytchuk.worker.repository.found.FoundItemClaimRepository;
 import org.shpytchuk.worker.repository.lost.LostItemClaimRepository;
 import org.shpytchuk.worker.service.ClaimNotifier;
-import org.shpytchuk.worker.service.ClaimRepositories;
 import org.shpytchuk.worker.service.ItemArchiver;
 import org.shpytchuk.worker.service.ItemKind;
+import org.shpytchuk.worker.service.ItemKinds;
 import org.shpytchuk.worker.support.Fixtures;
+import org.shpytchuk.worker.support.Kinds;
 import org.springframework.amqp.AmqpConnectException;
 
 import java.time.Clock;
@@ -51,9 +52,9 @@ class ClaimFollowUpJobTest {
         archiver = mock(ItemArchiver.class);
 
         Clock clock = Clock.fixed(NOW, ZoneOffset.UTC);
-        ClaimRepositories repositories = new ClaimRepositories(lostClaims, mock(FoundItemClaimRepository.class));
-        ClaimFollowUps followUps = new ClaimFollowUps(repositories, notifier, contactInfos, clock);
-        job = new ClaimFollowUpJob(repositories, followUps, archiver, Fixtures.PROPERTIES, clock);
+        ItemKinds kinds = Kinds.of(lostClaims, mock(FoundItemClaimRepository.class));
+        ClaimFollowUps followUps = new ClaimFollowUps(kinds, notifier, contactInfos, clock);
+        job = new ClaimFollowUpJob(kinds, followUps, archiver, Fixtures.PROPERTIES, clock);
     }
 
     @Test
@@ -151,5 +152,28 @@ class ClaimFollowUpJobTest {
         order.verify(lostClaims).deleteAllByIdInBatch(List.of(42L));
         order.verify(contactInfos).deleteAllByIdInBatch(List.of(77L));
         verify(archiver, never()).archive(any(), anyLong());
+    }
+
+    @Test
+    void runsTheStepsInOrderAndSelectsEachOneAfterThePreviousStepFinished() {
+        LostItemClaim reminded = Fixtures.lostClaim("+380671234567");
+        LostItemClaim confirmed = Fixtures.lostClaim("+380671234567");
+        confirmed.setId(43L);
+        confirmed.getItem().setId(5L);
+        when(lostClaims.findByItemNotNullAndConfirmedAtNullAndAuthorRemindedAtNullAndCreatedAtLessThanEqualOrderByIdAsc(any()))
+                .thenReturn(List.of(reminded));
+        when(lostClaims.findWithDetailsById(42L)).thenReturn(Optional.of(reminded));
+        when(lostClaims.findByItemNotNullAndConfirmedAtNotNull()).thenReturn(List.of(confirmed));
+
+        job.run();
+
+        InOrder order = inOrder(lostClaims, notifier, archiver);
+        order.verify(lostClaims).findByItemNotNullAndConfirmedAtNullAndAuthorRemindedAtNullAndCreatedAtLessThanEqualOrderByIdAsc(any());
+        order.verify(notifier).remindAuthor(ItemKind.LOST, reminded);
+        order.verify(lostClaims).findByItemNotNullAndConfirmedAtNullAndClaimantRemindedAtNullAndAuthorRemindedAtLessThanEqualOrderByIdAsc(any());
+        order.verify(lostClaims).findByItemNotNullAndConfirmedAtNotNull();
+        order.verify(archiver).archive(ItemKind.LOST, 5L);
+        order.verify(lostClaims).findByItemNotNullAndCreatedAtLessThanEqual(any());
+        order.verify(lostClaims).findByCreatedAtLessThanEqualOrderByIdAsc(any());
     }
 }

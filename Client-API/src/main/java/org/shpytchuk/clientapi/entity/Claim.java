@@ -63,4 +63,6 @@ public abstract class Claim<T extends Thing> {
     public abstract T getItem();
 
     public abstract void setItem(T item);
+
+    public abstract ItemKind kind();
 }

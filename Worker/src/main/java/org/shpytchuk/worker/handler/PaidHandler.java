@@ -6,8 +6,8 @@ import org.shpytchuk.worker.entity.matching.Claim;
 import org.shpytchuk.worker.event.ClaimEvent;
 import org.shpytchuk.worker.repository.ClaimRepository;
 import org.shpytchuk.worker.service.ClaimNotifier;
-import org.shpytchuk.worker.service.ClaimRepositories;
 import org.shpytchuk.worker.service.ItemKind;
+import org.shpytchuk.worker.service.ItemKinds;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
@@ -20,7 +20,7 @@ public class PaidHandler implements ClaimHandler {
     private static final String VERB = "paid";
 
     private final ItemKind kind;
-    private final ClaimRepositories repositories;
+    private final ItemKinds kinds;
     private final ClaimNotifier notifier;
     private final Clock clock;
 
@@ -37,7 +37,7 @@ public class PaidHandler implements ClaimHandler {
     @Override
     @Transactional
     public void handle(ClaimEvent event) {
-        send(repositories.of(kind), event.getId());
+        send(kinds.claims(kind), event.getId());
     }
 
     private <C extends Claim> void send(ClaimRepository<C> claims, Long claimId) {

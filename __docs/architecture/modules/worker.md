@@ -15,17 +15,20 @@ has no HTTP API; the only endpoints are actuator's.
 ## Flow
 
 1. `ItemCreatedListener` receives an `ItemCreatedEvent` (`id`, `date`, `category`, `lat`,
-   `lon`, `title`) and reads the routing key from the message. It keeps a map
-   `routing key → ItemCreatedHandler`, built from all handler beans, and throws
-   `AmqpRejectAndDontRequeueException` for a key nobody handles (straight to the DLQ, no
-   retry).
-2. `LostItemCreatedHandler` (`item.lost.created`) searches **found** items;
-   `FoundItemCreatedHandler` (`item.found.created`) searches **lost** items. Both are
-   `@Transactional` and otherwise symmetric.
+   `lon`, `title`) and hands the message to its `RoutingKeyDispatcher<ItemCreatedHandler>`,
+   a map `routing key → handler` built from all handler beans. The three listeners share that
+   class; a key nobody handles throws `AmqpRejectAndDontRequeueException` (straight to the
+   DLQ, no retry), and two handlers for one key fail startup.
+2. `ItemMatchHandler<T>` is one class and two `@Transactional` beans from `ItemSearchConfig`:
+   `lostItemCreatedHandler` (`item.lost.created`) searches **found** items,
+   `foundItemCreatedHandler` (`item.found.created`) searches **lost** items. Each bean holds
+   the `KindOps` of the kind that arrived and the `ItemService` of the opposite kind.
 3. `ItemService<T>.findAllMostSuitable(event)` (two beans from `ItemSearchConfig`, one per
    entity type) runs the query and ranks the result.
-4. The handler inserts `(found_item_id, lost_item_id, match_order)` rows with
-   `SimilarItemRepository.insertAll`, a single `INSERT ... SELECT FROM unnest(...)`.
+4. The handler calls `KindOps.insertMatches(itemId, candidateIds, matchOrders)`, which puts
+   the new notice in its own column of `(found_item_id, lost_item_id, match_order)` through
+   `SimilarItemRepository.insertForLost` or `insertForFound`, both wrappers around `insertAll`,
+   a single `INSERT ... SELECT FROM unnest(...)`.
 
 ## The query
 
@@ -82,6 +85,24 @@ confirmed return and the quiet-notice rule call it directly. Archiving re-points
 claims at the history copy instead of deleting them, which is why this module writes to the
 item, history and claim tables. Texts live in this module's own five `messages*.properties`.
 
+What tells a lost notice from a found one lives in `service/KindOps<T, H, C>`: the item,
+history and claim repositories of the kind, how to build its stamped history copy, and which
+column of `similar_item` is its own (`insertMatches`, `deleteMatches`). `ItemKinds` is the
+`@Component` that holds the two instances (`of(kind)`, `claims(kind)`), so `ItemArchiver`, the
+claim handlers and the job take an `ItemKind` and never switch on it.
+
+The claim handlers (`ClaimedHandler`, `ReturnedHandler`, `PaidHandler`, one instance per kind,
+`routingKey()` = `item.<kind>.<verb>`) are registered by `ClaimsConfig.ClaimHandlers`, a Spring
+`BeanRegistrar` that loops over `ItemKind.values()`. They are registered one by one on purpose:
+a list returned from a single `@Bean` would neither get the `@Transactional` proxy
+(`PaidHandler.handle`) nor be collected into the `List<ClaimHandler>` of `ClaimListener`.
+`ClaimsConfigTests` pins both.
+
+`ClaimNotifier` has one render-and-publish path; the four messages it sends are the enum
+`ClaimMessage` (routing key, bundle key, recipient, dedup key). The job runs its five steps
+from a list of `Step(name, summary, find, act)` in order, each finder running after the
+previous step finished, and the summary line is built from the steps.
+
 `ClaimFollowUpJob.run` is `@Scheduled` and also `@SchedulerLock(name = "claim-follow-up")`
 (ShedLock): two instances running it at once would send every reminder twice.
 `SchedulerLockConfig` enables the lock with `lockAtMostFor` PT30M (frees the lock of an
@@ -97,9 +118,11 @@ The `entity` package is a copy of the shared schema, laid out like `DB-Postgres`
 (`thing`, `lost`, `found`, `detail`, `matching`), with one addition: `Thing` has a
 `@Transient Double orderMatch` that carries the rank from the query to the insert.
 
-Packages by role: `listener` takes messages off the queues and dispatches by routing key,
-`handler` holds one handler per routing key (`ItemKind` + verb), `cron` the scheduled
-follow-up, `service` the work itself (`ClaimNotifier`, `ItemArchiver`, `ItemService`).
+Packages by role: `listener` takes messages off the queues and dispatches by routing key
+(`RoutingKeyDispatcher`), `handler` holds one handler bean per routing key (`ItemKind` + verb;
+the classes are parameterized by kind), `cron` the scheduled follow-up, `service` the work
+itself (`ClaimNotifier`, `ItemArchiver`, `ItemService`) and the per-kind `KindOps` behind
+`ItemKinds`.
 
 ## Config
 
@@ -141,18 +164,23 @@ SQL because this module's `Place` maps only the id and the coordinate):
 - `service/ItemServiceTests`: the candidate query and `rankAll` (same category, ±3 days, 20 km,
   most relevant first, the rank of each candidate equal to PostgreSQL's own `ts_rank`, five at
   most, a blank title ranks zero, a Ukrainian title goes through `ts_rank_ukrainian`);
-- `handler/ItemCreatedHandlerTests`: both handlers end to end into `similar_item`, a redelivered
-  event does not duplicate rows;
+- `handler/ItemCreatedHandlerTests`: both handler beans end to end into `similar_item`, a
+  redelivered event does not duplicate rows;
 - `repository/ClaimRepositoryTests`: the derived queries `ClaimFollowUpJob` selects its work with;
 - `cron/ClaimFollowUpsTests`: purge and the reminder stamp against the real foreign keys;
 - `service/ItemArchiverTests`: history copy, claims re-pointed under the `CHECK`, matches dropped.
 
 Unit tests: `LanguageResolverTest`, `PhoneLocalesTest`, `ClaimNotifierTest` (mocked
-`RabbitTemplate`, real bundles), `ItemCreatedListenerTest`, `ClaimListenerTest` and
-`ArchiveListenerTest` (dispatch), `ClaimHandlersTest` (what `claimed` and `returned` do, replays),
-`ItemArchiverTest`, `ClaimFollowUpJobTest` (publish-then-stamp order, newest-claim rule,
-retention), `RabbitConfigTest` (the type ids read from Client-API and Admin-API, the one written
-for Notification) and `MessagesTest` (bundle parity). `WorkerApplicationTests` starts the context
+`RabbitTemplate`, real bundles), `ClaimMessageTest` (routing, bundle and dedup keys, recipients),
+`RoutingKeyDispatcherTest`, `ItemCreatedListenerTest`, `ClaimListenerTest` and
+`ArchiveListenerTest` (dispatch), `ItemMatchHandlerTest` (which column each kind takes, through
+the repository's real default methods), `KindOpsTest` and `ItemKindsTest`, `ClaimHandlersTest`
+(what `claimed` and `returned` do, replays), `PaidHandlerTest`, `ItemArchiverTest`,
+`ClaimFollowUpJobTest` (publish-then-stamp order, newest-claim rule, retention, step order),
+`RabbitConfigTest` (the type ids read from Client-API and Admin-API, the one written for
+Notification) and `MessagesTest` (bundle parity). `ClaimsConfigTests` starts a small context with
+`ApplicationContextRunner`: six handler beans, all of them reachable through `ClaimListener`, the
+`@Transactional` proxy on `PaidHandler`. `WorkerApplicationTests` starts the context
 on the test container with `ddl-auto=validate`, so the scheduled job never touches the developer
 database. `insert into similar_item` by hand (see the root `README.md`) is still how the match
 page is exercised locally without going through the queue.

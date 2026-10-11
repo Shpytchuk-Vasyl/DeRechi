@@ -1,62 +1,39 @@
 package org.shpytchuk.adminapi.service.found;
 
 import org.shpytchuk.adminapi.config.property.ArchiveProperties;
-import org.shpytchuk.adminapi.config.property.CountriesProperties;
 import org.shpytchuk.adminapi.entity.found.FoundItem;
-import org.shpytchuk.adminapi.entity.found.FoundItemClaim;
+import org.shpytchuk.adminapi.mapper.ItemFormApplier;
 import org.shpytchuk.adminapi.repository.detail.ContactInfoRepository;
-import org.shpytchuk.adminapi.repository.detail.PlaceRepository;
-import org.shpytchuk.adminapi.repository.thing.ThingCategoryRepository;
 import org.shpytchuk.adminapi.repository.found.FoundItemClaimRepository;
 import org.shpytchuk.adminapi.repository.found.FoundItemRepository;
 import org.shpytchuk.adminapi.repository.matching.SimilarItemRepository;
-import org.shpytchuk.adminapi.service.AdminItemService;
+import org.shpytchuk.adminapi.service.ArchivableAdminItemService;
 import org.shpytchuk.adminapi.service.ItemClaims;
-import org.shpytchuk.adminapi.view.matching.ClaimView;
+import org.shpytchuk.adminapi.service.ItemKind;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 @Service
-public class FoundItemAdminService extends AdminItemService<FoundItem> {
+public class FoundItemAdminService extends ArchivableAdminItemService<FoundItem> {
 
     private static final String ARCHIVE_ROUTING_KEY = "item.found.archive";
 
     private final SimilarItemRepository similarItemRepository;
-    private final ItemClaims<FoundItemClaim> itemClaims;
 
     public FoundItemAdminService(FoundItemRepository repository,
-                                 ThingCategoryRepository categoryRepository,
-                                 PlaceRepository placeRepository,
-                                 ContactInfoRepository contactInfoRepository,
-                                 CountriesProperties countries,
-                                 SimilarItemRepository similarItemRepository,
                                  FoundItemClaimRepository claimRepository,
+                                 ContactInfoRepository contactInfoRepository,
+                                 ItemFormApplier applier,
+                                 SimilarItemRepository similarItemRepository,
                                  RabbitTemplate rabbitTemplate,
                                  ArchiveProperties archive) {
-        super(repository, categoryRepository, placeRepository, contactInfoRepository, countries,
-                FoundItem::new, "FOUND_ITEM", rabbitTemplate, archive, ARCHIVE_ROUTING_KEY);
+        super(repository, contactInfoRepository, ItemClaims.ofLive(claimRepository, contactInfoRepository),
+                applier, FoundItem::new, ItemKind.FOUND_ITEM, rabbitTemplate, archive, ARCHIVE_ROUTING_KEY);
         this.similarItemRepository = similarItemRepository;
-        this.itemClaims = ItemClaims.ofLive(claimRepository, contactInfoRepository);
     }
 
     @Override
     protected int deleteMatches(Long id) {
         return similarItemRepository.deleteByFoundItemId(id);
-    }
-
-    @Override
-    protected int deleteClaims(Long id) {
-        return itemClaims.deleteOf(id);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Map<Long, List<ClaimView>> claims(Collection<Long> itemIds) {
-        return itemClaims.byItem(itemIds);
     }
 }

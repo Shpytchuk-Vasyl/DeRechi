@@ -254,8 +254,6 @@ class LostItemControllerTests {
                 .andExpect(status().isForbidden());
         verify(service, never()).archive(anyLong(), any());
 
-        when(service.scopeKey()).thenReturn("LOST_ITEM");
-
         mockMvc.perform(post("/admin/lost-items/7/archive")
                         .with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.ARCHIVE)))
                         .with(csrf()))
@@ -279,7 +277,6 @@ class LostItemControllerTests {
                 .andExpect(status().isForbidden());
         verify(service, never()).delete(anyLong());
 
-        when(service.scopeKey()).thenReturn("LOST_ITEM");
         when(service.delete(7L)).thenReturn(new DeletedItem(0, 0));
 
         mockMvc.perform(post("/admin/lost-items/7/delete")
@@ -346,7 +343,6 @@ class LostItemControllerTests {
     @Test
     void passesTheCountryAndAnEmptyCurrencyToTheService() throws Exception {
         when(service.create(any())).thenReturn(lostItem());
-        when(service.scopeKey()).thenReturn("LOST_ITEM");
 
         mockMvc.perform(validCreate()
                         .param("countryCode", "PL")
@@ -362,7 +358,6 @@ class LostItemControllerTests {
     @Test
     void createsWithoutAnEmail() throws Exception {
         when(service.create(any())).thenReturn(lostItem());
-        when(service.scopeKey()).thenReturn("LOST_ITEM");
 
         mockMvc.perform(validCreateWithoutEmail()
                         .param("countryCode", "PL")

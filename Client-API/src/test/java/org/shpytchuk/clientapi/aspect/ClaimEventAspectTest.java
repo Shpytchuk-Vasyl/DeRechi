@@ -1,5 +1,6 @@
 package org.shpytchuk.clientapi.aspect;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -7,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.shpytchuk.clientapi.config.ClaimsProperties;
 import org.shpytchuk.clientapi.dto.ClaimDto;
+import org.shpytchuk.clientapi.entity.ItemKind;
 import org.shpytchuk.clientapi.event.ClaimEvent;
 import org.shpytchuk.clientapi.input.ContactInfoInput;
 import org.shpytchuk.clientapi.service.found.FoundClaimService;
@@ -22,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -39,6 +42,13 @@ class ClaimEventAspectTest {
 
     @Mock
     private FoundClaimService foundClaimService;
+
+    /** The aspect reads the kind only when it publishes, so the stubs stay unused in the silent cases. */
+    @BeforeEach
+    void kinds() {
+        lenient().when(lostClaimService.kind()).thenReturn(ItemKind.LOST);
+        lenient().when(foundClaimService.kind()).thenReturn(ItemKind.FOUND);
+    }
 
     @Test
     void publishesANewLostClaimUnderItsOwnRoutingKey() {

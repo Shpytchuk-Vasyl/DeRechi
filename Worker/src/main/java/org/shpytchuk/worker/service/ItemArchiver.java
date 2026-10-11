@@ -4,16 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.shpytchuk.worker.entity.matching.Claim;
 import org.shpytchuk.worker.entity.thing.Thing;
-import org.shpytchuk.worker.entity.found.FoundItemHistory;
-import org.shpytchuk.worker.entity.lost.LostItemHistory;
-import org.shpytchuk.worker.mapper.ItemMapper;
-import org.shpytchuk.worker.repository.ClaimRepository;
-import org.shpytchuk.worker.repository.found.FoundItemHistoryRepository;
-import org.shpytchuk.worker.repository.found.FoundItemRepository;
-import org.shpytchuk.worker.repository.lost.LostItemHistoryRepository;
-import org.shpytchuk.worker.repository.lost.LostItemRepository;
-import org.shpytchuk.worker.repository.SimilarItemRepository;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,66 +16,31 @@ import java.util.Optional;
 @Slf4j
 public class ItemArchiver {
 
-    private final LostItemRepository lostItemRepository;
-    private final FoundItemRepository foundItemRepository;
-    private final LostItemHistoryRepository lostItemHistoryRepository;
-    private final FoundItemHistoryRepository foundItemHistoryRepository;
-    private final SimilarItemRepository similarItemRepository;
-    private final ClaimRepositories claimRepositories;
+    private final ItemKinds kinds;
     private final Clock clock;
 
     @Transactional
     public boolean archive(ItemKind kind, Long itemId) {
-        return switch (kind) {
-            case LOST -> archive(kind, itemId, lostItemRepository);
-            case FOUND -> archive(kind, itemId, foundItemRepository);
-        };
+        return archive(kinds.of(kind), itemId);
     }
 
-    private <T extends Thing> boolean archive(ItemKind kind, Long itemId, JpaRepository<T, Long> items) {
-        Optional<T> found = items.findById(itemId);
+    private <T extends Thing, H extends Thing, C extends Claim> boolean archive(KindOps<T, H, C> ops, Long itemId) {
+        Optional<T> found = ops.items().findById(itemId);
         if (found.isEmpty()) {
-            log.info("{} item {} is already gone, nothing to archive", kind, itemId);
+            log.info("{} item {} is already gone, nothing to archive", ops.kind(), itemId);
             return false;
         }
 
         T item = found.get();
-        Thing history = saveHistory(kind, item);
-        int matches = deleteMatches(kind, itemId);
-        int claims = moveClaims(claimRepositories.of(kind), itemId, history);
-        items.delete(item);
+        H history = ops.saveHistory(item, clock.instant());
+        int matches = ops.deleteMatches(itemId);
+        List<C> claims = ops.claims().findByItemId(itemId);
+        claims.forEach(claim -> claim.moveToArchive(history));
+        ops.claims().saveAll(claims);
+        ops.items().delete(item);
 
         log.info("Archived {} item {} as history {}: {} matches deleted, {} claims moved",
-                kind, itemId, history.getId(), matches, claims);
+                ops.kind(), itemId, history.getId(), matches, claims.size());
         return true;
-    }
-
-    private Thing saveHistory(ItemKind kind, Thing item) {
-        return switch (kind) {
-            case LOST -> {
-                LostItemHistory history = ItemMapper.copy(item, new LostItemHistory());
-                history.setArchivedAt(clock.instant());
-                yield lostItemHistoryRepository.save(history);
-            }
-            case FOUND -> {
-                FoundItemHistory history = ItemMapper.copy(item, new FoundItemHistory());
-                history.setArchivedAt(clock.instant());
-                yield foundItemHistoryRepository.save(history);
-            }
-        };
-    }
-
-    private int deleteMatches(ItemKind kind, Long itemId) {
-        return switch (kind) {
-            case LOST -> similarItemRepository.deleteByLostItemId(itemId);
-            case FOUND -> similarItemRepository.deleteByFoundItemId(itemId);
-        };
-    }
-
-    private static <C extends Claim> int moveClaims(ClaimRepository<C> claims, Long itemId, Thing history) {
-        List<C> moved = claims.findByItemId(itemId);
-        moved.forEach(claim -> claim.moveToArchive(history));
-        claims.saveAll(moved);
-        return moved.size();
     }
 }

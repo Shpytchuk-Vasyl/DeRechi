@@ -1,16 +1,19 @@
 package org.shpytchuk.worker.config;
 
-import org.shpytchuk.worker.handler.ClaimHandler;
 import org.shpytchuk.worker.handler.ClaimedHandler;
 import org.shpytchuk.worker.handler.PaidHandler;
 import org.shpytchuk.worker.handler.ReturnedHandler;
 import org.shpytchuk.worker.service.ClaimNotifier;
-import org.shpytchuk.worker.service.ClaimRepositories;
 import org.shpytchuk.worker.service.ItemArchiver;
 import org.shpytchuk.worker.service.ItemKind;
+import org.shpytchuk.worker.service.ItemKinds;
+import org.springframework.beans.factory.BeanRegistrar;
+import org.springframework.beans.factory.BeanRegistry;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.time.Clock;
@@ -18,6 +21,7 @@ import java.time.Clock;
 @Configuration
 @EnableScheduling
 @EnableConfigurationProperties({ClaimsProperties.class, ArchiveProperties.class})
+@Import(ClaimsConfig.ClaimHandlers.class)
 public class ClaimsConfig {
 
     @Bean
@@ -25,33 +29,20 @@ public class ClaimsConfig {
         return Clock.systemUTC();
     }
 
-    @Bean
-    public ClaimHandler lostClaimedHandler(ClaimRepositories repositories, ClaimNotifier notifier) {
-        return new ClaimedHandler(ItemKind.LOST, repositories, notifier);
-    }
+    static class ClaimHandlers implements BeanRegistrar {
 
-    @Bean
-    public ClaimHandler foundClaimedHandler(ClaimRepositories repositories, ClaimNotifier notifier) {
-        return new ClaimedHandler(ItemKind.FOUND, repositories, notifier);
-    }
-
-    @Bean
-    public ClaimHandler lostReturnedHandler(ClaimRepositories repositories, ItemArchiver archiver) {
-        return new ReturnedHandler(ItemKind.LOST, repositories, archiver);
-    }
-
-    @Bean
-    public ClaimHandler foundReturnedHandler(ClaimRepositories repositories, ItemArchiver archiver) {
-        return new ReturnedHandler(ItemKind.FOUND, repositories, archiver);
-    }
-
-    @Bean
-    public ClaimHandler lostPaidHandler(ClaimRepositories repositories, ClaimNotifier notifier, Clock clock) {
-        return new PaidHandler(ItemKind.LOST, repositories, notifier, clock);
-    }
-
-    @Bean
-    public ClaimHandler foundPaidHandler(ClaimRepositories repositories, ClaimNotifier notifier, Clock clock) {
-        return new PaidHandler(ItemKind.FOUND, repositories, notifier, clock);
+        @Override
+        public void register(BeanRegistry registry, Environment env) {
+            for (ItemKind kind : ItemKind.values()) {
+                String prefix = kind.segment();
+                registry.registerBean(prefix + "ClaimedHandler", ClaimedHandler.class, spec -> spec.supplier(
+                        ctx -> new ClaimedHandler(kind, ctx.bean(ItemKinds.class), ctx.bean(ClaimNotifier.class))));
+                registry.registerBean(prefix + "ReturnedHandler", ReturnedHandler.class, spec -> spec.supplier(
+                        ctx -> new ReturnedHandler(kind, ctx.bean(ItemKinds.class), ctx.bean(ItemArchiver.class))));
+                registry.registerBean(prefix + "PaidHandler", PaidHandler.class, spec -> spec.supplier(
+                        ctx -> new PaidHandler(kind, ctx.bean(ItemKinds.class), ctx.bean(ClaimNotifier.class),
+                                ctx.bean(Clock.class))));
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 package org.shpytchuk.clientapi.config;
 
+import org.shpytchuk.clientapi.entity.ItemKind;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
@@ -12,7 +13,7 @@ public record SiteProperties(String url) {
         url = url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
     }
 
-    public String notice(String kind, Long itemId) {
-        return url + "/" + kind + "/" + itemId;
+    public String notice(ItemKind kind, Long itemId) {
+        return url + "/" + kind.label() + "/" + itemId;
     }
 }

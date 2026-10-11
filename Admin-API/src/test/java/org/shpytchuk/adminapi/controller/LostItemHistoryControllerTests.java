@@ -98,7 +98,6 @@ class LostItemHistoryControllerTests {
                 .andExpect(status().isForbidden());
         verify(service, never()).delete(anyLong());
 
-        when(service.scopeKey()).thenReturn("LOST_ITEM_HISTORY");
         when(service.delete(7L)).thenReturn(new DeletedItem(0, 0));
 
         mockMvc.perform(post("/admin/lost-items-history/7/delete")

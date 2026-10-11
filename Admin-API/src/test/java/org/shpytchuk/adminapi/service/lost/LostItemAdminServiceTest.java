@@ -15,6 +15,7 @@ import org.shpytchuk.adminapi.entity.thing.ThingCategory;
 import org.shpytchuk.adminapi.event.ArchiveRequestedEvent;
 import org.shpytchuk.adminapi.exception.NotFoundException;
 import org.shpytchuk.adminapi.form.ItemForm;
+import org.shpytchuk.adminapi.mapper.ItemFormApplier;
 import org.shpytchuk.adminapi.repository.detail.ContactInfoRepository;
 import org.shpytchuk.adminapi.repository.detail.PlaceRepository;
 import org.shpytchuk.adminapi.repository.thing.ThingCategoryRepository;
@@ -67,10 +68,10 @@ class LostItemAdminServiceTest {
         similarItemRepository = mock(SimilarItemRepository.class);
         claimRepository = mock(LostItemClaimRepository.class);
         rabbitTemplate = mock(RabbitTemplate.class);
-        service = new LostItemAdminService(repository, categoryRepository,
-                placeRepository, contactInfoRepository,
-                new CountriesProperties(List.of("UA", "PL"), "UA"),
-                similarItemRepository, claimRepository, rabbitTemplate, new ArchiveProperties("derechi.items"));
+        ItemFormApplier applier = new ItemFormApplier(categoryRepository, placeRepository,
+                new CountriesProperties(List.of("UA", "PL"), "UA"));
+        service = new LostItemAdminService(repository, claimRepository, contactInfoRepository, applier,
+                similarItemRepository, rabbitTemplate, new ArchiveProperties("derechi.items"));
     }
 
     @Test
@@ -182,16 +183,14 @@ class LostItemAdminServiceTest {
         LostItemHistoryRepository historyRepository = mock(LostItemHistoryRepository.class);
         when(historyRepository.findWithDetailsById(500L)).thenReturn(Optional.of(history));
         LostItemHistoryAdminService archive = new LostItemHistoryAdminService(
-                historyRepository, mock(ThingCategoryRepository.class),
-                mock(PlaceRepository.class), contactInfoRepository,
-                new CountriesProperties(List.of("UA"), "UA"), claimRepository);
+                historyRepository, claimRepository, contactInfoRepository,
+                new ItemFormApplier(mock(ThingCategoryRepository.class), mock(PlaceRepository.class),
+                        new CountriesProperties(List.of("UA"), "UA")));
 
         Map<Long, List<ClaimView>> claims = archive.claims(List.of(500L));
 
         assertThat(claims.get(500L)).extracting(ClaimView::phone, ClaimView::status)
                 .containsExactly(tuple("+380671111111", ClaimStatus.CONFIRMED));
-        assertThatThrownBy(() -> archive.archive(500L, "admin@derechi.local"))
-                .isInstanceOf(UnsupportedOperationException.class);
 
         archive.delete(500L);
 

@@ -47,7 +47,7 @@ Channels are enabled by configuration presence under `notify.channels.*`. Today 
 
 - **The consumer ignores the channel choice.** The event has no channel flag, so when an admin picks Telegram the consumer still sees a phone and attempts SMS. Choosing EMAIL works as expected because the phone is `null` in that case.
 - **SMS is not actually wired.** `Notification` has only the `notify-email` channel on the classpath, and NotifyHub's SMS channel also needs Twilio and `notify.channels.sms.account-sid`. The sender skips the unconfigured channel, so the owner gets the email and no SMS until a provider is added.
-- Messenger fan-out is commented out in `NotificationSender`. Telegram needs a chat id that `ContactInfo` does not store; Viber is mapped to SMS in `NotificationRequestedEvent.SocialMediaEnum` as a placeholder.
+- There is no messenger route: `NotificationSender` sends through `ChannelRoute.ALL` (email and SMS), and the `socialMedias` of the event are carried but not read. Telegram needs a chat id that `ContactInfo` does not store; a messenger becomes a new `ChannelRoute`.
 - The body is rendered in the admin's locale, not the owner's; the owner's language is unknown.
 - One dedup key per pair means "Notify again" is a no-op within the TTL.
 

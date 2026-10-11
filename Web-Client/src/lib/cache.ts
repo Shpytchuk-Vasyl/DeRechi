@@ -25,7 +25,7 @@ export const CACHE = {
     tags: [CACHE_TAG.items(kind)],
   }),
   sitemapItems: (kind: ItemKind): CachePolicy => ({
-    revalidate: CACHE_TTL.day,
+    revalidate: CACHE_TTL.hour,
     tags: [CACHE_TAG.items(kind)],
   }),
   item: (kind: ItemKind, id: string): CachePolicy => ({
@@ -35,7 +35,7 @@ export const CACHE = {
   places: (): CachePolicy => ({ revalidate: CACHE_TTL.minute, tags: [CACHE_TAG.places] }),
   categories: (): CachePolicy => ({ revalidate: CACHE_TTL.day, tags: [CACHE_TAG.categories] }),
   countries: (): CachePolicy => ({ revalidate: CACHE_TTL.day, tags: [CACHE_TAG.countries] }),
-  stats: (): CachePolicy => ({ revalidate: CACHE_TTL.day, tags: [CACHE_TAG.stats] }),
+  stats: (): CachePolicy => ({ revalidate: CACHE_TTL.fiveMinutes, tags: [CACHE_TAG.stats] }),
 }
 
 export const NO_STORE = { cache: "no-store" } as const

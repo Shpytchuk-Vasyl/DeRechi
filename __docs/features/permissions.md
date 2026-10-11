@@ -42,6 +42,14 @@ Dev users: `admin@derechi.local` (`ADMIN_SUPER`), `moderator@derechi.local` (`AD
    ```
 
    which is a meta-annotation for `@PreAuthorize("@perm.can(authentication, '{scope}', '{action}')")`. Placeholder substitution needs the `AnnotationTemplateExpressionDefaults` bean declared in `SecurityConfig`.
+
+   The handlers of the four item controllers are shared through `ItemController` and carry
+
+   ```java
+   @RequireAction(Action.EDIT)
+   ```
+
+   instead: the same kind of meta-annotation, expanding to `@PreAuthorize("@perm.can(authentication, this.scope().name(), '{value}')")`, where `this` is the controller handling the request and `scope()` returns the scope of its `ItemKind`. Either way the check is the `SCOPE:ACTION` of the concrete controller.
 3. The bean `perm` is `PermissionChecker`; `can` wraps the authorities in `AdminPermissions` and looks the string up. A miss raises `AccessDeniedException`, which `GlobalExceptionHandler` turns into the 403 page.
 4. Templates receive the same `AdminPermissions` as `perms` from `GlobalModelAdvice` and hide what the user cannot do: `${perms.can('MATCH', 'NOTIFY')}`.
 

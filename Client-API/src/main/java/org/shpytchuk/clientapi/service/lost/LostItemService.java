@@ -1,6 +1,7 @@
 package org.shpytchuk.clientapi.service.lost;
 
 import org.shpytchuk.clientapi.config.CountriesProperties;
+import org.shpytchuk.clientapi.entity.ItemKind;
 import org.shpytchuk.clientapi.entity.lost.LostItem;
 import org.shpytchuk.clientapi.repository.detail.ContactInfoRepository;
 import org.shpytchuk.clientapi.repository.lost.LostItemRepository;
@@ -18,6 +19,6 @@ public class LostItemService extends ItemService<LostItem> {
                            ContactInfoRepository contactInfoRepository,
                            CountriesProperties countries) {
         super(repository, categoryRepository, placeRepository, contactInfoRepository, countries,
-                LostItem::new, false, "Загублену річ");
+                LostItem::new, false, ItemKind.LOST);
     }
 }

@@ -30,7 +30,7 @@ Two cases follow.
 
 3. **Detection.** Nothing to do either: `LanguageResolver` reads a built-in optimaize profile for every `SearchLanguage.isoCodes()` entry plus `DETECT_ONLY_CODES`. If the library has no profile for the code, `readBuiltIn` throws at startup; the bundled profiles cover roughly 70 languages, so this is rare.
 
-4. **Verify** with a notice in that language: the log line from `LostItemCreatedHandler` or `FoundItemCreatedHandler` and the `match_order` values in `similar_item` should show non-zero ranks for titles that share stems.
+4. **Verify** with a notice in that language: the log line from `ItemMatchHandler` (one bean per kind) and the `match_order` values in `similar_item` should show non-zero ranks for titles that share stems.
 
 ## Case 2: PostgreSQL has no config (example: Polish)
 

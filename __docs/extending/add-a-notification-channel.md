@@ -57,19 +57,19 @@ Channel artifacts share the starter's groupId and are named `notify-<channel>`; 
 
 3. **Environment.** `docker-compose.services.yml`, service `notification`, next to `NOTIFY_EMAIL_HOST`: add `NOTIFY_TELEGRAM_BOT_TOKEN: ${NOTIFY_TELEGRAM_BOT_TOKEN}` so the secret comes from the host environment, not from git. Document it in [Environment variables](../deployment/environment-variables.md).
 
-4. **Sender.** `Notification/src/main/java/org/shpytchuk/notification/service/NotificationSender.java` has one `sendVia(Channel, event)` call per channel. The recipient is a builder field, not a channel argument: `to(...)` sets `recipientEmail`, which email, telegram, slack and teams read; `toPhone(...)` sets `recipientPhone` for sms and whatsapp. `NotificationRequestedEvent.getRecipient(channel)` returns the email for `EMAIL` and the phone for everything else, and `builder(channel, event)` passes it to `to(...)` for `EMAIL` and to `toPhone(...)` for every other channel. That is right for sms and whatsapp; a new email-like channel needs `to(...)`, and telegram needs the chat id, so extend the branch.
+4. **Sender.** `NotificationSender` (`Notification/src/main/java/org/shpytchuk/notification/service/`) walks `ChannelRoute.ALL` and sends once per route that has a recipient. A `ChannelRoute` is three things: the `Channel`, which contact of the event it goes to (`NotificationRequestedEvent::email`, `::phone`) and the builder method that carries that contact. The recipient is a builder field, not a channel argument: `NotifyHub::to` sets `recipientEmail`, which email, telegram, slack and teams read; `NotifyHub::toPhone` sets `recipientPhone` for sms and whatsapp. So a new channel is one more constant in `ChannelRoute` and one more entry in `ALL` (the order of `ALL` is the sending order): WhatsApp would be `new ChannelRoute(Channel.WHATSAPP, NotificationRequestedEvent::phone, NotifyHub::toPhone)`; an email-like channel uses `NotifyHub::to`; telegram needs the chat id, which means a new field in the event first.
 
    For Telegram the recipient is a **chat id**, which `ContactInfo` does not store. Shipping Telegram for real means: a `telegram_chat_id` column (migration in `DB-Postgres`, entity copies in all modules), a field in `ContactInfoInput` and `ItemForm`, a way for the user to obtain it (a bot `/start` flow), and the id in `NotificationRequestedEvent`. Without that, the channel can only reach the configured default `chat-id`, which is good for an ops alert and useless for owners.
 
-5. **Honour the admin's choice.** Planned, not in the code yet (`send` only checks `email` and `phone`): a `targets(event)` that iterates `event.socialMedias()`, map each to a `Channel` through `SocialMediaEnum`, skip channels that are not in `getRegisteredChannels()`, and send to the rest. Pair it with a rule for when `phone` or `email` are present so that choosing Telegram no longer triggers SMS. This is the change that makes `NotifyChannel` on the admin side meaningful.
+5. **Honour the admin's choice.** Planned, not in the code yet (a route fires whenever its contact is present, and `event.socialMedias()` is carried but never read): a rule that maps each listed `SocialMediaEnum` to a route and decides what `phone` alone means, so that choosing Telegram no longer triggers SMS. The natural place is where `NotificationSender.send` picks the routes for an event. This is the change that makes `NotifyChannel` on the admin side meaningful.
 
-6. **Dedup key.** `deduplicationKey(event, channel)` is `<event.deduplicationKey()>:<CHANNEL>`, falling back to `<recipient>:<CHANNEL>` when the event has no key; a new channel gets its own key automatically. The TTL is `notify.deduplication.ttl` (1 h). The store is NotifyHub's `InMemoryDeduplicationStore`: per instance and lost on restart.
+6. **Dedup key.** `deduplicationKey(event, route, recipient)` is `<event.deduplicationKey()>:<CHANNEL>`, falling back to `<recipient>:<CHANNEL>` when the event has no key; a new channel gets its own key automatically. The TTL is `notify.deduplication.ttl` (1 h). The store is NotifyHub's `InMemoryDeduplicationStore`: per instance and lost on restart.
 
 7. **Failure path.** Keep the behaviour: a channel without configuration or without a recipient is skipped; if a send fails, the exception propagates, Spring AMQP retries 3 times and the message goes to `notification.events.dlq`.
 
 ## Tests to add or update
 
-`NotificationSenderTest` drives `NotificationSender` with a recording `NotifyHub` test double (`hub.sent("email")`). Add cases: the new channel receives the message with the right recipient, an event without that recipient does not touch the channel, and the chosen-channel rule from step 5. For the real transport, test manually against a sandbox bot or Twilio test credentials; do not add network tests to the build.
+`NotificationSenderTest` drives `NotificationSender` with a recording `NotifyHub` test double (`hub.sent("email")`), and `ChannelRouteTest` pins the routes, their order and their names. Add cases: the new route in `ALL` at the right position, the new channel receives the message with the right recipient, an event without that recipient does not touch the channel, and the chosen-channel rule from step 5. For the real transport, test manually against a sandbox bot or Twilio test credentials; do not add network tests to the build.
 
 ## Migration needed?
 
@@ -84,7 +84,7 @@ None for the channel itself. If a new contact field appears (chat id), the web t
 - [ ] Channel artifact in `Notification/pom.xml`, version managed in the root
 - [ ] `notify.channels.<name>.<switch-key>` without an empty default
 - [ ] Secret wired through `docker-compose.services.yml` and documented
-- [ ] `NotificationSender.sendVia` uses the right recipient method for the channel
+- [ ] A `ChannelRoute` with the right contact and builder method, added to `ChannelRoute.ALL`
 - [ ] Admin's channel choice respected, SMS no longer implied by a phone
 - [ ] `NotificationSenderTest` extended
 - [ ] Manual send verified (Mailpit for email, sandbox for the rest)

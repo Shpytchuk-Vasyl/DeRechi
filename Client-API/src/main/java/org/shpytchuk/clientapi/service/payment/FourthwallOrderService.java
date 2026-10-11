@@ -6,23 +6,17 @@ import org.shpytchuk.clientapi.client.FourthwallClient;
 import org.shpytchuk.clientapi.config.SiteProperties;
 import org.shpytchuk.clientapi.controller.payment.FourthwallOrderPlaced;
 import org.shpytchuk.clientapi.entity.Claim;
-import org.shpytchuk.clientapi.entity.found.FoundItemClaim;
-import org.shpytchuk.clientapi.entity.lost.LostItemClaim;
 import org.shpytchuk.clientapi.entity.payment.FourthwallOrder;
 import org.shpytchuk.clientapi.exeption.PaymentUnavailableException;
-import org.shpytchuk.clientapi.repository.found.FoundItemClaimRepository;
-import org.shpytchuk.clientapi.repository.lost.LostItemClaimRepository;
 import org.shpytchuk.clientapi.repository.payment.FourthwallOrderRepository;
 import org.shpytchuk.clientapi.service.ClaimService;
-import org.shpytchuk.clientapi.service.found.FoundClaimService;
-import org.shpytchuk.clientapi.service.lost.LostClaimService;
+import org.shpytchuk.clientapi.service.ClaimServices;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.Instant;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import static org.springframework.core.NestedExceptionUtils.getMostSpecificCause;
 
@@ -34,10 +28,7 @@ public class FourthwallOrderService {
     static final Set<String> NOT_PAID = Set.of("CANCELLED");
 
     private final FourthwallOrderRepository orderRepository;
-    private final LostItemClaimRepository lostClaimRepository;
-    private final FoundItemClaimRepository foundClaimRepository;
-    private final LostClaimService lostClaimService;
-    private final FoundClaimService foundClaimService;
+    private final ClaimServices claimServices;
     private final TransactionTemplate transactionTemplate;
     private final FourthwallClient fourthwall;
     private final SiteProperties site;
@@ -45,11 +36,11 @@ public class FourthwallOrderService {
     public void receive(FourthwallOrderPlaced order) {
         Optional<Unpaid> unpaid = transactionTemplate.execute(status -> record(order).map(this::unpaid));
         if (unpaid != null) {
-            unpaid.ifPresent(pending -> serviceFor(pending.claim()).markPaid(pending.claim().getId())
+            unpaid.ifPresent(pending -> claimServices.of(pending.claim().kind()).markPaid(pending.claim().getId())
                     .filter(paid -> !paid.repeated())
                     .ifPresent(paid -> {
                         log.info("Marked {} claim {} paid by Fourthwall order {}",
-                                kind(pending.claim()), paid.id(), order.orderId());
+                                pending.claim().kind().label(), paid.id(), order.orderId());
                         closeSelfCancel(order.orderId(), pending.noticeUrl());
                     }));
         }
@@ -65,12 +56,8 @@ public class FourthwallOrderService {
     }
 
     private Unpaid unpaid(Claim<?> claim) {
-        String url = claim.getItem() == null ? site.url() : site.notice(kind(claim), claim.getItem().getId());
+        String url = claim.getItem() == null ? site.url() : site.notice(claim.kind(), claim.getItem().getId());
         return new Unpaid(claim, url);
-    }
-
-    private static String kind(Claim<?> claim) {
-        return claim instanceof LostItemClaim ? "lost" : "found";
     }
 
     private record Unpaid(Claim<?> claim, String noticeUrl) {
@@ -80,22 +67,21 @@ public class FourthwallOrderService {
         Optional<FourthwallOrder> existing = orderRepository.findByOrderId(placed.orderId());
         if (existing.isPresent()) {
             log.info("Fourthwall order {} was already received", placed.orderId());
-            return existing.flatMap(FourthwallOrderService::claimOf).filter(claim -> claim.getPaidAt() == null);
+            return existing.flatMap(this::claimOf).filter(claim -> claim.getPaidAt() == null);
         }
 
         FourthwallOrder order = orderRepository.save(toEntity(placed));
-        Optional<Claim<?>> claim = match(placed);
+        Optional<Claim<?>> claim = match(placed, order);
         if (claim.isEmpty()) {
             log.warn("Unmatched Fourthwall order {}: {}", placed.orderId(), placed);
             return Optional.empty();
         }
 
-        link(order, claim.get());
-        log.info("Fourthwall order {} matched {} claim {}", placed.orderId(), kind(claim.get()), claim.get().getId());
+        log.info("Fourthwall order {} matched {} claim {}", placed.orderId(), claim.get().kind().label(), claim.get().getId());
         return claim.filter(matched -> matched.getPaidAt() == null);
     }
 
-    private Optional<Claim<?>> match(FourthwallOrderPlaced placed) {
+    private Optional<Claim<?>> match(FourthwallOrderPlaced placed, FourthwallOrder order) {
         if (NOT_PAID.contains(placed.status())) {
             log.warn("Fourthwall order {} is {}, it unlocks nothing", placed.orderId(), placed.status());
             return Optional.empty();
@@ -103,29 +89,24 @@ public class FourthwallOrderService {
         if (placed.itemIds().isEmpty()) {
             return Optional.empty();
         }
-        Set<String> ids = placed.itemIds();
-        return Stream.concat(
-                        lostClaimRepository.findByPaymentProductIdInOrPaymentVariantIdIn(ids, ids).stream(),
-                        foundClaimRepository.findByPaymentProductIdInOrPaymentVariantIdIn(ids, ids).stream())
-                .<Claim<?>>map(claim -> claim)
+        return claimServices.all().stream()
+                .map(service -> linkBought(service, order, placed.itemIds()))
+                .flatMap(Optional::stream)
                 .findFirst();
     }
 
-    private ClaimService<?, ?> serviceFor(Claim<?> claim) {
-        return claim instanceof LostItemClaim ? lostClaimService : foundClaimService;
+    private static <C extends Claim<?>> Optional<Claim<?>> linkBought(ClaimService<?, C> service, FourthwallOrder order, Set<String> ids) {
+        Optional<C> claim = service.findByPaymentIds(ids);
+        claim.ifPresent(bought -> service.link(order, bought));
+        return claim.map(bought -> bought);
     }
 
-    private static void link(FourthwallOrder order, Claim<?> claim) {
-        switch (claim) {
-            case LostItemClaim lost -> order.setLostItemClaim(lost);
-            case FoundItemClaim found -> order.setFoundItemClaim(found);
-            default -> throw new IllegalStateException("Unknown claim type " + claim.getClass());
-        }
-    }
-
-    private static Optional<Claim<?>> claimOf(FourthwallOrder order) {
-        return Optional.<Claim<?>>ofNullable(order.getLostItemClaim())
-                .or(() -> Optional.ofNullable(order.getFoundItemClaim()));
+    private Optional<Claim<?>> claimOf(FourthwallOrder order) {
+        return claimServices.all().stream()
+                .map(service -> service.claimOf(order))
+                .flatMap(Optional::stream)
+                .<Claim<?>>map(claim -> claim)
+                .findFirst();
     }
 
     private static FourthwallOrder toEntity(FourthwallOrderPlaced placed) {

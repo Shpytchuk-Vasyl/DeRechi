@@ -7,7 +7,7 @@ import org.shpytchuk.adminapi.entity.detail.ContactInfo.SocialMediaEnum;
 import org.shpytchuk.adminapi.form.ItemFilter;
 import org.shpytchuk.adminapi.form.ItemForm;
 import org.shpytchuk.adminapi.repository.thing.ThingCategoryRepository;
-import org.shpytchuk.adminapi.security.Scope;
+import org.shpytchuk.adminapi.service.ItemKind;
 import org.shpytchuk.adminapi.view.GoogleMaps;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
@@ -23,10 +23,10 @@ public class ItemModel {
     private final CountriesProperties countries;
 
 
-    public void describe(Model model, Scope scope, String basePath, String titleKey) {
-        model.addAttribute("scope", scope.name());
-        model.addAttribute("basePath", basePath);
-        model.addAttribute("titleKey", titleKey);
+    public void describe(Model model, ItemKind kind) {
+        model.addAttribute("scope", kind.scope().name());
+        model.addAttribute("basePath", kind.basePath());
+        model.addAttribute("titleKey", kind.titleKey());
     }
 
     public void forFilter(Model model, ItemFilter filter) {

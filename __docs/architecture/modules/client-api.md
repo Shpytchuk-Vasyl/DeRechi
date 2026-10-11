@@ -73,13 +73,24 @@ the admin panel and in the notification sent to the owner.
 
 ## Services
 
+The kind of a notice is `ItemKind` (`entity/ItemKind.java`, `LOST` and `FOUND`): the one place
+that knows the lower-case `label()` used in URLs, product references and logs, the
+`entityName()` / `claimEntityName()` of `NotFoundException` messages and the
+`routingKey(verb)` shape `item.<kind>.<verb>`. Entities answer `kind()` (`Thing`, `Claim` and
+their subclasses), and so do the per-kind services; nothing decides lost or found by
+`instanceof` or by a string.
+
 `ItemService<T extends Thing>` is abstract and parameterised by the entity; `LostItemService`
-and `FoundItemService` differ only in the repository, the factory and whether an image is
-required. `create` saves `ContactInfo`, `Place` (keyed by Google place id, so a place is
-reused across notices) and the item in one transaction.
+and `FoundItemService` differ only in the repository, the factory, whether an image is
+required and the `ItemKind` they pass to the constructor (`kind()`). `create` saves
+`ContactInfo` (built from the input by `ContactInfoMapper`, which also serves claims: a blank
+author email becomes `null`, a claimant's email is stored as the input normalised it), `Place`
+(keyed by Google place id, so a place is reused across notices) and the item in one
+transaction.
 
 `ItemEventAspect` is an `@AfterReturning` advice on `ItemService+.create(..)` that publishes
-an `ItemCreatedEvent` to `derechi.items` with `item.lost.created` or `item.found.created`.
+an `ItemCreatedEvent` to `derechi.items` with `service.kind().routingKey("created")`, that is
+`item.lost.created` or `item.found.created`; the advised service is bound with `target(service)`.
 See [../messaging.md](../messaging.md) for why it is an aspect.
 
 `FoundItemStatisticsService` (`service/found/`) answers `stats` with two counts:
@@ -88,11 +99,23 @@ and `FoundItemRepository.countByDate` for today in UTC. `FoundItemHistory` is co
 this module for that query only; nothing here writes history, archiving stays in `Worker`.
 
 `ClaimService` (per kind) and `ReturnService` record responses to a notice; `ClaimEventAspect`
-publishes a `ClaimEvent` with `item.<kind>.claimed` / `item.<kind>.returned` after `claim(..)` or
-`confirm(..)` returns a non-repeated result, the same `@AfterReturning` + `@Order(0)` pattern as
-`ItemEventAspect`. The exchange is `derechi.claims.exchange`. The item is read with a plain
+publishes a `ClaimEvent` with `item.<kind>.claimed` / `item.<kind>.returned` / `item.<kind>.paid`
+after `claim(..)`, `confirm(..)` or `markPaid(..)` returns a non-repeated result, the same
+`@AfterReturning` + `@Order(0)` pattern as `ItemEventAspect`, with the key from the advised
+service's `kind()`. The exchange is `derechi.claims.exchange`. The item is read with a plain
 `findById`, without a row lock, so two simultaneous claims with the same phone or email can
 both be recorded. Planned: a `PESSIMISTIC_WRITE` lock on the item row.
+
+Code that serves both kinds does not inject `LostClaimService` and `FoundClaimService` as a
+pair: `ClaimServices` (`service/ClaimServices.java`) is the registry `Map<ItemKind,
+ClaimService<?, ?>>`, built from every `ClaimService` bean and refusing to start when a kind is
+missing or doubled. `ReturnService` walks `all()` (lost first) until one kind knows the token,
+`ClaimUnlockService.unlock(kind, itemId, claimId)` takes `of(kind)` (the two GraphQL mutations
+stay, the schema names them), and `FourthwallOrderService` lets each kind's service do the
+kind-specific part of a webhook: `findByPaymentIds`, `link(order, claim)` and `claimOf(order)`
+on `ClaimService`, implemented by the two subclasses over the two nullable foreign keys of
+`fourthwall_order`. `ClaimController` keeps the two concrete services for `claim` and `find`,
+as the GraphQL fields are per kind anyway.
 
 ## Config
 
@@ -139,10 +162,13 @@ set through `POSTGRES_*` and `RABBITMQ_*`; see
 | `controller/AbstractGraphQlTests` | `@SpringBootTest` + `@AutoConfigureGraphQlTester`, `RabbitTemplate` mocked | end-to-end GraphQL tests with seeded categories: items, claims, `ReferenceControllerTests` for categories, countries and places, `FoundItemStatisticsControllerTests` for `stats` |
 | `support/Fixtures` | static builders for `Place`, `ContactInfo`, items | shared test data |
 
-Unit tests without a container cover the aspect (`ItemEventAspectTest`, Mockito), the
-masker, `ItemSort`, `EventTypeScanner`, `CountriesProperties`, the `@WithinDays` validator,
-the mapper and the statistics window (`FoundItemStatisticsServiceTest`). `ReferenceControllerSliceTests` is a `@GraphQlTest` slice with a mocked
-repository.
+Unit tests without a container cover the aspects (`ItemEventAspectTest`, `ClaimEventAspectTest`,
+Mockito over an `AspectJProxyFactory`), the masker, `ItemSort`, `ItemKind` and the entities'
+`kind()`, `EventTypeScanner`, `CountriesProperties`, `SiteProperties`, the `@WithinDays`
+validator, the mappers (`ItemMapperTest`, `ContactInfoMapperTest`), the registry
+(`ClaimServicesTest`), `ReturnService` and the statistics window
+(`FoundItemStatisticsServiceTest`). `ReferenceControllerSliceTests` is a `@GraphQlTest` slice
+with a mocked repository.
 
 ```bash
 ./mvnw -pl Client-API test                 # needs Docker for the container-backed tests

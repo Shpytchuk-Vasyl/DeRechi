@@ -28,7 +28,7 @@ The Web-Client consumes exactly this API; it has no private endpoints of its own
 | `image` | storage key, up to 200 characters, required for found items (checked in `ItemService.apply`) |
 | `categoryId` | required, must exist (`NOT_FOUND` otherwise) |
 | `place` | `PlaceInput`: Google place id, name, lat/lon, `countryCode` (two letters, must be supported) |
-| `contact` | `ItemContactInfoInput`: phone in E.164 (`^\+[1-9]\d{7,14}$`), optional email up to 50 characters (blank is stored as `null`), optional list of `SocialMedia`. An author without an email gets responses and match notifications by SMS only |
+| `contact` | `ItemContactInfoInput`: phone in E.164 (`^\+[1-9]\d{7,14}$`), optional email up to 50 characters (blank is stored as `null` by `ContactInfoMapper`, which builds the `contact_info` row for notices and claims alike), optional list of `SocialMedia`. An author without an email gets responses and match notifications by SMS only |
 
 What the client gets back is `ItemDto` built by `ItemMapper`. Contact details are masked by `ContactMasker` so that scraping the API does not yield usable contacts:
 
@@ -55,7 +55,7 @@ Anything else falls through to the default `INTERNAL_ERROR`.
 
 ## What happens after a notice is created
 
-`ItemEventAspect` wraps every `ItemService.create(..)` with `@AfterReturning` and publishes an `ItemCreatedEvent` (`id`, `date`, `category`, `lat`, `lon`, `title`) to the `derechi.items` exchange. The routing key is `item.lost.created` or `item.found.created` depending on which service ran. `Worker` consumes it, see [Automatic matching](automatic-matching.md).
+`ItemEventAspect` wraps every `ItemService.create(..)` with `@AfterReturning` and publishes an `ItemCreatedEvent` (`id`, `date`, `category`, `lat`, `lon`, `title`) to the `derechi.items` exchange. The routing key is `item.lost.created` or `item.found.created`: the aspect binds the service that ran (`target(service)`) and asks its `kind()`, an `ItemKind`, for `routingKey("created")`. `Worker` consumes it, see [Automatic matching](automatic-matching.md).
 
 The aspect has `@Order(0)`, so it sits outside the transaction interceptor and fires only after the insert has committed; a failing `create` publishes nothing (`ItemEventAspectTest.doesNotPublishWhenCreateThrows`). The flip side: if RabbitMQ is unreachable at that moment the row is already committed but the publish throws and the mutation returns an error. There is no outbox, so such a notice simply never gets matched.
 
@@ -85,10 +85,10 @@ One row in `lost_item` or `found_item`, one `contact_info` row per notice, one `
 ## Where to look
 
 - `Client-API/src/main/resources/graphql/schema.graphqls`
-- `Client-API/src/main/java/org/shpytchuk/clientapi/service/ItemService.java`, `lost/LostItemService.java`, `found/FoundItemService.java`
+- `Client-API/src/main/java/org/shpytchuk/clientapi/service/ItemService.java`, `lost/LostItemService.java`, `found/FoundItemService.java`, `entity/ItemKind.java`, `mapper/ContactInfoMapper.java`
 - `Client-API/src/main/java/org/shpytchuk/clientapi/controller/LostItemController.java`, `FoundItemController.java`
 - `Client-API/src/main/java/org/shpytchuk/clientapi/util/ContactMasker.java`
 - `Client-API/src/main/java/org/shpytchuk/clientapi/controller/FoundItemStatisticsController.java`, `service/found/FoundItemStatisticsService.java`
-- Tests: `LostItemControllerTests`, `FoundItemControllerTests`, `ItemServiceTests`, `ContactMaskerTest`, `WithinDaysLocalDateValidatorTest`, `FoundItemStatisticsControllerTests`, `FoundItemStatisticsServiceTest`
+- Tests: `LostItemControllerTests`, `FoundItemControllerTests`, `ItemServiceTests`, `ItemEventAspectTest`, `ItemKindTest`, `ContactInfoMapperTest`, `ContactMaskerTest`, `WithinDaysLocalDateValidatorTest`, `FoundItemStatisticsControllerTests`, `FoundItemStatisticsServiceTest`
 
 Extending: [Add a GraphQL field](../extending/add-a-graphql-field.md), [Add a category](../extending/add-a-category.md), [Add a social network](../extending/add-a-social-network.md).

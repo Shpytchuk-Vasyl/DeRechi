@@ -86,14 +86,24 @@ Two NotifyHub details that shaped the code:
 AMQP's own retry would only triple the attempts; the message goes to
 `notification.events.dlq`.
 
-`NotificationSender`:
+`NotificationSender` walks the routes in `ChannelRoute.ALL`. A `ChannelRoute` is the
+`Channel`, the contact of the event it delivers to and the builder method that carries that
+contact; today there are two, in this order:
 
-1. if `event.email()` is not null, send via `Channel.EMAIL` to the email;
-2. if `event.phone()` is not null, send via `Channel.SMS` to the phone;
-3. a channel that is not registered in NotifyHub (`getRegisteredChannels()`, lower-case
-   hyphenated names such as `sms`, `google-chat`) is skipped with a warning, so an event with a
-   phone does not dead-letter while `SMS_FLY_API_KEY` is empty;
-4. a NotifyHub duplicate is treated as sent.
+| Route | Recipient | Addressed with |
+|---|---|---|
+| `EMAIL` | `event.email()` | `notify.to(...)` |
+| `SMS` | `event.phone()` | `notify.toPhone(...)` |
+
+For each route:
+
+1. a route whose recipient is null for this event is skipped silently;
+2. a channel that is not registered in NotifyHub (`getRegisteredChannels()`, lower-case
+   hyphenated names such as `sms`, `google-chat`, which `ChannelRoute.name()` produces) is
+   skipped with a warning, so an event with a phone does not dead-letter while
+   `SMS_FLY_API_KEY` is empty;
+3. a NotifyHub duplicate is treated as sent;
+4. otherwise the message is sent, and a failure propagates (NotifyHub has retried already).
 
 Each send carries `deduplicationKey = "<event.deduplicationKey>:<CHANNEL>"`
 (`match:<lostId>:<foundId>` from `Admin-API`, `claim:<kind>:<id>` from `Worker`), one
@@ -102,13 +112,12 @@ per channel so a dropped SMS cannot also drop the email. An event without a key 
 `InMemoryDeduplicationStore` for an hour: per instance and lost on restart, so a message
 redelivered after a restart, or to a second `Notification` instance, is sent again.
 
-The `socialMedias` array in the event is **ignored**. `NotificationRequestedEvent.SocialMediaEnum`
-maps `TELEGRAM` to `Channel.TELEGRAM`, `WHATSAPP` to `Channel.WHATSAPP` and `VIBER` to
-`Channel.SMS` (no Viber channel exists), and a `targets(...)` method that fanned out to the
-configured ones is commented out in the sender. It was disabled because Telegram needs a
-chat id, which `ContactInfo` does not have, and the event only carries a phone number.
-Until that is solved, choosing a messenger in the admin panel results in an SMS, since
-`Admin-API` still sends the phone for messenger channels. See
+The `socialMedias` array in the event is **ignored**: `NotificationRequestedEvent.SocialMediaEnum`
+(`TELEGRAM`, `VIBER`, `WHATSAPP`) is carried and never read. A messenger route is not in `ALL`
+because Telegram needs a chat id, which `ContactInfo` does not have, and the event only carries
+a phone number. Until that is solved, choosing a messenger in the admin panel results in an SMS,
+since `Admin-API` still sends the phone for messenger channels and the `SMS` route goes by
+phone. See
 [../../features/match-notifications.md](../../features/match-notifications.md) and
 [../../extending/add-a-notification-channel.md](../../extending/add-a-notification-channel.md).
 
@@ -130,8 +139,10 @@ healthy. Sent mail shows up at `http://localhost:8025`. SMS has no local sandbox
 
 `NotificationSenderTest` uses NotifyHub's `TestNotifyHub` (an in-memory hub from
 `io.notifyhub.core.testing`) to assert that an event with both contacts produces one email
-and one SMS with the message as content, that unconfigured channels are skipped and that the
-dedup key is per event. `NotificationRequestedListenerTest` checks that a failed delivery is
+and one SMS with the message as content, that unconfigured channels are skipped, that the
+dedup key is `<event key>:<CHANNEL>` per channel with the recipient as the fallback, and that
+the routes are tried in their order and only with a recipient. `ChannelRouteTest` pins the
+two routes, their order and the channel names. `NotificationRequestedListenerTest` checks that a failed delivery is
 rejected without requeue, `RabbitConfigTest` that a message labelled `NOTIFICATION` from another
 module is read into this module's record. `SmsFlyChannelTest` checks the SMS-fly request and its
 error handling against `MockRestServiceServer`, `SmsFlyConfigTest` that the channel registers only

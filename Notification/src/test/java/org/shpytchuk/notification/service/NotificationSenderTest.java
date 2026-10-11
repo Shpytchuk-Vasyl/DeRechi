@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.shpytchuk.notification.event.NotificationRequestedEvent;
 import org.shpytchuk.notification.event.NotificationRequestedEvent.SocialMediaEnum;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -94,6 +95,36 @@ class NotificationSenderTest {
 
         assertThat(hub.sent("email")).hasSize(1);
         assertThat(replay).hasToString("already sent via email");
+    }
+
+    @Test
+    void deduplicatesPerEventAndChannelAndFallsBackToTheRecipientWithoutAKey() {
+        InMemoryDeduplicationStore store = new InMemoryDeduplicationStore();
+        NotifyHub deduplicating = NotifyHub.builder()
+                .channel(hub.hub().getChannel("email").orElseThrow())
+                .channel(hub.hub().getChannel("sms").orElseThrow())
+                .deduplicationStore(store)
+                .build();
+        NotificationSender sender = new NotificationSender(deduplicating, Optional.of(store));
+
+        sender.send(event("+380501234567", "user@derechi.local", "claim:lost:1"));
+        sender.send(event("+380501234567", "user@derechi.local", null));
+
+        assertThat(store.isDuplicate("claim:lost:1:EMAIL")).isTrue();
+        assertThat(store.isDuplicate("claim:lost:1:SMS")).isTrue();
+        assertThat(store.isDuplicate("user@derechi.local:EMAIL")).isTrue();
+        assertThat(store.isDuplicate("+380501234567:SMS")).isTrue();
+    }
+
+    @Test
+    void triesTheRoutesInTheirOrderAndOnlyThoseWithARecipient() {
+        ChannelRoute nowhere = new ChannelRoute(Channel.EMAIL, event -> null, NotifyHub::to);
+        NotificationSender sender = new NotificationSender(hub.hub(), Optional.empty(),
+                List.of(nowhere, ChannelRoute.SMS, ChannelRoute.EMAIL));
+
+        sender.send(event("+380501234567", "user@derechi.local", "match:1:2"));
+
+        assertThat(hub.sent()).extracting(SentNotification::channel).containsExactly("sms", "email");
     }
 
     private static NotificationRequestedEvent event(String phone, String email, String deduplicationKey) {

@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.shpytchuk.clientapi.config.FourthwallProperties;
 import org.shpytchuk.clientapi.dto.ClaimDto;
+import org.shpytchuk.clientapi.entity.ItemKind;
 import org.shpytchuk.clientapi.input.ContactInfoInput;
 import org.shpytchuk.clientapi.service.ReturnService;
 import org.shpytchuk.clientapi.service.found.FoundClaimService;
@@ -59,11 +60,11 @@ public class ClaimController {
 
     @MutationMapping
     public ClaimDto unlockLostItemClaim(@Argument Long itemId, @Argument Long id) {
-        return unlockService.unlockLost(itemId, id);
+        return unlockService.unlock(ItemKind.LOST, itemId, id);
     }
 
     @MutationMapping
     public ClaimDto unlockFoundItemClaim(@Argument Long itemId, @Argument Long id) {
-        return unlockService.unlockFound(itemId, id);
+        return unlockService.unlock(ItemKind.FOUND, itemId, id);
     }
 }

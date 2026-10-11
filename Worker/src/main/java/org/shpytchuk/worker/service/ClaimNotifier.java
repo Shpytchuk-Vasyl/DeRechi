@@ -31,9 +31,6 @@ public class ClaimNotifier {
     public static final String UNLOCKED_ROUTING_KEY = "notification.claim.unlocked";
 
     private static final String MESSENGERS_NONE_KEY = "claim.messengers.none";
-    private static final String AUTHOR_REMINDER_KEY = "claim.reminder.author";
-    private static final String CLAIMANT_REMINDER_KEY = "claim.reminder.claimant";
-    private static final String UNLOCKED_KEY = "claim.unlocked";
 
     static final int TITLE_MAX_LENGTH = 15;
     private static final String TITLE_ELLIPSIS = "...";
@@ -45,65 +42,44 @@ public class ClaimNotifier {
     private final MessageSource messages;
 
     public void notifyAuthor(ItemKind kind, Claim claim) {
-        Thing item = claim.getItem();
-        ContactInfo author = item.getInfo();
         ContactInfo claimant = claim.getContactInfo();
-        Locale locale = PhoneLocales.of(author.getPhone());
-        String key = "claim." + kind.segment();
-
-        publish(CREATED_ROUTING_KEY, author,
-                text(key + ".subject", locale),
-                text(key + ".body", locale,
-                        shortTitle(item.getTitle()),
-                        formatPhone(claimant.getPhone()),
-                        claimant.getEmail(),
-                        messengers(claimant, locale),
-                        noticeUrl(kind, item, locale)),
-                "claim:%s:%d".formatted(kind.segment(), claim.getId()));
-        log.info("Passed the contacts of {} claim {} to the author of item {}", kind, claim.getId(), item.getId());
+        send(ClaimMessage.CREATED, kind, claim, (notice, title, locale) -> new Object[]{
+                title, formatPhone(claimant.getPhone()), claimant.getEmail(),
+                messengers(claimant, locale), noticeUrl(kind, notice, locale)});
     }
 
     public void remindAuthor(ItemKind kind, Claim claim) {
-        remind(kind, claim, claim.getItem().getInfo(), AUTHOR_REMINDER_KEY,
-                "claim:%s:%d:author-reminder".formatted(kind.segment(), claim.getId()));
+        send(ClaimMessage.AUTHOR_REMINDER, kind, claim,
+                (notice, title, locale) -> new Object[]{title, confirmUrl(claim, locale)});
     }
 
     public void remindClaimant(ItemKind kind, Claim claim) {
-        remind(kind, claim, claim.getContactInfo(), CLAIMANT_REMINDER_KEY,
-                "claim:%s:%d:claimant-reminder".formatted(kind.segment(), claim.getId()));
+        send(ClaimMessage.CLAIMANT_REMINDER, kind, claim,
+                (notice, title, locale) -> new Object[]{title, confirmUrl(claim, locale)});
     }
 
     public void sendAuthorContacts(ItemKind kind, Claim claim) {
+        send(ClaimMessage.UNLOCKED, kind, claim,
+                (notice, title, locale) -> new Object[]{title, formatPhone(notice.getInfo().getPhone())});
+    }
+
+    /** Renders the message in the language of the recipient's phone number and publishes it. */
+    private void send(ClaimMessage message, ItemKind kind, Claim claim, BodyArguments body) {
         Thing notice = claim.notice();
-        ContactInfo author = notice.getInfo();
-        ContactInfo claimant = claim.getContactInfo();
-        Locale locale = PhoneLocales.of(claimant.getPhone());
-        String title = shortTitle(notice.getTitle());
-
-        publish(UNLOCKED_ROUTING_KEY, claimant,
-                text(UNLOCKED_KEY + ".subject", locale, title),
-                text(UNLOCKED_KEY + ".body", locale, title, formatPhone(author.getPhone())),
-                "claim:%s:%d:unlocked".formatted(kind.segment(), claim.getId()));
-        log.info("Sent the author's phone number of item {} to the claimant of {} claim {}",
-                notice.getId(), kind, claim.getId());
-    }
-
-    private void remind(ItemKind kind, Claim claim, ContactInfo recipient, String key, String deduplicationKey) {
+        ContactInfo recipient = message.recipient().of(claim);
         Locale locale = PhoneLocales.of(recipient.getPhone());
-        String title = shortTitle(claim.getItem().getTitle());
+        String title = shortTitle(notice.getTitle());
+        String key = message.textKey(kind);
 
-        publish(REMINDER_ROUTING_KEY, recipient,
-                text(key + ".subject", locale, title),
-                text(key + ".body", locale, title, confirmUrl(claim, locale)),
-                deduplicationKey);
-        log.info("Sent {} for {} claim {}", key, kind, claim.getId());
-    }
-
-    private void publish(String routingKey, ContactInfo recipient, String subject, String body,
-                         String deduplicationKey) {
+        // Every subject gets the title; the CREATED subjects have no placeholder and MessageFormat drops the spare argument.
         NotificationRequestedEvent event = new NotificationRequestedEvent(
-                subject, body, recipient.getPhone(), recipient.getEmail(), new SocialMediaEnum[0], deduplicationKey);
-        rabbitTemplate.convertAndSend(properties.exchange(), routingKey, event);
+                text(key + ".subject", locale, title),
+                text(key + ".body", locale, body.of(notice, title, locale)),
+                recipient.getPhone(), recipient.getEmail(), new SocialMediaEnum[0],
+                message.deduplicationKey(kind, claim));
+        rabbitTemplate.convertAndSend(properties.exchange(), message.routingKey(), event);
+        log.info("Sent {} for {} claim {} on item {} to the {}",
+                key, kind, claim.getId(), notice.getId(), message.recipient());
     }
 
     private String noticeUrl(ItemKind kind, Thing item, Locale locale) {
@@ -152,5 +128,11 @@ public class ClaimNotifier {
 
     private String text(String key, Locale locale, Object... arguments) {
         return messages.getMessage(key, arguments, locale);
+    }
+
+    @FunctionalInterface
+    private interface BodyArguments {
+
+        Object[] of(Thing notice, String title, Locale locale);
     }
 }

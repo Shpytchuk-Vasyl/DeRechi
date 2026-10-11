@@ -6,10 +6,10 @@ Tests are JUnit 5 with AssertJ and Spring Boot's test starters. Database-backed 
 
 **Unit tests** (`*Test`): no Spring context, plain constructors, fast. For anything that is pure logic.
 
-- `Client-API`: `ContactMaskerTest`, `ItemSortTest`, `ItemMapperTest`, `FoundItemStatisticsServiceTest`, `ItemCreatedEventTest`, `EventTypeScannerTest`, `WithinDaysLocalDateValidatorTest`, `CountriesPropertiesTest`
-- `Admin-API`: `FormatsTest`, `NotifyChannelTest`, `ItemFilterTest`, `PermissionsTest`, `MessagesTest`, `CountriesPropertiesTest`, `MatchNotificationServiceTest`, `LostItemAdminServiceTest`, `KeycloakAuthoritiesMapperTest` (realm and client roles to authorities), `PagesTest` (the sort whitelist), `RabbitConfigTest`
-- `Notification`: `NotificationSenderTest` (uses NotifyHub's `TestNotifyHub` to capture what would be sent), `NotificationRequestedListenerTest` (a failed delivery is rejected without requeue), `RabbitConfigTest`
-- `Worker`: `PhoneLocalesTest`, `LanguageResolverTest`, `ClaimNotifierTest`, `ClaimFollowUpJobTest`, `ItemArchiverTest`, `PaidHandlerTest`, `ClaimListenerTest`, `ArchiveListenerTest`, `ItemCreatedListenerTest`, `ClaimHandlersTest` (`ClaimedHandler` and `ReturnedHandler`, replays included), `RabbitConfigTest`, `MessagesTest`
+- `Client-API`: `ContactMaskerTest`, `ItemSortTest`, `ItemMapperTest`, `FoundItemStatisticsServiceTest`, `ItemCreatedEventTest`, `EventTypeScannerTest`, `WithinDaysLocalDateValidatorTest`, `CountriesPropertiesTest`, `ItemKindTest` (the routing keys per kind), `ClaimServicesTest`, `ReturnServiceTest`, `ContactInfoMapperTest`
+- `Admin-API`: `FormatsTest`, `NotifyChannelTest`, `ItemFilterTest`, `PermissionsTest`, `MessagesTest`, `CountriesPropertiesTest`, `MatchNotificationServiceTest`, `LostItemAdminServiceTest`, `KeycloakAuthoritiesMapperTest` (realm and client roles to authorities), `PagesTest` (the sort whitelist), `RabbitConfigTest`, `ItemKindTest` (every message key a kind derives exists)
+- `Notification`: `NotificationSenderTest` (uses NotifyHub's `TestNotifyHub` to capture what would be sent), `NotificationRequestedListenerTest` (a failed delivery is rejected without requeue), `RabbitConfigTest`, `ChannelRouteTest`
+- `Worker`: `PhoneLocalesTest`, `LanguageResolverTest`, `ClaimNotifierTest`, `ClaimFollowUpJobTest`, `ItemArchiverTest`, `PaidHandlerTest`, `ClaimListenerTest`, `ArchiveListenerTest`, `ItemCreatedListenerTest`, `ClaimHandlersTest` (`ClaimedHandler` and `ReturnedHandler`, replays included), `RabbitConfigTest`, `MessagesTest`, `ItemMatchHandlerTest`, `RoutingKeyDispatcherTest`, `KindOpsTest`, `ItemKindsTest`, `ClaimMessageTest`, `ClaimsConfigTests` (every claim handler is its own bean, `PaidHandler` stays transactional)
 
 **Slice tests** (`*Tests`): one layer with a Spring context.
 

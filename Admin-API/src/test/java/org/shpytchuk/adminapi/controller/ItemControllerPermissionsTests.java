@@ -22,7 +22,9 @@ import org.shpytchuk.adminapi.security.Action;
 import org.shpytchuk.adminapi.security.Permissions;
 import org.shpytchuk.adminapi.security.Scope;
 import org.shpytchuk.adminapi.service.AdminItemService;
+import org.shpytchuk.adminapi.service.ArchivableAdminItemService;
 import org.shpytchuk.adminapi.service.ImageStorage;
+import org.shpytchuk.adminapi.service.ItemKind;
 import org.shpytchuk.adminapi.service.found.FoundItemAdminService;
 import org.shpytchuk.adminapi.service.found.FoundItemHistoryAdminService;
 import org.shpytchuk.adminapi.service.lost.LostItemAdminService;
@@ -71,10 +73,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * The four item controllers share {@link ItemController}, but each one repeats the {@code @RequirePermission}
- * on every handler because the annotation needs a constant scope. This walks every route of every controller:
- * its own {@code SCOPE:ACTION} opens it, the same action on a neighbouring scope (the likely copy-paste slip)
- * does not.
+ * The four item controllers share the handlers of {@link ItemController}; each handler names only its
+ * {@code Action}, and the {@code Scope} is read from the concrete controller at request time. This walks every
+ * route of every controller: its own {@code SCOPE:ACTION} opens it, the same action on a neighbouring scope
+ * does not, and the archives do not have the archive route at all.
  */
 @WebMvcTest(value = {LostItemController.class, FoundItemController.class,
         LostItemHistoryController.class, FoundItemHistoryController.class},
@@ -99,13 +101,24 @@ class ItemControllerPermissionsTests {
         }
     }
 
-    private record Kind(Scope scope, Scope neighbour, String basePath, boolean archivable) {
+    private record Kind(ItemKind kind, Scope neighbour, boolean archivable) {
+
+        Scope scope() {
+            return kind.scope();
+        }
+
+        String basePath() {
+            return kind.basePath();
+        }
 
         @Override
         public String toString() {
-            return scope.name();
+            return kind.name();
         }
     }
+
+    private static final Route ARCHIVE = new Route("archive", Action.ARCHIVE, base -> post(base + "/7/archive"),
+            service -> ((ArchivableAdminItemService<?>) service).archive(eq(7L), any()));
 
     private static final List<Route> ROUTES = List.of(
             new Route("list", Action.VIEW, base -> get(base), service -> service.page(any(), any())),
@@ -114,15 +127,14 @@ class ItemControllerPermissionsTests {
             new Route("edit form", Action.EDIT, base -> get(base + "/7/edit"), service -> service.form(7L)),
             new Route("update", Action.EDIT, base -> validForm(post(base + "/7")),
                     service -> service.update(eq(7L), any())),
-            new Route("archive", Action.ARCHIVE, base -> post(base + "/7/archive"),
-                    service -> service.archive(eq(7L), any())),
+            ARCHIVE,
             new Route("delete", Action.DELETE, base -> post(base + "/7/delete"), service -> service.delete(7L)));
 
     private static final List<Kind> KINDS = List.of(
-            new Kind(Scope.LOST_ITEM, Scope.FOUND_ITEM, LostItemController.BASE_PATH, true),
-            new Kind(Scope.FOUND_ITEM, Scope.LOST_ITEM, FoundItemController.BASE_PATH, true),
-            new Kind(Scope.LOST_ITEM_HISTORY, Scope.LOST_ITEM, LostItemHistoryController.BASE_PATH, false),
-            new Kind(Scope.FOUND_ITEM_HISTORY, Scope.FOUND_ITEM, FoundItemHistoryController.BASE_PATH, false));
+            new Kind(ItemKind.LOST_ITEM, Scope.FOUND_ITEM, true),
+            new Kind(ItemKind.FOUND_ITEM, Scope.LOST_ITEM, true),
+            new Kind(ItemKind.LOST_ITEM_HISTORY, Scope.LOST_ITEM, false),
+            new Kind(ItemKind.FOUND_ITEM_HISTORY, Scope.FOUND_ITEM, false));
 
     @Autowired
     private MockMvc mockMvc;
@@ -157,12 +169,16 @@ class ItemControllerPermissionsTests {
         return routes.stream();
     }
 
+    static Stream<Kind> archives() {
+        return KINDS.stream().filter(kind -> !kind.archivable());
+    }
+
     @BeforeEach
     void stubServices() {
-        stub(lostItems, Scope.LOST_ITEM, LostItem::new);
-        stub(foundItems, Scope.FOUND_ITEM, FoundItem::new);
-        stub(lostHistory, Scope.LOST_ITEM_HISTORY, LostItemHistory::new);
-        stub(foundHistory, Scope.FOUND_ITEM_HISTORY, FoundItemHistory::new);
+        stub(lostItems, LostItem::new);
+        stub(foundItems, FoundItem::new);
+        stub(lostHistory, LostItemHistory::new);
+        stub(foundHistory, FoundItemHistory::new);
     }
 
     @ParameterizedTest(name = "{0} {1}")
@@ -192,6 +208,16 @@ class ItemControllerPermissionsTests {
         }
     }
 
+    /** An archived notice cannot be archived again: the route is absent, not merely forbidden. */
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("archives")
+    void theArchivesHaveNoArchiveRoute(Kind kind) throws Exception {
+        mockMvc.perform(ARCHIVE.request().apply(kind.basePath())
+                        .with(oidcLogin().authorities(authority(kind.neighbour(), Action.ARCHIVE)))
+                        .with(csrf()))
+                .andExpect(status().isNotFound());
+    }
+
     private AdminItemService<?> serviceOf(Scope scope) {
         return switch (scope) {
             case LOST_ITEM -> lostItems;
@@ -202,10 +228,9 @@ class ItemControllerPermissionsTests {
         };
     }
 
-    private static <T extends Thing> void stub(AdminItemService<T> service, Scope scope, Supplier<T> factory) {
+    private static <T extends Thing> void stub(AdminItemService<T> service, Supplier<T> factory) {
         T saved = factory.get();
         saved.setId(7L);
-        when(service.scopeKey()).thenReturn(scope.name());
         when(service.page(any(), any())).thenReturn(Page.empty());
         when(service.claims(anyCollection())).thenReturn(Map.of());
         when(service.form(7L)).thenReturn(form());

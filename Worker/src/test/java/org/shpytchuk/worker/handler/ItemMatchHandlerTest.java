@@ -1,0 +1,101 @@
+package org.shpytchuk.worker.handler;
+
+import org.junit.jupiter.api.Test;
+import org.shpytchuk.worker.entity.found.FoundItem;
+import org.shpytchuk.worker.entity.lost.LostItem;
+import org.shpytchuk.worker.entity.thing.Thing;
+import org.shpytchuk.worker.event.ItemCreatedEvent;
+import org.shpytchuk.worker.repository.SimilarItemRepository;
+import org.shpytchuk.worker.repository.found.FoundItemClaimRepository;
+import org.shpytchuk.worker.repository.found.FoundItemHistoryRepository;
+import org.shpytchuk.worker.repository.found.FoundItemRepository;
+import org.shpytchuk.worker.repository.lost.LostItemClaimRepository;
+import org.shpytchuk.worker.repository.lost.LostItemHistoryRepository;
+import org.shpytchuk.worker.repository.lost.LostItemRepository;
+import org.shpytchuk.worker.service.ItemService;
+import org.shpytchuk.worker.service.KindOps;
+import org.shpytchuk.worker.support.Fixtures;
+import org.springframework.data.domain.ScrollPosition;
+import org.springframework.data.domain.Window;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
+
+
+class ItemMatchHandlerTest {
+
+    private final SimilarItemRepository similarItems =
+            mock(SimilarItemRepository.class, withSettings().defaultAnswer(CALLS_REAL_METHODS));
+
+    @Test
+    void routingKeysFollowTheKindOfTheNewNotice() {
+        assertThat(new ItemMatchHandler<>(lost(), search(FoundItem.class)).routingKey()).isEqualTo("item.lost.created");
+        assertThat(new ItemMatchHandler<>(found(), search(LostItem.class)).routingKey()).isEqualTo("item.found.created");
+    }
+
+    @Test
+    void aNewLostItemTakesTheLostColumnAndItsFoundCandidatesTheOther() {
+        ItemService<FoundItem> foundItemSearch = search(FoundItem.class,
+                candidate(new FoundItem(), 10L, 0.9), candidate(new FoundItem(), 11L, 0.5));
+        doReturn(2).when(similarItems).insertAll(any(), any(), any());
+
+        new ItemMatchHandler<>(lost(), foundItemSearch).onItemCreated(event(7L));
+
+        verify(similarItems).insertAll(new Long[]{10L, 11L}, new Long[]{7L, 7L}, new Double[]{0.9, 0.5});
+    }
+
+    @Test
+    void aNewFoundItemTakesTheFoundColumnAndItsLostCandidatesTheOther() {
+        ItemService<LostItem> lostItemSearch = search(LostItem.class, candidate(new LostItem(), 20L, 0.0));
+        doReturn(1).when(similarItems).insertAll(any(), any(), any());
+
+        new ItemMatchHandler<>(found(), lostItemSearch).onItemCreated(event(8L));
+
+        verify(similarItems).insertAll(new Long[]{8L}, new Long[]{20L}, new Double[]{0.0});
+    }
+
+    @Test
+    void writesNothingWhenNothingMatches() {
+        new ItemMatchHandler<>(lost(), search(FoundItem.class)).onItemCreated(event(7L));
+
+        verify(similarItems, never()).insertAll(any(), any(), any());
+    }
+
+    private KindOps<?, ?, ?> lost() {
+        return KindOps.lost(mock(LostItemRepository.class), mock(LostItemHistoryRepository.class),
+                mock(LostItemClaimRepository.class), similarItems);
+    }
+
+    private KindOps<?, ?, ?> found() {
+        return KindOps.found(mock(FoundItemRepository.class), mock(FoundItemHistoryRepository.class),
+                mock(FoundItemClaimRepository.class), similarItems);
+    }
+
+    @SafeVarargs
+    @SuppressWarnings("unchecked")
+    private static <T extends Thing> ItemService<T> search(Class<T> type, T... candidates) {
+        ItemService<T> search = mock(ItemService.class);
+        when(search.findAllMostSuitable(any())).thenReturn(Window.from(List.of(candidates), ScrollPosition::offset));
+        return search;
+    }
+
+    private static <T extends Thing> T candidate(T item, long id, double rank) {
+        item.setId(id);
+        item.setOrderMatch(rank);
+        return item;
+    }
+
+    private static ItemCreatedEvent event(long id) {
+        return Fixtures.created(id, "Wallet", LocalDate.of(2026, 9, 10), 1L, 49.8419, 24.0315);
+    }
+}

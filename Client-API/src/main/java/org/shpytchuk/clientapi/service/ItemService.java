@@ -4,18 +4,18 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.shpytchuk.clientapi.config.CountriesProperties;
 import org.shpytchuk.clientapi.dto.ItemDto;
+import org.shpytchuk.clientapi.entity.ItemKind;
 import org.shpytchuk.clientapi.input.ItemFilterInput;
 import org.shpytchuk.clientapi.input.ItemInput;
 import org.shpytchuk.clientapi.input.MoneyInput;
 import org.shpytchuk.clientapi.input.PlaceInput;
 import org.shpytchuk.clientapi.dto.ItemSort;
 import org.shpytchuk.clientapi.entity.detail.ContactInfo;
-import org.shpytchuk.clientapi.entity.detail.ContactInfo.SocialMediaEnum;
 import org.shpytchuk.clientapi.entity.detail.Place;
-import org.shpytchuk.clientapi.entity.lost.LostItem;
 import org.shpytchuk.clientapi.entity.thing.Thing;
 import org.shpytchuk.clientapi.entity.thing.ThingCategory;
 import org.shpytchuk.clientapi.exeption.NotFoundException;
+import org.shpytchuk.clientapi.mapper.ContactInfoMapper;
 import org.shpytchuk.clientapi.mapper.ItemMapper;
 import org.shpytchuk.clientapi.repository.detail.ContactInfoRepository;
 import org.shpytchuk.clientapi.repository.detail.PlaceRepository;
@@ -28,7 +28,6 @@ import org.springframework.graphql.data.query.ScrollSubrange;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -44,8 +43,11 @@ public abstract class ItemService<T extends Thing> {
     private final CountriesProperties countries;
     private final Supplier<T> factory;
     private final boolean imageRequired;
-    private final String entityName;
+    private final ItemKind kind;
 
+    public ItemKind kind() {
+        return kind;
+    }
 
     public Optional<ItemDto> findById(Long id) {
         return repository.findWithDetailsById(id).map(ItemMapper::toDto);
@@ -62,17 +64,17 @@ public abstract class ItemService<T extends Thing> {
     @Transactional
     public ItemDto create(ItemInput input) {
         T item = factory.get();
-        ContactInfo info = new ContactInfo();
+        ContactInfo info = ContactInfoMapper.toEntity(input.contact());
         apply(input, item, info);
         contactInfoRepository.save(info);
         T saved = repository.save(item);
-        log.info("Created {} item {}", saved instanceof LostItem ? "lost" : "found", saved.getId());
+        log.info("Created {} item {}", saved.kind().label(), saved.getId());
         return ItemMapper.toDto(saved);
     }
 
 //    @Transactional
 //    public ItemDto update(Long id, ItemInput input) {
-//        T item = repository.findWithDetailsById(id).orElseThrow(() -> new NotFoundException(entityName, id));
+//        T item = repository.findWithDetailsById(id).orElseThrow(() -> new NotFoundException(kind.entityName(), id));
 //        apply(input, item, item.getInfo());
 //        return ItemMapper.toDto(repository.save(item));
 //    }
@@ -80,7 +82,7 @@ public abstract class ItemService<T extends Thing> {
 //    @Transactional
 //    public boolean delete(Long id) {
 //        if (!repository.existsById(id)) {
-//            throw new NotFoundException(entityName, id);
+//            throw new NotFoundException(kind.entityName(), id);
 //        }
 //        repository.deleteById(id);
 //        return true;
@@ -100,10 +102,6 @@ public abstract class ItemService<T extends Thing> {
     }
 
     private static <T extends Thing> void buildItemFromInput(ItemInput input, T item, ContactInfo info, ThingCategory category, Place place, String currency) {
-        info.setPhone(input.contact().phone());
-        info.setEmail(StringUtils.hasText(input.contact().email()) ? input.contact().email() : null);
-        info.setSocialMedias(toArray(input.contact().socialMedias()));
-
         item.setTitle(input.title());
         item.setDescription(input.description());
         item.setDate(input.date());
@@ -140,10 +138,6 @@ public abstract class ItemService<T extends Thing> {
 
     private static String upper(String code) {
         return code.strip().toUpperCase(Locale.ROOT);
-    }
-
-    private static SocialMediaEnum[] toArray(List<SocialMediaEnum> socialMedias) {
-        return socialMedias == null ? null : socialMedias.toArray(SocialMediaEnum[]::new);
     }
 
     private static Sort toSort(ItemSort sort) {

@@ -9,8 +9,8 @@ import org.shpytchuk.worker.entity.lost.LostItemHistory;
 import org.shpytchuk.worker.entity.thing.ThingCategory;
 import org.shpytchuk.worker.repository.AbstractRepositoryTests;
 import org.shpytchuk.worker.service.ClaimNotifier;
-import org.shpytchuk.worker.service.ClaimRepositories;
 import org.shpytchuk.worker.service.ItemKind;
+import org.shpytchuk.worker.service.ItemKinds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 /** The per-claim transactions of the follow-up job against the real foreign keys. */
-@Import({ClaimFollowUps.class, ClaimRepositories.class, ClaimFollowUpsTests.FixedClock.class})
+@Import({ClaimFollowUps.class, ItemKinds.class, ClaimFollowUpsTests.FixedClock.class})
 class ClaimFollowUpsTests extends AbstractRepositoryTests {
 
     private static final Instant NOW = Instant.parse("2026-10-01T12:00:00Z");

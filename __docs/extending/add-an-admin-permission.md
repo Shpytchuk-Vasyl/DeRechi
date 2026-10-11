@@ -45,6 +45,10 @@ The example adds `LOST_ITEM:EXPORT` for a CSV download button.
 
    Nothing else is needed on the server: `@RequirePermission` expands to `@PreAuthorize("@perm.can(authentication, 'LOST_ITEM', 'EXPORT')")`.
 
+   A handler added to `ItemController` (and so inherited by all four item kinds) uses
+   `@RequireAction(Action.EXPORT)` instead: the scope is the concrete controller's own, so every
+   scope that inherits the handler must list `EXPORT` in `Scope` and gets its own client role.
+
 5. **Guard the template.**
 
    ```html
@@ -80,7 +84,7 @@ None. The public client authenticates against `derechi-web` and never sees admin
 - [ ] Client role added to `derechi-admin` in the realm JSON, with a unique id
 - [ ] Added to exactly one composite realm role, or a new composite created with a dev user
 - [ ] Realm re-imported locally and the dev user can see or not see the button as intended
-- [ ] `@RequirePermission` on every new handler, `perms.can` on every new control
+- [ ] `@RequirePermission` (or `@RequireAction` on a handler shared through `ItemController`) on every new handler, `perms.can` on every new control
 - [ ] Message keys in all five bundles
 - [ ] `PermissionsTest` and the 200/403 controller cases green
 - [ ] Permissions feature page updated

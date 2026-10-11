@@ -5,8 +5,8 @@ import org.shpytchuk.worker.entity.matching.Claim;
 import org.shpytchuk.worker.repository.ClaimRepository;
 import org.shpytchuk.worker.repository.ContactInfoRepository;
 import org.shpytchuk.worker.service.ClaimNotifier;
-import org.shpytchuk.worker.service.ClaimRepositories;
 import org.shpytchuk.worker.service.ItemKind;
+import org.shpytchuk.worker.service.ItemKinds;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,14 +22,14 @@ import java.util.function.Predicate;
 @AllArgsConstructor
 public class ClaimFollowUps {
 
-    private final ClaimRepositories repositories;
+    private final ItemKinds kinds;
     private final ClaimNotifier notifier;
     private final ContactInfoRepository contactInfoRepository;
     private final Clock clock;
 
     @Transactional
     public boolean remindAuthor(ItemKind kind, Long claimId) {
-        return remind(repositories.of(kind), claimId,
+        return remind(kinds.claims(kind), claimId,
                 claim -> claim.getAuthorRemindedAt() == null,
                 claim -> notifier.remindAuthor(kind, claim),
                 Claim::setAuthorRemindedAt);
@@ -37,7 +37,7 @@ public class ClaimFollowUps {
 
     @Transactional
     public boolean remindClaimant(ItemKind kind, Long claimId) {
-        return remind(repositories.of(kind), claimId,
+        return remind(kinds.claims(kind), claimId,
                 claim -> claim.getClaimantRemindedAt() == null,
                 claim -> notifier.remindClaimant(kind, claim),
                 Claim::setClaimantRemindedAt);
@@ -45,7 +45,7 @@ public class ClaimFollowUps {
 
     @Transactional
     public boolean purge(ItemKind kind, Long claimId) {
-        ClaimRepository<? extends Claim> claims = repositories.of(kind);
+        ClaimRepository<? extends Claim> claims = kinds.claims(kind);
         Optional<? extends Claim> found = claims.findById(claimId);
         if (found.isEmpty()) {
             return false;

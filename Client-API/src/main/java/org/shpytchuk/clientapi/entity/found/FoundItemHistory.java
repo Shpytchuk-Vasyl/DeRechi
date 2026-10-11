@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.shpytchuk.clientapi.entity.ItemKind;
 import org.shpytchuk.clientapi.entity.thing.Thing;
 
 import java.time.Instant;
@@ -17,4 +18,9 @@ public class FoundItemHistory extends Thing {
 
     @Column(nullable = false)
     private Instant archivedAt;
+
+    @Override
+    public ItemKind kind() {
+        return ItemKind.FOUND;
+    }
 }

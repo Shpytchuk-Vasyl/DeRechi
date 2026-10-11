@@ -17,6 +17,7 @@ import org.shpytchuk.adminapi.entity.thing.ThingCategory;
 import org.shpytchuk.adminapi.exception.NotFoundException;
 import org.shpytchuk.adminapi.form.ItemFilter;
 import org.shpytchuk.adminapi.form.ItemForm;
+import org.shpytchuk.adminapi.mapper.ItemFormApplier;
 import org.shpytchuk.adminapi.repository.AbstractRepositoryTests;
 import org.shpytchuk.adminapi.service.found.FoundItemAdminService;
 import org.shpytchuk.adminapi.service.lost.LostItemAdminService;
@@ -41,9 +42,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-/** Create, update, list and delete through the real services, on the real schema and its foreign keys. */
 @Import({LostItemAdminService.class, FoundItemAdminService.class, LostItemHistoryAdminService.class,
-        CountriesConfig.class, AdminItemServiceTests.Properties.class})
+        ItemFormApplier.class, CountriesConfig.class, AdminItemServiceTests.Properties.class})
 class AdminItemServiceTests extends AbstractRepositoryTests {
 
     private static final Instant NOW = Instant.parse("2026-10-01T12:00:00Z");

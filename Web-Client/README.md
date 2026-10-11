@@ -41,18 +41,21 @@ Every GraphQL read in `src/api/` is a `fetch` cached by Next, and all the number
 `src/lib/cache.ts`:
 
 - `CACHE_TTL`: four tiers, `minute` (lists, place suggestions), `fiveMinutes` (home page
-  `stats`), `hour` (one notice, categories, countries) and `day` (the sitemap, OG fonts).
+  `stats`), `hour` (one notice, categories, countries, the sitemap) and `day` (OG fonts).
   Pick the tier by how stale the data may get, not per call site.
 - `CACHE_TAG` and `CACHE`: the tag and the policy (`{ revalidate, tags }`) of each read,
   passed straight to `graphqlRequest`.
-- `invalidate(...tags)`: what server actions call after a write; it is `revalidateTag(tag, "max")`,
-  so the next visitor still gets the old response while the fresh one loads.
+- `invalidate(...tags)`: what server actions call after a write; it is `updateTag(tag)`, which
+  expires the tag at once (read-your-own-writes): the author sees their new notice or claim on the
+  next render instead of a stale page. It works only inside server actions.
 - `NO_STORE`: mutations and per-visitor reads (claim status).
 
 Two things Next does not make obvious. A fetch with a shorter `revalidate` shortens the whole
-route, which is why the sitemap reads the lists through `CACHE.sitemapItems` (a day) and not
+route, which is why the sitemap reads the lists through `CACHE.sitemapItems` (an hour) and not
 `CACHE.items` (a minute). And route segment config such as `export const revalidate` has to be
-a literal, so `sitemap.ts` repeats `86400` with a comment instead of importing `CACHE_TTL.day`.
+a literal, so `sitemap.ts` repeats `3600` with a comment instead of importing `CACHE_TTL.hour`.
+The hour bounds changes made outside the site (notices imported from Telegram, archiving in the
+admin panel and by Worker); posts through the site drop the `items:<kind>` tag at once.
 
 ## Tests
 
