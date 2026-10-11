@@ -46,6 +46,7 @@ build/
 
 ### Tests ###
 /tests/reports/
+/tests/redaction/.tessdata/
 
 ### Environments: credentials, never committed ###
 /env.test
