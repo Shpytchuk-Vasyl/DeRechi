@@ -53,20 +53,8 @@ public class DefaultImageRedactor implements ImageRedactor {
     @Override
     public RedactedImage redact(byte[] image, boolean documentHint) {
         BufferedImage picture = decode(image);
-        List<OcrLine> lines;
-        try {
-            lines = ocr.lines(picture);
-        } catch (RuntimeException e) {
-            log.warn("OCR failed, the photo is blurred entirely: {}", getMostSpecificCause(e).toString());
-            return full(picture, "ocr failed");
-        }
-        List<Rectangle> faces;
-        try {
-            faces = faceDetector.faces(picture);
-        } catch (RuntimeException e) {
-            log.warn("Face detection failed, the photo is blurred entirely: {}", getMostSpecificCause(e).toString());
-            return full(picture, "face detection failed");
-        }
+        List<OcrLine> lines = lines(picture);
+        List<Rectangle> faces = faces(picture);
         if (documentHint || documentDetector.looksLikeDocument(lines)
                 || documentDetector.portraitOnTheLeft(faces, picture.getWidth())) {
             return document(picture, faces);
@@ -90,6 +78,24 @@ public class DefaultImageRedactor implements ImageRedactor {
     @Override
     public boolean mentionsDocument(String text) {
         return documentDetector.mentionsDocument(text);
+    }
+
+    private List<OcrLine> lines(BufferedImage picture) {
+        try {
+            return ocr.lines(picture);
+        } catch (RuntimeException e) {
+            log.warn("OCR failed, contacts on the photo are not blurred: {}", getMostSpecificCause(e).toString());
+            return List.of();
+        }
+    }
+
+    private List<Rectangle> faces(BufferedImage picture) {
+        try {
+            return faceDetector.faces(picture);
+        } catch (RuntimeException e) {
+            log.warn("Face detection failed, a document photo is blurred entirely: {}", getMostSpecificCause(e).toString());
+            return List.of();
+        }
     }
 
     private RedactedImage document(BufferedImage picture, List<Rectangle> faces) {

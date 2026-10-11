@@ -182,25 +182,52 @@ class DefaultImageRedactorTest {
     }
 
     @Test
-    void failedFaceDetectionBlursThePhotoEntirely() {
+    void failedFaceDetectionLeavesAnOrdinaryPhotoToOcr() {
         faces.failure = new IllegalStateException("face model is not loaded");
 
-        RedactedImage result = redactor(ocr(line("Знайдено гаманець", TEXT_BOX))).redact(stripes(), false);
+        RedactedImage result = redactor(ocr(line("Тел. 067 123 45 67", PHONE_BOX), line("Знайдено гаманець", TEXT_BOX)))
+                .redact(stripes(), false);
+
+        assertThat(result.mode()).isEqualTo(RedactionMode.PHONES);
+        BufferedImage out = decode(result);
+        assertThat(BlurTest.variance(out, PHONE_BOX)).isLessThan(BLURRED);
+        assertThat(BlurTest.variance(out, TEXT_BOX)).isGreaterThan(SHARP);
+    }
+
+    @Test
+    void failedFaceDetectionBlursADocumentEntirely() {
+        faces.failure = new IllegalStateException("face model is not loaded");
+
+        RedactedImage result = redactor(ocr(documentLines())).redact(stripes(), true);
 
         assertThat(result.mode()).isEqualTo(RedactionMode.FULL);
         assertWhollyBlurred(result);
     }
 
     @Test
-    void failedOcrBlursThePhotoEntirely() {
-        OcrEngine broken = image -> {
+    void failedOcrLeavesAnOrdinaryPhotoAlone() {
+        RedactedImage result = redactor(brokenOcr()).redact(stripes(), false);
+
+        assertThat(result.mode()).isEqualTo(RedactionMode.NONE);
+        assertThat(BlurTest.variance(decode(result), UNTOUCHED)).isGreaterThan(SHARP);
+    }
+
+    @Test
+    void failedOcrStillBlursADocumentExceptTheFace() {
+        faces.found = List.of(FACE_BOX);
+
+        RedactedImage result = redactor(brokenOcr()).redact(stripes(), true);
+
+        assertThat(result.mode()).isEqualTo(RedactionMode.DOCUMENT);
+        BufferedImage out = decode(result);
+        assertThat(BlurTest.variance(out, UNTOUCHED)).isLessThan(BLURRED);
+        assertThat(BlurTest.variance(out, FACE_BOX)).isGreaterThan(SHARP);
+    }
+
+    private static OcrEngine brokenOcr() {
+        return image -> {
             throw new IllegalStateException("Tesseract failed");
         };
-
-        RedactedImage result = redactor(broken).redact(stripes(), false);
-
-        assertThat(result.mode()).isEqualTo(RedactionMode.FULL);
-        assertWhollyBlurred(result);
     }
 
     @Test
