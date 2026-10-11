@@ -58,7 +58,7 @@ class GooglePlaceResolverTest {
         RestClient.Builder builder = RestClient.builder();
         server = MockRestServiceServer.bindTo(builder).build();
         return new GooglePlaceResolver(builder,
-                new PlacesProperties(URL + "/", apiKey, Duration.ofSeconds(5), 3, Duration.ofMillis(1)));
+                new PlacesProperties(PlacesProperties.Api.NEW, URL + "/", apiKey, Duration.ofSeconds(5), 3, Duration.ofMillis(1)));
     }
 
     @Test

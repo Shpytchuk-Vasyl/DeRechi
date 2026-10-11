@@ -88,7 +88,8 @@ derechi:
     daily-limit: ${OPENROUTER_DAILY_LIMIT:300}
 
   places:
-    url: ${GOOGLE_PLACES_URL:https://places.googleapis.com/v1}
+    api: ${GOOGLE_PLACES_API:LEGACY}
+    url: ${GOOGLE_PLACES_URL:}
     api-key: ${GOOGLE_PLACES_API_KEY:}
     timeout: ${GOOGLE_PLACES_TIMEOUT:PT10S}
     max-attempts: ${GOOGLE_PLACES_MAX_ATTEMPTS:3}

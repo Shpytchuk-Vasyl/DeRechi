@@ -21,7 +21,7 @@ One package per stage, each behind an interface the pipeline sees; the implement
 | `phone/` | | `PhoneExtractor`, `AuthorPhoneResolver`, `Masker`, `PhoneHasher` |
 | `image/` | `ImageRedactor`, `OcrEngine`, `FaceDetector` | `DefaultImageRedactor`, `TesseractOcrEngine`, `YuNetFaceDetector`, `DocumentDetector`, `Blur` |
 | `llm/` | `Extractor` | `OpenRouterExtractor`, `PromptBuilder`, `ExtractionPolicy` |
-| `geo/` | `PlaceResolver` | `GooglePlaceResolver` |
+| `geo/` | `PlaceResolver` | `GoogleLegacyPlaceResolver` (`GOOGLE_PLACES_API=LEGACY`, default) or `GooglePlaceResolver` (`NEW`), both on `TextSearchPlaceResolver` |
 | `api/` | `DeRechiApi` | `GraphQlDeRechiApi` |
 | `storage/` | `ImageUploader` | `S3ImageUploader` |
 | `channel/` | | `ChannelPoster` (public channel), `ReviewChat` (DRY_RUN previews), `BotApiClient`, `CaptionBuilder` |

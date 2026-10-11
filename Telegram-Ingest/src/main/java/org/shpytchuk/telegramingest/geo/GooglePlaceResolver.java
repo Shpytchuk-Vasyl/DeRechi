@@ -1,10 +1,8 @@
 package org.shpytchuk.telegramingest.geo;
 
-import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
 import org.shpytchuk.telegramingest.config.PlacesProperties;
 import org.shpytchuk.telegramingest.exception.IngestException;
-import org.shpytchuk.telegramingest.exception.StageUnavailableException;
 import org.shpytchuk.telegramingest.http.HttpCalls;
 import org.shpytchuk.telegramingest.telegram.ChatSettings;
 import org.springframework.core.retry.RetryTemplate;
@@ -17,44 +15,26 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
-@Slf4j
-public class GooglePlaceResolver implements PlaceResolver {
+public class GooglePlaceResolver extends TextSearchPlaceResolver {
 
     private static final String OPERATION = "Google Places search";
     private static final String FIELD_MASK = "places.id,places.displayName,places.location,places.addressComponents";
-    private static final int NAME_LENGTH = 100;
 
     private final RestClient restClient;
     private final RetryTemplate retry;
-    private final PlacesProperties properties;
 
     public GooglePlaceResolver(RestClient.Builder builder, PlacesProperties properties) {
+        super(properties);
         this.restClient = builder
                 .baseUrl(properties.url())
                 .defaultHeader("X-Goog-Api-Key", properties.apiKey())
                 .defaultHeader("X-Goog-FieldMask", FIELD_MASK)
                 .build();
         this.retry = HttpCalls.retryTemplate(properties.maxAttempts(), properties.retryDelay(), HttpCalls::transientFailure);
-        this.properties = properties;
     }
 
     @Override
-    public Optional<ResolvedPlace> resolve(@Nullable String placeText, @Nullable String city, ChatSettings chat) {
-        if (!properties.configured()) {
-            throw new StageUnavailableException("Google Places API key is not configured");
-        }
-        String town = StringUtils.hasText(city) ? city.trim() : chat.defaultCity();
-        Optional<ResolvedPlace> place = Optional.empty();
-        if (StringUtils.hasText(placeText)) {
-            place = search(town == null ? placeText.trim() : placeText.trim() + ", " + town, chat);
-        }
-        if (place.isEmpty() && town != null) {
-            place = search(town, chat);
-        }
-        return place;
-    }
-
-    private Optional<ResolvedPlace> search(String query, ChatSettings chat) {
+    protected Optional<ResolvedPlace> search(String query, ChatSettings chat) {
         SearchRequest request = new SearchRequest(query, chat.locale(), chat.region(), 1);
         SearchResponse response;
         try {
@@ -70,7 +50,12 @@ public class GooglePlaceResolver implements PlaceResolver {
         if (response == null || response.places() == null || response.places().isEmpty()) {
             return Optional.empty();
         }
-        return response.places().getFirst().resolved();
+        Place first = response.places().getFirst();
+        if (first.location() == null) {
+            return Optional.empty();
+        }
+        String name = first.displayName() == null ? null : first.displayName().text();
+        return place(first.id(), name, first.location().latitude(), first.location().longitude(), first.country());
     }
 
     private record SearchRequest(String textQuery, String languageCode, String regionCode, int pageSize) {
@@ -82,19 +67,7 @@ public class GooglePlaceResolver implements PlaceResolver {
     private record Place(@Nullable String id, @Nullable LocalizedText displayName, @Nullable LatLng location,
                          @Nullable List<AddressComponent> addressComponents) {
 
-        Optional<ResolvedPlace> resolved() {
-            String name = displayName == null || displayName.text() == null ? "" : displayName.text().strip();
-            String country = country();
-            if (id == null || location == null || name.isEmpty() || country == null) {
-                return Optional.empty();
-            }
-            if (name.length() > NAME_LENGTH) {
-                name = name.substring(0, NAME_LENGTH).strip();
-            }
-            return Optional.of(new ResolvedPlace(id, name, location.latitude(), location.longitude(), country));
-        }
-
-        private @Nullable String country() {
+        @Nullable String country() {
             if (addressComponents == null) {
                 return null;
             }

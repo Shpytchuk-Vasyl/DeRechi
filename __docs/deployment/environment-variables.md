@@ -203,7 +203,8 @@ except where the table says otherwise. An empty `TELEGRAM_API_ID`/`TELEGRAM_API_
 | `OPENROUTER_FALLBACK_MODEL` | `qwen/qwen3.5-flash-02-23` | same | sent after `OPENROUTER_MODEL` in OpenRouter's `models` list; empty for none |
 | `OPENROUTER_TIMEOUT` / `OPENROUTER_MAX_ATTEMPTS` / `OPENROUTER_RETRY_DELAY` | `PT60S` / `3` / `PT1S` | same | model call timeout, attempts and the first back-off |
 | `OPENROUTER_DAILY_LIMIT` | `300` | same | model calls per UTC day, a safety net; over it posts are skipped (`budget`) |
-| `GOOGLE_PLACES_URL` | `https://places.googleapis.com/v1` | same | Places API (New) base URL |
+| `GOOGLE_PLACES_API` | `LEGACY` | same | `LEGACY`: Places API text search (`textsearch/json`); `NEW`: Places API (New) `places:searchText`. Switching is only this variable |
+| `GOOGLE_PLACES_URL` | empty | same | base URL; empty takes the chosen API's own (`https://maps.googleapis.com/maps/api/place` or `https://places.googleapis.com/v1`) |
 | `GOOGLE_PLACES_API_KEY` | empty | same | a server key restricted by IP, not the admin panel's browser key (`GOOGLE_MAPS_API_KEY`) |
 | `GOOGLE_PLACES_TIMEOUT` / `GOOGLE_PLACES_MAX_ATTEMPTS` / `GOOGLE_PLACES_RETRY_DELAY` | `PT10S` / `3` / `PT1S` | same | geocoding timeout, attempts and the first back-off |
 | `DERECHI_API_URI` | `http://localhost:8080` | `http://getaway:8080` | the Gateway; notices go to its `/graphql`. On a machine without the Gateway, its public address |

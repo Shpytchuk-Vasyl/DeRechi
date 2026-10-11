@@ -6,10 +6,11 @@ import org.springframework.util.StringUtils;
 import java.time.Duration;
 
 @ConfigurationProperties(prefix = "derechi.places")
-public record PlacesProperties(String url, String apiKey, Duration timeout, int maxAttempts, Duration retryDelay) {
+public record PlacesProperties(Api api, String url, String apiKey, Duration timeout, int maxAttempts, Duration retryDelay) {
 
     public PlacesProperties {
-        url = StringUtils.hasText(url) ? StringUtils.trimTrailingCharacter(url.trim(), '/') : "https://places.googleapis.com/v1";
+        api = api == null ? Api.LEGACY : api;
+        url = StringUtils.hasText(url) ? StringUtils.trimTrailingCharacter(url.trim(), '/') : api.defaultUrl;
         apiKey = apiKey == null ? "" : apiKey.trim();
         timeout = timeout == null ? Duration.ofSeconds(10) : timeout;
         maxAttempts = maxAttempts <= 0 ? 3 : maxAttempts;
@@ -18,5 +19,16 @@ public record PlacesProperties(String url, String apiKey, Duration timeout, int 
 
     public boolean configured() {
         return !apiKey.isEmpty();
+    }
+
+    public enum Api {
+        NEW("https://places.googleapis.com/v1"),
+        LEGACY("https://maps.googleapis.com/maps/api/place");
+
+        private final String defaultUrl;
+
+        Api(String defaultUrl) {
+            this.defaultUrl = defaultUrl;
+        }
     }
 }
