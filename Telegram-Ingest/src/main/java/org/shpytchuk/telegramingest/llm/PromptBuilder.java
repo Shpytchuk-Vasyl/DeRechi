@@ -20,6 +20,7 @@ public class PromptBuilder {
     private static final String USER_TEXT = """
             postDate: %s
             today: %s
+            chatCity: %s
             categories: %s
             photos: %d
 
@@ -43,8 +44,9 @@ public class PromptBuilder {
 
     public String userText(ExtractionRequest request) {
         String post = POST_TAG.matcher(request.maskedText()).replaceAll("‹$1post›");
-        return USER_TEXT.formatted(request.postDate(), request.today(), String.join(", ", request.categories()),
-                request.photos().size(), post);
+        String chatCity = request.chatCity() == null ? "unknown" : request.chatCity();
+        return USER_TEXT.formatted(request.postDate(), request.today(), chatCity,
+                String.join(", ", request.categories()), request.photos().size(), post);
     }
 
     public ObjectNode schema(List<String> categories) {

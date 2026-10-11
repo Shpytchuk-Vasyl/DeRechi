@@ -29,10 +29,23 @@ emails with `[EMAIL_1]`, ... Parts of the photos may be blurred on purpose.
 - `category`: one key from the category list in the message, `OTHER` when nothing fits.
 - `date`: `yyyy-MM-dd`, the day the thing was lost or found. Resolve relative dates ("yesterday
   evening", "on Saturday") from `postDate`, never from `today`. `null` when the post does not say.
-- `placeText`: the most specific place as written in the post: street and house, crossroads,
-  landmark, shop, park, transport stop or route. Without the city. `null` when there is none.
+- `placeText`: the most specific place from the post, rewritten as a Google Maps search query.
+  Never shown to people, only searched. Without the city. `null` when there is none.
+  - Use the name a map knows, in the nominative case, in the language of the post: street and
+    house, crossroads as two streets, a landmark, shop, market, mall, park, station or stop.
+  - Drop prepositions and filler ("біля", "на", "в районі", "koło", "near") and the word for the
+    item.
+  - Expand slang, nicknames and abbreviations that locals use into the official name, when you are
+    sure what they mean in `chatCity` or the city of the post: "біля Опери" in Lviv → "Львівська
+    національна опера", "Політех" → "Національний університет «Львівська політехніка»", "Оушен" in
+    Kyiv → "ТРЦ Ocean Plaza". When unsure, keep the name as written.
+  - A chain shop or cafe needs its street or square: "Пузата хата, площа Ринок".
+  - A district or neighbourhood is "<name> район" or the neighbourhood name, never a building
+    named after it.
+  - A transport route or vehicle ("маршрутка 25", "трамвай 6", "в автобусі") is not a place: use
+    the stop or the place named next to it, otherwise `null`.
 - `city`: only when the post names it or it is unambiguous from the post. Do not guess it from the
-  language.
+  language, and do not copy `chatCity` into it: `chatCity` only helps to understand local names.
 - `contactPhoneRef`: the placeholder (`PHONE_1`, ...) that is the contact for this notice. `null`
   when there is no phone or it is unclear which one is the contact.
 - `socialMedias`: only `TELEGRAM`, `VIBER`, `WHATSAPP`, and only when the post asks to write there
@@ -60,7 +73,7 @@ Example 1. `postDate: 2026-10-08`, a photo of a Lviv transport card "Леока�
 ```json
 {"isNotice": true, "kind": "FOUND", "title": "Знайдено Леокарту",
  "description": "Знайдено іменну Леокарту на перехресті вулиць Наукова та Кульпарківська.",
- "category": "DOCUMENTS", "date": null, "placeText": "перехрестя Наукова / Кульпарківська",
+ "category": "DOCUMENTS", "date": null, "placeText": "вулиця Наукова та вулиця Кульпарківська",
  "city": null, "compensation": null, "contactPhoneRef": null, "socialMedias": ["TELEGRAM"],
  "confidence": 0.9, "rejectReason": null}
 ```
@@ -78,4 +91,19 @@ Example 2. `postDate: 2026-10-06`, no photo:
  "category": "WALLET", "date": "2026-10-05", "placeText": "ТЦ Ocean Plaza", "city": "Київ",
  "compensation": {"amount": 500, "currency": "UAH"}, "contactPhoneRef": "PHONE_1",
  "socialMedias": ["VIBER"], "confidence": 0.95, "rejectReason": null}
+```
+
+Example 3. `postDate: 2026-10-07`, `chatCity: Львів`, no photo:
+
+<post>
+Загубила синій рюкзак у маршрутці 25, вийшла біля Політеху. [PHONE_1]
+</post>
+
+```json
+{"isNotice": true, "kind": "LOST", "title": "Загублено синій рюкзак",
+ "description": "Загублено синій рюкзак у маршрутці 25 біля Львівської політехніки.",
+ "category": "BAGS", "date": null,
+ "placeText": "Національний університет «Львівська політехніка»", "city": null,
+ "compensation": null, "contactPhoneRef": "PHONE_1", "socialMedias": null,
+ "confidence": 0.9, "rejectReason": null}
 ```

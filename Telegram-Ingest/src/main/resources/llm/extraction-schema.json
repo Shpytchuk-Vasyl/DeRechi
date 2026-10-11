@@ -28,7 +28,7 @@
     },
     "placeText": {
       "type": ["string", "null"],
-      "description": "the most specific place as written, without the city"
+      "description": "the most specific place as a Google Maps search query: official name, nominative, no prepositions, no city"
     },
     "city": {
       "type": ["string", "null"]

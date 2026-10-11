@@ -1,5 +1,7 @@
 package org.shpytchuk.telegramingest.llm;
 
+import org.jspecify.annotations.Nullable;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -11,6 +13,6 @@ import java.util.List;
  * @param categories category keys the model may choose from
  * @param photos     redacted JPEGs, at most {@code derechi.ingest.max-photos}
  */
-public record ExtractionRequest(String maskedText, LocalDate postDate, LocalDate today,
+public record ExtractionRequest(String maskedText, LocalDate postDate, LocalDate today, @Nullable String chatCity,
                                 List<String> categories, List<byte[]> photos) {
 }

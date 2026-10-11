@@ -95,7 +95,7 @@ class OpenRouterExtractorTest {
 
     private static ExtractionRequest request(List<byte[]> photos) {
         return new ExtractionRequest("Знайдено леокарт. [PHONE_1]", LocalDate.parse("2026-10-09"),
-                LocalDate.parse("2026-10-10"), List.of("DOCUMENTS", "WALLET", "PHONES"), photos);
+                LocalDate.parse("2026-10-10"), "Львів", List.of("DOCUMENTS", "WALLET", "PHONES"), photos);
     }
 
     private static String response(String content, @Nullable String model, @Nullable Object cost) {
