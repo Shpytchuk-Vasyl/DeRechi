@@ -201,6 +201,7 @@ except where the table says otherwise. An empty `TELEGRAM_API_ID`/`TELEGRAM_API_
 | `OPENROUTER_API_KEY` | empty | same | OpenRouter key |
 | `OPENROUTER_MODEL` | `google/gemini-3.1-flash-lite` | same | extraction model |
 | `OPENROUTER_FALLBACK_MODEL` | `qwen/qwen3.5-flash-02-23` | same | sent after `OPENROUTER_MODEL` in OpenRouter's `models` list; empty for none |
+| `OPENROUTER_ROUTING` | `true` | same | OpenRouter-only request fields (`models`, `provider.require_parameters`); `false` for another OpenAI-compatible API under `OPENROUTER_URL`, which rejects them with 400. The fallback model is then not sent |
 | `OPENROUTER_TIMEOUT` / `OPENROUTER_MAX_ATTEMPTS` / `OPENROUTER_RETRY_DELAY` | `PT60S` / `3` / `PT1S` | same | model call timeout, attempts and the first back-off |
 | `OPENROUTER_DAILY_LIMIT` | `300` | same | model calls per UTC day, a safety net; over it posts are skipped (`budget`) |
 | `GOOGLE_PLACES_API` | `LEGACY` | same | `LEGACY`: Places API text search (`textsearch/json`); `NEW`: Places API (New) `places:searchText`. Switching is only this variable |

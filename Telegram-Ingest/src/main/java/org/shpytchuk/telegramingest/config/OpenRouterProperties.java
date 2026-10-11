@@ -5,13 +5,10 @@ import org.springframework.util.StringUtils;
 
 import java.time.Duration;
 
-/**
- * @param fallbackModel sent in OpenRouter's {@code models} list after {@code model}; empty for none
- * @param dailyLimit    calls per UTC day, a safety net against a loop or a flood
- */
 @ConfigurationProperties(prefix = "derechi.openrouter")
 public record OpenRouterProperties(String url, String apiKey, String model, String fallbackModel,
-                                   Duration timeout, int maxAttempts, Duration retryDelay, int dailyLimit) {
+                                   boolean routing, Duration timeout, int maxAttempts, Duration retryDelay,
+                                   int dailyLimit) {
 
     public OpenRouterProperties {
         url = StringUtils.hasText(url) ? StringUtils.trimTrailingCharacter(url.trim(), '/') : "https://openrouter.ai/api/v1";

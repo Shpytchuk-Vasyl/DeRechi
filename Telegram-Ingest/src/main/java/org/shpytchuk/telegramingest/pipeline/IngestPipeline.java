@@ -113,6 +113,7 @@ public class IngestPipeline {
                         masked.text(),
                         postDate,
                         today,
+                        post.chat().defaultCity(),
                         List.copyOf(categories.keySet()),
                         redacted(photos)));
         metrics.llm(result.model(), result.duration(), result.cost());
@@ -142,7 +143,7 @@ public class IngestPipeline {
             return;
         }
         // =========== step: find the place ===========
-        ResolvedPlace place = placeResolver.resolve(extraction.placeText(), extraction.city(), post.chat()).orElse(null);
+        ResolvedPlace place = place(post, extraction);
         if (place == null) {
             skip(post, Outcome.NO_PLACE, phoneHash, result, photos);
             return;
@@ -160,6 +161,15 @@ public class IngestPipeline {
                 publicPhoto(photos, DOCUMENTS_CATEGORY.equals(extraction.category())), phoneHash);
 
         output.accept(post, notice, result, redacted(photos));
+    }
+
+    private @Nullable ResolvedPlace place(IncomingPost post, Extraction extraction) {
+        try {
+            return placeResolver.resolve(extraction.placeText(), extraction.city(), post.chat()).orElse(null);
+        } catch (IngestException e) {
+            log.warn("Post {}/{} place search failed: {}", post.chatId(), post.messageId(), e.getMessage());
+            return null;
+        }
     }
 
     private List<Photo> photos(IncomingPost post) {

@@ -98,12 +98,18 @@ public class OpenRouterExtractor implements Extractor {
         List<Part> content = new ArrayList<>();
         content.add(new TextPart(prompts.userText(request)));
         request.photos().forEach(photo -> content.add(ImagePart.jpeg(photo)));
-        String fallback = properties.fallbackModel();
-        List<String> models = fallback.isEmpty() || fallback.equals(properties.model())
-                ? null : List.of(properties.model(), fallback);
-        return new CompletionRequest(properties.model(), models,
+        return new CompletionRequest(properties.model(), models(),
                 List.of(new SystemMessage(prompts.systemPrompt()), new UserMessage(content)), 0,
-                ResponseFormat.strictSchema("notice", prompts.schema(request.categories())), new Provider(true));
+                ResponseFormat.strictSchema("notice", prompts.schema(request.categories())),
+                properties.routing() ? new Provider(true) : null);
+    }
+
+    private @Nullable List<String> models() {
+        String fallback = properties.fallbackModel();
+        if (!properties.routing() || fallback.isEmpty() || fallback.equals(properties.model())) {
+            return null;
+        }
+        return List.of(properties.model(), fallback);
     }
 
     private ExtractionResult complete(CompletionRequest body, long started) {

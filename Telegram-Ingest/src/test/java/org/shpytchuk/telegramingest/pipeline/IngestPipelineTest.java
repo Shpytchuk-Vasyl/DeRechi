@@ -8,6 +8,7 @@ import org.shpytchuk.telegramingest.api.DeRechiApi;
 import org.shpytchuk.telegramingest.config.IngestProperties;
 import org.shpytchuk.telegramingest.config.IngestProperties.IngestMode;
 import org.shpytchuk.telegramingest.entity.PostStatus;
+import org.shpytchuk.telegramingest.exception.IngestException;
 import org.shpytchuk.telegramingest.exception.StageUnavailableException;
 import org.shpytchuk.telegramingest.geo.PlaceResolver;
 import org.shpytchuk.telegramingest.geo.ResolvedPlace;
@@ -222,6 +223,19 @@ class IngestPipelineTest {
 
         verify(output).skipped(any(), eq(Outcome.UNSUPPORTED_COUNTRY), any(), any());
         assertThat(count("unsupported_country")).isEqualTo(1);
+    }
+
+    @Test
+    void failedPlaceSearchIsSkippedAsNoPlace() {
+        extracts(extraction(ItemKind.LOST, "WALLET"));
+        when(places.resolve(any(), any(), any())).thenThrow(new IngestException("Google Places (legacy) failed: HTTP 404"));
+
+        pipeline().process(post("Загубив гаманець 067 123 45 67", List.of()));
+
+        verify(ledger).record(any(), eq(PostStatus.SKIPPED), any(), isNull());
+        verify(output).skipped(any(), eq(Outcome.NO_PLACE), any(), any());
+        assertThat(count("no_place")).isEqualTo(1);
+        assertThat(count("failed")).isZero();
     }
 
     @Test

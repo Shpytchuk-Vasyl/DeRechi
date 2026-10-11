@@ -85,7 +85,11 @@ class OpenRouterExtractorTest {
     }
 
     private static OpenRouterProperties properties(String apiKey, String fallback, int dailyLimit) {
-        return new OpenRouterProperties(URL + "/", apiKey, MAIN, fallback, Duration.ofSeconds(5), 3,
+        return properties(apiKey, fallback, true, dailyLimit);
+    }
+
+    private static OpenRouterProperties properties(String apiKey, String fallback, boolean routing, int dailyLimit) {
+        return new OpenRouterProperties(URL + "/", apiKey, MAIN, fallback, routing, Duration.ofSeconds(5), 3,
                 Duration.ofMillis(1), dailyLimit);
     }
 
@@ -151,6 +155,21 @@ class OpenRouterExtractorTest {
                 .andExpect(jsonPath("$.model").value(MAIN))
                 .andExpect(jsonPath("$.models").doesNotExist())
                 .andExpect(jsonPath("$.messages[1].content.length()").value(1))
+                .andRespond(withSuccess(response(ANSWER, MAIN, null), MediaType.APPLICATION_JSON));
+
+        extractor.extract(request(List.of()));
+
+        server.verify();
+    }
+
+    @Test
+    void sendsNoOpenRouterFieldsWithoutRouting() {
+        extractor = extractor(properties("secret-key", FALLBACK, false, 300));
+        server.expect(requestTo(COMPLETIONS))
+                .andExpect(jsonPath("$.model").value(MAIN))
+                .andExpect(jsonPath("$.models").doesNotExist())
+                .andExpect(jsonPath("$.provider").doesNotExist())
+                .andExpect(jsonPath("$.response_format.json_schema.strict").value(true))
                 .andRespond(withSuccess(response(ANSWER, MAIN, null), MediaType.APPLICATION_JSON));
 
         extractor.extract(request(List.of()));

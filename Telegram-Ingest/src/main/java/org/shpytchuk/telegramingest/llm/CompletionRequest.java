@@ -16,7 +16,7 @@ record CompletionRequest(
         List<Message> messages,
         int temperature,
         @JsonProperty("response_format") ResponseFormat responseFormat,
-        Provider provider) {
+        @Nullable Provider provider) {
 
     sealed interface Message permits SystemMessage, UserMessage {
     }
