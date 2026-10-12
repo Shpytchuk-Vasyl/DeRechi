@@ -65,6 +65,6 @@ Every variable is in [environment variables](../deployment/environment-variables
 ## Where to look
 
 - `Ingest/src/main/java/org/shpytchuk/ingest/pipeline/` (`IngestPipeline`, `IngestQueue`, `PostLedger`, `IngestMetrics`)
-- `source/` and `telegram/` (sources), `publish/` and `channel/` (publishers), `phone/`, `image/`, `llm/`, `geo/`, `api/`, `storage/` next to it, one package per stage
+- `source/` and `telegram/` (sources), `publish/` and `channel/` (publishers), `phone/`, `image/` next to it, one package per stage; the clients of outside services under `api/`: `ai/llm/` and `ai/model/` (OpenRouter), `geo/` (Google Places), `derechi/` (Client-API), `storage/` (MinIO)
 - `Ingest/src/main/resources/prompts/extract.md`, `llm/extraction-schema.json`, `messages*.properties`
 - `DB-Postgres/changelog/changes/012-ingest-post.postgresql.sql`

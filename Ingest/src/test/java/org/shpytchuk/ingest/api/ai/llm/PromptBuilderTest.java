@@ -1,9 +1,7 @@
-package org.shpytchuk.ingest.llm;
+package org.shpytchuk.ingest.api.ai.llm;
 
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
-import org.shpytchuk.ingest.api.ai.llm.ExtractionRequest;
-import org.shpytchuk.ingest.api.ai.llm.PromptBuilder;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDate;

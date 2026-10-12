@@ -1,9 +1,8 @@
-package org.shpytchuk.ingest.llm;
+package org.shpytchuk.ingest.api.ai.llm;
 
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.shpytchuk.ingest.api.ai.llm.*;
 import org.shpytchuk.ingest.config.IngestProperties;
 import org.shpytchuk.ingest.config.OpenRouterProperties;
 import org.shpytchuk.ingest.exception.BudgetExceededException;

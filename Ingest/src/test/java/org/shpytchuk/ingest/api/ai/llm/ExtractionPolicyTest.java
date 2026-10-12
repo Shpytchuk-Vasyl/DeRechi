@@ -1,10 +1,7 @@
-package org.shpytchuk.ingest.llm;
+package org.shpytchuk.ingest.api.ai.llm;
 
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
-import org.shpytchuk.ingest.api.ai.llm.Extraction;
-import org.shpytchuk.ingest.api.ai.llm.ExtractionDecision;
-import org.shpytchuk.ingest.api.ai.llm.ExtractionPolicy;
 import org.shpytchuk.ingest.config.IngestProperties;
 import org.shpytchuk.ingest.api.ai.model.ItemKind;
 import org.shpytchuk.ingest.api.ai.model.Outcome;

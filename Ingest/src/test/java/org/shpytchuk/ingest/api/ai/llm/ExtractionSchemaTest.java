@@ -1,8 +1,6 @@
-package org.shpytchuk.ingest.llm;
+package org.shpytchuk.ingest.api.ai.llm;
 
 import org.junit.jupiter.api.Test;
-import org.shpytchuk.ingest.api.ai.llm.Extraction;
-import org.shpytchuk.ingest.api.ai.llm.PromptBuilder;
 import org.shpytchuk.ingest.api.ai.model.ItemKind;
 import org.shpytchuk.ingest.api.ai.model.Money;
 import org.shpytchuk.ingest.api.ai.model.SocialMedia;

@@ -1,9 +1,7 @@
-package org.shpytchuk.ingest.geo;
+package org.shpytchuk.ingest.api.geo;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.shpytchuk.ingest.api.geo.GooglePlaceResolver;
-import org.shpytchuk.ingest.api.geo.ResolvedPlace;
 import org.shpytchuk.ingest.config.PlacesProperties;
 import org.shpytchuk.ingest.exception.IngestException;
 import org.shpytchuk.ingest.exception.StageUnavailableException;

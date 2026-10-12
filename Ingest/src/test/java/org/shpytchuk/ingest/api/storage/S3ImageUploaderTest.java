@@ -1,11 +1,10 @@
-package org.shpytchuk.ingest.storage;
+package org.shpytchuk.ingest.api.storage;
 
 import io.awspring.cloud.s3.ObjectMetadata;
 import io.awspring.cloud.s3.S3Exception;
 import io.awspring.cloud.s3.S3Operations;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.shpytchuk.ingest.api.storage.S3ImageUploader;
 import org.shpytchuk.ingest.config.StorageProperties;
 import org.shpytchuk.ingest.exception.IngestException;
 import org.springframework.util.unit.DataSize;

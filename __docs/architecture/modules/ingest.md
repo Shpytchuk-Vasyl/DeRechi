@@ -13,7 +13,7 @@ Imports lost-and-found notices from outside sources and publishes them. Today th
 
 ## Packages
 
-One package per stage, each behind an interface the pipeline sees; the implementation is the only class that knows the outside service.
+One package per stage, each behind an interface the pipeline sees; the implementation is the only class that knows the outside service. The clients of outside services sit under `api/`: the model (`api/ai/`), Google Places (`api/geo/`), Client-API (`api/derechi/`) and MinIO (`api/storage/`).
 
 | Package | Interface | Implementation |
 |---|---|---|
@@ -21,10 +21,11 @@ One package per stage, each behind an interface the pipeline sees; the implement
 | `telegram/` | `TelegramSource` | `TelegramPostSource` (the `PostSource` named `telegram`), `TdlightTelegramSource`, `MessageMapper`, `PostBuffer` and `PostGroup` (an album or a text with its photos sent separately become one post), `AuthorPhoneResolver`, `TelegramDetails`, `TelegramLogin` (`--login`) |
 | `phone/` | | `PhoneExtractor`, `Masker`, `PhoneHasher` |
 | `image/` | `ImageRedactor`, `OcrEngine`, `FaceDetector` | `DefaultImageRedactor`, `TesseractOcrEngine`, `YuNetFaceDetector`, `DocumentDetector`, `Blur` |
-| `llm/` | `Extractor` | `OpenRouterExtractor`, `PromptBuilder`, `ExtractionPolicy` |
-| `geo/` | `PlaceResolver` | `GoogleLegacyPlaceResolver` (`GOOGLE_PLACES_API=LEGACY`, default) or `GooglePlaceResolver` (`NEW`), both on `TextSearchPlaceResolver` |
-| `api/` | `DeRechiApi` | `GraphQlDeRechiApi` |
-| `storage/` | `ImageUploader` | `S3ImageUploader` |
+| `api/ai/llm/` | `Extractor` | `OpenRouterExtractor`, `PromptBuilder`, `ExtractionPolicy`, `Extraction` (the model's answer), `DailyCallCounter` |
+| `api/ai/model/` | | `ItemKind`, `Money`, `SocialMedia`, `Outcome`: the values shared by the model's answer, the notice and the metrics |
+| `api/geo/` | `PlaceResolver` | `GoogleLegacyPlaceResolver` (`GOOGLE_PLACES_API=LEGACY`, default) or `GooglePlaceResolver` (`NEW`), both on `TextSearchPlaceResolver` |
+| `api/derechi/` | `DeRechiApi` | `GraphQlDeRechiApi`, `NewItem` |
+| `api/storage/` | `ImageUploader` | `S3ImageUploader` |
 | `publish/` | `Publisher` | `Publishers` (runs the list of `INGEST_PUBLISHERS`), `SitePublisher` (`site`), `Publication`, `SiteItem`, `SkippedPost` |
 | `channel/` | | `ChannelPoster` (`channel`), `ReviewChat` (`review`), `BotApiClient`, `CaptionBuilder` |
 | `pipeline/` | | `IngestQueue`, `IngestPipeline`, `PostLedger`, `IngestMetrics`, `Notice`, `Notices` |
