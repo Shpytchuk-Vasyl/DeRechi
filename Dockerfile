@@ -12,11 +12,11 @@ COPY Client-API Client-API
 COPY Admin-API Admin-API
 COPY Worker Worker
 COPY Notification Notification
-COPY Telegram-Ingest Telegram-Ingest
+COPY Ingest Ingest
 
 RUN --mount=type=cache,target=/root/.m2,sharing=locked ./mvnw -B --strict-checksums -DskipTests package
 
-FROM eclipse-temurin:26-jre AS telegram-ingest
+FROM eclipse-temurin:26-jre AS ingest
 WORKDIR /app
 
 RUN apt-get update \
@@ -29,7 +29,7 @@ RUN useradd --system --uid 1001 spring \
  && chown spring /app/tdlib
 USER spring
 
-COPY --from=build /workspace/Telegram-Ingest/target/*.jar app.jar
+COPY --from=build /workspace/Ingest/target/*.jar app.jar
 
 ENV JAVA_OPTS="--enable-native-access=ALL-UNNAMED"
 ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar \"$@\"", "--"]

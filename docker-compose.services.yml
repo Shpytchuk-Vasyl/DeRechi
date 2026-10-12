@@ -183,28 +183,28 @@ services:
         condition: service_healthy
         required: false
 
-  #   docker compose -f docker-compose.yml -f docker-compose.services.yml run --rm -it telegram-ingest --login
-  telegram-ingest:
+  #   docker compose -f docker-compose.yml -f docker-compose.services.yml run --rm -it ingest --login
+  ingest:
     <<: *service-base
     build:
       context: .
       dockerfile: Dockerfile
-      target: telegram-ingest
+      target: ingest
       args:
-        MODULE: Telegram-Ingest
-    container_name: derechi-telegram-ingest
+        MODULE: Ingest
+    container_name: derechi-ingest
     ports:
       - "8086:8086"
     deploy:
       resources:
         limits:
-          memory: ${TELEGRAM_INGEST_MEMORY:-1g}
+          memory: ${INGEST_MEMORY:-1g}
     volumes:
       - tdlib-data:/app/tdlib
     environment:
       <<: *postgres
       # Tesseract, ONNX Runtime and TDLib live outside the heap: keep -Xmx well below the memory limit
-      JAVA_OPTS: ${TELEGRAM_INGEST_JAVA_OPTS:--Xms64m -Xmx384m -XX:MaxMetaspaceSize=192m -XX:-UseG1GC -XX:+UseSerialGC --enable-native-access=ALL-UNNAMED}
+      JAVA_OPTS: ${INGEST_JAVA_OPTS:--Xms64m -Xmx384m -XX:MaxMetaspaceSize=192m -XX:-UseG1GC -XX:+UseSerialGC --enable-native-access=ALL-UNNAMED}
       TDLIB_DATA_DIR: /app/tdlib
       DERECHI_SITE_URL: ${DERECHI_SITE_URL:-http://localhost:3000}
       DERECHI_API_URI: ${DERECHI_API_URI:-http://getaway:8080}
@@ -218,7 +218,7 @@ services:
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-derechi-app}
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-derechi-app-secret}
       MINIO_MAX_UPLOAD: ${MINIO_MAX_UPLOAD:-5MB}
-      INGEST_MODE: ${INGEST_MODE:-DRY_RUN}
+      INGEST_PUBLISHERS: ${INGEST_PUBLISHERS:-review}
       INGEST_HASH_KEY: ${INGEST_HASH_KEY:-dev-hash-key-change-me}
       INGEST_DUPLICATE_WINDOW: ${INGEST_DUPLICATE_WINDOW:-P14D}
       INGEST_MAX_PHOTOS: ${INGEST_MAX_PHOTOS:-3}
@@ -272,4 +272,4 @@ services:
         condition: service_completed_successfully
 
 volumes:
-  tdlib-data:    # TDLib session of Telegram-Ingest; losing it means another --login
+  tdlib-data:    # TDLib session of Ingest; losing it means another --login
