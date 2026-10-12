@@ -2,6 +2,7 @@ package org.shpytchuk.telegramingest.channel;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.Nullable;
 import org.shpytchuk.telegramingest.config.BotProperties;
 import org.springframework.stereotype.Service;
 import tools.jackson.core.JacksonException;
@@ -33,10 +34,15 @@ public class ReviewChat {
         }
         try {
             String header = header(preview);
-            if (!preview.photos().isEmpty()) {
-                bot.sendPhoto(properties.reviewChat(), preview.photos().getFirst(), header);
+            if (preview.photos().isEmpty()) {
+                bot.sendMessage(properties.reviewChat(), withJson(withCaption(header, preview.post(), TEXT_LIMIT), preview));
+                return;
             }
-            bot.sendMessage(properties.reviewChat(), message(header, preview));
+            bot.sendPhoto(properties.reviewChat(), preview.photos().getFirst(),
+                    withCaption(header, preview.post(), PHOTO_LIMIT));
+            if (preview.extractionJson() != null) {
+                bot.sendMessage(properties.reviewChat(), withJson(header, preview));
+            }
         } catch (RuntimeException e) {
             log.warn("Preview of a {} post failed: {}", preview.outcome(), getMostSpecificCause(e).toString());
         }
@@ -51,14 +57,17 @@ public class ReviewChat {
         return header.toString();
     }
 
-    private String message(String header, Preview preview) {
-        StringBuilder text = new StringBuilder(header);
-        ChannelPost post = preview.post();
-        if (post != null) {
-            int wouldBe = post.photo() != null ? PHOTO_LIMIT : TEXT_LIMIT;
-            int room = TEXT_LIMIT - text.length() - 2;
-            text.append("\n\n").append(captions.caption(post, Math.min(wouldBe, room)));
+    private String withCaption(String header, @Nullable ChannelPost post, int limit) {
+        if (post == null) {
+            return header;
         }
+        int wouldBe = post.photo() != null ? PHOTO_LIMIT : TEXT_LIMIT;
+        int room = limit - header.length() - 2;
+        return header + "\n\n" + captions.caption(post, Math.min(wouldBe, room));
+    }
+
+    private String withJson(String head, Preview preview) {
+        StringBuilder text = new StringBuilder(head);
         int jsonRoom = TEXT_LIMIT - text.length() - 2 - PRE_OPEN.length() - PRE_CLOSE.length();
         if (preview.extractionJson() != null && jsonRoom >= MIN_JSON) {
             text.append("\n\n").append(PRE_OPEN)

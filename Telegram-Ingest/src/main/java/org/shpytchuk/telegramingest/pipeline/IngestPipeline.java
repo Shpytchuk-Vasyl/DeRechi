@@ -76,7 +76,7 @@ public class IngestPipeline {
 
     private void run(IncomingPost post) {
         // =========== step: find the contact phone ===========
-        String region = post.chat().region();
+         String region = post.chat().region();
         List<FoundPhone> phones = phoneExtractor.find(post.text(), region);
         String authorPhone = null;
         if (phones.isEmpty()) {

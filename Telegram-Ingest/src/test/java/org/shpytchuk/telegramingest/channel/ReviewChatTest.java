@@ -39,24 +39,45 @@ class ReviewChatTest {
     }
 
     @Test
-    void sendsFirstPhotoWithHeaderThenTextWithCaptionAndJson() {
+    void sendsFirstPhotoWithTheChannelCaptionThenTheJson() {
         byte[] second = {3};
+        String header = "<b>DRY_RUN · previewed</b>\nЗагублено &amp; знайдено\nhttps://t.me/lost/5";
         reviewChat(properties("", "-500")).send(preview(post(PHOTO, null), JSON, List.of(PHOTO, second)));
 
-        ArgumentCaptor<String> header = ArgumentCaptor.forClass(String.class);
-        verify(bot).sendPhoto(eq("-500"), eq(PHOTO), header.capture());
+        ArgumentCaptor<String> caption = ArgumentCaptor.forClass(String.class);
+        verify(bot).sendPhoto(eq("-500"), eq(PHOTO), caption.capture());
         verify(bot, never()).sendPhoto(anyString(), eq(second), anyString());
-        assertThat(header.getValue()).isEqualTo("<b>DRY_RUN · previewed</b>\nЗагублено &amp; знайдено\nhttps://t.me/lost/5");
+        assertThat(caption.getValue())
+                .startsWith(header + "\n\n🟢 Знайдено: Ключі")
+                .contains("Посилання ще немає")
+                .doesNotContain("<pre>");
+        assertThat(caption.getValue().length()).isLessThanOrEqualTo(CaptionBuilder.PHOTO_LIMIT);
 
         ArgumentCaptor<String> text = ArgumentCaptor.forClass(String.class);
         verify(bot).sendMessage(eq("-500"), text.capture());
         assertThat(text.getValue())
-                .startsWith(header.getValue() + "\n\n🟢 Знайдено: Ключі")
-                .contains("Посилання ще немає")
-                .contains("<pre>{\n")
+                .startsWith(header + "\n\n<pre>{\n")
                 .contains("\"title\" : \"Гаманець &lt;чорний&gt;\"")
+                .doesNotContain("Знайдено: Ключі")
                 .endsWith("}</pre>");
-        assertThat(text.getValue().length()).isLessThanOrEqualTo(CaptionBuilder.TEXT_LIMIT);
+    }
+
+    @Test
+    void photoWithoutJsonIsOneMessage() {
+        reviewChat(properties("", "-500")).send(preview(post(PHOTO, null), null, List.of(PHOTO)));
+
+        verify(bot).sendPhoto(eq("-500"), eq(PHOTO), startsWith("<b>DRY_RUN · previewed</b>"));
+        verify(bot, never()).sendMessage(anyString(), anyString());
+    }
+
+    @Test
+    void textOnlyPreviewKeepsTheCaptionAndTheJsonInOneMessage() {
+        reviewChat(properties("", "-500")).send(preview(post(null, null), JSON, List.of()));
+
+        ArgumentCaptor<String> text = ArgumentCaptor.forClass(String.class);
+        verify(bot).sendMessage(eq("-500"), text.capture());
+        verify(bot, never()).sendPhoto(anyString(), any(), anyString());
+        assertThat(text.getValue()).contains("Знайдено: Ключі").endsWith("}</pre>");
     }
 
     @Test
