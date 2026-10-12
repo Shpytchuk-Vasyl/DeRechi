@@ -188,7 +188,7 @@ except where the table says otherwise. An empty `TELEGRAM_API_ID`/`TELEGRAM_API_
 | `TELEGRAM_CHATS` | empty | same | per-chat overrides, `username=city[\|region[\|locale]]` separated by `;` or new lines, e.g. `zagubleno911=Львів` |
 | `TELEGRAM_DEFAULT_REGION` | `UA` | same | region for chats without an override. The region also gives the authors' time zone (`UA` Kyiv, `PL` Warsaw, `DE` Berlin, `FR` Paris) for dates like "yesterday"; any other region fails the start |
 | `TELEGRAM_DEFAULT_LOCALE` | `uk` | same | geocoding language for chats without an override |
-| `TELEGRAM_ALBUM_WAIT` | `PT3S` | same | how long to wait for the rest of an album after its last part |
+| `TELEGRAM_ALBUM_WAIT` | `PT3S` | same | how long to wait for the rest of a post after its last message: album parts, or a text and its photos sent as separate messages by the same sender. Every message is held this long; a larger value catches people who send the photo a few seconds after the text |
 | `TELEGRAM_FOLDER_REFRESH` | `PT10M` | same | how often the folder's chat list is re-read |
 | `TELEGRAM_CATCH_UP_MAX_AGE` / `TELEGRAM_CATCH_UP_MAX_MESSAGES` | `PT48H` / `200` | same | on start, history read back per chat to pick up posts missed while down |
 | `TELEGRAM_BOT_API_URL` | `https://api.telegram.org` | same | Bot API base URL |

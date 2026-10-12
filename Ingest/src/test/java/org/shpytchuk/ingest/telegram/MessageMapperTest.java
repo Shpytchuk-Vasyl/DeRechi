@@ -7,6 +7,7 @@ import org.shpytchuk.ingest.source.PhotoRef;
 import org.shpytchuk.ingest.source.PostKey;
 import org.shpytchuk.ingest.source.SourceSettings;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +20,7 @@ class MessageMapperTest {
     private static final SourceSettings LVIV = new SourceSettings("UA", "Львів", "uk");
     private static final FolderChat CHAT = new FolderChat("Загублено Львів", "zagubleno911", LVIV);
     private static final int DATE = 1_791_000_000;
+    private static final Duration WAIT = Duration.ofSeconds(3);
 
     @Test
     void mapsTextMessageOfAGroupMember() {
@@ -197,12 +199,64 @@ class MessageMapperTest {
         outgoing.isOutgoing = true;
         TdApi.Message sticker = message(12, new TdApi.MessageSticker());
 
-        List<IncomingPost> posts = MessageMapper.mapAll(List.of(text, albumPart2, albumPart1, outgoing, sticker), CHAT);
+        List<IncomingPost> posts = MessageMapper.mapAll(List.of(text, albumPart2, albumPart1, outgoing, sticker), CHAT,
+                WAIT);
 
         assertThat(posts).extracting(MessageMapper::messageId).containsExactlyInAnyOrder(20L, 30L);
         IncomingPost album = posts.stream().filter(post -> MessageMapper.messageId(post) == 20).findFirst().orElseThrow();
         assertThat(album.text()).isEqualTo("альбом");
         assertThat(album.photos()).extracting(PhotoRef::id).containsExactly("1", "2");
+    }
+
+    @Test
+    void mapAllAttachesPhotosForwardedRightAfterATextFromTheSamePerson() {
+        TdApi.Message text = forwardedFrom(555, message(9450L << 20, text("Знайшов леокард персоналізований")));
+        TdApi.Message albumPart1 = forwardedFrom(555, message(9451L << 20, photo(caption(""), size(1, 10, 10))));
+        albumPart1.mediaAlbumId = 99;
+        TdApi.Message albumPart2 = forwardedFrom(555, message(9452L << 20, photo(caption(""), size(2, 10, 10))));
+        albumPart2.mediaAlbumId = 99;
+
+        List<IncomingPost> posts = MessageMapper.mapAll(List.of(albumPart2, albumPart1, text), CHAT, WAIT);
+
+        assertThat(posts).singleElement().satisfies(post -> {
+            assertThat(post.link()).isEqualTo("https://t.me/zagubleno911/9450");
+            assertThat(post.text()).isEqualTo("Знайшов леокард персоналізований");
+            assertThat(post.photos()).extracting(PhotoRef::id).containsExactly("1", "2");
+            assertThat(details(post).authorUserId()).isEqualTo(555L);
+        });
+    }
+
+    @Test
+    void mapAllAttachesAPhotoSentJustBeforeTheText() {
+        TdApi.Message photo = fromUser(777, message(1, photo(caption(""), size(1, 10, 10))));
+        TdApi.Message text = fromUser(777, message(2, text("Знайдено ключі біля ратуші")));
+        text.date = DATE + 3;
+
+        assertThat(MessageMapper.mapAll(List.of(text, photo), CHAT, WAIT)).singleElement().satisfies(post -> {
+            assertThat(post.key().id()).isEqualTo("1");
+            assertThat(post.text()).isEqualTo("Знайдено ключі біля ратуші");
+            assertThat(post.photos()).hasSize(1);
+        });
+    }
+
+    @Test
+    void mapAllKeepsTwoTextsOfTheSameSenderApart() {
+        TdApi.Message first = fromChannel(message(1, text("Загублено паспорт")));
+        TdApi.Message second = fromChannel(message(2, text("Загублено гаманець")));
+
+        assertThat(MessageMapper.mapAll(List.of(second, first), CHAT, WAIT))
+                .extracting(IncomingPost::text).containsExactlyInAnyOrder("Загублено паспорт", "Загублено гаманець");
+    }
+
+    @Test
+    void mapAllKeepsPhotosOfAnotherSenderOrPostedLaterApart() {
+        TdApi.Message text = forwardedFrom(555, message(1, text("Знайшов леокард")));
+        TdApi.Message stranger = forwardedFrom(556, message(2, photo(caption(""), size(1, 10, 10))));
+        TdApi.Message late = forwardedFrom(555, message(3, photo(caption(""), size(2, 10, 10))));
+        late.date = DATE + 4;
+
+        assertThat(MessageMapper.mapAll(List.of(late, stranger, text), CHAT, WAIT))
+                .extracting(post -> post.key().id()).containsExactlyInAnyOrder("1", "2", "3");
     }
 
     private static Optional<IncomingPost> map(TdApi.Message message) {
@@ -215,6 +269,23 @@ class MessageMapperTest {
         message.chatId = CHAT_ID;
         message.date = DATE;
         message.content = content;
+        return message;
+    }
+
+    private static TdApi.Message forwardedFrom(long userId, TdApi.Message message) {
+        fromChannel(message).forwardInfo = new TdApi.MessageForwardInfo(new TdApi.MessageOriginUser(userId), DATE,
+                null, null);
+        return message;
+    }
+
+    private static TdApi.Message fromChannel(TdApi.Message message) {
+        message.isChannelPost = true;
+        message.senderId = new TdApi.MessageSenderChat(CHAT_ID);
+        return message;
+    }
+
+    private static TdApi.Message fromUser(long userId, TdApi.Message message) {
+        message.senderId = new TdApi.MessageSenderUser(userId);
         return message;
     }
 

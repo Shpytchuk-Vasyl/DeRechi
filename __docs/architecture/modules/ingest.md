@@ -18,7 +18,7 @@ One package per stage, each behind an interface the pipeline sees; the implement
 | Package | Interface | Implementation |
 |---|---|---|
 | `source/` | `PostSource` | `PostSources` (all sources by name), `IncomingPost`, `PostKey`, `SourceSettings`, `PhotoRef`, `SourceDetails` |
-| `telegram/` | `TelegramSource` | `TelegramPostSource` (the `PostSource` named `telegram`), `TdlightTelegramSource`, `MessageMapper`, `AlbumBuffer`, `AuthorPhoneResolver`, `TelegramDetails`, `TelegramLogin` (`--login`) |
+| `telegram/` | `TelegramSource` | `TelegramPostSource` (the `PostSource` named `telegram`), `TdlightTelegramSource`, `MessageMapper`, `PostBuffer` and `PostGroup` (an album or a text with its photos sent separately become one post), `AuthorPhoneResolver`, `TelegramDetails`, `TelegramLogin` (`--login`) |
 | `phone/` | | `PhoneExtractor`, `Masker`, `PhoneHasher` |
 | `image/` | `ImageRedactor`, `OcrEngine`, `FaceDetector` | `DefaultImageRedactor`, `TesseractOcrEngine`, `YuNetFaceDetector`, `DocumentDetector`, `Blur` |
 | `llm/` | `Extractor` | `OpenRouterExtractor`, `PromptBuilder`, `ExtractionPolicy` |

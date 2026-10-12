@@ -59,7 +59,7 @@ public class TdlightTelegramSource implements TelegramSource {
     private final TelegramProperties properties;
     private final TaskScheduler scheduler;
     private final Clock clock;
-    private final AlbumBuffer albums;
+    private final PostBuffer buffer;
     private final AtomicBoolean authorized = new AtomicBoolean();
 
     private volatile Consumer<IncomingPost> sink = post -> {
@@ -77,7 +77,7 @@ public class TdlightTelegramSource implements TelegramSource {
         this.properties = properties;
         this.scheduler = scheduler;
         this.clock = clock;
-        this.albums = new AlbumBuffer(properties.albumWait(), scheduler, post -> sink.accept(post));
+        this.buffer = new PostBuffer(properties.albumWait(), scheduler, post -> sink.accept(post));
     }
 
     @Override
@@ -117,7 +117,7 @@ public class TdlightTelegramSource implements TelegramSource {
         List<IncomingPost> posts = new ArrayList<>();
         chats.forEach((chatId, chat) -> {
             try {
-                posts.addAll(MessageMapper.mapAll(history(chatId, cutoff, maxMessages), chat));
+                posts.addAll(MessageMapper.mapAll(history(chatId, cutoff, maxMessages), chat, properties.albumWait()));
             } catch (IngestException e) {
                 log.warn("History of chat {} was not read: {}", chatId, e.getMessage());
             }
@@ -238,7 +238,7 @@ public class TdlightTelegramSource implements TelegramSource {
         TdApi.Message message = update.message;
         FolderChat chat = chats.get(message.chatId);
         if (chat != null) {
-            MessageMapper.map(message, chat).ifPresent(post -> albums.add(message.mediaAlbumId, post));
+            MessageMapper.part(message, chat).ifPresent(buffer::add);
         }
     }
 

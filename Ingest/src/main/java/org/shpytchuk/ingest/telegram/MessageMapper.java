@@ -7,15 +7,14 @@ import org.shpytchuk.ingest.source.PhotoRef;
 import org.shpytchuk.ingest.source.PostKey;
 import org.shpytchuk.ingest.source.SourceSettings;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -27,6 +26,10 @@ final class MessageMapper {
     private static final String PARAGRAPH = "\n\n";
 
     private MessageMapper() {
+    }
+
+    static Optional<MessagePart> part(TdApi.Message message, FolderChat chat) {
+        return map(message, chat).map(post -> new MessagePart(post, sender(message), message.mediaAlbumId));
     }
 
     static Optional<IncomingPost> map(TdApi.Message message, FolderChat chat) {
@@ -114,20 +117,8 @@ final class MessageMapper {
                 : "https://t.me/%s/%d".formatted(details.chatUsername(), details.messageId() >> 20);
     }
 
-    static List<IncomingPost> mapAll(List<TdApi.Message> messages, FolderChat chat) {
-        List<IncomingPost> posts = new ArrayList<>();
-        Map<Long, List<IncomingPost>> albums = new HashMap<>();
-        for (TdApi.Message message : messages) {
-            map(message, chat).ifPresent(post -> {
-                if (message.mediaAlbumId == 0) {
-                    posts.add(post);
-                } else {
-                    albums.computeIfAbsent(message.mediaAlbumId, id -> new ArrayList<>()).add(post);
-                }
-            });
-        }
-        albums.values().forEach(parts -> posts.add(merge(parts)));
-        return posts;
+    static List<IncomingPost> mapAll(List<TdApi.Message> messages, FolderChat chat, Duration wait) {
+        return PostGroup.assemble(messages.stream().flatMap(message -> part(message, chat).stream()).toList(), wait);
     }
 
     private static Optional<PhotoRef> largest(TdApi.Photo photo) {
@@ -141,6 +132,21 @@ final class MessageMapper {
             return origin.senderUserId;
         }
         return message.senderId instanceof TdApi.MessageSenderUser sender ? sender.userId : null;
+    }
+
+    private static String sender(TdApi.Message message) {
+        TdApi.MessageOrigin origin = message.forwardInfo == null ? null : message.forwardInfo.origin;
+        return switch (origin) {
+            case TdApi.MessageOriginUser user -> "user " + user.senderUserId;
+            case TdApi.MessageOriginHiddenUser hidden -> "hidden " + hidden.senderName;
+            case TdApi.MessageOriginChat chat -> "chat " + chat.senderChatId;
+            case TdApi.MessageOriginChannel channel -> "chat " + channel.chatId;
+            case null, default -> switch (message.senderId) {
+                case TdApi.MessageSenderUser user -> "user " + user.userId;
+                case TdApi.MessageSenderChat chat -> "chat " + chat.chatId;
+                case null, default -> "unknown";
+            };
+        };
     }
 
     private static List<String> distinctIgnoringCase(List<String> usernames) {
