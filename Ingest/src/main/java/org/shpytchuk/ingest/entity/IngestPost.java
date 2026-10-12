@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.shpytchuk.ingest.model.ItemKind;
+import org.shpytchuk.ingest.api.ai.model.ItemKind;
 import org.shpytchuk.ingest.source.PostKey;
 
 import java.time.Instant;

@@ -1,4 +1,4 @@
-package org.shpytchuk.ingest.geo;
+package org.shpytchuk.ingest.api.geo;
 
 import org.jspecify.annotations.Nullable;
 import org.shpytchuk.ingest.config.PlacesProperties;

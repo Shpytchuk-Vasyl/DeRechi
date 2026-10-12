@@ -1,14 +1,14 @@
-package org.shpytchuk.ingest.api;
+package org.shpytchuk.ingest.api.derechi;
 
 import org.jspecify.annotations.Nullable;
 import org.shpytchuk.ingest.config.ApiProperties;
 import org.shpytchuk.ingest.exception.IngestException;
 import org.shpytchuk.ingest.exception.RejectedItemException;
-import org.shpytchuk.ingest.geo.ResolvedPlace;
+import org.shpytchuk.ingest.api.geo.ResolvedPlace;
 import org.shpytchuk.ingest.http.HttpCalls;
-import org.shpytchuk.ingest.model.ItemKind;
-import org.shpytchuk.ingest.model.Money;
-import org.shpytchuk.ingest.model.SocialMedia;
+import org.shpytchuk.ingest.api.ai.model.ItemKind;
+import org.shpytchuk.ingest.api.ai.model.Money;
+import org.shpytchuk.ingest.api.ai.model.SocialMedia;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.retry.RetryTemplate;
 import org.springframework.graphql.ResponseError;

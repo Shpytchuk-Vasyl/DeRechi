@@ -1,4 +1,4 @@
-package org.shpytchuk.ingest.storage;
+package org.shpytchuk.ingest.api.storage;
 
 public interface ImageUploader {
 

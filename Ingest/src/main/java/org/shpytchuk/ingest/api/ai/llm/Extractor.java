@@ -1,4 +1,4 @@
-package org.shpytchuk.ingest.llm;
+package org.shpytchuk.ingest.api.ai.llm;
 
 import org.shpytchuk.ingest.exception.BudgetExceededException;
 import org.shpytchuk.ingest.exception.IngestException;

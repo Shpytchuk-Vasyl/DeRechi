@@ -1,8 +1,8 @@
 package org.shpytchuk.ingest.channel;
 
 import org.jspecify.annotations.Nullable;
-import org.shpytchuk.ingest.model.ItemKind;
-import org.shpytchuk.ingest.model.Money;
+import org.shpytchuk.ingest.api.ai.model.ItemKind;
+import org.shpytchuk.ingest.api.ai.model.Money;
 
 import java.time.LocalDate;
 

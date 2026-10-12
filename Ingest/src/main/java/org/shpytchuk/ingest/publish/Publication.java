@@ -1,7 +1,7 @@
 package org.shpytchuk.ingest.publish;
 
 import org.jspecify.annotations.Nullable;
-import org.shpytchuk.ingest.llm.ExtractionResult;
+import org.shpytchuk.ingest.api.ai.llm.ExtractionResult;
 import org.shpytchuk.ingest.pipeline.Notice;
 import org.shpytchuk.ingest.source.IncomingPost;
 

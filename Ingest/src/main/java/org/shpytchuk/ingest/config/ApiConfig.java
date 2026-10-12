@@ -1,7 +1,7 @@
 package org.shpytchuk.ingest.config;
 
-import org.shpytchuk.ingest.api.DeRechiApi;
-import org.shpytchuk.ingest.api.GraphQlDeRechiApi;
+import org.shpytchuk.ingest.api.derechi.DeRechiApi;
+import org.shpytchuk.ingest.api.derechi.GraphQlDeRechiApi;
 import org.shpytchuk.ingest.http.HttpCalls;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

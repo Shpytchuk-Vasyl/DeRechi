@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.shpytchuk.ingest.config.BotProperties;
 import org.shpytchuk.ingest.exception.IngestException;
 import org.shpytchuk.ingest.exception.StageUnavailableException;
-import org.shpytchuk.ingest.model.ItemKind;
-import org.shpytchuk.ingest.model.Money;
+import org.shpytchuk.ingest.api.ai.model.ItemKind;
+import org.shpytchuk.ingest.api.ai.model.Money;
 
 import java.time.LocalDate;
 

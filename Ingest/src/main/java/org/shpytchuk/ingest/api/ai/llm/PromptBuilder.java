@@ -1,4 +1,4 @@
-package org.shpytchuk.ingest.llm;
+package org.shpytchuk.ingest.api.ai.llm;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;

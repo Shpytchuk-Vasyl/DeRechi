@@ -1,16 +1,14 @@
-package org.shpytchuk.ingest.llm;
+package org.shpytchuk.ingest.api.ai.llm;
 
 import org.jspecify.annotations.Nullable;
-import org.shpytchuk.ingest.model.ItemKind;
-import org.shpytchuk.ingest.model.Money;
-import org.shpytchuk.ingest.model.SocialMedia;
+import org.shpytchuk.ingest.api.ai.model.ItemKind;
+import org.shpytchuk.ingest.api.ai.model.Money;
+import org.shpytchuk.ingest.api.ai.model.SocialMedia;
 
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * What the model read out of a post; the JSON schema sent to OpenRouter mirrors this record.
- */
+
 public record Extraction(
         @Nullable Boolean isNotice,
         @Nullable ItemKind kind,

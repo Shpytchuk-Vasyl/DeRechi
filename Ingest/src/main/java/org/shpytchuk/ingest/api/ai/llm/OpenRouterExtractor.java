@@ -1,4 +1,4 @@
-package org.shpytchuk.ingest.llm;
+package org.shpytchuk.ingest.api.ai.llm;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
@@ -8,13 +8,13 @@ import org.shpytchuk.ingest.exception.BudgetExceededException;
 import org.shpytchuk.ingest.exception.IngestException;
 import org.shpytchuk.ingest.exception.StageUnavailableException;
 import org.shpytchuk.ingest.http.HttpCalls;
-import org.shpytchuk.ingest.llm.CompletionRequest.ImagePart;
-import org.shpytchuk.ingest.llm.CompletionRequest.Part;
-import org.shpytchuk.ingest.llm.CompletionRequest.Provider;
-import org.shpytchuk.ingest.llm.CompletionRequest.ResponseFormat;
-import org.shpytchuk.ingest.llm.CompletionRequest.SystemMessage;
-import org.shpytchuk.ingest.llm.CompletionRequest.TextPart;
-import org.shpytchuk.ingest.llm.CompletionRequest.UserMessage;
+import org.shpytchuk.ingest.api.ai.llm.CompletionRequest.ImagePart;
+import org.shpytchuk.ingest.api.ai.llm.CompletionRequest.Part;
+import org.shpytchuk.ingest.api.ai.llm.CompletionRequest.Provider;
+import org.shpytchuk.ingest.api.ai.llm.CompletionRequest.ResponseFormat;
+import org.shpytchuk.ingest.api.ai.llm.CompletionRequest.SystemMessage;
+import org.shpytchuk.ingest.api.ai.llm.CompletionRequest.TextPart;
+import org.shpytchuk.ingest.api.ai.llm.CompletionRequest.UserMessage;
 import org.springframework.core.retry.RetryTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;

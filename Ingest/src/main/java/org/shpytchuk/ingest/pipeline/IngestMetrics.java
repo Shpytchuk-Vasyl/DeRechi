@@ -5,7 +5,7 @@ import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.jspecify.annotations.Nullable;
 import org.shpytchuk.ingest.image.RedactionMode;
-import org.shpytchuk.ingest.model.Outcome;
+import org.shpytchuk.ingest.api.ai.model.Outcome;
 import org.shpytchuk.ingest.telegram.TelegramSource;
 import org.springframework.stereotype.Component;
 

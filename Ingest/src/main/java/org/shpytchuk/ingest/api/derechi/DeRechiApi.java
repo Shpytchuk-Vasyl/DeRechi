@@ -1,4 +1,4 @@
-package org.shpytchuk.ingest.api;
+package org.shpytchuk.ingest.api.derechi;
 
 import java.util.Map;
 import java.util.Set;

@@ -1,12 +1,12 @@
 package org.shpytchuk.ingest.pipeline;
 
 import org.jspecify.annotations.Nullable;
-import org.shpytchuk.ingest.api.NewItem;
+import org.shpytchuk.ingest.api.derechi.NewItem;
 import org.shpytchuk.ingest.channel.ChannelPost;
-import org.shpytchuk.ingest.geo.ResolvedPlace;
-import org.shpytchuk.ingest.model.ItemKind;
-import org.shpytchuk.ingest.model.Money;
-import org.shpytchuk.ingest.model.SocialMedia;
+import org.shpytchuk.ingest.api.geo.ResolvedPlace;
+import org.shpytchuk.ingest.api.ai.model.ItemKind;
+import org.shpytchuk.ingest.api.ai.model.Money;
+import org.shpytchuk.ingest.api.ai.model.SocialMedia;
 import org.shpytchuk.ingest.source.IncomingPost;
 
 import java.time.LocalDate;

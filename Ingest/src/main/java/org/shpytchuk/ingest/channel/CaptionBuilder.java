@@ -2,8 +2,8 @@ package org.shpytchuk.ingest.channel;
 
 import org.jspecify.annotations.Nullable;
 import org.shpytchuk.ingest.config.BotProperties;
-import org.shpytchuk.ingest.model.ItemKind;
-import org.shpytchuk.ingest.model.Money;
+import org.shpytchuk.ingest.api.ai.model.ItemKind;
+import org.shpytchuk.ingest.api.ai.model.Money;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Component;

@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
 import org.shpytchuk.ingest.entity.IngestPost;
 import org.shpytchuk.ingest.entity.PostStatus;
-import org.shpytchuk.ingest.model.ItemKind;
+import org.shpytchuk.ingest.api.ai.model.ItemKind;
 import org.shpytchuk.ingest.repository.IngestPostRepository;
 import org.shpytchuk.ingest.source.IncomingPost;
 import org.shpytchuk.ingest.source.PostKey;

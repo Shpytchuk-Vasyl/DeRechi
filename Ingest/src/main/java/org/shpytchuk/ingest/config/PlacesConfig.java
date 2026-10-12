@@ -1,8 +1,8 @@
 package org.shpytchuk.ingest.config;
 
-import org.shpytchuk.ingest.geo.GoogleLegacyPlaceResolver;
-import org.shpytchuk.ingest.geo.GooglePlaceResolver;
-import org.shpytchuk.ingest.geo.PlaceResolver;
+import org.shpytchuk.ingest.api.geo.GoogleLegacyPlaceResolver;
+import org.shpytchuk.ingest.api.geo.GooglePlaceResolver;
+import org.shpytchuk.ingest.api.geo.PlaceResolver;
 import org.shpytchuk.ingest.http.HttpCalls;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;

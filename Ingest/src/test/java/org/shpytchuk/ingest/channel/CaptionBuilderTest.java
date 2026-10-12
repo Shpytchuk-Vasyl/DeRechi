@@ -2,8 +2,8 @@ package org.shpytchuk.ingest.channel;
 
 import org.junit.jupiter.api.Test;
 import org.shpytchuk.ingest.config.BotProperties;
-import org.shpytchuk.ingest.model.ItemKind;
-import org.shpytchuk.ingest.model.Money;
+import org.shpytchuk.ingest.api.ai.model.ItemKind;
+import org.shpytchuk.ingest.api.ai.model.Money;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
 import java.time.LocalDate;

@@ -1,4 +1,4 @@
-package org.shpytchuk.ingest.geo;
+package org.shpytchuk.ingest.api.geo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jspecify.annotations.Nullable;

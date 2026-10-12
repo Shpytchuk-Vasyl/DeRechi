@@ -1,4 +1,4 @@
-package org.shpytchuk.ingest.storage;
+package org.shpytchuk.ingest.api.storage;
 
 import io.awspring.cloud.s3.ObjectMetadata;
 import io.awspring.cloud.s3.S3Operations;

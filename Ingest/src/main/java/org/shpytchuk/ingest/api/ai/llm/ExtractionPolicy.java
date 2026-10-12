@@ -1,9 +1,9 @@
-package org.shpytchuk.ingest.llm;
+package org.shpytchuk.ingest.api.ai.llm;
 
 import lombok.AllArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.shpytchuk.ingest.config.IngestProperties;
-import org.shpytchuk.ingest.model.Outcome;
+import org.shpytchuk.ingest.api.ai.model.Outcome;
 import org.shpytchuk.ingest.phone.MaskedText;
 import org.shpytchuk.ingest.source.SourceSettings;
 import org.springframework.stereotype.Component;

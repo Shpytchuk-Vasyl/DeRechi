@@ -1,4 +1,4 @@
-package org.shpytchuk.ingest.model;
+package org.shpytchuk.ingest.api.ai.model;
 
 import org.jspecify.annotations.Nullable;
 

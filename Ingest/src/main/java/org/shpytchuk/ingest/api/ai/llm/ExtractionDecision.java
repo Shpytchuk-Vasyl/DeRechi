@@ -1,7 +1,7 @@
-package org.shpytchuk.ingest.llm;
+package org.shpytchuk.ingest.api.ai.llm;
 
 import org.jspecify.annotations.Nullable;
-import org.shpytchuk.ingest.model.Outcome;
+import org.shpytchuk.ingest.api.ai.model.Outcome;
 
 
 public record ExtractionDecision(@Nullable Outcome skipOutcome, @Nullable String contactPhone) {
