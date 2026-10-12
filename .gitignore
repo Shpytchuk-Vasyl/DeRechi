@@ -54,4 +54,4 @@ build/
 /env.prod
 
 /tdlib/
-/Telegram-Ingest/tdlib/
+/Ingest/tdlib/

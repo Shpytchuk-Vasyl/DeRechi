@@ -1,0 +1,135 @@
+spring:
+  application:
+    name: Ingest
+
+  threads:
+    virtual:
+      enabled: true
+
+  messages:
+    basename: messages
+    encoding: UTF-8
+    fallback-to-system-locale: false
+
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:derechi}
+    username: ${POSTGRES_USER:derechi}
+    password: ${POSTGRES_PASSWORD:derechi}
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+
+  liquibase:
+    enabled: false
+
+  cache:
+    type: caffeine
+    cache-names: categories,countries
+    caffeine:
+      spec: expireAfterWrite=${DERECHI_API_REFERENCE_TTL:1h}
+
+  cloud:
+    aws:
+      region:
+        static: ${MINIO_REGION:us-east-1}
+      credentials:
+        access-key: ${MINIO_ACCESS_KEY:derechi-app}
+        secret-key: ${MINIO_SECRET_KEY:derechi-app-secret}
+      s3:
+        endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
+        path-style-access-enabled: true
+
+derechi:
+  ingest:
+    publishers: ${INGEST_PUBLISHERS:review}
+    hash-key: ${INGEST_HASH_KEY:dev-hash-key-change-me}
+    duplicate-window: ${INGEST_DUPLICATE_WINDOW:P14D}
+    max-photos: ${INGEST_MAX_PHOTOS:3}
+    max-age: ${INGEST_MAX_AGE:P30D}
+    site-url: ${DERECHI_SITE_URL:http://localhost:3000}
+    site-locale: ${INGEST_SITE_LOCALE:uk}
+    min-confidence: ${INGEST_MIN_CONFIDENCE:0.6}
+
+  telegram:
+    api-id: ${TELEGRAM_API_ID:0}
+    api-hash: ${TELEGRAM_API_HASH:}
+    phone: ${TELEGRAM_PHONE:}
+    data-dir: ${TDLIB_DATA_DIR:tdlib}
+    folder: ${TELEGRAM_FOLDER:DeRechi}
+    # username=city[|region[|locale]];... e.g. zagubleno911=Львів
+    chats: ${TELEGRAM_CHATS:}
+    default-region: ${TELEGRAM_DEFAULT_REGION:UA}
+    default-locale: ${TELEGRAM_DEFAULT_LOCALE:uk}
+    album-wait: ${TELEGRAM_ALBUM_WAIT:PT3S}
+    folder-refresh: ${TELEGRAM_FOLDER_REFRESH:PT10M}
+    catch-up-max-age: ${TELEGRAM_CATCH_UP_MAX_AGE:PT48H}
+    catch-up-max-messages: ${TELEGRAM_CATCH_UP_MAX_MESSAGES:200}
+
+  bot:
+    api-url: ${TELEGRAM_BOT_API_URL:https://api.telegram.org}
+    token: ${TELEGRAM_BOT_TOKEN:}
+    publish-chat: ${TELEGRAM_PUBLISH_CHAT:}
+    review-chat: ${TELEGRAM_REVIEW_CHAT:}
+    locale: ${TELEGRAM_PUBLISH_LOCALE:uk}
+    timeout: ${TELEGRAM_BOT_TIMEOUT:PT30S}
+    max-attempts: ${TELEGRAM_BOT_MAX_ATTEMPTS:3}
+    retry-delay: ${TELEGRAM_BOT_RETRY_DELAY:PT3S}
+
+  openrouter:
+    url: ${OPENROUTER_URL:https://openrouter.ai/api/v1}
+    api-key: ${OPENROUTER_API_KEY:}
+    model: ${OPENROUTER_MODEL:google/gemini-3.1-flash-lite}
+    fallback-model: ${OPENROUTER_FALLBACK_MODEL:qwen/qwen3.5-flash-02-23}
+    routing: ${OPENROUTER_ROUTING:true}
+    timeout: ${OPENROUTER_TIMEOUT:PT60S}
+    max-attempts: ${OPENROUTER_MAX_ATTEMPTS:3}
+    retry-delay: ${OPENROUTER_RETRY_DELAY:PT1S}
+    daily-limit: ${OPENROUTER_DAILY_LIMIT:300}
+
+  places:
+    api: ${GOOGLE_PLACES_API:LEGACY}
+    url: ${GOOGLE_PLACES_URL:}
+    api-key: ${GOOGLE_PLACES_API_KEY:}
+    timeout: ${GOOGLE_PLACES_TIMEOUT:PT10S}
+    max-attempts: ${GOOGLE_PLACES_MAX_ATTEMPTS:3}
+    retry-delay: ${GOOGLE_PLACES_RETRY_DELAY:PT1S}
+
+  api:
+    uri: ${DERECHI_API_URI:http://localhost:8080}
+    timeout: ${DERECHI_API_TIMEOUT:PT15S}
+    max-attempts: ${DERECHI_API_MAX_ATTEMPTS:3}
+    retry-delay: ${DERECHI_API_RETRY_DELAY:PT1S}
+
+  storage:
+    bucket: ${MINIO_BUCKET:derechi-files}
+    max-size: ${MINIO_MAX_UPLOAD:5MB}
+
+  redaction:
+    # empty = OCR off (development only); the Docker image sets it
+    tessdata: ${TESSDATA_PREFIX:}
+    languages: ${REDACTION_OCR_LANGUAGES:ukr+eng}
+    document-keywords: ${REDACTION_DOCUMENT_KEYWORDS:паспорт,passport,посвід,свідоцтв,водійськ,id-картк,айді,ідентифікац,леокарт,студентськ,пенсійн,військов,dowód,legitymacja,paszport,personalausweis,reisepass,führerschein,carte d'identité,permis de conduire}
+    face-model: ${REDACTION_FACE_MODEL:classpath:models/face_detection_yunet_2023mar.onnx}
+    face-score: ${REDACTION_FACE_SCORE:0.6}
+    document-mode: ${REDACTION_DOCUMENT_MODE:PARTIAL}
+
+server:
+  port: 8086
+
+management:
+  server:
+    port: ${MANAGEMENT_PORT:9086}
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: never
+
+logging:
+  exception-conversion-word: "%wEx{10}"
+  level:
+    it.tdlight: WARN

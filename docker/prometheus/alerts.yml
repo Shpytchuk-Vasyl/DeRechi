@@ -29,11 +29,11 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: Telegram-Ingest's Telegram session is not authorized
+          summary: Ingest's Telegram session is not authorized
           description: >-
             TDLib is waiting for a login, so no posts are read. On the machine that runs the service, with
-            the same -f files and --env-file as the stack: docker compose stop telegram-ingest, then
-            docker compose run --rm -it telegram-ingest --login, then docker compose start telegram-ingest
+            the same -f files and --env-file as the stack: docker compose stop ingest, then
+            docker compose run --rm -it ingest --login, then docker compose start ingest
             (two TDLib instances cannot share the session directory).
 
       - alert: IngestStalled
@@ -42,7 +42,7 @@ groups:
         labels:
           severity: warning
         annotations:
-          summary: Telegram-Ingest has received nothing for {{ $value | humanizeDuration }}
+          summary: Ingest has received nothing for {{ $value | humanizeDuration }}
           description: >-
             No post has come from the source chats for 6 hours: the Telegram folder is empty or renamed,
             the session was revoked, or the chats are simply silent.

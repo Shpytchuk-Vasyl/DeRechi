@@ -10,4 +10,4 @@ docker-compose*.yml
 Dockerfile
 .dockerignore
 tdlib/
-Telegram-Ingest/tdlib/
+Ingest/tdlib/
