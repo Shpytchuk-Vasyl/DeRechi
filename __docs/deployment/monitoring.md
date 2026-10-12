@@ -18,7 +18,7 @@ The override file switches Prometheus to the second config by replacing its `--c
 | Job | Targets | Path |
 |---|---|---|
 | `prometheus` | itself | `/metrics` |
-| `derechi-services` | management ports: Getaway 9080, Client-API 9082, Admin-API 9083, Worker 9085, Notification 9084, Telegram-Ingest 9086 | `/actuator/prometheus` |
+| `derechi-services` | management ports: Getaway 9080, Client-API 9082, Admin-API 9083, Worker 9085, Notification 9084, Ingest 9086 | `/actuator/prometheus` |
 | `keycloak` | `keycloak:9000` | `/metrics` |
 | `minio` | `minio:9000` | `/minio/v2/metrics/cluster` |
 | `rabbitmq` | `rabbitmq:15692` | `/metrics`, per queue (`prometheus.return_per_object_metrics = true` in `docker/rabbitmq/rabbitmq.conf`) |
@@ -34,7 +34,7 @@ Every module gets `spring-boot-starter-actuator` and `micrometer-registry-promet
 ```yaml
 management:
   server:
-    port: ${MANAGEMENT_PORT:9082}     # Client-API; 9080 Getaway, 9083 Admin-API, 9084 Notification, 9085 Worker, 9086 Telegram-Ingest
+    port: ${MANAGEMENT_PORT:9082}     # Client-API; 9080 Getaway, 9083 Admin-API, 9084 Notification, 9085 Worker, 9086 Ingest
   endpoints:
     web:
       exposure:
@@ -58,8 +58,8 @@ The containers have no Docker healthcheck on actuator: nothing waits for a servi
 |---|---|---|
 | `DeadLetters` | any `*.dlq` queue has a ready message for 1 minute (`rabbitmq_queue_messages_ready{queue=~".+\\.dlq"} > 0`), one alert per queue | warning |
 | `TargetDown` | a scrape target (service, Keycloak, MinIO, RabbitMQ, Prometheus) has been unreachable for 2 minutes | critical |
-| `IngestUnauthorized` | Telegram-Ingest's Telegram session has not been authorized for 5 minutes (`max(derechi_ingest_telegram_authorized) == 0`). Fix: `docker compose stop telegram-ingest`, `docker compose run --rm -it telegram-ingest --login`, `docker compose start telegram-ingest` (same `-f` files and `--env-file` as the stack) | critical |
-| `IngestStalled` | no post from the source chats for 6 hours, for 10 minutes (`time() - max(derechi_ingest_last_received_seconds) > 6 * 3600`): the folder is empty or renamed, the session was revoked, or the chats are silent. The threshold is a first guess, to be tuned after the `DRY_RUN` weeks | warning |
+| `IngestUnauthorized` | Ingest's Telegram session has not been authorized for 5 minutes (`max(derechi_ingest_telegram_authorized) == 0`). Fix: `docker compose stop ingest`, `docker compose run --rm -it ingest --login`, `docker compose start ingest` (same `-f` files and `--env-file` as the stack) | critical |
+| `IngestStalled` | no post from the source chats for 6 hours, for 10 minutes (`time() - max(derechi_ingest_last_received_seconds) > 6 * 3600`): the folder is empty or renamed, the session was revoked, or the chats are silent. The threshold is a first guess, to be tuned after the weeks with `INGEST_PUBLISHERS=review` | warning |
 
 Alertmanager (`prom/alertmanager`, port 9093) groups by `alertname`, `queue` and `application`, repeats an open alert every 4 hours and sends the resolution too. It has a single receiver, email, configured by environment variables:
 

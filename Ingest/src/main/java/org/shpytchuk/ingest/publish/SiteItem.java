@@ -1,0 +1,6 @@
+package org.shpytchuk.ingest.publish;
+
+import org.shpytchuk.ingest.model.ItemKind;
+
+public record SiteItem(ItemKind kind, long id, String url) {
+}

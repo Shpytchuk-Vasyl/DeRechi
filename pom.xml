@@ -25,7 +25,7 @@
         <module>Admin-API</module>
         <module>Worker</module>
         <module>Notification</module>
-        <module>Telegram-Ingest</module>
+        <module>Ingest</module>
     </modules>
 
     <properties>

@@ -27,5 +27,5 @@ done
 
 cd ../..
 TESSDATA_PREFIX="$TESSDATA" REDACTION_OCR_LANGUAGES="$LANGUAGES" \
-  ./mvnw -q -pl Telegram-Ingest test -Dtest=RedactionReportIT -Dsurefire.failIfNoSpecifiedTests=false
+  ./mvnw -q -pl Ingest test -Dtest=RedactionReportIT -Dsurefire.failIfNoSpecifiedTests=false
 echo "Report: tests/reports/redaction/index.html"
