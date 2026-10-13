@@ -131,6 +131,11 @@
             <artifactId>liquibase-core</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <!-- The TDLib native library of the machine that builds the jar. The Docker image is built on the

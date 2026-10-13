@@ -29,7 +29,7 @@ class CaptionBuilderTest {
     @Test
     void lostCaptionInUkrainian() {
         ChannelPost post = new ChannelPost(ItemKind.LOST, "Чорний гаманець", "Шкіряний, з карткою ПриватБанку",
-                "ТЦ Ocean Plaza", DATE, new Money(500, "UAH"), null, "https://derechi.site/uk/lost/42", "Бюро знахідок Київ");
+                "ТЦ Ocean Plaza", DATE, new Money(500, "UAH"), null, "https://derechi.site/uk/lost/42");
 
         assertThat(uk.caption(post, PHOTO_LIMIT)).isEqualTo("""
                 🔴 Чорний гаманець
@@ -39,22 +39,20 @@ class CaptionBuilderTest {
 
                 Шкіряний, з карткою ПриватБанку
 
-                Знайшли? Залиште свої контакти тут, автор отримає їх: https://derechi.site/uk/lost/42
-                Джерело: Бюро знахідок Київ""");
+                Знайшли? Залиште свої контакти тут, автор отримає їх: https://derechi.site/uk/lost/42""");
     }
 
     @Test
     void foundCaptionWithoutRewardAndDescription() {
         ChannelPost post = new ChannelPost(ItemKind.FOUND, "Ключі", null, "Площа Ринок", DATE, null,
-                new byte[]{1}, "https://derechi.site/uk/found/7", "Загублено Львів");
+                new byte[]{1}, "https://derechi.site/uk/found/7");
 
         assertThat(uk.caption(post, PHOTO_LIMIT)).isEqualTo("""
                 🟢 Ключі
                 📍 Площа Ринок
                 📅 09.10.2026
 
-                Ваше? Залиште свої контакти тут, автор отримає їх: https://derechi.site/uk/found/7
-                Джерело: Загублено Львів""");
+                Ваше? Залиште свої контакти тут, автор отримає їх: https://derechi.site/uk/found/7""");
     }
 
     @Test
@@ -74,7 +72,7 @@ class CaptionBuilderTest {
     @Test
     void escapesEveryValue() {
         ChannelPost post = new ChannelPost(ItemKind.LOST, "<b>Сумка</b> & ключі", "a <script> & b",
-                "Cafe <Tom & Jerry>", DATE, new Money(1, "<X>"), null, "https://x/uk/lost/1?a=1&b=2", "Chat <i>&</i>");
+                "Cafe <Tom & Jerry>", DATE, new Money(1, "<X>"), null, "https://x/uk/lost/1?a=1&b=2");
 
         String caption = uk.caption(post, PHOTO_LIMIT);
 
@@ -84,8 +82,7 @@ class CaptionBuilderTest {
                 .contains("Cafe &lt;Tom &amp; Jerry&gt;")
                 .contains("1 &lt;X&gt;")
                 .contains("https://x/uk/lost/1?a=1&amp;b=2")
-                .contains("Chat &lt;i&gt;&amp;&lt;/i&gt;")
-                .doesNotContain("<b>").doesNotContain("<script>").doesNotContain("<i>");
+                .doesNotContain("<b>").doesNotContain("<script>");
     }
 
     @Test
@@ -100,7 +97,7 @@ class CaptionBuilderTest {
     void englishIsTheFallback() {
         String caption = builder("de").caption(post("Bag", null, new Money(5, "EUR"), "https://x/de/lost/1"), PHOTO_LIMIT);
 
-        assertThat(caption).startsWith("🔴 Bag").contains("💰 Reward: 5 EUR").contains("Source: Chat");
+        assertThat(caption).startsWith("🔴 Bag").contains("💰 Reward: 5 EUR");
     }
 
     @Test
@@ -111,7 +108,7 @@ class CaptionBuilderTest {
         String caption = uk.caption(post, PHOTO_LIMIT);
 
         assertThat(caption.length()).isLessThanOrEqualTo(PHOTO_LIMIT).isGreaterThan(PHOTO_LIMIT - 20);
-        assertThat(caption).contains("слово слово…\n\n").contains("Сумка").endsWith("Джерело: Chat");
+        assertThat(caption).contains("слово слово…\n\n").contains("Сумка").endsWith("https://x/uk/lost/1");
     }
 
     @Test
@@ -157,6 +154,6 @@ class CaptionBuilderTest {
     }
 
     private static ChannelPost post(String title, String description, Money compensation, String url) {
-        return new ChannelPost(ItemKind.LOST, title, description, "Місце", DATE, compensation, null, url, "Chat");
+        return new ChannelPost(ItemKind.LOST, title, description, "Місце", DATE, compensation, null, url);
     }
 }

@@ -16,13 +16,11 @@ public record ChannelPost(
         LocalDate date,
         @Nullable Money compensation,
         byte @Nullable [] photo,
-        @Nullable String itemUrl,
-        String sourceTitle) {
+        @Nullable String itemUrl) {
 
     static ChannelPost of(Publication publication) {
         Notice notice = publication.notice();
         return new ChannelPost(notice.kind(), notice.title(), notice.description(), notice.place().name(),
-                notice.date(), notice.compensation(), notice.photo(), publication.siteItemUrl(),
-                publication.post().sourceTitle());
+                notice.date(), notice.compensation(), notice.photo(), publication.siteItemUrl());
     }
 }

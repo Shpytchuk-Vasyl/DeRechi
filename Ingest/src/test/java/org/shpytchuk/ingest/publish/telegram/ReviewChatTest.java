@@ -163,7 +163,7 @@ class ReviewChatTest {
 
     private static ChannelPost post(byte[] photo, String url) {
         return new ChannelPost(ItemKind.FOUND, "Ключі", "Зв'язка з брелоком", "Площа Ринок", LocalDate.of(2026, 10, 9),
-                new Money(200, "UAH"), photo, url, "Загублено & знайдено");
+                new Money(200, "UAH"), photo, url);
     }
 
     private static Preview preview(ChannelPost post, String json, List<byte[]> photos) {

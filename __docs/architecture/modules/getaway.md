@@ -102,7 +102,7 @@ limiting or circuit breakers written in Java. Then:
 4. Production `docker/caddy/Caddyfile`: replace `import api.Caddyfile` with an `API_DOMAIN`
    site that does `reverse_proxy getaway:8080`.
 5. `DERECHI_API_URI` of `Ingest` back to `http://getaway:8080` (compose and `env.local`).
-6. `.github/workflows/images.yml`: the `getaway` image.
+6. `docker-bake.hcl`: the `getaway` image (an item in the `service` matrix), which the `images` workflow builds.
 7. The `Getaway` target on 9080 in `prometheus.yml`, `prometheus-full.yml` and
    `prometheus-agent-api.yml.tmpl`.
 8. CORS is the gateway's again: `WEB_ORIGIN_PATTERNS` in the env files.

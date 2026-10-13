@@ -79,6 +79,19 @@ docker build --build-arg MODULE=Admin-API -t derechi/admin-api .
 docker run --rm -p 8083:8083 -e POSTGRES_HOST=... -e POSTGRES_PASSWORD=... derechi/admin-api
 ```
 
+### In CI
+
+The `images` workflow (`.github/workflows/images.yml`) pushes the arm64 images to GHCR with one `docker buildx bake` over `docker-bake.hcl`, in a single job. Bake sends every target to the same builder, so the build stage runs once for all images, as in compose. A matrix with a job per image would compile the whole reactor in every job.
+
+Two caches survive between runs:
+
+- **`~/.m2`.** A runner starts with an empty builder, and BuildKit does not put `--mount=type=cache` into the GitHub cache. `reproducible-containers/buildkit-cache-dance` moves the mount in and out of `actions/cache`, keyed by the hash of every `pom.xml` and the wrapper properties. Without it every run downloads all dependencies and Maven itself.
+- **Layers**, `type=gha` with a scope per image and the default `min` mode: only the layers of the final images, such as the `apt-get` of `ingest` and the dictionaries of `postgis`. The build stage is not exported: any commit changes its input, so it would be uploaded on every run and never read back.
+
+A new image is a new target in `docker-bake.hcl` (and in its `default` group), not a change to the workflow.
+
+### Context
+
 The build context is the repository root. `.dockerignore` keeps `**/target/`, `.git/`, `.idea/`, `docker/`, the compose files and the `Dockerfile` itself out of it. `Web-Client/` is not excluded yet, so its `node_modules/` is sent to the daemon on every build; adding `Web-Client/` to `.dockerignore` would make the context noticeably smaller.
 
 ## The PostgreSQL image

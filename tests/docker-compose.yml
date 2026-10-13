@@ -199,6 +199,27 @@ services:
       FOURTHWALL_WEBHOOK_SECRET: tests-webhook-secret
     command: ["sh", "./mvnw", "-B", "-f", "tests/integration/pom.xml", "test", "-Dreports.dir=/reports/integration"]
 
+  integration-ingest:
+    image: eclipse-temurin:26-jdk
+    profiles: [runner]
+    working_dir: /w
+    volumes:
+      - ..:/w
+      - m2:/root/.m2
+      - ${TESTS_REPORT_DIR:-./reports/latest}:/reports
+    environment:
+      CLIENT_API_URL: http://client-api:8082
+      POSTGRES_URL: jdbc:postgresql://postgres:5432/derechi
+      POSTGRES_USER: derechi
+      POSTGRES_PASSWORD: derechi
+    command:
+      - sh
+      - -c
+      - >-
+        sh ./mvnw -B -ntp -pl Ingest test -Dtest=SiteFlowIT; status=$$?;
+        cp Ingest/target/surefire-reports/TEST-*SiteFlowIT.xml /reports/integration/ 2>/dev/null;
+        exit $$status
+
   k6:
     image: grafana/k6:2.3.0
     profiles: [runner]

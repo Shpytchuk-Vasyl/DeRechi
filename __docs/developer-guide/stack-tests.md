@@ -6,6 +6,7 @@ reactor, so `./mvnw test` does not run them:
 | Folder | What | Tool |
 |---|---|---|
 | `tests/integration` | flows across services: Client-API → RabbitMQ → Worker → Notification → e-mail | JUnit 5, Awaitility, JDBC, the Mailpit API |
+| `Ingest/.../SiteFlowIT` | a post through Ingest's pipeline to Client-API and the database (see [Ingest](#ingest)) | Spring Boot test, Mockito, Awaitility |
 | `tests/load` | Client-API's GraphQL under load | k6 |
 
 ## One command
@@ -71,6 +72,26 @@ their 30 s wait, and the two that do not (unknown token, wrong signature) pass.
 A new test extends `StackIT` (GraphQL, JDBC, Mailpit and webhook helpers), creates its own data
 with unique contacts and places, and waits with `await()` rather than `sleep`.
 
+### Ingest
+
+`Ingest` reads Telegram and Facebook, which a stack cannot fake, so its flow test is not black-box:
+[`Ingest/.../SiteFlowIT`](../../Ingest/src/test/java/org/shpytchuk/ingest/SiteFlowIT.java) boots the
+module's own context against this stack (the `integration-ingest` runner, `./mvnw -pl Ingest test
+-Dtest=SiteFlowIT`; its report is copied next to the others). The post comes from a test
+`PostSource`, the model and the place search are `@MockitoBean` stubs of `Extractor` and
+`PlaceResolver`; the rest is real: phone extraction, the `ingest_post` journal, `SitePublisher`, the
+GraphQL client and Client-API's `categories`, `countries` and `createLostItem`. Posts carry no
+photos, so MinIO is not needed and only lost notices get through (a found one without a photo is
+skipped by design).
+
+| Case | Checks |
+|---|---|
+| published | the notice lands in `lost_item` with its category, place, currency taken from the country, the phone in E.164 and the messenger; the journal row is `PUBLISHED` with the item id |
+| rejected | Client-API refuses an unsupported currency with `BAD_REQUEST`, and the row is `FAILED`, not `NEEDS_CHECK` |
+
+Surefire runs only `*Test`/`*Tests` in the module's own build, so the unit job never starts it, and
+outside the stack it skips itself (no `CLIENT_API_URL`).
+
 ## Load tests
 
 [`tests/load/client-api.js`](../../tests/load/client-api.js) runs two scenarios at their own
@@ -116,15 +137,16 @@ With `--keep`, Grafana (`http://localhost:13000`, anonymous view, `admin` / `adm
 [`.github/workflows/tests.yml`](../../.github/workflows/tests.yml) runs on demand (`workflow_dispatch`);
 the pull-request trigger is written but commented out for now. Two stages:
 
-1. **`unit`**, one job per module (`DB-Postgres`, `Client-API`, `Worker`, `Notification`), in
-   parallel: `./mvnw -pl <module> test`. The `Getaway` job is commented out together with the
+1. **`unit`**, one job per module (`DB-Postgres`, `Client-API`, `Admin-API`, `Worker`, `Notification`,
+   `Ingest`), in parallel: `./mvnw -pl <module> test`. The `Getaway` job is commented out together with the
    module's `<module>` entry: it is not deployed for now
-   ([Caddy](../deployment/infrastructure.md#caddy-api-entry) is the API entry). `Admin-API` is not tested
-   in CI. The context tests connect to `localhost` just like on a developer machine, so a job
+   ([Caddy](../deployment/infrastructure.md#caddy-api-entry) is the API entry). The context tests connect
+   to `localhost` just like on a developer machine, so a job
    starts from the root `docker-compose.yml` only what its module needs: PostgreSQL (our image with
-   the dictionaries) for `DB-Postgres` and `Client-API`, RabbitMQ with `rabbitmq-init` for
-   `Client-API`, `Worker` and `Notification`. `Worker`'s database tests run
-   on their Testcontainers PostGIS. `fail-fast` is off, so one red module does not hide the others. On failure
+   the dictionaries) for `DB-Postgres`, `Client-API` and `Admin-API`, RabbitMQ with `rabbitmq-init` for
+   `Client-API`, `Admin-API`, `Worker` and `Notification`. `Worker`'s and `Ingest`'s database tests run
+   on their Testcontainers PostGIS, so `Ingest` needs nothing from compose. Its Tesseract tests (`*IT`,
+   gated on `TESSDATA_PREFIX`) are not run by Surefire. `fail-fast` is off, so one red module does not hide the others. On failure
    the job uploads `target/surefire-reports/` and prints the compose logs.
 2. **`integration`**, only when every `unit` job is green: `tests/run.sh --only integration` on the
    `derechi-tests` stack. It puts `summary.md` on the job page and uploads `tests/reports/` as an

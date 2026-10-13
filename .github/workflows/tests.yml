@@ -37,6 +37,7 @@ jobs:
             rabbitmq: true
           - module: Notification
             rabbitmq: true
+          - module: Ingest
     steps:
       - uses: actions/checkout@v7
 

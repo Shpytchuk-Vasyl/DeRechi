@@ -72,8 +72,7 @@ public class CaptionBuilder {
         } else {
             html.append(text("channel.preview.noLink"));
         }
-        return html.append('\n').append(text("channel.source")).append(": ").append(escape(post.sourceTitle()))
-                .toString();
+        return html.toString();
     }
 
     private String text(String key) {

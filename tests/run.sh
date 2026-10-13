@@ -64,6 +64,7 @@ load_status=0
 if [ "$ONLY" != load ]; then
   echo "==> integration tests"
   dc run --rm --quiet-pull integration || integration_status=$?
+  dc run --rm --quiet-pull integration-ingest || integration_status=$?
 fi
 
 if [ "$ONLY" != integration ]; then
