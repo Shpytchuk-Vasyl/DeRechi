@@ -32,19 +32,34 @@ has no HTTP API; the only endpoints are actuator's.
 
 ## The query
 
-`ThingSpecifications.byFilter(event, language)` combines four predicates:
+`ThingSpecifications.byFilter(event, language)` combines four predicates and the order:
 
 | Predicate | Rule | Source |
 |---|---|---|
 | category | same `category.id` | `event.category` |
 | date | within ±3 days of the event's date | `PERIOD = Period.ofDays(3)` |
 | distance | `place.coordinate` within 20 000 m of the event's point | `RADIUS_METERS`, `JTSSpatialPredicates.distanceWithin` |
-| order | `ts_rank_<config>(title || ' ' || coalesce(description, ''), :title)` descending, then `id` | only when the title is not blank |
+| shared words | `shares_words_<config>(title || ' ' || coalesce(description, ''), :title)`: at least 2 words of the new title are in the candidate's title or description, or 1 when the title has a single word | `MIN_SHARED_WORDS` in `FullTextFunctionContributor`; a blank title matches nothing |
+| order | `match_rank_<config>(...)` descending, then `id` | see below |
+
+Words are counted after the configuration has stemmed them and dropped stop words (`на`, `біля`,
+`десь`, ...), as distinct lexemes: a word repeated in the title counts once, while a word the
+hunspell dictionary gives several normal forms for may count as several. A typo is a different word:
+"паспотр Аля Марія" shares only "Марія" with "Знайдено паспорт на ім'я Марія" and is not a match.
+Lost and found titles often differ in their verb ("Загублено телефон" and "Знайдено телефон
+Samsung" share one word of two), so such pairs are not matched either; that is the price of
+the two-word rule.
+
+The rank is `ts_rank_cd` (cover density) of the title's words joined by `|`: about 0.1 for every
+occurrence of a shared word, so a candidate with the full name ranks above one with the first name
+alone ("Загублено Леокарту Столяр Максим": "…на ім'я Столяр Максим" 0.3, "…на ім'я Максим Петренко"
+0.2). Where the words stand does not matter. The `&` query is not used because it gives 0 as soon as
+one title word is missing, which "Загублено" always is in a found notice.
 
 The page size is 5 (`PAGE_SIZE`), so at most five candidates are stored per new notice.
 After the page is loaded, `ThingRepository.rankAll` recomputes the rank for exactly those
 ids with the same configuration and the value is written into the transient `orderMatch`
-field, which becomes `match_order`. A blank title gives every candidate a rank of 0.
+field, which becomes `match_order`.
 
 Candidates are found only for the notice that triggered the event. An older notice that
 would match a new one is reached from the new one's side, so the pairing is symmetric in
@@ -69,9 +84,11 @@ The detector is loaded with profiles for every `SearchLanguage` plus `DETECT_ONL
 not mistaken for a neighbour, and then falls through to `simple`. Adding a language is described in
 [../../extending/add-a-search-language.md](../../extending/add-a-search-language.md).
 
-`FullTextFunctionContributor` registers one HQL function per `SearchLanguage`
-(`ts_rank_english`, `ts_rank_ukrainian`, ...), a generic `ts_rank_cfg(regconfig, doc,
-query)` used by `rankAll`, and the same `dwithin` that `Client-API` has. It is wired through
+`FullTextFunctionContributor` registers three HQL functions per `SearchLanguage`: `ts_rank_<config>`
+(plain `ts_rank` of the `&` query), `match_rank_<config>` (the matching order above) and
+`shares_words_<config>` (the shared-words filter); then the generic `ts_rank_cfg(regconfig, doc, query)`
+and `match_rank_cfg(regconfig, doc, title)`, the latter used by `rankAll`, and the same `dwithin` that
+`Client-API` has. It is wired through
 `META-INF/services/org.hibernate.boot.model.FunctionContributor`.
 
 ## Claims
@@ -165,8 +182,10 @@ Database-backed, on the Testcontainers harness copied from `Client-API`
 SQL because this module's `Place` maps only the id and the coordinate):
 
 - `service/ItemServiceTests`: the candidate query and `rankAll` (same category, ±3 days, 20 km,
-  most relevant first, the rank of each candidate equal to PostgreSQL's own `ts_rank`, five at
-  most, a blank title ranks zero, a Ukrainian title goes through `ts_rank_ukrainian`);
+  at least two shared words or one for a one-word title, a typo or a repeated word not counted
+  twice, most relevant first, the full name above the first name alone, the rank of each candidate
+  equal to PostgreSQL's own `ts_rank_cd` of the `|` query, five at most, a blank title matches nothing, a Ukrainian title goes through
+  `ts_rank_ukrainian`);
 - `handler/ItemCreatedHandlerTests`: both handler beans end to end into `similar_item`, a
   redelivered event does not duplicate rows;
 - `repository/ClaimRepositoryTests`: the derived queries `ClaimFollowUpJob` selects its work with;

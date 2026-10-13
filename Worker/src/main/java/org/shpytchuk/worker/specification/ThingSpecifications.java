@@ -32,7 +32,7 @@ public final class ThingSpecifications {
         return ThingSpecifications.<T>categoryIs(event.getCategory())
                 .and(dateBetween(date.minus(PERIOD), date.plus(PERIOD)))
                 .and(nearTo(event.getLat(), event.getLon()))
-                .and(orderByRelevance(event.getTitle(), language));
+                .and(relevantTo(event.getTitle(), language));
     }
 
     private static <T extends Thing> Specification<T> categoryIs(Long categoryId) {
@@ -43,20 +43,23 @@ public final class ThingSpecifications {
         return (root, query, cb) -> cb.between(root.get("date"), from, to);
     }
 
-    private static <T extends Thing> Specification<T> orderByRelevance(String title, SearchLanguage language) {
+    private static <T extends Thing> Specification<T> relevantTo(String title, SearchLanguage language) {
         return (root, query, cb) -> {
-            if (query == null || !StringUtils.hasText(title)) {
-                return null;
+            if (!StringUtils.hasText(title)) {
+                return cb.disjunction();
             }
 
             Expression<String> document = cb.concat(
                     cb.concat(root.get("title"), " "),
                     cb.coalesce(root.get("description"), ""));
 
-            Expression<Double> rank = cb.function(
-                    language.rankFunction(), Double.class, document, cb.literal(title));
-            query.orderBy(cb.desc(rank), cb.asc(root.get("id")));
-            return null;
+            if (query != null) {
+                Expression<Double> rank = cb.function(
+                        language.matchRankFunction(), Double.class, document, cb.literal(title));
+                query.orderBy(cb.desc(rank), cb.asc(root.get("id")));
+            }
+            return cb.isTrue(cb.function(
+                    language.sharesWordsFunction(), Boolean.class, document, cb.literal(title)));
         };
     }
 

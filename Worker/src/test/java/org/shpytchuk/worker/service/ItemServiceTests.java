@@ -61,22 +61,69 @@ class ItemServiceTests extends AbstractRepositoryTests {
 
     @Test
     void putsTheMostRelevantFirstAndGivesEachCandidateItsOwnRank() {
-        // Inserted least relevant first, so ids and relevance run in opposite directions.
-        LostItem unrelated = lost("Umbrella", null);
         LostItem byDescription = lost("Purse", "black leather, two zips");
         LostItem byWholeTitle = lost("Black leather wallet", null);
 
         List<LostItem> found = service.findAllMostSuitable(event("Black leather wallet")).getContent();
 
-        assertThat(found).extracting(Thing::getId)
-                .containsExactly(byWholeTitle.getId(), byDescription.getId(), unrelated.getId());
+        assertThat(found).extracting(Thing::getId).containsExactly(byWholeTitle.getId(), byDescription.getId());
         for (LostItem candidate : found) {
             assertThat(candidate.getOrderMatch()).as("rank of %s", candidate.getTitle())
-                    .isCloseTo(rank("english", candidate.getId(), "Black leather wallet"), within(1e-6));
+                    .isCloseTo(rank("english", candidate.getId(), "black | leather | wallet"), within(1e-6));
         }
         assertThat(found.get(0).getOrderMatch()).isGreaterThan(found.get(1).getOrderMatch());
-        assertThat(found.get(1).getOrderMatch()).isGreaterThan(found.get(2).getOrderMatch());
-        assertThat(found.get(2).getOrderMatch()).isLessThan(1e-6);
+    }
+
+    @Test
+    void skipsCandidatesThatShareNoWord() {
+        LostItem wallet = lost("Black leather wallet", null);
+        lost("Umbrella", null);
+
+        assertThat(service.findAllMostSuitable(event("Black leather wallet")).getContent())
+                .extracting(Thing::getId).containsExactly(wallet.getId());
+    }
+
+    @Test
+    void needsTwoSharedWordsWhenTheTitleHasMore() {
+        LostItem passport = lost("Знайдено паспорт на ім'я Марія", null);
+        lost("Знайдено леокарт десь біля форуму", null);
+        lost("Знайдено студентський квиток, Марія", null);
+
+        assertThat(service.findAllMostSuitable(event("паспорт Аля Марія")).getContent())
+                .extracting(Thing::getId).containsExactly(passport.getId());
+    }
+
+    @Test
+    void aTypoLeavesOnlyOneSharedWord() {
+        lost("Знайдено паспорт на ім'я Марія", null);
+
+        assertThat(service.findAllMostSuitable(event("паспотр Аля Марія")).getContent()).isEmpty();
+    }
+
+    @Test
+    void aOneWordTitleNeedsOneSharedWord() {
+        LostItem phone = lost("Знайдено телефон Samsung", null);
+
+        assertThat(service.findAllMostSuitable(event("Телефон")).getContent())
+                .extracting(Thing::getId).containsExactly(phone.getId());
+    }
+
+    @Test
+    void aRepeatedWordCountsOnce() {
+        lost("Чорний пес", null);
+
+        assertThat(service.findAllMostSuitable(event("Чорний телефон, чорний чохол")).getContent()).isEmpty();
+    }
+
+    @Test
+    void putsTheFullNameAboveTheFirstNameAlone() {
+        LostItem firstNameOnly = lost("Знайдено Леокарту на ім'я Максим Петренко", null);
+        LostItem fullName = lost("Знайдено Леокарту на ім'я Столяр Максим", null);
+
+        List<LostItem> found = service.findAllMostSuitable(event("Загублено Леокарту Столяр Максим")).getContent();
+
+        assertThat(found).extracting(Thing::getId).containsExactly(fullName.getId(), firstNameOnly.getId());
+        assertThat(found.get(0).getOrderMatch()).isGreaterThan(found.get(1).getOrderMatch());
     }
 
     @Test
@@ -86,9 +133,9 @@ class ItemServiceTests extends AbstractRepositoryTests {
 
         List<LostItem> found = service.findAllMostSuitable(event("Чорний шкіряний гаманець")).getContent();
 
-        assertThat(found).extracting(Thing::getId).containsExactly(wallet.getId(), umbrella.getId());
+        assertThat(found).extracting(Thing::getId).containsExactly(wallet.getId()).doesNotContain(umbrella.getId());
         assertThat(found.getFirst().getOrderMatch())
-                .isCloseTo(rank("ukrainian", wallet.getId(), "Чорний шкіряний гаманець"), within(1e-6))
+                .isCloseTo(rank("ukrainian", wallet.getId(), "чорний | шкіряний | гаманець"), within(1e-6))
                 .isPositive();
     }
 
@@ -99,9 +146,10 @@ class ItemServiceTests extends AbstractRepositoryTests {
 
         List<LostItem> found = service.findAllMostSuitable(event("Czarny skórzany portfel z dokumentami")).getContent();
 
-        assertThat(found).extracting(Thing::getId).containsExactly(wallet.getId(), umbrella.getId());
+        assertThat(found).extracting(Thing::getId).containsExactly(wallet.getId()).doesNotContain(umbrella.getId());
         assertThat(found.getFirst().getOrderMatch())
-                .isCloseTo(rank("polish", wallet.getId(), "Czarny skórzany portfel z dokumentami"), within(1e-6))
+                .isCloseTo(rank("polish", wallet.getId(), "czarny | skórzany | portfel | z | dokumentami"),
+                        within(1e-6))
                 .isPositive();
     }
 
@@ -118,13 +166,10 @@ class ItemServiceTests extends AbstractRepositoryTests {
     }
 
     @Test
-    void ranksEveryCandidateZeroWhenTheTitleIsBlank() {
+    void findsNothingWhenTheTitleIsBlank() {
         lost("Wallet", null);
-        lost("Umbrella", null);
 
-        List<LostItem> found = service.findAllMostSuitable(event("  ")).getContent();
-
-        assertThat(found).hasSize(2).extracting(Thing::getOrderMatch).containsOnly(0.0);
+        assertThat(service.findAllMostSuitable(event("  ")).getContent()).isEmpty();
     }
 
     @Test
@@ -147,12 +192,12 @@ class ItemServiceTests extends AbstractRepositoryTests {
     }
 
     /** The rank computed independently, straight from PostgreSQL. */
-    private double rank(String regconfig, Long id, String title) {
+    private double rank(String regconfig, Long id, String anyWord) {
         Double rank = jdbc.queryForObject("""
-                SELECT ts_rank(to_tsvector(CAST(? AS regconfig), title || ' ' || coalesce(description, '')),
-                               plainto_tsquery(CAST(? AS regconfig), ?))
+                SELECT ts_rank_cd(to_tsvector(CAST(? AS regconfig), title || ' ' || coalesce(description, '')),
+                                  to_tsquery(CAST(? AS regconfig), ?))
                 FROM lost_item WHERE id = ?
-                """, Double.class, regconfig, regconfig, title, id);
+                """, Double.class, regconfig, regconfig, anyWord, id);
         return rank == null ? 0.0 : rank;
     }
 }

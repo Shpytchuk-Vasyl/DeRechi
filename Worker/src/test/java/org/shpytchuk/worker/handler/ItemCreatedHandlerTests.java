@@ -62,15 +62,16 @@ class ItemCreatedHandlerTests extends AbstractRepositoryTests {
 
     @Test
     void storesTheLostCandidatesOfANewFoundItem() {
-        LostItem first = item(new LostItem(), "Wallet", null, DATE.minusDays(1), wallets, rynok);
-        LostItem second = item(new LostItem(), "Black wallet", null, DATE.plusDays(1), wallets, rynok);
+        LostItem dayBefore = item(new LostItem(), "Black wallet", null, DATE.minusDays(1), wallets, rynok);
+        LostItem dayAfter = item(new LostItem(), "Black wallet", null, DATE.plusDays(1), wallets, rynok);
+        item(new LostItem(), "Wallet", null, DATE, wallets, rynok);
         FoundItem found = item(new FoundItem(), "Black wallet", null, DATE, wallets, rynok);
 
         foundItemCreated.onItemCreated(event(found.getId(), "Black wallet"));
 
         List<Map<String, Object>> rows = similarItems();
         assertThat(rows).extracting(row -> row.get("lost_item_id"))
-                .containsExactly(second.getId(), first.getId());
+                .containsExactlyInAnyOrder(dayBefore.getId(), dayAfter.getId());
         assertThat(rows).extracting(row -> row.get("found_item_id")).containsOnly(found.getId());
     }
 

@@ -14,10 +14,10 @@ import java.util.List;
 public interface ThingRepository<T extends Thing> extends JpaRepository<T, Long>, JpaSpecificationExecutor<T> {
 
     @Query("""
-            SELECT ts_rank_cfg(:regconfig, t.title || ' ' || COALESCE(t.description, ''), :title)
+            SELECT match_rank_cfg(:regconfig, t.title || ' ' || COALESCE(t.description, ''), :title)
             FROM #{#entityName} t
             WHERE t.id IN :ids
-            ORDER BY ts_rank_cfg(:regconfig, t.title || ' ' || COALESCE(t.description, ''), :title) DESC, t.id ASC
+            ORDER BY match_rank_cfg(:regconfig, t.title || ' ' || COALESCE(t.description, ''), :title) DESC, t.id ASC
             """)
     List<Double> rankAll(@Param("ids") List<Long> ids,
                          @Param("regconfig") String regconfig,

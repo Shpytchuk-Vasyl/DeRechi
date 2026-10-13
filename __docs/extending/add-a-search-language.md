@@ -26,7 +26,7 @@ Two cases follow.
 
    Keep `SIMPLE` last. `isoCodes()` and `fromIsoCode` are derived from the enum.
 
-2. **Rank function.** Nothing to do: `FullTextFunctionContributor` loops over `SearchLanguage.values()` and registers `ts_rank_portuguese` as an HQL function at startup.
+2. **Rank function.** Nothing to do: `FullTextFunctionContributor` loops over `SearchLanguage.values()` and registers `ts_rank_portuguese`, `match_rank_portuguese` and `shares_words_portuguese` as HQL functions at startup.
 
 3. **Detection.** Nothing to do either: `LanguageResolver` reads a built-in optimaize profile for every `SearchLanguage.isoCodes()` entry plus `DETECT_ONLY_CODES`. If the library has no profile for the code, `readBuiltIn` throws at startup; the bundled profiles cover roughly 70 languages, so this is rare.
 

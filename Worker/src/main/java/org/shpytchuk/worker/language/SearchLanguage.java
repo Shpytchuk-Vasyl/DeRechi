@@ -18,6 +18,8 @@ public enum SearchLanguage {
     SIMPLE(null, "simple");
 
     private static final String RANK_FUNCTION_PREFIX = "ts_rank_";
+    private static final String MATCH_RANK_FUNCTION_PREFIX = "match_rank_";
+    private static final String SHARES_WORDS_FUNCTION_PREFIX = "shares_words_";
 
     private final String isoCode;
     private final String regconfig;
@@ -33,6 +35,14 @@ public enum SearchLanguage {
 
     public String rankFunction() {
         return RANK_FUNCTION_PREFIX + regconfig;
+    }
+
+    public String matchRankFunction() {
+        return MATCH_RANK_FUNCTION_PREFIX + regconfig;
+    }
+
+    public String sharesWordsFunction() {
+        return SHARES_WORDS_FUNCTION_PREFIX + regconfig;
     }
 
     public static List<String> isoCodes() {

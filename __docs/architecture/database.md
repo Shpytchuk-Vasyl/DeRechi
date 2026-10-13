@@ -75,7 +75,8 @@ hunspell dictionary that `docker/postgres/Dockerfile` bakes into the image; migr
 does the same for `polish`. Each configuration is guarded by a precondition so the changeset is marked as run on a database
 where it already exists.
 
-`Worker` ranks candidates with `ts_rank(to_tsvector('<config>', ...), ...)`, where
+`Worker` keeps candidates that share at least two words with the new title and ranks them with
+`ts_rank_cd(to_tsvector('<config>', ...), ...)`, where
 `<config>` is one of PostgreSQL's built-in configurations (`english`, `german`, `french`,
 `spanish`, `italian`, `russian`), our `ukrainian` and `polish`, or `simple` as the fallback. See
 [modules/worker.md](modules/worker.md).

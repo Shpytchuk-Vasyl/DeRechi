@@ -76,8 +76,9 @@ Two things in the picture are deliberate and worth knowing before reading furthe
 3. An aspect around `ItemService.create` publishes an `ItemCreatedEvent` to the
    `derechi.items` exchange with the routing key `item.lost.created` or `item.found.created`.
 4. `Worker` consumes it from `worker.items`, looks for notices of the
-   opposite kind in the same category, within three days and twenty kilometres, ranks them by
-   full-text similarity of the title, and stores the top five in `similar_item`.
+   opposite kind in the same category, within three days and twenty kilometres, sharing at least
+   two words with the title, ranks them by full-text similarity, and stores the top five in
+   `similar_item`.
 
 ### A match is notified
 
