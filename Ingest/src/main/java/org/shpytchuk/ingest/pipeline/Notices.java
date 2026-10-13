@@ -1,8 +1,8 @@
 package org.shpytchuk.ingest.pipeline;
 
 import org.jspecify.annotations.Nullable;
-import org.shpytchuk.ingest.api.ai.model.Money;
-import org.shpytchuk.ingest.api.ai.model.SocialMedia;
+import org.shpytchuk.ingest.model.Money;
+import org.shpytchuk.ingest.model.SocialMedia;
 
 import java.time.LocalDate;
 import java.time.Period;

@@ -1,7 +1,7 @@
 package org.shpytchuk.ingest.publish;
 
-import org.shpytchuk.ingest.api.ai.llm.ExtractionResult;
-import org.shpytchuk.ingest.api.ai.model.Outcome;
+import org.shpytchuk.ingest.extraction.ExtractionResult;
+import org.shpytchuk.ingest.model.Outcome;
 import org.shpytchuk.ingest.source.IncomingPost;
 
 import java.util.List;

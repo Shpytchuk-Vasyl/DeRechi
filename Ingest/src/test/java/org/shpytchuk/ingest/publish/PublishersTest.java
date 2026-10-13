@@ -6,12 +6,13 @@ import org.mockito.ArgumentCaptor;
 import org.shpytchuk.ingest.config.IngestProperties;
 import org.shpytchuk.ingest.entity.PostStatus;
 import org.shpytchuk.ingest.exception.IngestException;
-import org.shpytchuk.ingest.api.ai.model.ItemKind;
-import org.shpytchuk.ingest.api.ai.model.Outcome;
+import org.shpytchuk.ingest.model.ItemKind;
+import org.shpytchuk.ingest.model.Outcome;
 import org.shpytchuk.ingest.pipeline.IngestMetrics;
 import org.shpytchuk.ingest.pipeline.PostLedger;
+import org.shpytchuk.ingest.publish.site.SitePublisher;
+import org.shpytchuk.ingest.source.telegram.TelegramSource;
 import org.shpytchuk.ingest.support.Outputs;
-import org.shpytchuk.ingest.telegram.TelegramSource;
 
 import java.time.Clock;
 import java.time.Duration;

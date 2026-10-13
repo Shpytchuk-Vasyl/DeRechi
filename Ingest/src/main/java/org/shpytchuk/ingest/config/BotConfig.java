@@ -1,7 +1,7 @@
 package org.shpytchuk.ingest.config;
 
-import org.shpytchuk.ingest.channel.BotApiClient;
-import org.shpytchuk.ingest.http.HttpCalls;
+import org.shpytchuk.ingest.client.HttpCalls;
+import org.shpytchuk.ingest.publish.telegram.BotApiClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

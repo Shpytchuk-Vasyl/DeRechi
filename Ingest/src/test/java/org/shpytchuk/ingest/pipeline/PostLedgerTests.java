@@ -3,7 +3,7 @@ package org.shpytchuk.ingest.pipeline;
 import org.junit.jupiter.api.Test;
 import org.shpytchuk.ingest.entity.IngestPost;
 import org.shpytchuk.ingest.entity.PostStatus;
-import org.shpytchuk.ingest.api.ai.model.ItemKind;
+import org.shpytchuk.ingest.model.ItemKind;
 import org.shpytchuk.ingest.repository.IngestPostRepository;
 import org.shpytchuk.ingest.source.IncomingPost;
 import org.shpytchuk.ingest.support.AbstractPostgresTests;

@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.shpytchuk.ingest.publish.Publishers;
 import org.shpytchuk.ingest.source.PostSource;
+import org.shpytchuk.ingest.source.telegram.TelegramPostSource;
 import org.shpytchuk.ingest.support.AbstractPostgresTests;
-import org.shpytchuk.ingest.telegram.TelegramPostSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 

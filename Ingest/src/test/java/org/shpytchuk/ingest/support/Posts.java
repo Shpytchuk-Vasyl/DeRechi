@@ -4,8 +4,8 @@ import org.shpytchuk.ingest.source.IncomingPost;
 import org.shpytchuk.ingest.source.PhotoRef;
 import org.shpytchuk.ingest.source.PostKey;
 import org.shpytchuk.ingest.source.SourceSettings;
-import org.shpytchuk.ingest.telegram.TelegramDetails;
-import org.shpytchuk.ingest.telegram.TelegramPostSource;
+import org.shpytchuk.ingest.source.telegram.TelegramDetails;
+import org.shpytchuk.ingest.source.telegram.TelegramPostSource;
 
 import java.time.Instant;
 import java.util.List;

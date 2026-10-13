@@ -127,9 +127,11 @@ The worker gained a second queue, `worker.claims`, bound with `item.*.claimed`,
   2. reminds claimants `claimant-reminder-after` (1 day) after the author reminder, stamps `claimant_reminded_at`;
   3. archives items that have a confirmed claim (fallback for a lost `returned` event);
   4. archives items whose **newest** claim is older than `archive-after` (7 days);
-  5. deletes claims older than `retention` (1 year), archived or not, with their contact infos:
+  5. archives items whose `date` is more than `derechi.archive.max-age` (30 days) ago, in UTC,
+     claims or not (see [Notices](notices.md#what-happens-after-a-notice-is-created));
+  6. deletes claims older than `retention` (1 year), archived or not, with their contact infos:
      this is what keeps the privacy policy's "one year at most" true.
-  The five steps are a list of `Step(name, summary, find, act)` run in that order; each finder
+  The six steps are a list of `Step(name, summary, find, act)` run in that order; each finder
   runs when its turn comes, so a step sees what the previous ones wrote, and the summary log line
   is built from the steps. Each claim is handled in its own transaction (`ClaimFollowUps`),
   publish first and stamp second: a RabbitMQ outage is retried on the next run, and a stamp
@@ -162,6 +164,9 @@ derechi:
     claimant-reminder-after: P1D
     archive-after: P7D
     retention: P365D
+  archive:
+    queue: worker.archive
+    max-age: P30D                                          # notices dated earlier are archived
 ```
 
 `DERECHI_SITE_URL` is the public address of the web client; Compose sets it to

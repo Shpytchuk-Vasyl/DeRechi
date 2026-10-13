@@ -1,9 +1,9 @@
 package org.shpytchuk.ingest.config;
 
-import org.shpytchuk.ingest.http.HttpCalls;
-import org.shpytchuk.ingest.api.ai.llm.DailyCallCounter;
-import org.shpytchuk.ingest.api.ai.llm.OpenRouterExtractor;
-import org.shpytchuk.ingest.api.ai.llm.PromptBuilder;
+import org.shpytchuk.ingest.client.HttpCalls;
+import org.shpytchuk.ingest.extraction.PromptBuilder;
+import org.shpytchuk.ingest.extraction.openrouter.DailyCallCounter;
+import org.shpytchuk.ingest.extraction.openrouter.OpenRouterExtractor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import tools.jackson.databind.json.JsonMapper;

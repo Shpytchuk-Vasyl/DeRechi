@@ -1,12 +1,12 @@
 package org.shpytchuk.ingest.support;
 
 import org.jspecify.annotations.Nullable;
-import org.shpytchuk.ingest.api.geo.ResolvedPlace;
-import org.shpytchuk.ingest.api.ai.llm.Extraction;
-import org.shpytchuk.ingest.api.ai.llm.ExtractionResult;
-import org.shpytchuk.ingest.api.ai.model.ItemKind;
-import org.shpytchuk.ingest.api.ai.model.SocialMedia;
+import org.shpytchuk.ingest.extraction.Extraction;
+import org.shpytchuk.ingest.extraction.ExtractionResult;
+import org.shpytchuk.ingest.model.ItemKind;
+import org.shpytchuk.ingest.model.SocialMedia;
 import org.shpytchuk.ingest.pipeline.Notice;
+import org.shpytchuk.ingest.place.ResolvedPlace;
 import org.shpytchuk.ingest.source.IncomingPost;
 
 import java.math.BigDecimal;

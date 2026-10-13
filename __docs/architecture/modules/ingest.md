@@ -13,28 +13,30 @@ Imports lost-and-found notices from outside sources and publishes them. Today th
 
 ## Packages
 
-One package per stage, each behind an interface the pipeline sees; the implementation is the only class that knows the outside service. The clients of outside services sit under `api/`: the model (`api/ai/`), Google Places (`api/geo/`), Client-API (`api/derechi/`) and MinIO (`api/storage/`).
+One package per stage. The root of a stage package is what the pipeline sees: the interface and its records. The implementation that knows an outside service sits one level down, named after that service (`source/telegram/`, `extraction/openrouter/`, `place/google/`); another provider is another subpackage next to it. `config/`, `entity/`, `repository/` and `exception/` stay at the top, as in the other modules. Tests mirror the main packages.
 
-| Package | Interface | Implementation |
-|---|---|---|
-| `source/` | `PostSource` | `PostSources` (all sources by name), `IncomingPost`, `PostKey`, `SourceSettings`, `PhotoRef`, `SourceDetails` |
-| `telegram/` | `TelegramSource` | `TelegramPostSource` (the `PostSource` named `telegram`), `TdlightTelegramSource`, `MessageMapper`, `PostBuffer` and `PostGroup` (an album or a text with its photos sent separately become one post), `AuthorPhoneResolver`, `TelegramDetails`, `TelegramLogin` (`--login`) |
-| `phone/` | | `PhoneExtractor`, `Masker`, `PhoneHasher` |
-| `image/` | `ImageRedactor`, `OcrEngine`, `FaceDetector` | `DefaultImageRedactor`, `TesseractOcrEngine`, `YuNetFaceDetector`, `DocumentDetector`, `Blur` |
-| `api/ai/llm/` | `Extractor` | `OpenRouterExtractor`, `PromptBuilder`, `ExtractionPolicy`, `Extraction` (the model's answer), `DailyCallCounter` |
-| `api/ai/model/` | | `ItemKind`, `Money`, `SocialMedia`, `Outcome`: the values shared by the model's answer, the notice and the metrics |
-| `api/geo/` | `PlaceResolver` | `GoogleLegacyPlaceResolver` (`GOOGLE_PLACES_API=LEGACY`, default) or `GooglePlaceResolver` (`NEW`), both on `TextSearchPlaceResolver` |
-| `api/derechi/` | `DeRechiApi` | `GraphQlDeRechiApi`, `NewItem` |
-| `api/storage/` | `ImageUploader` | `S3ImageUploader` |
-| `publish/` | `Publisher` | `Publishers` (runs the list of `INGEST_PUBLISHERS`), `SitePublisher` (`site`), `Publication`, `SiteItem`, `SkippedPost` |
-| `channel/` | | `ChannelPoster` (`channel`), `ReviewChat` (`review`), `BotApiClient`, `CaptionBuilder` |
-| `pipeline/` | | `IngestQueue`, `IngestPipeline`, `PostLedger`, `IngestMetrics`, `Notice`, `Notices` |
+| Package | Classes |
+|---|---|
+| `source/` | `PostSource`, `PostSources` (all sources by name), `IncomingPost`, `PostKey`, `SourceSettings`, `PhotoRef`, `SourceDetails` |
+| `source/telegram/` | `TelegramPostSource` (the `PostSource` named `telegram`) over `TelegramSource` / `TdlightTelegramSource`, `MessageMapper`, `PostBuffer` and `PostGroup` (an album or a text with its photos sent separately become one post), `AuthorPhoneResolver`, `TelegramDetails`, `ChatSettingsParser`, `TelegramLogin` (`--login`) |
+| `phone/` | `PhoneExtractor`, `Masker`, `PhoneHasher` |
+| `image/` | `ImageRedactor`, `OcrEngine`, `FaceDetector`; `DefaultImageRedactor`, `TesseractOcrEngine`, `YuNetFaceDetector`, `DocumentDetector`, `Blur` |
+| `extraction/` | `Extractor`, `ExtractionRequest`, `Extraction` (the model's answer), `ExtractionResult`, `ExtractionPolicy` (is the answer a usable notice, which phone to take), `PromptBuilder` (`prompts/extract.md`, `prompts/extraction-schema.json`) |
+| `extraction/openrouter/` | `OpenRouterExtractor`, `CompletionRequest`, `DailyCallCounter` |
+| `place/` | `PlaceResolver`, `ResolvedPlace` |
+| `place/google/` | `GoogleLegacyPlaceResolver` (`GOOGLE_PLACES_API=LEGACY`, default) or `GooglePlaceResolver` (`NEW`), both on `TextSearchPlaceResolver` |
+| `pipeline/` | `IngestQueue`, `IngestPipeline`, `PostLedger`, `IngestMetrics`, `Notice`, `Notices` |
+| `publish/` | `Publisher`, `Publishers` (runs the list of `INGEST_PUBLISHERS`), `Publication`, `SiteItem`, `SkippedPost` |
+| `publish/site/` | `SitePublisher` (`site`), `ImageUploader` / `S3ImageUploader` (MinIO) |
+| `publish/telegram/` | `ChannelPoster` (`channel`), `ReviewChat` (`review`), `BotApiClient`, `CaptionBuilder`, `ChannelPost` |
+| `client/` | `DeRechiApi` / `GraphQlDeRechiApi` and `NewItem`: Client-API, used by the pipeline (categories, countries) and by `site`; `HttpCalls` for every HTTP client |
+| `model/` | `ItemKind`, `Money`, `SocialMedia`, `Outcome`: the values shared by the model's answer, the notice, the ledger, the publishers and the metrics |
 
 ## Sources
 
 A post enters as an `IncomingPost`: a `PostKey` (source name, channel, id within the channel; the unique key of `ingest_post`), the source title and link, the text, `PhotoRef`s, the `SourceSettings` of its channel (region, default city, locale) and `SourceDetails` only its source understands (`TelegramDetails`: chat and message ids, the author, mentions). The pipeline asks the post's source, found by `PostSources` by name, to download a photo and to look for the author's phone when the text has none.
 
-A new source (a website, say) is one `@Component` implementing `PostSource` with its own name, plus its `SourceDetails` if it needs any. It turns what it reads into `IncomingPost`s and hands them to the sink given to `start`; the queue, the ledger, the duplicate check and everything after are shared. `authorPhone` returns empty when the source has no such notion.
+A new source (a website, say) is one `@Component` implementing `PostSource` with its own name, in its own subpackage of `source/`, plus its `SourceDetails` if it needs any. It turns what it reads into `IncomingPost`s and hands them to the sink given to `start`; the queue, the ledger, the duplicate check and everything after are shared. `authorPhone` returns empty when the source has no such notion.
 
 ## Publishers
 
@@ -45,7 +47,9 @@ A new source (a website, say) is one `@Component` implementing `PostSource` with
 - A publisher whose `needsSiteItem()` is true (`channel`) links to the notice page instead of carrying contacts; the start fails if it is listed without `site`.
 - Publishers are independent: a failing one is logged (`WARN`) and counted in `derechi.ingest.published{publisher,outcome}`, the others still run, and the ledger status stays what `site` set. Skipped posts go to `Publisher.skipped`, which only `review` uses.
 
-A new publisher (a Viber group, say) is one `@Component` implementing `Publisher` with its own name; adding the name to `INGEST_PUBLISHERS` turns it on. An unknown name fails the start.
+Each publisher turns the `Notice` into its own format (`SitePublisher` into Client-API's `NewItem`, `ChannelPost.of` into a channel post), so the pipeline knows none of them.
+
+A new publisher (a Viber group, say) is one `@Component` implementing `Publisher` with its own name, in its own subpackage of `publish/`; adding the name to `INGEST_PUBLISHERS` turns it on. An unknown name fails the start.
 
 ## Build and image
 

@@ -1,6 +1,6 @@
 package org.shpytchuk.ingest;
 
-import org.shpytchuk.ingest.telegram.TelegramLogin;
+import org.shpytchuk.ingest.source.telegram.TelegramLogin;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;

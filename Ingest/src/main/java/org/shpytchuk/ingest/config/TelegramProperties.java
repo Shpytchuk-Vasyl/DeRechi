@@ -1,7 +1,7 @@
 package org.shpytchuk.ingest.config;
 
 import org.shpytchuk.ingest.source.SourceSettings;
-import org.shpytchuk.ingest.telegram.ChatSettingsParser;
+import org.shpytchuk.ingest.source.telegram.ChatSettingsParser;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 

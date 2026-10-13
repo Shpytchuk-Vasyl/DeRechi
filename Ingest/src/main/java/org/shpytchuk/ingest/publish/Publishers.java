@@ -4,11 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
 import org.shpytchuk.ingest.config.IngestProperties;
 import org.shpytchuk.ingest.entity.PostStatus;
-import org.shpytchuk.ingest.api.ai.llm.ExtractionResult;
-import org.shpytchuk.ingest.api.ai.model.Outcome;
+import org.shpytchuk.ingest.extraction.ExtractionResult;
+import org.shpytchuk.ingest.model.Outcome;
 import org.shpytchuk.ingest.pipeline.IngestMetrics;
 import org.shpytchuk.ingest.pipeline.Notice;
 import org.shpytchuk.ingest.pipeline.PostLedger;
+import org.shpytchuk.ingest.publish.site.SitePublisher;
 import org.shpytchuk.ingest.source.IncomingPost;
 import org.springframework.stereotype.Component;
 
