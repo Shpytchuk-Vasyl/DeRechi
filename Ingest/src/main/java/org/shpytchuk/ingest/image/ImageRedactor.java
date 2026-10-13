@@ -10,6 +10,5 @@ public interface ImageRedactor {
 
     RedactedImage blurFully(byte[] image);
 
-    /** True when the text talks about an identity document (passport, ID card, transport card...). */
     boolean mentionsDocument(String text);
 }

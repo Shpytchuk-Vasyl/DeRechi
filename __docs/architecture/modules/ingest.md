@@ -13,14 +13,17 @@ Imports lost-and-found notices from outside sources and publishes them. Today th
 
 ## Packages
 
-One package per stage. The root of a stage package is what the pipeline sees: the interface and its records. The implementation that knows an outside service sits one level down, named after that service (`source/telegram/`, `extraction/openrouter/`, `place/google/`); another provider is another subpackage next to it. `config/`, `entity/`, `repository/` and `exception/` stay at the top, as in the other modules. Tests mirror the main packages.
+One package per stage. The root of a stage package is what the pipeline sees: the interface and its records. The implementation that knows an outside service sits one level down, named after that service (`source/telegram/`, `extraction/openrouter/`, `place/google/`); another provider is another subpackage next to it. `config/`, `entity/`, `repository/` and `exception/` stay at the top, as in the other modules; `config/` keeps only what the whole module uses (`IngestConfig`, `IngestProperties`) and has a subpackage per stage for the rest. Tests mirror the main packages.
 
 | Package | Classes |
 |---|---|
 | `source/` | `PostSource`, `PostSources` (all sources by name), `IncomingPost`, `PostKey`, `SourceSettings`, `PhotoRef`, `SourceDetails` |
 | `source/telegram/` | `TelegramPostSource` (the `PostSource` named `telegram`) over `TelegramSource` / `TdlightTelegramSource`, `MessageMapper`, `PostBuffer` and `PostGroup` (an album or a text with its photos sent separately become one post), `AuthorPhoneResolver`, `TelegramDetails`, `ChatSettingsParser`, `TelegramLogin` (`--login`) |
 | `phone/` | `PhoneExtractor`, `Masker`, `PhoneHasher` |
-| `image/` | `ImageRedactor`, `OcrEngine`, `FaceDetector`; `DefaultImageRedactor`, `TesseractOcrEngine`, `YuNetFaceDetector`, `DocumentDetector`, `Blur` |
+| `image/` | `ImageRedactor`, `RedactedImage`, `RedactionMode` |
+| `image/redaction/` | `DefaultImageRedactor` (what to blur), `DocumentDetector`, `Blur` |
+| `image/ocr/` | `OcrEngine`, `OcrLine`, `TesseractOcrEngine` |
+| `image/face/` | `FaceDetector`, `YuNetFaceDetector` |
 | `extraction/` | `Extractor`, `ExtractionRequest`, `Extraction` (the model's answer), `ExtractionResult`, `ExtractionPolicy` (is the answer a usable notice, which phone to take), `PromptBuilder` (`prompts/extract.md`, `prompts/extraction-schema.json`) |
 | `extraction/openrouter/` | `OpenRouterExtractor`, `CompletionRequest`, `DailyCallCounter` |
 | `place/` | `PlaceResolver`, `ResolvedPlace` |
@@ -61,8 +64,8 @@ A new publisher (a Viber group, say) is one `@Component` implementing `Publisher
 
 ## Configuration
 
-`derechi.telegram.*`, `derechi.bot.*`, `derechi.ingest.*`, `derechi.openrouter.*`, `derechi.places.*`, `derechi.api.*`, `derechi.storage.*`, `derechi.redaction.*`, one record each in `config/`. Every key has an environment variable; the list is in [environment variables](../../deployment/environment-variables.md). Missing keys do not fail the start: the stage reports itself unavailable and the post waits for the next catch-up. An unknown name in `INGEST_PUBLISHERS`, or `channel` without `site`, does fail it.
+`derechi.telegram.*`, `derechi.bot.*`, `derechi.ingest.*`, `derechi.openrouter.*`, `derechi.places.*`, `derechi.api.*`, `derechi.storage.*`, `derechi.redaction.*`, one record each: `IngestProperties` in `config/`, the others in `config/telegram/`, `config/bot/`, `config/openrouter/`, `config/places/`, `config/client/`, `config/storage/`, `config/redaction/`, each with the `@Configuration` that builds its client where there is one. Every key has an environment variable; the list is in [environment variables](../../deployment/environment-variables.md). Missing keys do not fail the start: the stage reports itself unavailable and the post waits for the next catch-up. An unknown name in `INGEST_PUBLISHERS`, or `channel` without `site`, does fail it.
 
 ## Tests
 
-Unit tests per stage (`*Test`), HTTP clients against `MockRestServiceServer`, `PostLedgerTests` and `IngestApplicationTests` on the Testcontainers database with `ddl-auto=validate`. Nothing talks to Telegram, OpenRouter or Google; `TesseractOcrEngineIT` runs only when `TESSDATA_PREFIX` is set. `support/Posts` and `support/Outputs` build the shared test posts and notices.
+Unit tests per stage (`*Test`), HTTP clients against `MockRestServiceServer`, `PostLedgerTests` and `IngestApplicationTests` on the Testcontainers database with `ddl-auto=validate`. Nothing talks to Telegram, OpenRouter or Google; `TesseractOcrEngineIT` runs only when `TESSDATA_PREFIX` is set. `support/Posts` and `support/Outputs` build the shared test posts and notices, `support/Images` the noise images and the variance check of the redaction tests.
