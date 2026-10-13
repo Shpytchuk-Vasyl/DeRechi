@@ -1,13 +1,13 @@
 # Ingest
 
-Imports lost-and-found notices from outside sources and publishes them. Today the only source is Telegram: a userbot session reads the chats of one Telegram folder, a model through OpenRouter extracts the notice, and the result goes to the publishers in `INGEST_PUBLISHERS`: the site (Client-API's public GraphQL), our Telegram channel, the review chat. What it does step by step is in [the feature page](../../features/telegram-ingest.md).
+Imports lost-and-found notices from outside sources and publishes them. The sources are Telegram (a userbot session reads the chats of one Telegram folder) and Facebook groups (read through a logged-in account once an hour); a model through OpenRouter extracts the notice, and the result goes to the publishers in `INGEST_PUBLISHERS`: the site (Client-API's public GraphQL), our Telegram channel, the review chat. What it does step by step is in [the feature page](../../features/telegram-ingest.md).
 
 | | |
 |---|---|
 | Port | 8086 (serves nothing public); actuator on the management port 9086 |
-| Consumes | Telegram updates (TDLib through TDLight), no queue |
+| Consumes | Telegram updates (TDLib through TDLight); Facebook group pages and the group feed query of `www.facebook.com`, polled; no queue |
 | Produces | notices through the API entry, Caddy for now (`createLostItem` / `createFoundItem`), photos in MinIO, posts in our Telegram channel and the review chat (Bot API) |
-| Needs | PostgreSQL (`ingest_post`), the API entry (Caddy) with Client-API behind it, MinIO; OpenRouter, Google Places, Telegram |
+| Needs | PostgreSQL (`ingest_post`), the API entry (Caddy) with Client-API behind it, MinIO; OpenRouter, Google Places, Telegram, Facebook |
 | Stack | TDLight Java (TDLib 1.8.66), libphonenumber, Tess4J + system Tesseract, ONNX Runtime + YuNet, Spring for GraphQL client, Spring Cloud AWS S3, Lombok |
 | Instances | exactly one: the TDLib session cannot be shared |
 
@@ -19,6 +19,7 @@ One package per stage. The root of a stage package is what the pipeline sees: th
 |---|---|
 | `source/` | `PostSource`, `PostSources` (all sources by name), `IncomingPost`, `PostKey`, `SourceSettings`, `PhotoRef`, `SourceDetails` |
 | `source/telegram/` | `TelegramPostSource` (the `PostSource` named `telegram`) over `TelegramSource` / `TdlightTelegramSource`, `MessageMapper`, `PostBuffer` and `PostGroup` (an album or a text with its photos sent separately become one post), `AuthorPhoneResolver`, `TelegramDetails`, `ChatSettingsParser`, `TelegramLogin` (`--login`) |
+| `source/facebook/` | `FacebookPostSource` (the `PostSource` named `facebook`, polls the groups), `FacebookGroupReader` (the group page, then the feed query page by page), `FacebookParser`, `FacebookClient` (the account's cookies) |
 | `phone/` | `PhoneExtractor`, `Masker`, `PhoneHasher` |
 | `image/` | `ImageRedactor`, `RedactedImage`, `RedactionMode` |
 | `image/redaction/` | `DefaultImageRedactor` (what to blur), `DocumentDetector`, `Blur` |
@@ -38,6 +39,16 @@ One package per stage. The root of a stage package is what the pipeline sees: th
 ## Sources
 
 A post enters as an `IncomingPost`: a `PostKey` (source name, channel, id within the channel; the unique key of `ingest_post`), the source title and link, the text, `PhotoRef`s, the `SourceSettings` of its channel (region, default city, locale) and `SourceDetails` only its source understands (`TelegramDetails`: chat and message ids, the author, mentions). The pipeline asks the post's source, found by `PostSources` by name, to download a photo and to look for the author's phone when the text has none.
+
+### Facebook
+
+`FacebookPostSource` reads the groups of `FACEBOOK_GROUPS` (`group=city[|region[|locale]]`, the group is its name or id from the URL) through a logged-in account whose browser cookies are in `FACEBOOK_COOKIES`. Facebook has no API for groups since 2024, so this is the web client's own traffic, and it breaks Meta's terms: use a separate account, expect it to be banned one day.
+
+- A poll starts a minute after the start and then every `FACEBOOK_POLL_EVERY` plus a random part of `FACEBOOK_POLL_JITTER`; between two requests it waits a random 0.5–1.5 × `FACEBOOK_REQUEST_PAUSE`.
+- For each group: `GET /groups/<group>/?sorting_setting=CHRONOLOGICAL`. The page carries the session tokens (`USER_ID`, `fb_dtsg`, `lsd`), the variables of the feed query, the newest post and the feed cursor, all in `<script type="application/json">` blobs. `USER_ID` 0 means the cookies no longer log in: the group is skipped and `derechi.ingest.facebook.authorized` drops to 0.
+- Older posts come from `POST /api/graphql/` with the persisted query `GroupsCometFeedRegularStoriesPaginationQuery`, three posts and a new cursor per answer (a JSON line per post; `field_exception` errors in it are partial and ignored). Its `doc_id` changes with Facebook's releases: the reader finds it in the JavaScript bundles the page links (`<Query>_facebookRelayOperation`), caches it and looks it up again when the query fails.
+- Paging stops at a post older than the previous poll's start minus 30 minutes (`FACEBOOK_CATCH_UP_MAX_AGE` back on the first poll), at the end of the feed or after `FACEBOOK_MAX_PAGES`. Posts are handed over oldest first, keyed `facebook / <group> / <post_id>`, linked to the permalink; repeats are dropped by the ledger.
+- Photos are the `viewer_image` of the attachments, downloaded from the CDN by URL. There is no author phone: a post without a number in its text is dropped.
 
 A new source (a website, say) is one `@Component` implementing `PostSource` with its own name, in its own subpackage of `source/`, plus its `SourceDetails` if it needs any. It turns what it reads into `IncomingPost`s and hands them to the sink given to `start`; the queue, the ledger, the duplicate check and everything after are shared. `authorPhone` returns empty when the source has no such notion.
 

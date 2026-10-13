@@ -200,6 +200,14 @@ except where the table says otherwise. An empty `TELEGRAM_API_ID`/`TELEGRAM_API_
 | `TELEGRAM_ALBUM_WAIT` | `PT3S` | same | how long to wait for the rest of a post after its last message: album parts, or a text and its photos sent as separate messages by the same sender. Every message is held this long; a larger value catches people who send the photo a few seconds after the text |
 | `TELEGRAM_FOLDER_REFRESH` | `PT10M` | same | how often the folder's chat list is re-read |
 | `TELEGRAM_CATCH_UP_MAX_AGE` / `TELEGRAM_CATCH_UP_MAX_MESSAGES` | `PT48H` / `200` | same | on start, history read back per chat to pick up posts missed while down |
+| `FACEBOOK_COOKIES` | empty (Facebook off) | same | **secret**: the `Cookie` header of a logged-in `www.facebook.com` request (`c_user=...; xs=...; datr=...`), from a separate account |
+| `FACEBOOK_GROUPS` | empty | same | groups to read, `group=city[\|region[\|locale]]` separated by `;` or new lines; the group is its name or id from the URL, e.g. `zzter=Тернопіль` |
+| `FACEBOOK_USER_AGENT` | a desktop Chrome | same | the user agent of the browser the cookies were copied from |
+| `FACEBOOK_POLL_EVERY` / `FACEBOOK_POLL_JITTER` | `PT1H` / `PT20M` | same | the groups are read every `POLL_EVERY` plus a random part of `POLL_JITTER`; the first poll comes a minute after the start |
+| `FACEBOOK_REQUEST_PAUSE` | `PT10S` | same | a random 0.5–1.5 × this pause between two requests to Facebook |
+| `FACEBOOK_MAX_PAGES` | `10` | same | feed pages (three posts each) read per group and poll at most |
+| `FACEBOOK_CATCH_UP_MAX_AGE` | `PT48H` | same | how far back the first poll after a start reads |
+| `FACEBOOK_TIMEOUT` | `PT30S` | same | per request to Facebook |
 | `TELEGRAM_BOT_API_URL` | `https://api.telegram.org` | same | Bot API base URL |
 | `TELEGRAM_BOT_TOKEN` | empty | same | the bot that posts to our channel and to the review chat |
 | `TELEGRAM_PUBLISH_CHAT` | empty | same | our public channel: id (`-100...`) or `@username` |

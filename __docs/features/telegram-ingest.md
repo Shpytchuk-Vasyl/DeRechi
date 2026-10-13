@@ -1,6 +1,6 @@
 # Telegram import
 
-The `Ingest` module reads the lost-and-found channels and groups our Telegram account follows, turns real notices into site notices and reposts them to our own channel. Telegram is its only source today; the module is built for more (see [Ingest](../architecture/modules/ingest.md#sources)). Notices created this way are ordinary notices: matching in `Worker` and claims work for them unchanged.
+The `Ingest` module reads the lost-and-found channels and groups our Telegram account follows, turns real notices into site notices and reposts them to our own channel. Public Facebook groups are read too, through a logged-in account once an hour (see [Ingest](../architecture/modules/ingest.md#facebook)); from the phone step on, a Facebook post goes the same way. Notices created this way are ordinary notices: matching in `Worker` and claims work for them unchanged.
 
 The design and the decisions behind it are in [the spec](../specs/telegram-ingest.md) until the feature has run in production for a while; this page describes what the code does.
 
@@ -8,7 +8,7 @@ The design and the decisions behind it are in [the spec](../specs/telegram-inges
 
 One post at a time, from an in-memory queue (`IngestQueue` → `IngestPipeline`):
 
-1. **Listen.** `TdlightTelegramSource` (TDLight, a userbot session) takes every new text or photo message of the chats in the Telegram folder `TELEGRAM_FOLDER`. Messages of one sender (the forward origin, else the sender) that come within `TELEGRAM_ALBUM_WAIT` of each other and carry at most one text are merged into one post (`PostBuffer`, `PostGroup`): an album, but also a text with its photos sent as a separate message or album, which is how channel admins forward a person's notice. Each message therefore waits `TELEGRAM_ALBUM_WAIT` before it goes on; the merged post is keyed by its first message. The catch-up groups the history the same way. After a start it also replays the last `TELEGRAM_CATCH_UP_MAX_AGE` of every chat; posts already in `ingest_post` are dropped.
+1. **Listen.** `TdlightTelegramSource` (TDLight, a userbot session) takes every new text or photo message of the chats in the Telegram folder `TELEGRAM_FOLDER`. Messages of one sender (the forward origin, else the sender) that come within `TELEGRAM_ALBUM_WAIT` of each other and carry at most one text are merged into one post (`PostBuffer`, `PostGroup`): an album, but also a text with its photos sent as a separate message or album, which is how channel admins forward a person's notice. Each message therefore waits `TELEGRAM_ALBUM_WAIT` before it goes on; the merged post is keyed by its first message. The catch-up groups the history the same way. After a start it also replays the last `TELEGRAM_CATCH_UP_MAX_AGE` of every chat; posts already in `ingest_post` are dropped. `FacebookPostSource` polls the groups of `FACEBOOK_GROUPS` every `FACEBOOK_POLL_EVERY` plus a random jitter and hands over what is new since the last poll.
 2. **Phone.** `PhoneExtractor` (libphonenumber, the chat's region) finds numbers in the text. No number in the text → the post's source looks for the author's phone; for Telegram `AuthorPhoneResolver` tries the phone the author made public in their Telegram profile: the sender in a group, the forward origin of a channel post, then users mentioned in the text (`@username` or a link to the user), because channel posts often name the author only as `Контакт: @username`. Still nothing → the post is dropped without a trace (`outcome=no_phone`).
 3. **Duplicate.** The same contact number (HMAC in `ingest_post.phone_hash`) on a notice within `INGEST_DUPLICATE_WINDOW` → skipped. This runs before the model, so a repost in five channels costs one model call.
 4. **Mask.** `Masker` replaces numbers with `[PHONE_n]` and emails with `[EMAIL_n]`; the mapping stays in memory. No phone or email leaves the machine.
@@ -45,12 +45,13 @@ A stage that is not configured (no OpenRouter or Places key, Client-API unreacha
 - Start with `INGEST_PUBLISHERS=review` and `TELEGRAM_REVIEW_CHAT` set, read the previews, then switch to `site,channel` (or `site,channel,review` to keep watching).
 - To see where a post is stuck, set `LOGGING_LEVEL_ORG_SHPYTCHUK_INGEST_PIPELINE=DEBUG`: the pipeline then logs every step with its duration (queued, phone, duplicate check, each photo's download and redaction, the model answer, the checks, the place search, the upload). The last line of a post names the last finished step; the next one is the slow one. Every external call has a timeout (TDLib 30 s, model `OPENROUTER_TIMEOUT` per attempt, Places, Client-API), OCR does not.
 - Exactly one instance: the TDLib session cannot be shared.
+- Facebook: log in to a separate account in a browser, open `www.facebook.com`, copy the `Cookie` request header (DevTools, Network) into `FACEBOOK_COOKIES`, set `FACEBOOK_USER_AGENT` to that browser's user agent and list the groups in `FACEBOOK_GROUPS=zzter=Тернопіль;...`. The cookies are a password: `env.test` / `env.prod` only. Without them the source logs one warning and reads nothing; when they stop logging in, `FacebookUnauthorized` fires and they have to be copied again.
 
 Every variable is in [environment variables](../deployment/environment-variables.md).
 
 ## Metrics and alerts
 
-`derechi.ingest.posts{outcome}`, `derechi.ingest.phone.source{source}`, `derechi.ingest.llm.duration{model}`, `derechi.ingest.llm.cost{model}` (USD), `derechi.ingest.image.redacted{mode}`, `derechi.ingest.published{publisher,outcome}`, `derechi.ingest.queue`, `derechi.ingest.telegram.authorized`, `derechi.ingest.last.received` (epoch seconds). Alerts `IngestUnauthorized` and `IngestStalled`, see [monitoring](../deployment/monitoring.md).
+`derechi.ingest.posts{outcome}`, `derechi.ingest.phone.source{source}`, `derechi.ingest.llm.duration{model}`, `derechi.ingest.llm.cost{model}` (USD), `derechi.ingest.image.redacted{mode}`, `derechi.ingest.published{publisher,outcome}`, `derechi.ingest.queue`, `derechi.ingest.telegram.authorized`, `derechi.ingest.facebook.authorized`, `derechi.ingest.facebook.polls{group,outcome}`, `derechi.ingest.last.received` (epoch seconds). Alerts `IngestUnauthorized`, `FacebookUnauthorized` and `IngestStalled`, see [monitoring](../deployment/monitoring.md).
 
 ## Known gaps
 
@@ -61,6 +62,7 @@ Every variable is in [environment variables](../deployment/environment-variables
 - WebP photos are not decoded (the JDK has no WebP reader); Telegram serves photos as JPEG.
 - The in-memory queue and the username cache are lost on restart (the catch-up refills the queue).
 - A publisher that failed after `site` succeeded (`channel`, say) is not retried; the channel post has to be made by hand.
+- Facebook is read through the web client's undocumented feed query: a change on their side shows up as `derechi.ingest.facebook.polls{outcome="failed"}` until the reader is fixed. The account can be banned, and a datacenter IP meets login walls sooner than a home one. Facebook posts have no author phone, so a post without a number in its text is dropped.
 
 ## Where to look
 

@@ -67,6 +67,17 @@ derechi:
     catch-up-max-age: ${TELEGRAM_CATCH_UP_MAX_AGE:PT48H}
     catch-up-max-messages: ${TELEGRAM_CATCH_UP_MAX_MESSAGES:200}
 
+  facebook:
+    cookies: ${FACEBOOK_COOKIES:}
+    groups: ${FACEBOOK_GROUPS:}
+    user-agent: ${FACEBOOK_USER_AGENT:}
+    poll-every: ${FACEBOOK_POLL_EVERY:PT1H}
+    poll-jitter: ${FACEBOOK_POLL_JITTER:PT20M}
+    request-pause: ${FACEBOOK_REQUEST_PAUSE:PT10S}
+    max-pages: ${FACEBOOK_MAX_PAGES:10}
+    catch-up-max-age: ${FACEBOOK_CATCH_UP_MAX_AGE:PT18H}
+    timeout: ${FACEBOOK_TIMEOUT:PT30S}
+
   bot:
     api-url: ${TELEGRAM_BOT_API_URL:https://api.telegram.org}
     token: ${TELEGRAM_BOT_TOKEN:}

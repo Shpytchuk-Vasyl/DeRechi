@@ -1,7 +1,7 @@
 package org.shpytchuk.ingest.config.telegram;
 
 import org.shpytchuk.ingest.source.SourceSettings;
-import org.shpytchuk.ingest.source.telegram.ChatSettingsParser;
+import org.shpytchuk.ingest.source.SourceSettingsParser;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
@@ -16,7 +16,7 @@ import java.util.Map;
  * @param dataDir         TDLib database and downloads, a persistent volume in Docker
  * @param folder          name of the chat folder whose channels and groups are read
  * @param chats           per-chat overrides, {@code username=city[|region[|locale]]} separated by {@code ;}
- *                        or new lines, see {@link ChatSettingsParser}
+ *                        or new lines, see {@link SourceSettingsParser}
  * @param defaultRegion   region for chats without an override
  * @param defaultLocale   geocoding language for chats without an override
  */
@@ -48,7 +48,7 @@ public record TelegramProperties(
         catchUpMaxAge = catchUpMaxAge == null ? Duration.ofHours(48) : catchUpMaxAge;
         catchUpMaxMessages = catchUpMaxMessages <= 0 ? 200 : catchUpMaxMessages;
         SourceSettings.requireKnownRegion(defaultRegion);
-        ChatSettingsParser.parse(chats, defaultRegion, defaultLocale);
+        SourceSettingsParser.parse("derechi.telegram.chats", chats, defaultRegion, defaultLocale);
     }
 
     public boolean configured() {
@@ -56,7 +56,7 @@ public record TelegramProperties(
     }
 
     public Map<String, SourceSettings> chatOverrides() {
-        return ChatSettingsParser.parse(chats, defaultRegion, defaultLocale);
+        return SourceSettingsParser.parse("derechi.telegram.chats", chats, defaultRegion, defaultLocale);
     }
 
     public SourceSettings settingsFor(String username, long chatId) {

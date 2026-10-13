@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.shpytchuk.ingest.publish.Publishers;
 import org.shpytchuk.ingest.source.PostSource;
+import org.shpytchuk.ingest.source.facebook.FacebookPostSource;
 import org.shpytchuk.ingest.source.telegram.TelegramPostSource;
 import org.shpytchuk.ingest.support.AbstractPostgresTests;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +31,10 @@ class IngestApplicationTests {
         List<PostSource> sources;
 
         @Test
-        void previewsInTheReviewChatAndReadsTelegram() {
+        void previewsInTheReviewChatAndReadsTelegramAndFacebook() {
             assertThat(publishers.names()).containsExactly("review");
-            assertThat(sources).singleElement().isInstanceOf(TelegramPostSource.class);
+            assertThat(sources).extracting(PostSource::name)
+                    .containsExactlyInAnyOrder(TelegramPostSource.NAME, FacebookPostSource.NAME);
         }
     }
 
