@@ -6,9 +6,10 @@ Every Maven module inherits `spring-boot-starter-actuator` and
 `micrometer-registry-prometheus` from the root pom and exposes
 `health`, `info` and `prometheus` over HTTP (`management.endpoints.web.exposure.include`
 in each `application.yaml`). Actuator listens on a separate management port, the service
-port + 1000 (`MANAGEMENT_PORT`: `Getaway` 9080, `Client-API` 9082, `Admin-API` 9083,
-`Notification` 9084, `Worker` 9085). Compose does not publish those ports and the gateway
-never routes `/actuator`, so only Prometheus reaches them.
+port + 1000 (`MANAGEMENT_PORT`: `Client-API` 9082, `Admin-API` 9083, `Notification` 9084,
+`Worker` 9085, `Ingest` 9086; `Getaway`, not deployed for now, 9080). Compose does not
+publish those ports and the API entry (Caddy) never routes `/actuator`, so only Prometheus
+reaches them.
 Health shows no details (`show-details: never`).
 
 Prometheus v3.14.0 runs as a container with a 15-day retention and `--web.enable-lifecycle`
@@ -19,8 +20,8 @@ run:
 
 | File | Used by | Service targets |
 |---|---|---|
-| `prometheus.yml` | `docker compose up` (infrastructure only, services in the IDE) | `host.docker.internal:<management port>` (9080, 9082, ...), the container reaches the host |
-| `prometheus-full.yml` | `docker compose -f docker-compose.yml -f docker-compose.services.yml up` | container names on the management ports, `getaway:9080`, `client-api:9082`, ... |
+| `prometheus.yml` | `docker compose up` (infrastructure only, services in the IDE) | `host.docker.internal:<management port>` (9082, 9083, ...), the container reaches the host |
+| `prometheus-full.yml` | `docker compose -f docker-compose.yml -f docker-compose.services.yml up` | container names on the management ports, `client-api:9082`, `admin-api:9083`, ... |
 
 The services override in `docker-compose.services.yml` swaps the `--config.file` argument;
 that is why the full stack is an override file rather than a second compose project.
@@ -30,7 +31,7 @@ Both files define the same jobs:
 | Job | Targets | Path |
 |---|---|---|
 | `prometheus` | itself | `/metrics` |
-| `derechi-services` | all five Spring services, each with an `application` label (`Getaway`, `Client-API`, `Admin-API`, `Worker`, `Notification`) | `/actuator/prometheus` |
+| `derechi-services` | the five deployed Spring services, each with an `application` label (`Client-API`, `Admin-API`, `Worker`, `Notification`, `Ingest`) | `/actuator/prometheus` |
 | `keycloak` | `keycloak:9000` (management port, `KC_METRICS_ENABLED=true`) | `/metrics` |
 | `minio` | `minio:9000` | `/minio/v2/metrics/cluster` (public, `MINIO_PROMETHEUS_AUTH_TYPE=public`) |
 | `rabbitmq` | `rabbitmq:15692` | `/metrics` (the `rabbitmq_prometheus` plugin) |
@@ -41,6 +42,10 @@ instance selector. A new service goes into both files with that label, see
 
 Keycloak is a separate job and not a `derechi-services` target because its metrics are on
 a different port and path and carry no `application` label.
+
+`Getaway` has no target while it is not deployed (it would only fire `TargetDown`), and
+Caddy, the API entry for now, exports no metrics by decision; see
+[Caddy (API entry)](../deployment/infrastructure.md#caddy-api-entry).
 
 ## Alerts
 

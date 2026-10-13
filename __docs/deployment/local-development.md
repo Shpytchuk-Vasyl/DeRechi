@@ -21,7 +21,7 @@ docker compose --profile dev up -d
 
 `--profile dev` adds Mailpit and pgAdmin, which production does not run; `--env-file env.local` does the same through `COMPOSE_PROFILES=dev`.
 
-This builds the custom PostGIS image on first run (it downloads the Ukrainian and Polish hunspell dictionaries), then starts PostgreSQL, RabbitMQ, Keycloak, MinIO (plus the `minio-init` job that creates the `derechi-files` bucket and the `rabbitmq-init` job that imports the queues), Mailpit, pgAdmin, Prometheus, Alertmanager and Grafana. Wait until `docker compose ps` shows `healthy` for PostgreSQL, RabbitMQ, MinIO and Mailpit and `running` for the rest. Keycloak takes the longest; it is ready when `http://localhost:8180` answers.
+This builds the custom PostGIS image on first run (it downloads the Ukrainian and Polish hunspell dictionaries), then starts PostgreSQL, RabbitMQ, Keycloak, MinIO (plus the `minio-init` job that creates the `derechi-files` bucket and the `rabbitmq-init` job that imports the queues), Caddy as the API entry on 8080, Mailpit, pgAdmin, Prometheus, Alertmanager and Grafana. Wait until `docker compose ps` shows `healthy` for PostgreSQL, RabbitMQ, MinIO and Mailpit and `running` for the rest. Keycloak takes the longest; it is ready when `http://localhost:8180` answers.
 
 ## 2. Create the schema
 
@@ -35,10 +35,9 @@ If your JVM's default timezone is `Europe/Kiev`, this fails with `invalid value 
 
 ## 3. Start the services
 
-In any order; the Gateway answers `/graphql` once `Client-API` is up.
+In any order. There is nothing to start for port 8080: Caddy from compose answers `/graphql` once `Client-API` is up, reaching it at `host.docker.internal:8082` (see [infrastructure](infrastructure.md#caddy-api-entry)). The `Getaway` module is not run for now.
 
 ```bash
-./mvnw -pl Getaway spring-boot:run
 ./mvnw -pl Client-API spring-boot:run
 ./mvnw -pl Admin-API spring-boot:run
 ./mvnw -pl Worker spring-boot:run
@@ -47,7 +46,7 @@ In any order; the Gateway answers `/graphql` once `Client-API` is up.
 
 Start only what you need: `Admin-API` alone is enough for admin UI work (it needs PostgreSQL, Keycloak, MinIO and RabbitMQ from compose). `Worker` and `Notification` are only needed when you exercise the event flows.
 
-Actuator is on a separate management port, the service port + 1000: `http://localhost:9080/actuator/health` for the Gateway, `9082`, `9083`, `9084`, `9085` for the others. The service ports themselves do not serve `/actuator`.
+Actuator is on a separate management port, the service port + 1000: `http://localhost:9082/actuator/health` for `Client-API`, `9083`, `9084`, `9085`, `9086` for the others. The service ports themselves do not serve `/actuator`.
 
 In IDEA, create a Spring Boot run configuration per `*Application` class, or a compound configuration that starts them together.
 
@@ -56,7 +55,7 @@ In IDEA, create a Spring Boot run configuration per `*Application` class, or a c
 | What | URL | Login |
 |---|---|---|
 | Admin panel | `http://localhost:8083/admin` | Keycloak user, see below |
-| GraphiQL through the gateway | `http://localhost:8080/graphiql` | none |
+| GraphiQL through Caddy | `http://localhost:8080/graphiql` | none |
 | GraphQL endpoint | `http://localhost:8080/graphql` | none |
 | Keycloak console | `http://localhost:8180` | `admin` / `admin` |
 | RabbitMQ management | `http://localhost:15672` | `derechi` / `derechi` |
@@ -84,7 +83,7 @@ pnpm install
 pnpm dev        # http://localhost:3000
 ```
 
-It calls `Client-API` through the Gateway (`GRAPHQL_URL`) and loads images from the Gateway's `/files/**` route; both default to `localhost:8080`. See `Web-Client/README.md`.
+It calls `Client-API` through Caddy (`GRAPHQL_URL`) and loads images from Caddy's `/files/**` route; both default to `localhost:8080`. See `Web-Client/README.md`.
 
 ## Everything in Docker instead
 

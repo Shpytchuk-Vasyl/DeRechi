@@ -1,7 +1,4 @@
-{$API_DOMAIN} {
-	encode zstd gzip
-	reverse_proxy getaway:8080
-}
+import api.Caddyfile
 
 {$ADMIN_DOMAIN} {
 	encode zstd gzip

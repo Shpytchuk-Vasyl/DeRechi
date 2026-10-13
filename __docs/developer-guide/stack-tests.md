@@ -36,7 +36,7 @@ The exit code is non-zero when an integration test fails or a k6 threshold is cr
 
 | Runs | Does not run |
 |---|---|
-| PostgreSQL (in tmpfs), Liquibase migrations, RabbitMQ + `rabbitmq-init`, Client-API, Worker, Notification, Mailpit, Prometheus, Grafana | Keycloak, Admin-API, Getaway, MinIO, pgAdmin |
+| PostgreSQL (in tmpfs), Liquibase migrations, RabbitMQ + `rabbitmq-init`, Client-API, Worker, Notification, Mailpit, Prometheus, Grafana | Keycloak, Admin-API, Caddy, Getaway, MinIO, pgAdmin |
 
 - No `container_name` and no shared host ports, so it runs next to the main `derechi` project.
   The only host ports are Grafana `13000`, Prometheus `19090` and Mailpit `18025`
@@ -116,12 +116,14 @@ With `--keep`, Grafana (`http://localhost:13000`, anonymous view, `admin` / `adm
 [`.github/workflows/tests.yml`](../../.github/workflows/tests.yml) runs on demand (`workflow_dispatch`);
 the pull-request trigger is written but commented out for now. Two stages:
 
-1. **`unit`**, one job per module that `images.yml` ships (`DB-Postgres`, `Getaway`, `Client-API`,
-   `Worker`, `Notification`), in parallel: `./mvnw -pl <module> test`. `Admin-API` is not tested
+1. **`unit`**, one job per module (`DB-Postgres`, `Client-API`, `Worker`, `Notification`), in
+   parallel: `./mvnw -pl <module> test`. The `Getaway` job is commented out together with the
+   module's `<module>` entry: it is not deployed for now
+   ([Caddy](../deployment/infrastructure.md#caddy-api-entry) is the API entry). `Admin-API` is not tested
    in CI. The context tests connect to `localhost` just like on a developer machine, so a job
    starts from the root `docker-compose.yml` only what its module needs: PostgreSQL (our image with
    the dictionaries) for `DB-Postgres` and `Client-API`, RabbitMQ with `rabbitmq-init` for
-   `Client-API`, `Worker` and `Notification`, nothing for `Getaway`. `Worker`'s database tests run
+   `Client-API`, `Worker` and `Notification`. `Worker`'s database tests run
    on their Testcontainers PostGIS. `fail-fast` is off, so one red module does not hide the others. On failure
    the job uploads `target/surefire-reports/` and prints the compose logs.
 2. **`integration`**, only when every `unit` job is green: `tests/run.sh --only integration` on the

@@ -39,9 +39,9 @@ describeIf(`presigned upload against ${endpoint}`, () => {
     expect(await download.text()).toBe(body.toString())
   })
 
-  const itThroughGateway = process.env.S3_TEST_MAX_BYTES ? it : it.skip
+  const itThroughProxy = process.env.S3_TEST_MAX_BYTES ? it : it.skip
 
-  itThroughGateway("rejects a body over the Gateway's limit", async () => {
+  itThroughProxy("rejects a body over the proxy's limit", async () => {
     const limit = Number(process.env.S3_TEST_MAX_BYTES)
     const url = presignUrl({
       ...target,

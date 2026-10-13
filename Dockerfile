@@ -7,7 +7,7 @@ COPY .mvn .mvn
 COPY --chmod=755 mvnw ./
 COPY pom.xml ./
 COPY DB-Postgres DB-Postgres
-COPY Getaway Getaway
+# COPY Getaway Getaway
 COPY Client-API Client-API
 COPY Admin-API Admin-API
 COPY Worker Worker

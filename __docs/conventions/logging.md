@@ -72,11 +72,13 @@ Each module logs every incoming unit of work once, at its edge, with the outcome
 
 | Module | Line | From |
 |---|---|---|
-| Getaway | method, path, status, duration | Reactor Netty access log |
+| Getaway (not deployed for now) | method, path, status, duration | Reactor Netty access log |
 | Client-API | GraphQL operation, `OK` or error types, duration (no variables); other HTTP requests (the Fourthwall webhook) | `GraphQlRequestLogger`, `HttpRequestLogger` |
 | Admin-API | write actions with the actor (Rule 6); errors in `GlobalExceptionHandler` | controllers, `GlobalExceptionHandler` |
 | Worker | queue, routing key, event type and ids, outcome, duration | `RabbitMessageLogger` |
 | Notification | routing key, event, channels used, outcome | the listener |
+
+Caddy, which serves 8080 instead of `Getaway` for now, writes no access log, by decision: the API's request lines come from `Client-API`, and file traffic is not logged. See [infrastructure](../deployment/infrastructure.md#caddy-api-entry).
 
 Business classes below the edge log only business events (Rule 2), not "entering method X".
 

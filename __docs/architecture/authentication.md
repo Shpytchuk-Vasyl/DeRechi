@@ -125,15 +125,18 @@ default profile) a single `issuer-uri: http://localhost:8180/realms/derechi` is 
 
 ## Gateway and Keycloak
 
-Keycloak is not behind the gateway. The gateway used to have a `keycloak` route
-(`/realms/**`, `/resources/**`) that exposed the realm under its own origin, but nothing
-used it and it was removed. Browsers reach Keycloak directly at `KEYCLOAK_PUBLIC_URI`
-(`http://localhost:8180` locally), and `Admin-API` talks to it on the internal
-`KEYCLOAK_URI`, as described above. See [modules/getaway.md](modules/getaway.md).
+Keycloak is not behind the API entry on 8080 (Caddy for now, see
+[Caddy (API entry)](../deployment/infrastructure.md#caddy-api-entry)). The `Getaway` module,
+while it was deployed, used to have a `keycloak` route (`/realms/**`, `/resources/**`) that
+exposed the realm under its own origin, but nothing used it and it was removed. Browsers
+reach Keycloak directly at `KEYCLOAK_PUBLIC_URI` (`http://localhost:8180` locally), and
+`Admin-API` talks to it on the internal `KEYCLOAK_URI`, as described above. In production
+the same Caddy serves it on `AUTH_DOMAIN` and answers `404` for the console and the
+`master` realm. See [modules/getaway.md](modules/getaway.md).
 
 ## What is not there yet
 
-- No resource server: `Client-API` is unauthenticated, and the gateway does not validate
+- No resource server: `Client-API` is unauthenticated, and the API entry does not validate
   tokens. The `derechi-web` client and the `USER` role exist for the day it does.
 - `derechi-services` has no caller. Service-to-service traffic is RabbitMQ, which has its
   own credentials.

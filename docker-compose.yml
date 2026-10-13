@@ -268,6 +268,26 @@ services:
         { mc admin policy attach local derechi-app --user "$$MINIO_ACCESS_KEY" || true; } &&
         echo 'buckets and the application account ready'
 
+  caddy:
+    <<: *infra
+    image: caddy:2.11.4-alpine
+    container_name: derechi-caddy
+    command: ["caddy", "run", "--config", "/etc/caddy/api.Caddyfile", "--adapter", "caddyfile"]
+    environment:
+      CLIENT_API_URI: http://host.docker.internal:8082
+      MINIO_URI: ${MINIO_URI:-http://minio:9000}
+      MINIO_BUCKET: ${MINIO_BUCKET:-derechi-files}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./docker/caddy:/etc/caddy:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    deploy:
+      resources:
+        limits:
+          memory: ${CADDY_MEMORY:-128m}
+
   #   docker compose --profile dev up -d    (or COMPOSE_PROFILES=dev, as env.local sets)
   mailpit:
     <<: *infra

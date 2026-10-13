@@ -1,5 +1,12 @@
 # Getaway
 
+> **Not deployed for now.** The API entry on port 8080 is temporarily Caddy, see
+> [infrastructure](../../deployment/infrastructure.md#caddy-api-entry). The code stays in the
+> repository, but the module is commented out in the root `<modules>`, in the `Dockerfile`'s
+> `COPY` list and in `tests.yml`; compose, `images.yml` and the Prometheus configs no longer
+> mention it. It still builds on its own: `./mvnw -f Getaway/pom.xml test`. Everything below
+> describes the module as it is, ready for the day it comes back.
+
 The public entry point, a Spring Cloud Gateway on WebFlux. Its job is narrow: get the web
 client's traffic to `Client-API` and move files in and out of MinIO. It is the one reactive module in the reactor; everything
 else is blocking code on virtual threads.
@@ -12,7 +19,7 @@ and `spring.application.name` all use that spelling, and so does the Dockerfile.
 | Port | 8080; actuator on the management port 9080 |
 | Dependencies | `spring-cloud-starter-gateway-server-webflux`, `spring-cloud-starter-circuitbreaker-reactor-resilience4j` |
 | Needs | Client-API and MinIO reachable at the configured URIs |
-| Code | `GetawayApplication` and `application.yaml`; no Java beyond the main class |
+| Code | `GetawayApplication`, `AccessLogConfig` (Reactor Netty access log without the query string) and `application.yaml` |
 
 ## Routes
 
@@ -79,3 +86,23 @@ of the container (a `404` on a PUT to the bucket means the upload route does not
 `GetawayApplicationTests` loads the context with `reactor-test` on the classpath. Route
 behaviour is exercised manually and from the web client's upload tests, see
 `Web-Client/README.md`.
+
+## Bringing it back
+
+The gateway returns when the entry needs something Caddy does not give in configuration:
+`lb://` routes over service discovery, a JWT resource server in front of the services, rate
+limiting or circuit breakers written in Java. Then:
+
+1. Uncomment `<module>Getaway</module>` in the root `pom.xml`, `COPY Getaway Getaway` in the
+   `Dockerfile` and the `Getaway` job in `.github/workflows/tests.yml`.
+2. `docker-compose.services.yml`: the `getaway` service again (it is in git history), with
+   `CLIENT_API_URI`, `MINIO_URI`, `MINIO_BUCKET`, `WEB_ORIGIN_PATTERNS` and `depends_on: minio`.
+3. Port 8080 belongs to one of them: drop the `caddy` service from `docker-compose.yml`, or
+   move it, and run the gateway from IDEA in development mode again.
+4. Production `docker/caddy/Caddyfile`: replace `import api.Caddyfile` with an `API_DOMAIN`
+   site that does `reverse_proxy getaway:8080`.
+5. `DERECHI_API_URI` of `Ingest` back to `http://getaway:8080` (compose and `env.local`).
+6. `.github/workflows/images.yml`: the `getaway` image.
+7. The `Getaway` target on 9080 in `prometheus.yml`, `prometheus-full.yml` and
+   `prometheus-agent-api.yml.tmpl`.
+8. CORS is the gateway's again: `WEB_ORIGIN_PATTERNS` in the env files.

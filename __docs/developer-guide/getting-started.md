@@ -39,11 +39,13 @@ docker compose --profile dev up -d     # dev adds Mailpit (local mail catcher) a
 ```
 
 The first run builds our Postgres image (PostGIS plus a Ukrainian full-text dictionary) and
-pulls RabbitMQ, Keycloak, MinIO, Mailpit, pgAdmin, Prometheus, Alertmanager and Grafana.
+pulls RabbitMQ, Keycloak, MinIO, Caddy, Mailpit, pgAdmin, Prometheus, Alertmanager and Grafana.
 Wait until `docker compose ps` shows PostgreSQL, RabbitMQ, MinIO and Mailpit `healthy` and
 the rest `running`, and `http://localhost:8180` answers (Keycloak is the slowest). Keycloak imports the `derechi`
 realm (and the dev users, once uncommented) on this first start; MinIO's init container creates the
-`derechi-files` bucket and the application account, then exits.
+`derechi-files` bucket and the application account, then exits. Caddy takes port 8080, the
+public API entry, and forwards `/graphql` to `Client-API` on the host once you start it
+([Caddy](../deployment/infrastructure.md#caddy-api-entry), for now in place of the `Getaway` module).
 
 What is now listening, with credentials, is listed in
 [deployment/infrastructure.md](../deployment/infrastructure.md).
@@ -69,21 +71,19 @@ Then build everything once to make sure the toolchain is right:
 Order does not matter.
 
 From IDEA, run the `*Application` classes:
-`GetawayApplication`, `ClientApiApplication`, `AdminApiApplication`,
-`WorkerApplication`, `NotificationApplication`. From a terminal, one module per
-window:
+`ClientApiApplication`, `AdminApiApplication`, `WorkerApplication`,
+`NotificationApplication`. From a terminal, one module per window:
 
 ```bash
-./mvnw -pl Getaway spring-boot:run
 ./mvnw -pl Client-API spring-boot:run
 ./mvnw -pl Admin-API spring-boot:run
 ./mvnw -pl Worker spring-boot:run
 ./mvnw -pl Notification spring-boot:run
 ```
 
-Ports: Getaway 8080, Client-API 8082, Admin-API 8083, Notification 8084, Worker 8085.
-Actuator is on a separate management port, the service port + 1000: each answers
-`/actuator/health` on 9080, 9082, 9083, 9084 or 9085.
+Ports: Client-API 8082, Admin-API 8083, Notification 8084, Worker 8085; 8080 is Caddy in
+Docker. Actuator is on a separate management port, the service port + 1000: each answers
+`/actuator/health` on 9082, 9083, 9084 or 9085.
 
 The alternative, everything in containers, is one command and is covered in
 [deployment/local-development.md](../deployment/local-development.md):
@@ -105,7 +105,7 @@ runs for a realm that does not exist yet. Switch the language with `?lang=uk` (o
 
 ## 5. Create a lost and a found notice
 
-GraphiQL is served by `Client-API` and routed through the gateway:
+GraphiQL is served by `Client-API` and routed through Caddy:
 `http://localhost:8080/graphiql`. First get the category ids:
 
 ```graphql

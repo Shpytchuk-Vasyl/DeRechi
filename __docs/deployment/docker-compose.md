@@ -4,14 +4,15 @@ A base file and one override, one project named `derechi`. Production runs the s
 
 | File | Contains | Command |
 |---|---|---|
-| `docker-compose.yml` | infrastructure only | `docker compose --profile dev up -d` |
-| `docker-compose.services.yml` | the six Spring services, the one-shot `db-postgres` migration job, and an override for Prometheus | `docker compose --profile dev -f docker-compose.yml -f docker-compose.services.yml up -d --build` |
+| `docker-compose.yml` | infrastructure only, including Caddy as the API entry on 8080 | `docker compose --profile dev up -d` |
+| `docker-compose.services.yml` | the five Spring services, the one-shot `db-postgres` migration job, and overrides for Prometheus and Caddy | `docker compose --profile dev -f docker-compose.yml -f docker-compose.services.yml up -d --build` |
 
 ## Why the second file is an override
 
-`docker-compose.services.yml` is not a complete compose file: it has no `postgres`, `rabbitmq` or `minio` definitions, only the services that run on top of them, and it **modifies** one service from the first file:
+`docker-compose.services.yml` is not a complete compose file: it has no `postgres`, `rabbitmq` or `minio` definitions, only the services that run on top of them, and it **modifies** two services from the first file:
 
 - `prometheus` gets a different `command` so it reads `prometheus-full.yml`, where targets are container names, instead of `prometheus.yml`, where targets are `host.docker.internal:<port>`.
+- `caddy` gets `CLIENT_API_URI` = `http://client-api:8082` instead of `http://host.docker.internal:8082`, where `Client-API` runs in IDEA. See [infrastructure](infrastructure.md#caddy-api-entry).
 
 Compose's `include:` directive cannot do this: a service defined in an included file cannot be redefined by the including file, and the attempt fails with `services.prometheus conflicts with imported resource`. Passing both files with `-f` merges them, with the second winning for the keys it sets. Keep it that way; do not duplicate the infrastructure into the second file to make it standalone.
 
@@ -80,10 +81,11 @@ A healthcheck exists only where a `depends_on: condition: service_healthy` waits
 | prometheus | none | `PROMETHEUS_MEMORY`, 512m |
 | alertmanager | none | `ALERTMANAGER_MEMORY`, 128m |
 | grafana | none | `GRAFANA_MEMORY`, 256m |
-| minio | `mc ready local` (`minio-init`, Getaway) | `MINIO_MEMORY`, 512m |
+| minio | `mc ready local` (`minio-init`) | `MINIO_MEMORY`, 512m |
+| caddy | none | `CADDY_MEMORY`, 128m |
 | mailpit | `mailpit readyz` (Notification) | `MAILPIT_MEMORY`, 128m |
 | db-postgres (one-shot) | none; Client-API, Admin-API, Worker and Ingest wait for it to exit with 0 | `SERVICE_MEMORY`, 512m |
-| the five services | none | `SERVICE_MEMORY`, 512m each |
+| the four services | none | `SERVICE_MEMORY`, 512m each |
 | ingest | none | `INGEST_MEMORY`, 1g (TDLib, ONNX Runtime and Tesseract are native memory); its heap is `INGEST_JAVA_OPTS`, not `x-jvm` |
 
 The memory limits and the `x-jvm` heap belong together: a container limit below what the JVM is allowed to take gets the service killed instead of throwing `OutOfMemoryError`.
@@ -121,4 +123,4 @@ Rebuilding one service still runs the whole reactor build in the image's build s
 
 Every service and infrastructure component publishes its port on the host in both modes, so the URLs in [local-development](local-development.md) are the same whether a service runs in IDEA or in a container. Because of that, do not start a service in IDEA while its container is running; the port is already taken and the second instance fails to bind.
 
-The services' management ports (9080, 9082 to 9085, actuator) are **not** published: inside the network Prometheus reaches them, from the host only a service run in IDEA answers on `localhost:908x`. Keycloak's management port 9000 is not published either.
+The services' management ports (9082 to 9086, actuator) are **not** published: inside the network Prometheus reaches them, from the host only a service run in IDEA answers on `localhost:908x`. Keycloak's management port 9000 is not published either.

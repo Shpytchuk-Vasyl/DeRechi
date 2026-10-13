@@ -73,9 +73,9 @@ In full mode `Admin-API` runs inside the Docker network and must call `http://ke
 
 To reach the stack from another machine set `KEYCLOAK_PUBLIC_URI` in the host environment before `docker compose up`; see [environment-variables](environment-variables.md).
 
-## No Gateway route
+## No route through the API entry
 
-The Gateway no longer routes `/realms/**` and `/resources/**` to Keycloak. Browsers reach Keycloak directly at `KEYCLOAK_PUBLIC_URI` (port 8180 locally), and `Admin-API` in full mode reaches it inside the network at `KEYCLOAK_URI` (see above). In production put Keycloak behind the reverse proxy on its own hostname and set `KEYCLOAK_PUBLIC_URI` to that `https` address.
+The API entry on 8080 (for now Caddy, `docker/caddy/api.Caddyfile`; the gateway's old `/realms/**` and `/resources/**` route is gone too) does not lead to Keycloak. Browsers reach Keycloak directly at `KEYCLOAK_PUBLIC_URI` (port 8180 locally), and `Admin-API` in full mode reaches it inside the network at `KEYCLOAK_URI` (see above). In production Keycloak has its own hostname, the `AUTH_DOMAIN` site of `docker/caddy/Caddyfile`, which answers `404` on `/admin` and the `master` realm; set `KEYCLOAK_PUBLIC_URI` to that `https` address.
 
 ## Metrics and health
 

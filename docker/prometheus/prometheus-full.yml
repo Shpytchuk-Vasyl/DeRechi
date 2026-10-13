@@ -21,8 +21,6 @@ scrape_configs:
   - job_name: derechi-services
     metrics_path: /actuator/prometheus
     static_configs:
-      - targets: ["getaway:9080"]
-        labels: { application: Getaway }
       - targets: ["client-api:9082"]
         labels: { application: Client-API }
       - targets: ["admin-api:9083"]

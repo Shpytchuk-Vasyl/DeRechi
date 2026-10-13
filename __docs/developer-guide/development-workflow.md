@@ -93,12 +93,12 @@ Never edit an applied changeset. Backfill `NOT NULL` columns.
 
 ## 6. Run it and check by hand
 
-Tests do not exercise the gateway, RabbitMQ topology or Keycloak. Start the stack
+Tests do not exercise the Caddy routes, RabbitMQ topology or Keycloak. Start the stack
 ([getting started](getting-started.md)) and check the change where it lives:
 
 | Change | Where to look |
 |---|---|
-| GraphQL query or mutation | GraphiQL at `http://localhost:8080/graphiql`, through the gateway so routing is covered too |
+| GraphQL query or mutation | GraphiQL at `http://localhost:8080/graphiql`, through Caddy so routing is covered too |
 | Admin page or action | `http://localhost:8083/admin` with the dev user whose role should and should not see it |
 | Matching | `Worker` log, `similar_item` table, the Matches page |
 | Notification | Mailpit at `http://localhost:8025`, the `Notification` log |

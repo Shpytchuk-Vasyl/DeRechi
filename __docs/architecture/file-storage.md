@@ -65,22 +65,25 @@ Properties live under `derechi.storage` (`bucket`, `public-url`, `max-size`, bou
 `StorageProperties` record). Spring's own multipart limits are set to match
 (`max-file-size: 5MB`, `max-request-size: 6MB`).
 
-### Web client: presigned PUT through the gateway
+### Web client: presigned PUT through Caddy
 
 `Web-Client` never sends image bytes through Node or through `Client-API`. A server action
 signs a PUT URL for the key (SigV4) with the application account (`S3_ACCESS_KEY` /
 `S3_SECRET_KEY`, `derechi-app` locally) and the browser PUTs the file to
-`http://<gateway>/derechi-files/<key>?X-Amz-...`. The gateway's `files-upload` route
-(`Path=/derechi-files/**`, `Method=PUT`) forwards it to MinIO with:
+`http://<entry>/derechi-files/<key>?X-Amz-...`. The entry on 8080 is Caddy for now (see
+[Caddy (API entry)](../deployment/infrastructure.md#caddy-api-entry)); its upload route
+(`PUT` and `OPTIONS` on `/derechi-files/**`) forwards it to MinIO with:
 
-- `PreserveHostHeader`: the signature covers the host, so the gateway must not rewrite it;
+- the `Host` header kept as is, which Caddy does by default for an HTTP upstream: the
+  signature covers the host, so it must not be rewritten;
 - no path rewrite, for the same reason;
-- `RequestSize` of `MINIO_MAX_UPLOAD` (default 5 MB), because a presigned PUT cannot cap
-  its own body;
-- `DedupeResponseHeader` on the CORS headers, since both the gateway and MinIO add them.
+- a 5 MiB body cap (`request_body`, `413` above it), because a presigned PUT cannot cap its
+  own body;
+- no CORS of its own: MinIO answers the preflight and adds the CORS headers itself.
 
 The signed URL must therefore be built for the origin the browser uses, which is the
-gateway, not MinIO's internal address. `Web-Client/README.md` has the details and the
+entry, not MinIO's internal address. In production the browser skips the entry and PUTs
+straight to the Backblaze B2 bucket (`S3_PUBLIC_ENDPOINT`), whose own CORS rules apply. `Web-Client/README.md` has the details and the
 diagnostics for a failing PUT.
 
 `Client-API` has no upload endpoint: `ItemInput.image` is just the key string, and
@@ -88,7 +91,7 @@ diagnostics for a failing PUT.
 
 ## One way out
 
-Reads go through the gateway's `files` route: `GET /files/**` is rewritten to
+Reads go through Caddy's `/files` route: `GET /files/**` is rewritten to
 `/derechi-files/<key>` on MinIO and gets a
 `Cache-Control: public, max-age=31536000, immutable` header. Keys contain a UUID, so an
 object is never overwritten under the same key and the immutable header is safe.
@@ -97,12 +100,12 @@ Each consumer builds the public URL from its own setting:
 
 | Who | Setting | Default |
 |---|---|---|
-| `Admin-API` | `derechi.storage.public-url` / `MINIO_PUBLIC_URL` | `http://localhost:9000/derechi-files` locally and in Compose (straight to MinIO, not through the Gateway) |
-| `Web-Client` | `NEXT_PUBLIC_FILES_URL` | the gateway's `/files` |
-| `Getaway` | `MINIO_URI`, `MINIO_BUCKET` | `http://localhost:9000`, `derechi-files` |
+| `Admin-API` | `derechi.storage.public-url` / `MINIO_PUBLIC_URL` | `http://localhost:9000/derechi-files` locally and in Compose (straight to MinIO, not through Caddy) |
+| `Web-Client` | `NEXT_PUBLIC_FILES_URL` | Caddy's `/files` |
+| Caddy | `MINIO_URI`, `MINIO_BUCKET` | `http://minio:9000`, `derechi-files` |
 
-Note the two defaults for `Admin-API`: run from the IDE it links straight to MinIO (bucket
-is public), in Compose it links through the gateway so one hostname serves everything.
+`Admin-API` links straight to MinIO (the bucket is public) both from the IDE and in
+Compose, not through Caddy.
 
 ## Tests
 

@@ -10,12 +10,13 @@ those files, the file wins and this page needs a fix.
 |---|---|---|
 | Java | 26 | `<release>26</release>` in the root `maven-compiler-plugin` config |
 | Spring Boot | 4.1.1 | root `<parent>` is `spring-boot-starter-parent` |
-| Spring Cloud | 2025.1.3 | Gateway (WebFlux), Resilience4j; `Getaway` only |
+| Spring Cloud | 2025.1.3 | Gateway (WebFlux), Resilience4j; `Getaway` only, which is not deployed for now |
 | Spring Cloud AWS | 4.1.1 | `spring-cloud-aws-starter-s3`, pointed at MinIO |
 | PostgreSQL | 17 with PostGIS 3.5 | custom image built from `docker/postgres/Dockerfile` |
 | RabbitMQ | 4.3.5 | management plugin on, quorum queues |
 | Keycloak | 26.4 | `start --import-realm` by default; `start-dev` is a commented-out line for local development |
 | MinIO | RELEASE.2025-09-07 | plus an `mc` init container that creates the bucket and the `derechi-app` application account |
+| Caddy | 2.11.4 | API entry on 8080 for now, in place of `Getaway`; see [Caddy (API entry)](../deployment/infrastructure.md#caddy-api-entry) |
 | Mailpit | 1.28 | SMTP sink with a web UI, development only |
 | Prometheus | v3.14.0 | |
 | Alertmanager | v0.34.1 | emails the Prometheus alerts, see [observability.md](observability.md#alerts) |
@@ -54,8 +55,8 @@ was written with 18 in mind; the image rejects the old spelling today as well).
 Virtual threads are on (`spring.threads.virtual.enabled: true`) in every blocking service:
 `Client-API`, `Admin-API`, `Worker`, `Notification`. That is why the code is plain
 blocking Spring MVC, JPA and `RestClient`; there is no WebFlux and no `RestTemplate` in the
-services. The one reactive module is `Getaway`, because Spring Cloud Gateway's server is
-WebFlux-based.
+services. The one reactive module is `Getaway` (not deployed for now), because Spring Cloud
+Gateway's server is WebFlux-based.
 
 ## Libraries
 

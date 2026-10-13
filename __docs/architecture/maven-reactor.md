@@ -9,13 +9,18 @@ module pom stays a short list of dependencies and nothing else.
 ```xml
 <modules>
     <module>DB-Postgres</module>
-    <module>Getaway</module>
+    <!-- <module>Getaway</module> -->
     <module>Client-API</module>
     <module>Admin-API</module>
     <module>Worker</module>
     <module>Notification</module>
+    <module>Ingest</module>
 </modules>
 ```
+
+`Getaway` is commented out for now: the API entry is Caddy, see
+[modules/getaway.md](modules/getaway.md). Its folder keeps the parent reference, so it still builds
+on its own with `./mvnw -f Getaway/pom.xml`.
 
 No module depends on another service module.
 

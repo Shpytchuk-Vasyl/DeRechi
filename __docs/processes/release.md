@@ -18,14 +18,16 @@ a staging host, tags). Where something does not exist in the repository yet, it 
 
 - One Docker image per service, built from the root `Dockerfile` with `--build-arg MODULE=...`.
   The build stage compiles the whole reactor once and is cached; the runtime stage copies one
-  module's jar. `docker-compose.services.yml` already does this for `DB-Postgres`, `Getaway`,
-  `Client-API`, `Admin-API`, `Worker` and `Notification`.
+  module's jar. `docker-compose.services.yml` already does this for `DB-Postgres`,
+  `Client-API`, `Admin-API`, `Worker` and `Notification`. `Getaway` is not deployed for now: the
+  API entry is [Caddy](../deployment/infrastructure.md#caddy-api-entry), a stock image.
 - `DB-Postgres` has an image but is not a long-running service: the `db-postgres` container
   applies pending migrations and exits. See [database changes](database-changes.md).
 - Infrastructure configuration that lives in Git and may change with a release:
   `docker/keycloak/realms/derechi-realm.json`, `docker/rabbitmq/definitions.json`,
   `docker/prometheus/*.yml` (scrape configs and `alerts.yml`), `docker/alertmanager/`,
-  `docker/minio/derechi-app-policy.json` and `docker/grafana/provisioning`.
+  `docker/minio/derechi-app-policy.json`, `docker/grafana/provisioning` and `docker/caddy/`
+  (the API routes and the production sites).
   `docker/keycloak/dev/` holds the dev users and is local only: its volume line and the
   `start-dev` command stay commented out in `docker-compose.yml` on the production host.
 
@@ -59,11 +61,13 @@ a staging host, tags). Where something does not exist in the repository yet, it 
    docker compose --env-file env.prod -f docker-compose.yml -f docker-compose.services.yml build
    ```
 
-5. **Deploy the services** in any order. `Getaway` last avoids a few seconds of 5xx on
-   `/graphql` while `Client-API` restarts. The only start order is the one Compose enforces:
-   `db-postgres` before the services that use the database.
+5. **Deploy the services** in any order. Caddy keeps running and answers `/graphql` with 502
+   for the few seconds `Client-API` restarts. The only start order is the one Compose enforces:
+   `db-postgres` before the services that use the database. A change under `docker/caddy/`
+   is applied with `caddy reload` inside the Caddy container (no dropped connections) or a
+   restart of that container.
 6. **Web-Client** is built and started separately with `pnpm build` and `pnpm start`, pointed at
-   the gateway through `GRAPHQL_URL` and `NEXT_PUBLIC_FILES_URL`. If the release takes the API
+   Caddy through `GRAPHQL_URL` and `NEXT_PUBLIC_FILES_URL`. If the release takes the API
    down for longer than a restart, deploy the web client with `NEXT_PUBLIC_MAINTENANCE=true`
    first and switch it back off once the smoke checks pass. Only the home page and the legal
    pages stay open; see [Web-Client feature flags](../architecture/modules/web-client.md#feature-flags).
@@ -77,14 +81,14 @@ docker compose --env-file env.prod -f docker-compose.yml -f docker-compose.servi
 ## Smoke checks after deploy
 
 - [ ] Every service reports `UP` on `/actuator/health`. Actuator is on the management ports
-      (9080, 9082, 9083, 9084, 9085), which are internal to the compose network, so check it
+      (9082, 9083, 9084, 9085, 9086), which are internal to the compose network, so check it
       in Prometheus (`up{job="derechi-services"}` is 1 for all five, no `TargetDown` alert) or
       from inside a container.
-- [ ] `/graphql` through the gateway answers, which proves the `client-api` route points at the
-      right `CLIENT_API_URI` (the gateway no longer exposes `/actuator/gateway/routes`).
+- [ ] `/graphql` through Caddy answers, which proves its route points at the right
+      `CLIENT_API_URI`.
 - [ ] Prometheus `Status > Targets` shows every target up, including Keycloak, MinIO and RabbitMQ.
 - [ ] Prometheus `Alerts` shows no firing alert, and Alertmanager (port 9093) lists none.
-- [ ] GraphiQL through the gateway (`/graphiql`) runs `categories` and `countries`, and a
+- [ ] GraphiQL through Caddy (`/graphiql`) runs `categories` and `countries`, and a
       `createLostItem` mutation succeeds.
 - [ ] `Worker` logs the search for that item and nothing lands in
       `worker.items.dlq` (or any other `*.dlq`; the `DeadLetters` alert fires otherwise).
@@ -92,8 +96,8 @@ docker compose --env-file env.prod -f docker-compose.yml -f docker-compose.servi
 - [ ] Notifying a candidate produces an email at the real mail provider (Mailpit only runs
       with the `dev` profile) and the
       row shows "Notified".
-- [ ] An image upload through the gateway lands in the `derechi-files` bucket and is served
-      back from `/files/<key>`.
+- [ ] An image upload lands in the `derechi-files` bucket (straight to B2 in production, through
+      Caddy locally) and is served back through Caddy from `/files/<key>`.
 
 ## Rollback
 

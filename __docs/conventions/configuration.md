@@ -68,9 +68,9 @@ Application-specific settings live under the `derechi` prefix and are bound to a
 
 `derechi.countries` is declared in both `Admin-API` and `Client-API` and must list the same countries; see [add-a-country](../extending/add-a-country.md).
 
-## Rule 5: Gateway routes are variables
+## Rule 5: API entry routes are variables
 
-Every route in `Getaway/src/main/resources/application.yaml` targets a placeholder whose default is the local address: `${CLIENT_API_URI:http://localhost:8082}`, `${MINIO_URI:http://localhost:9000}`. There is no Keycloak route. Compose sets the container addresses. Never write a bare `localhost:<port>` into a route; a new route gets its own `*_URI` variable. There is no service registry (Eureka was removed): on one compose host Docker's DNS resolves the container name, and several instances of a service would sit behind one load-balanced address. Planned: bringing service discovery back.
+For now the API entry is Caddy, see [infrastructure](../deployment/infrastructure.md#caddy-api-entry). Every route in `docker/caddy/api.Caddyfile` targets a placeholder whose default is the container address: `{$CLIENT_API_URI:http://client-api:8082}`, `{$MINIO_URI:http://minio:9000}`, and the bucket is `{$MINIO_BUCKET:derechi-files}`. There is no Keycloak route. Compose sets the address per mode (`host.docker.internal:8082` for `Client-API` in IDEA, `client-api:8082` in full mode); the production Caddy gets them from its environment. Never write a bare address into a route; a new route gets its own `*_URI` variable. The `Getaway` module, not deployed for now, follows the same rule in its `application.yaml` (`${CLIENT_API_URI:http://localhost:8082}`, `${MINIO_URI:http://localhost:9000}`). There is no service registry (Eureka was removed): on one compose host Docker's DNS resolves the container name, and several instances of a service would sit behind one load-balanced address. Planned: bringing service discovery back.
 
 ## Rule 6: every service is scraped
 
@@ -88,7 +88,7 @@ Known issue: `Admin-API/src/main/resources/application.yaml` ships a Google Maps
 
 | Module | Port | Management port | Notable settings |
 |---|---|---|---|
-| Getaway | 8080 | 9080 | routes, global CORS from `WEB_ORIGIN_PATTERNS`, `files` and `files-upload` routes to MinIO |
+| Getaway | 8080 | 9080 | not deployed for now, Caddy serves 8080 (see [infrastructure](../deployment/infrastructure.md#caddy-api-entry)); routes, global CORS from `WEB_ORIGIN_PATTERNS`, `files` and `files-upload` routes to MinIO |
 | Client-API | 8082 | 9082 | GraphQL schema location, GraphiQL enabled, `derechi.countries`, `derechi.claims`, `derechi.fourthwall` |
 | Admin-API | 8083 | 9083 | OIDC client `derechi-admin`, Caffeine cache `categories`, static resource content hashing, multipart 5 MB, S3 client for MinIO, `derechi.*` |
 | Worker | 8085 | 9085 | listener retry `max-retries: 2` (3 attempts), `default-requeue-rejected: false`, queue name, ShedLock on the claims job |

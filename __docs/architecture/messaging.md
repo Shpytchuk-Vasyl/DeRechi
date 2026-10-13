@@ -1,9 +1,9 @@
 # Messaging
 
 RabbitMQ is the only way services talk to each other asynchronously. The only
-service-to-service HTTP call is `Ingest` creating notices through the Gateway's public
-GraphQL, exactly like a browser; the gateway forwards browser traffic to `Client-API`, and
-everything else goes through a queue.
+service-to-service HTTP call is `Ingest` creating notices through the public GraphQL on the
+API entry (Caddy for now), exactly like a browser; the entry forwards browser traffic to
+`Client-API`, and everything else goes through a queue.
 
 ## Topology
 

@@ -8,20 +8,21 @@ backend developer needs to know.
 | | |
 |---|---|
 | Port | 3000 (`pnpm dev` / `pnpm start`) |
-| Talks to | `Getaway`: GraphQL at `GRAPHQL_URL` from the server side, images from `NEXT_PUBLIC_FILES_URL` (`/files/**`), uploads by presigned PUT to `/derechi-files/**` |
+| Talks to | the API entry on 8080 (Caddy for now): GraphQL at `GRAPHQL_URL` from the server side, images from `NEXT_PUBLIC_FILES_URL` (`/files/**`), uploads by presigned PUT to `/derechi-files/**` |
 | Stack | Next.js, React, Tailwind v4, shadcn/ui, GraphQL code generation, Biome, Vitest |
 
 ## How it talks to the backend
 
-Server components and server actions call `Client-API` through the gateway; the browser
-itself never sends a GraphQL request, apart from the "show more" server action. Images are
-loaded straight from the gateway's `/files/**` route, which is why that origin has to be in
+Server components and server actions call `Client-API` through the API entry, which is
+[Caddy](../../deployment/infrastructure.md#caddy-api-entry) for now; the browser itself never
+sends a GraphQL request, apart from the "show more" server action. Images are loaded
+straight from Caddy's `/files/**` route, which is why that origin has to be in
 `next.config.ts`'s `remotePatterns`.
 
-Photo uploads go from the browser to MinIO through the gateway's `files-upload` route with
-a URL the server action signed; `Client-API` only ever receives the object key. The full
+Photo uploads go from the browser to MinIO through Caddy's upload route with a URL the
+server action signed (in production straight to the Backblaze B2 bucket, `S3_PUBLIC_ENDPOINT`); `Client-API` only ever receives the object key. The full
 sequence, the environment variables and how to tell a CORS refusal from a bad signature are
-in `Web-Client/README.md`; the gateway side is in [../file-storage.md](../file-storage.md).
+in `Web-Client/README.md`; the entry side is in [../file-storage.md](../file-storage.md).
 
 ## What a backend change means here
 
@@ -45,8 +46,11 @@ in `Web-Client/README.md`; the gateway side is in [../file-storage.md](../file-s
   call site. `stats` is cached for five minutes and refreshed when a found notice is posted.
 - **New country or currency**: the client reads `countries { code currency }` from the
   API; nothing is hard-coded on its side.
-- **Gateway CORS or routes**: `WEB_ORIGIN_PATTERNS` must include the origin the browser
-  uses, including a LAN address when testing from a phone.
+- **Entry CORS or routes**: Caddy adds no CORS headers. The presigned upload is the only
+  cross-origin request, and the storage answers it: MinIO allows any origin by default, so a
+  LAN address works when testing from a phone; in production the B2 bucket's CORS rules must
+  list the site. `WEB_ORIGIN_PATTERNS` belongs to the `Getaway` module and is read by
+  nothing while it is not deployed.
 
 ## Feature flags
 
@@ -66,7 +70,7 @@ the reminder links (`/{locale}/claims/{token}`) lead to the maintenance page too
 ```bash
 cd Web-Client
 pnpm install
-pnpm dev          # http://localhost:3000, needs Getaway + Client-API running
+pnpm dev          # http://localhost:3000, needs Caddy (docker compose up -d) + Client-API running
 pnpm codegen      # after a schema change
 pnpm lint         # Biome
 pnpm typecheck

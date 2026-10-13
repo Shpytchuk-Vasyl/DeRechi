@@ -31,9 +31,6 @@ jobs:
           - name: db-postgres
             context: .
             build-args: MODULE=DB-Postgres
-          - name: getaway
-            context: .
-            build-args: MODULE=Getaway
           - name: client-api
             context: .
             build-args: MODULE=Client-API

@@ -4,16 +4,16 @@ DeRechi is a lost-and-found board: people post notices about things they lost or
 the system looks for likely matches between the two kinds of notice, and an administrator
 can tell the owner of a lost item that something similar was found.
 
-Technically it is a small set of Spring Boot services behind a gateway, sharing one
-PostgreSQL database and talking to each other through RabbitMQ. Everything that is not
+Technically it is a small set of Spring Boot services behind one public entry (Caddy for
+now), sharing one PostgreSQL database and talking to each other through RabbitMQ. Everything that is not
 business logic (identity, file storage, mail, metrics) is an off-the-shelf container.
 
 ## Components
 
 ```
                  ┌──────────────┐          ┌─────────────────────┐
-  public user ──▶│  Web-Client  │──GraphQL▶│  Getaway (8080)     │
-  (browser)      │  Next.js     │          │  Spring Cloud GW    │
+  public user ──▶│  Web-Client  │──GraphQL▶│  Caddy (8080)       │
+  (browser)      │  Next.js     │          │  reverse proxy      │
                  └──────────────┘          └──────┬──────────────┘
                        │ presigned PUT            │
                        ▼                   direct URI ▼
@@ -47,8 +47,8 @@ business logic (identity, file storage, mail, metrics) is an off-the-shelf conta
   Prometheus (9090) scrapes /actuator/prometheus on each service's management port
   (service port + 1000, never published or routed), evaluates the alert rules and hands
   firing alerts to Alertmanager (9093), which emails them; Grafana (3000) reads
-  Prometheus. Keycloak is not behind the gateway: browsers reach it directly.
-  There is no service registry (planned: bring discovery back): the gateway reaches
+  Prometheus. Keycloak is not behind the API entry: browsers reach it directly.
+  There is no service registry (planned: bring discovery back): Caddy reaches
   Client-API at CLIENT_API_URI, and the services talk to each other only through RabbitMQ.
 ```
 
@@ -57,18 +57,21 @@ Two things in the picture are deliberate and worth knowing before reading furthe
 - **One database.** All services read and write the same `derechi` database. The schema is
   owned by a single library module, `DB-Postgres`, and every service carries its own copy of
   the entity classes. See [database.md](database.md).
-- **The admin panel is not behind the gateway.** `Admin-API` serves HTML on its own port and
-  logs in against Keycloak directly. The gateway exists for the public GraphQL API and for
-  file traffic only. See [modules/getaway.md](modules/getaway.md).
+- **The admin panel is not behind the API entry.** `Admin-API` serves HTML on its own port and
+  logs in against Keycloak directly. The entry on 8080 exists for the public GraphQL API and
+  for file traffic only. For now it is Caddy, not the `Getaway` module: see
+  [Caddy (API entry)](../deployment/infrastructure.md#caddy-api-entry) and
+  [modules/getaway.md](modules/getaway.md).
 
 ## The two main flows
 
 ### A notice is created
 
 1. A user fills in the form in `Web-Client`. The photo is uploaded straight to MinIO through
-   the gateway with a presigned URL; only the object key reaches the API.
-2. `Web-Client` calls `createLostItem` or `createFoundItem` on `Client-API` through the
-   gateway (`/graphql`). `Client-API` validates the input, resolves the place's country and
+   Caddy with a presigned URL (in production straight to the bucket); only the object key
+   reaches the API.
+2. `Web-Client` calls `createLostItem` or `createFoundItem` on `Client-API` through
+   Caddy (`/graphql`). `Client-API` validates the input, resolves the place's country and
    the reward currency, and saves `place`, `contact_info` and the item.
 3. An aspect around `ItemService.create` publishes an `ItemCreatedEvent` to the
    `derechi.items` exchange with the routing key `item.lost.created` or `item.found.created`.

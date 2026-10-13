@@ -18,23 +18,25 @@ The override file switches Prometheus to the second config by replacing its `--c
 | Job | Targets | Path |
 |---|---|---|
 | `prometheus` | itself | `/metrics` |
-| `derechi-services` | management ports: Getaway 9080, Client-API 9082, Admin-API 9083, Worker 9085, Notification 9084, Ingest 9086 | `/actuator/prometheus` |
+| `derechi-services` | management ports: Client-API 9082, Admin-API 9083, Worker 9085, Notification 9084, Ingest 9086 | `/actuator/prometheus` |
 | `keycloak` | `keycloak:9000` | `/metrics` |
 | `minio` | `minio:9000` | `/minio/v2/metrics/cluster` |
 | `rabbitmq` | `rabbitmq:15692` | `/metrics`, per queue (`prometheus.return_per_object_metrics = true` in `docker/rabbitmq/rabbitmq.conf`) |
 
-Each service target carries an `application` label (`Getaway`, `Client-API`, `Admin-API`, ...). Grafana's community dashboard **4701** ("JVM (Micrometer)") filters on exactly that label, so the label must be present on every new target or the service does not show up in the dropdown.
+Each service target carries an `application` label (`Client-API`, `Admin-API`, ...). Grafana's community dashboard **4701** ("JVM (Micrometer)") filters on exactly that label, so the label must be present on every new target or the service does not show up in the dropdown.
 
 **A new service must be added to both files**, with its management port and `application` label, as part of the same change that adds the module; see [add-a-module](../extending/add-a-module.md). Keycloak, MinIO and RabbitMQ are separate jobs because their metrics paths differ from the actuator one.
 
+Caddy, the API entry on 8080 for now, has no target and no metrics, by decision; `Getaway` (9080) has no target while it is not deployed. See [infrastructure](infrastructure.md#caddy-api-entry).
+
 ## Actuator
 
-Every module gets `spring-boot-starter-actuator` and `micrometer-registry-prometheus` from the root POM. Actuator does not share the public port: it listens on its own **management port, the service port + 1000**, which is never published by Compose and never routed by the gateway.
+Every module gets `spring-boot-starter-actuator` and `micrometer-registry-prometheus` from the root POM. Actuator does not share the public port: it listens on its own **management port, the service port + 1000**, which is never published by Compose and never routed by the API entry.
 
 ```yaml
 management:
   server:
-    port: ${MANAGEMENT_PORT:9082}     # Client-API; 9080 Getaway, 9083 Admin-API, 9084 Notification, 9085 Worker, 9086 Ingest
+    port: ${MANAGEMENT_PORT:9082}     # Client-API; 9083 Admin-API, 9084 Notification, 9085 Worker, 9086 Ingest
   endpoints:
     web:
       exposure:

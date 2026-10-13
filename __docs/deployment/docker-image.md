@@ -11,7 +11,7 @@ COPY .mvn .mvn
 COPY --chmod=755 mvnw ./
 COPY pom.xml ./
 COPY DB-Postgres DB-Postgres
-COPY Getaway Getaway
+# COPY Getaway Getaway
 COPY Client-API Client-API
 COPY Admin-API Admin-API
 COPY Worker Worker
@@ -32,7 +32,7 @@ ENV JAVA_OPTS=""
 ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar"]
 ```
 
-**Build stage.** Identical for every service: it copies the whole reactor and runs `package` once. Because the stage does not depend on `MODULE`, Docker reuses its layer for all seven images, so building the stack compiles the reactor one time, not seven. The `--mount=type=cache` keeps `~/.m2` between builds, which is what makes a rebuild after a one-line change take seconds instead of downloading every dependency again. `sharing=locked` stops the parallel image builds from writing to that cache at the same time. `--strict-checksums` fails a download whose checksum does not match. Without it, Maven only warns and keeps the broken jar in the cache, and every later build fails with `ZipException ... zip END header not found`. If that error appears anyway, clear the cache with `docker builder prune --filter type=exec.cachemount -f`.
+**Build stage.** Identical for every service: it copies the whole reactor and runs `package` once. Because the stage does not depend on `MODULE`, Docker reuses its layer for all six images, so building the stack compiles the reactor one time, not six. The `--mount=type=cache` keeps `~/.m2` between builds, which is what makes a rebuild after a one-line change take seconds instead of downloading every dependency again. `sharing=locked` stops the parallel image builds from writing to that cache at the same time. `--strict-checksums` fails a download whose checksum does not match. Without it, Maven only warns and keeps the broken jar in the cache, and every later build fails with `ZipException ... zip END header not found`. If that error appears anyway, clear the cache with `docker builder prune --filter type=exec.cachemount -f`.
 
 **Runtime stage.** A JRE-only image, a non-root `spring` user and the single fat jar of the requested module. `JAVA_OPTS` is empty by default and is where compose injects heap limits and any `-D` flags. It must stay the **last** stage: a compose service without `build.target` gets the last stage, and every service except `ingest` relies on that.
 
@@ -54,6 +54,8 @@ Tests are skipped in the image build (`-DskipTests`); they run in CI and locally
 ## Every module must be in the `COPY` list
 
 Maven reads `<modules>` from the root POM and expects each folder to exist. A module that is listed there but not copied into the build context fails the image build with "Child module ... does not exist". **Adding a module means adding a `COPY <Name> <Name>` line** to the build stage; see [add-a-module](../extending/add-a-module.md).
+
+The other way round works too: `Getaway` is not deployed for now (the API entry is Caddy, see [infrastructure](infrastructure.md#caddy-api-entry)), so its `COPY` line is commented out together with its `<module>` entry, and the two come back together. While both are commented out, the build stage does not see the module at all.
 
 The spelling must match the folder on a case-sensitive filesystem: `COPY Admin-API Admin-API`, not `admin-api`. Windows will not tell you when it is wrong; the Linux build will.
 

@@ -1,6 +1,6 @@
 # Add a module
 
-A new Spring Boot service in the Maven reactor. Most of the work is wiring, and every forgotten line fails somewhere else (the Docker build, Prometheus, the Gateway), so go through the list in order.
+A new Spring Boot service in the Maven reactor. Most of the work is wiring, and every forgotten line fails somewhere else (the Docker build, Prometheus, the Caddy routes), so go through the list in order.
 
 ## Before you start
 
@@ -63,7 +63,7 @@ Read [Maven reactor](../architecture/maven-reactor.md), [Maven and modules](../c
    - `docker/prometheus/prometheus.yml`: `host.docker.internal:9086`, `labels: { application: Report-Export }`
    - `docker/prometheus/prometheus-full.yml`: `report-export:9086` (the compose service name), same label
 
-10. **Gateway, if it serves HTTP to the outside.** `Getaway/src/main/resources/application.yaml`: a route with `uri: ${REPORT_EXPORT_URI:http://localhost:8086}` and a `Path=` predicate; set `REPORT_EXPORT_URI: http://report-export:8086` for `getaway` in compose and add it to the env files and [environment-variables](../deployment/environment-variables.md).
+10. **Public route, if it serves HTTP to the outside.** The API entry is [Caddy](../deployment/infrastructure.md#caddy-api-entry) for now, so the route goes into `docker/caddy/api.Caddyfile`, above the final `handle { respond 404 }`: a named `path` matcher and a `handle` with `reverse_proxy {$REPORT_EXPORT_URI:http://report-export:8086}`. Pass the variable to the `caddy` service: `http://host.docker.internal:8086` in `docker-compose.yml` (the module runs in IDEA), `${REPORT_EXPORT_URI:-http://report-export:8086}` in the `caddy` override of `docker-compose.services.yml`; the production Caddy needs it in its environment too. Add it to the env files and [environment-variables](../deployment/environment-variables.md).
 
 11. **Context test.** `src/test/java/.../ReportExportApplicationTests.java` with `@SpringBootTest` and an empty `contextLoads()`; if the module needs the database, extend it with the Testcontainers base from `Client-API` (`AbstractPostgresTests`) rather than pointing tests at a local server.
 
@@ -79,7 +79,7 @@ Only if the module introduces tables, and then the migration lives in `DB-Postgr
 
 ## Web-Client impact
 
-Only if the module exposes something through the Gateway that the web client should call. In that case the route and the contract are the deliverables for the web team.
+Only if the module exposes something through Caddy that the web client should call. In that case the route and the contract are the deliverables for the web team.
 
 ## Checklist
 
@@ -90,7 +90,7 @@ Only if the module exposes something through the Gateway that the web client sho
 - [ ] `COPY` line in `Dockerfile`
 - [ ] Service block in `docker-compose.services.yml`, management port not published
 - [ ] Target in both Prometheus configs on the management port, with the `application` label
-- [ ] Gateway route with its own `*_URI` variable if it serves HTTP
+- [ ] Caddy route in `docker/caddy/api.Caddyfile` with its own `*_URI` variable if it serves HTTP
 - [ ] `*ApplicationTests` passes
 - [ ] `./mvnw test-compile` and `docker compose -f docker-compose.yml -f docker-compose.services.yml build` succeed
 - [ ] Module page under `..`

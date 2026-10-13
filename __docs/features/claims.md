@@ -263,7 +263,7 @@ The flow:
    pass the count. Over the limit the mutation fails with the GraphQL error
    `UNLOCK_LIMIT`, `extensions.retryAfter` holding the ISO-8601 instant when the next checkout is
    allowed. A claim that already has its checkout keeps getting it back, limit or not.
-2. Fourthwall posts `ORDER_PLACED` to `POST /api/client/webhooks/fourthwall` (through the gateway's
+2. Fourthwall posts `ORDER_PLACED` to `POST /api/client/webhooks/fourthwall` (through Caddy's
    `/api/client/**` route). `FourthwallWebhookController` checks `X-Fourthwall-Hmac-SHA256`
    (HMAC-SHA256 of the raw body, base64, key `derechi.fourthwall.webhook-secret`), answers 401
    otherwise, ignores other event types with 200 and stores every accepted order in

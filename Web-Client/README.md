@@ -22,11 +22,13 @@ pnpm test         # Vitest: bundle parity, schemas, server actions, URL/SEO help
 
 ## How requests flow
 
-The browser never talks to the Gateway. Server components and server actions call
-`GRAPHQL_URL` from the server, and the only query surface exposed to the client is the
-`loadMoreItems` server action behind the "show more" button. The one exception is images:
-they are served straight from `NEXT_PUBLIC_FILES_URL` (the Gateway's `/files/**` route into
-MinIO), which is why that origin is in `next.config.ts`'s `remotePatterns`.
+The browser never calls the API. Server components and server actions call `GRAPHQL_URL`
+from the server, and the only query surface exposed to the client is the `loadMoreItems`
+server action behind the "show more" button. The one exception is images: they are served
+straight from `NEXT_PUBLIC_FILES_URL` (the `/files/**` route of the API entry into the
+bucket), which is why that origin is in `next.config.ts`'s `remotePatterns`. The API entry on
+`:8080` is Caddy for now, not the `Getaway` module; see
+[Caddy (API entry)](../__docs/deployment/infrastructure.md#caddy-api-entry).
 
 ## Types
 
@@ -215,8 +217,9 @@ still carries two placeholders, `[EMAIL AND SMS PROVIDER, HOSTING: TO BE ADDED]`
 
 ## Uploads
 
-Photos go **straight from the browser to MinIO through the Gateway**; no image byte passes
-through Node, and `Client-API` needs no upload endpoint.
+Photos go **straight from the browser to the bucket**: locally to MinIO through Caddy, in
+production to Backblaze B2 directly. No image byte passes through Node, and `Client-API` needs
+no upload endpoint.
 
 The file is held in the browser while the form is filled in and travels **when the notice is
 submitted**, not when it is chosen: an abandoned form then leaves nothing in the bucket, and
@@ -227,41 +230,44 @@ the photo is only stored once the rest of the notice has passed validation.
    with SigV4, see `src/lib/uploads/presign.ts`. It signs with `S3_ACCESS_KEY`/`S3_SECRET_KEY`,
    MinIO's application account (`derechi-app` locally, created by `minio-init`), which may only
    read, write and delete objects in the bucket; never the root credentials.
-2. The browser PUTs the file to `http://<gateway>/derechi-files/<key>?X-Amz-…`.
-3. The Gateway's `files-upload` route forwards it to MinIO with **`PreserveHostHeader`** and
-   no path rewrite: the signature covers both, so either one would break it. A presigned PUT
-   cannot cap its own body, so a `RequestSize` filter does (5 MB, `MINIO_MAX_UPLOAD`).
-4. The notice stores the key; reads go through the existing `/files/**` route.
+2. The browser PUTs the file to `<S3_PUBLIC_ENDPOINT>/derechi-files/<key>?X-Amz-…`.
+3. Locally Caddy (`docker/caddy/api.Caddyfile`) forwards `PUT` and the CORS preflight on
+   `/derechi-files/**` to MinIO **with the `Host` header kept** and no path rewrite: the
+   signature covers both, so changing either would break it. It also caps the body at 5 MiB
+   (`413` above it), the same 5242880 bytes as `S3_MAX_UPLOAD_BYTES` in `.env.example`.
+4. The notice stores the key; reads go through the `/files/**` route.
 
 Because the key only exists after the upload, the browser validates the form with
 `draftSchema` (the full schema minus `image`) and the "a found item needs a photo" rule is
 checked against the picked file. The server action still runs the complete `reportSchema`, so
 the contract with Client-API is unchanged.
 
-`S3_PUBLIC_ENDPOINT` must therefore be the origin **the browser** uses (the Gateway), not
-MinIO's internal address: it is signed into the URL. Testing from a phone on the same
-network means the LAN address (`http://192.168.x.y:8080`), and the Gateway's
-`WEB_ORIGIN_PATTERNS` has to let that origin through CORS.
+`S3_PUBLIC_ENDPOINT` must therefore be the origin **the browser** uses (Caddy on `:8080`
+locally, B2 in production), not MinIO's internal address: it is signed into the URL. Testing
+from a phone on the same network means the LAN address (`http://192.168.x.y:8080`).
 
-A `403` on the PUT with an **empty body and no `Server: MinIO` header** is the Gateway
-refusing the request on CORS grounds, not a bad signature: MinIO answers with an XML body and
-its own `Server` header. The browser's `Origin` has to match `WEB_ORIGIN_PATTERNS`, which is
-what makes uploads from a phone on the LAN work.
+CORS is answered by the storage, not by Caddy: MinIO allows any origin by default, so a phone
+on the LAN needs no extra setting, and in production the B2 bucket's own CORS rules have to
+allow the site.
 
-A `404` on the PUT comes from the Gateway, not from MinIO. MinIO would answer `403` for a
-bad signature and `404` only for a missing bucket. It means the `files-upload` route is not
-in the running Gateway. `curl -i -X PUT http://localhost:8080/derechi-files/probe` tells the
-two apart: `403` means the route is live and MinIO rejected the unsigned request, `404` means
-the Gateway is still running an older config.
+A `403` on the PUT comes from the storage, never from Caddy: MinIO answers with an XML body
+naming the reason. `SignatureDoesNotMatch` usually means the browser reached a different
+address than the one in `S3_PUBLIC_ENDPOINT`.
+
+A `404` on the PUT comes from Caddy, not from MinIO: no route matched (MinIO would answer
+`403` for a bad signature and `404` only for a missing bucket). `curl -i -X PUT
+http://localhost:8080/derechi-files/probe` tells the two apart: `403` means the route is live
+and MinIO rejected the unsigned request, `404` means the path or the method does not match,
+or the running Caddy has an older config (`docker compose restart caddy`). A `502` means
+Caddy cannot reach MinIO.
 
 The signing is verified against a real MinIO rather than a golden string:
 
 ```bash
-docker compose up -d minio                   # from the repo root
-./mvnw -pl Getaway spring-boot:run           # for the through-the-Gateway run
+docker compose up -d minio minio-init caddy   # from the repo root
 
 S3_TEST_ENDPOINT=http://localhost:9000 pnpm test                      # MinIO directly
-# through the Gateway (adds the 413 size-cap check)
+# through Caddy (adds the 413 size-cap check)
 S3_TEST_ENDPOINT=http://localhost:8080 S3_TEST_READ_URL=http://localhost:8080/files S3_TEST_MAX_BYTES=5242880 pnpm test
 ```
 

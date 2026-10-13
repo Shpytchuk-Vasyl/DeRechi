@@ -26,7 +26,7 @@ jobs:
         include:
           - module: DB-Postgres
             postgres: true
-          - module: Getaway
+          # - module: Getaway
           - module: Client-API
             postgres: true
             rabbitmq: true

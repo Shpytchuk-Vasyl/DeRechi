@@ -6,8 +6,8 @@ Imports lost-and-found notices from outside sources and publishes them. Today th
 |---|---|
 | Port | 8086 (serves nothing public); actuator on the management port 9086 |
 | Consumes | Telegram updates (TDLib through TDLight), no queue |
-| Produces | notices through the Gateway (`createLostItem` / `createFoundItem`), photos in MinIO, posts in our Telegram channel and the review chat (Bot API) |
-| Needs | PostgreSQL (`ingest_post`), the Gateway with Client-API behind it, MinIO; OpenRouter, Google Places, Telegram |
+| Produces | notices through the API entry, Caddy for now (`createLostItem` / `createFoundItem`), photos in MinIO, posts in our Telegram channel and the review chat (Bot API) |
+| Needs | PostgreSQL (`ingest_post`), the API entry (Caddy) with Client-API behind it, MinIO; OpenRouter, Google Places, Telegram |
 | Stack | TDLight Java (TDLib 1.8.66), libphonenumber, Tess4J + system Tesseract, ONNX Runtime + YuNet, Spring for GraphQL client, Spring Cloud AWS S3, Lombok |
 | Instances | exactly one: the TDLib session cannot be shared |
 
@@ -40,7 +40,7 @@ A new source (a website, say) is one `@Component` implementing `PostSource` with
 
 `INGEST_PUBLISHERS` lists where a notice goes, in any order: `site`, `channel`, `review`.
 
-- `site` (`SitePublisher`) is special: it runs first, puts the photo into MinIO, creates the notice through the Gateway and owns the ledger statuses `PUBLISHING`, `PUBLISHED`, `NEEDS_CHECK`, `FAILED`. Without `site` in the list a notice is recorded as `PREVIEWED`.
+- `site` (`SitePublisher`) is special: it runs first, puts the photo into MinIO, creates the notice through the API entry and owns the ledger statuses `PUBLISHING`, `PUBLISHED`, `NEEDS_CHECK`, `FAILED`. Without `site` in the list a notice is recorded as `PREVIEWED`.
 - Every other publisher implements `Publisher` and gets a `Publication`: the post, the notice, the model answer, the redacted photos and the `SiteItem` (id and page URL) when `site` created one. If `site` is in the list and fails, nobody else is called.
 - A publisher whose `needsSiteItem()` is true (`channel`) links to the notice page instead of carrying contacts; the start fails if it is listed without `site`.
 - Publishers are independent: a failing one is logged (`WARN`) and counted in `derechi.ingest.published{publisher,outcome}`, the others still run, and the ledger status stays what `site` set. Skipped posts go to `Publisher.skipped`, which only `review` uses.

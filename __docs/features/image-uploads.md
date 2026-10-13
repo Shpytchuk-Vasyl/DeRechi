@@ -18,24 +18,24 @@ See [File storage](../architecture/file-storage.md) for the infrastructure side.
 
 Configuration (`derechi.storage.*` bound to `StorageProperties`): `bucket`, `public-url` (`MINIO_PUBLIC_URL`, default `http://localhost:9000/derechi-files`; it must already point at the bucket), `max-size`. The S3 client itself is configured under `spring.cloud.aws.*` with path-style access and the application account `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` (locally `derechi-app` / `derechi-app-secret`, created by `minio-init`), which may only work with objects in the bucket; the root account (`MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD`) is not used by services.
 
-Rendering: `StorageProperties.urlOf(key)` returns `<public-url>/<key>` (the bucket is never added: MinIO gets it from `public-url`, the Gateway `/files` route adds it in its rewrite), or the key unchanged when it is already an absolute URL. The templates get it as `${uploads.urlOf(item.image)}`.
+Rendering: `StorageProperties.urlOf(key)` returns `<public-url>/<key>` (the bucket is never added: MinIO gets it from `public-url`, Caddy's `/files` route adds it in its rewrite), or the key unchanged when it is already an absolute URL. The templates get it as `${uploads.urlOf(item.image)}`.
 
 ## From the web client
 
-The browser uploads straight to MinIO through the Gateway; no byte passes through Node or `Client-API`:
+The browser uploads straight to the storage; no byte passes through Node or `Client-API`. Locally and in Compose it goes through [Caddy](../deployment/infrastructure.md#caddy-api-entry) on 8080 to MinIO; in production `S3_PUBLIC_ENDPOINT` is Backblaze B2 itself, so uploads skip Caddy:
 
-1. A server action validates type and size, generates the key in the same layout, and signs a presigned PUT (SigV4) for `http://<gateway>/derechi-files/<key>`.
+1. A server action validates type and size, generates the key in the same layout, and signs a presigned PUT (SigV4) for `<S3_PUBLIC_ENDPOINT>/derechi-files/<key>`.
 2. The browser PUTs the file when the notice is submitted, not when it is picked, so an abandoned form leaves nothing in the bucket.
-3. The Gateway route `files-upload` (`Path=/derechi-files/**`, `Method=PUT`) forwards to MinIO with `PreserveHostHeader` and no rewrite, because the signature covers host and path. A `RequestSize` filter caps the body at `MINIO_MAX_UPLOAD` (5 MB).
+3. Caddy matches `PUT` and `OPTIONS` on `/derechi-files/**` and forwards them to MinIO without a rewrite. For an HTTP upstream it keeps the `Host` header, which the signature covers along with the path. The body is capped at 5 MiB (`413` above it, the web client's limit to the byte). The preflight and the CORS headers come from MinIO, not from Caddy.
 4. The mutation sends the key in `ItemInput.image`.
 
 The full write-up, including how to read the 403 and 404 variants on the PUT, is in `Web-Client/README.md`.
 
 ## Reading images
 
-The Gateway route `files` rewrites `GET /files/<key>` to `/derechi-files/<key>` on MinIO and adds `Cache-Control: public, max-age=31536000, immutable`. Keys contain a UUID, so immutability is safe. The bucket has anonymous download enabled by `minio-init` in `docker-compose.yml`.
+Caddy rewrites `GET /files/<key>` to `/derechi-files/<key>` on the storage (MinIO, B2 in production) and sets `Cache-Control: public, max-age=31536000, immutable`. Keys contain a UUID, so immutability is safe. The bucket has anonymous download enabled by `minio-init` in `docker-compose.yml`.
 
-`Admin-API` does not go through the Gateway: `MINIO_PUBLIC_URL` points straight at the bucket (`http://localhost:9000/derechi-files` locally and in Compose), which works because the bucket allows anonymous download. Those responses do not carry the Gateway's `Cache-Control` header.
+`Admin-API` does not go through Caddy: `MINIO_PUBLIC_URL` points straight at the bucket (`http://localhost:9000/derechi-files` locally and in Compose), which works because the bucket allows anonymous download. Those responses do not carry Caddy's `Cache-Control` header.
 
 ## Known gaps
 
@@ -49,5 +49,5 @@ The Gateway route `files` rewrites `GET /files/<key>` to `/derechi-files/<key>` 
 - `Admin-API/src/main/java/org/shpytchuk/adminapi/service/ImageStorage.java`
 - `Admin-API/src/main/java/org/shpytchuk/adminapi/config/property/StorageProperties.java`, `config/StorageConfig.java`
 - `Admin-API/src/main/resources/static/js/image-upload.js`
-- `Getaway/src/main/resources/application.yaml` (routes `files-upload`, `files`)
+- `docker/caddy/api.Caddyfile` (the upload matcher and `/files`)
 - Tests: `UploadControllerTests` (who may upload, the localized rejection), `ImageStorageIT` (runs only when the local MinIO on port 9000 is up, `@EnabledIf("minioIsUp")`), and in `Web-Client` `presign.test.ts` / `presign.integration.test.ts`

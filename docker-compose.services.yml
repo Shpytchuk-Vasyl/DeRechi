@@ -48,6 +48,10 @@ services:
       - --storage.tsdb.retention.time=15d
       - --web.enable-lifecycle
 
+  caddy:
+    environment:
+      CLIENT_API_URI: ${CLIENT_API_URI:-http://client-api:8082}
+
   db-postgres:
     <<: *service-base
     build:
@@ -62,26 +66,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-
-  getaway:
-    <<: *service-base
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        MODULE: Getaway
-    container_name: derechi-getaway
-    ports:
-      - "8080:8080"
-    depends_on:
-      minio:
-        condition: service_healthy
-    environment:
-      <<: *jvm
-      CLIENT_API_URI: ${CLIENT_API_URI:-http://client-api:8082}
-      MINIO_URI: ${MINIO_URI:-http://minio:9000}
-      MINIO_BUCKET: ${MINIO_BUCKET:-derechi-files}
-      WEB_ORIGIN_PATTERNS: ${WEB_ORIGIN_PATTERNS:-http://localhost:[*],http://127.0.0.1:[*],http://192.168.*:[*],http://10.*:[*]}
 
   client-api:
     <<: *service-base
@@ -207,7 +191,7 @@ services:
       JAVA_OPTS: ${INGEST_JAVA_OPTS:--Xms64m -Xmx384m -XX:MaxMetaspaceSize=192m -XX:-UseG1GC -XX:+UseSerialGC --enable-native-access=ALL-UNNAMED}
       TDLIB_DATA_DIR: /app/tdlib
       DERECHI_SITE_URL: ${DERECHI_SITE_URL:-http://localhost:3000}
-      DERECHI_API_URI: ${DERECHI_API_URI:-http://getaway:8080}
+      DERECHI_API_URI: ${DERECHI_API_URI:-http://caddy:8080}
       DERECHI_API_TIMEOUT: ${DERECHI_API_TIMEOUT:-PT15S}
       DERECHI_API_MAX_ATTEMPTS: ${DERECHI_API_MAX_ATTEMPTS:-3}
       DERECHI_API_RETRY_DELAY: ${DERECHI_API_RETRY_DELAY:-PT1S}

@@ -90,17 +90,26 @@ local tool and runs only with the `dev` profile.
 built from these in every `application.yaml`. Spring's relaxed binding still applies on top
 (`SPRING_DATASOURCE_URL` would beat the YAML), but nothing sets those any more.
 
-## Getaway
+## Caddy (API entry)
 
-| Variable | YAML default | Compose default | Purpose |
+For now the API entry on 8080 is Caddy, not the `Getaway` module; see
+[infrastructure](infrastructure.md#caddy-api-entry). Its defaults live in the Caddyfile
+(`{$NAME:default}`), not in an `application.yaml`.
+
+| Variable | Caddyfile default | Compose default | Purpose |
 |---|---|---|---|
-| `CLIENT_API_URI` | `http://localhost:8082` | `http://client-api:8082` | target of the `client-api` route (`/graphql/**`, `/graphiql/**`, `/api/client/**`) |
-| `MINIO_URI` | `http://localhost:9000` | `http://minio:9000` | target of the `files` (GET) and `files-upload` (PUT) routes |
-| `MINIO_BUCKET` | `derechi-files` | `derechi-files` | bucket segment in the upload path and the `/files/**` rewrite; Admin-API reads it too. |
-| `MINIO_MAX_UPLOAD` | `5MB` | not set | `RequestSize` filter on presigned uploads |
-| `WEB_ORIGIN_PATTERNS` | `http://localhost:[*],http://127.0.0.1:[*],http://192.168.*:[*],http://10.*:[*]` | same | CORS `allowed-origin-patterns`; the web client's real origin outside a LAN |
+| `CLIENT_API_URI` | `http://client-api:8082` | `http://host.docker.internal:8082` in `docker-compose.yml` (fixed, `Client-API` runs in IDEA); `http://client-api:8082` from `docker-compose.services.yml` | upstream of `/graphql`, `/graphiql`, `/api/client/**` |
+| `MINIO_URI` | `http://minio:9000` | `http://minio:9000` | upstream of the presigned uploads and of `/files/**`; the B2 endpoint in production |
+| `MINIO_BUCKET` | `derechi-files` | `derechi-files` | bucket segment of the upload path and of the `/files/**` rewrite; Admin-API reads it too |
+| `API_DOMAIN` | `:8080`, plain HTTP | not passed | production only: the public API host, TLS by Caddy |
+| `ADMIN_DOMAIN`, `AUTH_DOMAIN` | none | not passed | production only: the other two sites of `docker/caddy/Caddyfile`, which fails to start without them |
+| `CADDY_MEMORY` | n/a | `128m` | memory limit of the container |
 
-The Gateway has no Keycloak route; browsers reach Keycloak directly at `KEYCLOAK_PUBLIC_URI`.
+Caddy reads neither `WEB_ORIGIN_PATTERNS` (no CORS at the entry) nor `MINIO_MAX_UPLOAD`: the
+upload cap is fixed at 5 MiB in `api.Caddyfile`, and `MINIO_MAX_UPLOAD` is Ingest's own limit.
+Both stay in the gateway's `application.yaml` for the day the module comes back.
+
+No route leads to Keycloak; browsers reach Keycloak directly at `KEYCLOAK_PUBLIC_URI`.
 
 ## Client-API
 
@@ -129,7 +138,7 @@ the YAML and must match Admin-API's list. The Fourthwall client's timeouts are Y
 | `MINIO_ENDPOINT` | `http://localhost:9000` | `http://minio:9000` | S3 endpoint used to upload images; also `minio-init`'s target |
 | `MINIO_REGION` | `us-east-1` | `us-east-1` | region the uploads are signed for; MinIO ignores it|
 | `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` | `derechi-app` / `derechi-app-secret` | same | S3 credentials of the application's account (objects in `derechi-files` only, `docker/minio/derechi-app-policy.json`), created by `minio-init`; not the root user. The web client uses the same account as `S3_ACCESS_KEY` / `S3_SECRET_KEY` |
-| `MINIO_PUBLIC_URL` | `http://localhost:9000/derechi-files` | `http://localhost:9000/derechi-files` | base of image URLs rendered in the admin UI; read straight from MinIO, not through the Gateway |
+| `MINIO_PUBLIC_URL` | `http://localhost:9000/derechi-files` | `http://localhost:9000/derechi-files` | base of image URLs rendered in the admin UI; read straight from MinIO, not through Caddy's `/files` |
 | `GOOGLE_MAPS_API_KEY` | a committed dev key (known issue, see [configuration](../conventions/configuration.md#rule-7-no-secrets-in-the-repository)) | passed on only when the env file sets it | Google Places widget in the item form |
 
 ## Worker
@@ -173,7 +182,7 @@ except where the table says otherwise. An empty `TELEGRAM_API_ID`/`TELEGRAM_API_
 | `POSTGRES_*` | see above | see above | the `ingest_post` table; no RabbitMQ |
 | `INGEST_JAVA_OPTS` | n/a | `-Xms64m -Xmx384m -XX:MaxMetaspaceSize=192m -XX:-UseG1GC -XX:+UseSerialGC --enable-native-access=ALL-UNNAMED` | this service's `JAVA_OPTS` instead of the shared one. TDLib, ONNX Runtime and Tesseract are native and live outside the heap, so keep `-Xmx` well below the memory limit. `--enable-native-access` silences the JDK's warnings for JNI/JNA |
 | `INGEST_MEMORY` | n/a | `1g` | memory limit of the container, instead of `SERVICE_MEMORY` |
-| `INGEST_PUBLISHERS` | `review` | same | where notices go, comma-separated, any order: `site` (Client-API through the Gateway, runs first), `channel` (our channel, links to the site so needs `site`), `review` (`TELEGRAM_REVIEW_CHAT`, also gets skips). `review` alone is a dry run; an unknown name fails the start |
+| `INGEST_PUBLISHERS` | `review` | same | where notices go, comma-separated, any order: `site` (Client-API through Caddy, runs first), `channel` (our channel, links to the site so needs `site`), `review` (`TELEGRAM_REVIEW_CHAT`, also gets skips). `review` alone is a dry run; an unknown name fails the start |
 | `INGEST_HASH_KEY` | `dev-hash-key-change-me` | same | HMAC key of `ingest_post.phone_hash`, used to spot duplicates; a random secret in production. Changing it forgets every phone seen so far |
 | `INGEST_DUPLICATE_WINDOW` | `P14D` | same | how long a contact phone marks later posts as duplicates |
 | `INGEST_MAX_PHOTOS` | `3` | same | photos per post that are downloaded, redacted and published |
@@ -208,7 +217,7 @@ except where the table says otherwise. An empty `TELEGRAM_API_ID`/`TELEGRAM_API_
 | `GOOGLE_PLACES_URL` | empty | same | base URL; empty takes the chosen API's own (`https://maps.googleapis.com/maps/api/place` or `https://places.googleapis.com/v1`) |
 | `GOOGLE_PLACES_API_KEY` | empty | same | a server key restricted by IP, not the admin panel's browser key (`GOOGLE_MAPS_API_KEY`) |
 | `GOOGLE_PLACES_TIMEOUT` / `GOOGLE_PLACES_MAX_ATTEMPTS` / `GOOGLE_PLACES_RETRY_DELAY` | `PT10S` / `3` / `PT1S` | same | geocoding timeout, attempts and the first back-off |
-| `DERECHI_API_URI` | `http://localhost:8080` | `http://getaway:8080` | the Gateway; notices go to its `/graphql`. On a machine without the Gateway, its public address |
+| `DERECHI_API_URI` | `http://localhost:8080` | `http://caddy:8080` | the API entry (Caddy); notices go to its `/graphql`. On a machine without it, its public address |
 | `DERECHI_API_TIMEOUT` / `DERECHI_API_MAX_ATTEMPTS` / `DERECHI_API_RETRY_DELAY` | `PT15S` / `3` / `PT1S` | same | API timeout, attempts and the first back-off; creating a notice is retried only when the request certainly did not arrive |
 | `DERECHI_API_REFERENCE_TTL` | `1h` | same | how long categories and countries from the API are cached; Caffeine spec format (`30m`, `1h`, `1d`) |
 | `MINIO_ENDPOINT`, `MINIO_REGION`, `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` | as in Admin-API | as in Admin-API | S3 client for the photos (the application's account) |
@@ -239,9 +248,10 @@ The first start needs the Telegram session: stop the service and run
 | grafana | `GRAFANA_ADMIN_USER`, `GRAFANA_ADMIN_PASSWORD` |
 | pgadmin | `PGADMIN_DEFAULT_EMAIL`, `PGADMIN_DEFAULT_PASSWORD`; started only with the `dev` profile |
 | mailpit | nothing environment-specific; started only with the `dev` profile |
+| caddy | `MINIO_URI`, `MINIO_BUCKET`; `CLIENT_API_URI` only with `docker-compose.services.yml`, see [Caddy](#caddy-api-entry) |
 
 Every long-running container has a memory limit, overridable per environment:
 `POSTGRES_MEMORY` (1g), `PGADMIN_MEMORY` (512m), `RABBITMQ_MEMORY` (512m), `KEYCLOAK_MEMORY`
 (768m), `PROMETHEUS_MEMORY` (512m), `ALERTMANAGER_MEMORY` (128m), `GRAFANA_MEMORY` (256m),
-`MINIO_MEMORY` (512m), `MAILPIT_MEMORY` (128m), and `SERVICE_MEMORY` (512m) for each Spring
+`MINIO_MEMORY` (512m), `MAILPIT_MEMORY` (128m), `CADDY_MEMORY` (128m), and `SERVICE_MEMORY` (512m) for each Spring
 service except Ingest, which has `INGEST_MEMORY` (1g). See [docker-compose](docker-compose.md#healthchecks-restarts-and-memory).

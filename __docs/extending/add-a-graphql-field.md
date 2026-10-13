@@ -40,7 +40,7 @@ Read [Notices](../features/notices.md) and [Search and filtering](../features/se
 
 7. **Controllers.** Controllers only forward to a service with `@QueryMapping`, `@MutationMapping` and `@Argument`. An operation on notices of one kind goes to `LostItemController` / `FoundItemController`; anything else gets its own controller next to them, as `ClaimController` (claims), `ReferenceController` (categories, countries, places) and `FoundItemStatisticsController` (`stats`) do. Argument names must equal the schema argument names.
 
-8. **Manual check.** Start `Client-API` and open GraphiQL at `http://localhost:8082/graphiql` (or through the Gateway at `http://localhost:8080/graphiql`). The schema printer is on, so `http://localhost:8082/graphql/schema` shows what the server actually loaded.
+8. **Manual check.** Start `Client-API` and open GraphiQL at `http://localhost:8082/graphiql` (or through Caddy at `http://localhost:8080/graphiql`). The schema printer is on, so `http://localhost:8082/graphql/schema` shows what the server actually loaded.
 
 ## Tests to add or update
 

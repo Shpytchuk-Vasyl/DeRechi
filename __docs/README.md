@@ -7,9 +7,10 @@ match. Matching happens automatically in the background whenever a notice is cre
 moderator can notify the owner of a lost item about a promising candidate by email, SMS or a
 messenger with one click.
 
-Everything runs as a set of Spring Boot services behind a gateway, sharing one PostgreSQL
-database and talking to each other through RabbitMQ. Keycloak handles logins, MinIO stores
-photos, Prometheus and Grafana watch the whole thing.
+Everything runs as a set of Spring Boot services behind one public API entry (for now Caddy,
+not the gateway module), sharing one PostgreSQL database and talking to each other through
+RabbitMQ. Keycloak handles logins, MinIO stores photos, Prometheus and Grafana watch the whole
+thing.
 
 ## Start here
 

@@ -1,8 +1,8 @@
 # Client-API
 
 The public API: a GraphQL endpoint that the web client (and later the mobile client) uses to
-browse and post notices. It has no authentication today; the gateway forwards `/graphql`
-to it as is.
+browse and post notices. It has no authentication today; the API entry (Caddy for now) forwards
+`/graphql` to it as is.
 
 | | |
 |---|---|

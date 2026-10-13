@@ -1,6 +1,6 @@
 # Web-Client e2e (Playwright)
 
-End-to-end tests against a **production build** of the site and the **local** backend (Getaway,
+End-to-end tests against a **production build** of the site and the **local** backend (Caddy,
 Client-API, MinIO). The suite talks to the backend **only through the GraphQL API and the
 UI** (plus the presigned photo upload to MinIO, as the site does): no database access at all, and no
 cleanup, since the API cannot delete anything.

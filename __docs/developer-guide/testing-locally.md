@@ -42,10 +42,10 @@ Conventions for writing new ones are in [conventions/testing.md](../conventions/
 
 Start the stack as in [getting started](getting-started.md).
 
-### GraphQL through the gateway
+### GraphQL through Caddy
 
-`http://localhost:8080/graphiql`. Going through the gateway rather than `:8082` directly
-also proves the `client-api` route and CORS. Useful documents:
+`http://localhost:8080/graphiql`. Going through [Caddy](../deployment/infrastructure.md#caddy-api-entry)
+rather than `:8082` directly also proves its `/graphql` route. Useful documents:
 
 ```graphql
 query Reference { categories { id key } countries { code currency } }
@@ -130,7 +130,7 @@ match twice within an hour is deduplicated by NotifyHub on purpose.
 
 Upload from the admin item form (jpeg, png, webp, gif, up to 5 MB). The key appears in the
 MinIO console at `http://localhost:9001` (root account `derechi` / `derechi123`) under `derechi-files`,
-and the image is served at `http://localhost:8080/files/<key>` through the gateway.
+and the image is served at `http://localhost:8080/files/<key>` through Caddy.
 
 ### Metrics
 

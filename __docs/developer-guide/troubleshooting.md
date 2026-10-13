@@ -179,19 +179,21 @@ which `rabbitmq-init` imports on every `docker compose up`. Run `docker compose 
 `docker compose run --rm rabbitmq-init`). If the import itself fails,
 `docker compose logs rabbitmq-init` names the queue whose arguments no longer match.
 
-## Gateway and monitoring
+## API entry and monitoring
 
-### Gateway returns 5xx for `/graphql`
+### Caddy returns 502 for `/graphql`
 
-The gateway forwards to `CLIENT_API_URI` as is. Either `Client-API` is not up yet (check
-`http://localhost:9082/actuator/health`, the management port), or the gateway got the wrong
-address. The gateway does not expose `/actuator/gateway/routes`; check the `CLIENT_API_URI` it
-was started with. From IDEA the default is `http://localhost:8082`; in compose it is
-`http://client-api:8082`.
+[Caddy](../deployment/infrastructure.md#caddy-api-entry) on 8080 forwards to `CLIENT_API_URI`
+as is and cannot reach it. Either `Client-API` is not up yet (check
+`http://localhost:9082/actuator/health`, the management port), or the address is wrong. In
+development mode Caddy runs in Docker and looks for `Client-API` on the host as
+`http://host.docker.internal:8082`, so the service must listen on 8082; in the full compose
+stack it is `http://client-api:8082`. `docker compose logs caddy` shows the dial error with the
+address it tried.
 
 ### Prometheus shows a service target down although it is running
 
-In the dev config targets are `host.docker.internal:<management port>` (9080, 9082 to 9085),
+In the dev config targets are `host.docker.internal:<management port>` (9082 to 9086),
 not the service port. On Linux that name needs the `extra_hosts` entry that
 `docker-compose.yml` already sets; on Windows and macOS Docker Desktop provides it. A service
 run from IDEA with a different `MANAGEMENT_PORT` than the config expects also shows as down.
@@ -206,6 +208,9 @@ only with `KC_METRICS_ENABLED=true`. It is a separate Prometheus job, not part o
 
 ### CORS errors from the web client
 
-The gateway's global CORS allows `localhost`, `127.0.0.1`, `192.168.*` and `10.*` origins on
-any port. Another origin has to be added through `WEB_ORIGIN_PATTERNS`. Also check that the
-browser hits the gateway (`8080`), not `Client-API` directly.
+Caddy adds no CORS headers, and `WEB_ORIGIN_PATTERNS` no longer applies to anything that runs.
+The only cross-origin request is the presigned upload, and its preflight is answered by MinIO,
+which allows any origin by default. A CORS error on upload therefore means the browser is not
+going to `:8080/derechi-files/...` (check `S3_PUBLIC_ENDPOINT` in the web client) or MinIO's
+own CORS settings were changed. GraphQL is called from the Next.js server, never from the
+browser, so it cannot hit CORS.

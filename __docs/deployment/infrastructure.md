@@ -9,6 +9,7 @@ The supporting services started by `docker compose up -d`. All of them publish t
 | RabbitMQ | `rabbitmq:4.3.5-management` | 5672 AMQP, 15672 UI, 15692 metrics | `derechi` / `derechi` | `http://localhost:15672` |
 | Keycloak | `quay.io/keycloak/keycloak:26.4` | 8180 (container 8080) | `admin` / `admin`, realm `derechi` | `http://localhost:8180` |
 | MinIO | `quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z` | 9000 S3, 9001 console | root (console): `derechi` / `derechi123`; application account `derechi-app` / `derechi-app-secret`; bucket `derechi-files` | `http://localhost:9001` |
+| Caddy (API entry) | `caddy:2.11.4-alpine` | 8080 | none | none; `http://localhost:8080/graphiql` goes through it |
 | Mailpit | `axllent/mailpit:v1.28` | 1025 SMTP, 8025 UI | none | `http://localhost:8025` |
 | Prometheus | `prom/prometheus:v3.14.0` | 9090 | none | `http://localhost:9090` |
 | Alertmanager | `prom/alertmanager:v0.34.1` | 9093 | none | `http://localhost:9093` |
@@ -54,9 +55,28 @@ Runs `start --import-realm` (production mode, plain HTTP inside the network, `KC
 
 ## MinIO
 
-S3-compatible object storage for item images. `minio-init` is a one-shot container that waits for MinIO to be healthy, creates the `derechi-files` bucket and sets anonymous **download** on it, so image URLs work without signing. It also creates the application account `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` with the policy `docker/minio/derechi-app-policy.json` (get, put and delete objects in `derechi-files`, list the bucket). The root account (`MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD`) is used only by `minio-init` and for the console. `Admin-API` uploads through the S3 API with the application account, and the web client signs with the same account (`S3_ACCESS_KEY` / `S3_SECRET_KEY`); the web client uploads through the Gateway with presigned PUTs. See [file-storage](../architecture/file-storage.md).
+S3-compatible object storage for item images. `minio-init` is a one-shot container that waits for MinIO to be healthy, creates the `derechi-files` bucket and sets anonymous **download** on it, so image URLs work without signing. It also creates the application account `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` with the policy `docker/minio/derechi-app-policy.json` (get, put and delete objects in `derechi-files`, list the bucket). The root account (`MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD`) is used only by `minio-init` and for the console. `Admin-API` uploads through the S3 API with the application account, and the web client signs with the same account (`S3_ACCESS_KEY` / `S3_SECRET_KEY`); the web client uploads through [Caddy](#caddy-api-entry) with presigned PUTs. See [file-storage](../architecture/file-storage.md).
 
 `MINIO_PROMETHEUS_AUTH_TYPE=public` lets Prometheus scrape `/minio/v2/metrics/cluster` without a token.
+
+## Caddy (API entry)
+
+**For now the public API entry on port 8080 is Caddy, not the `Getaway` module.** The gateway's job was three routes, a body cap, a cache header and CORS, all of which Caddy covers in configuration, and in production a Caddy sits in front anyway; dropping the gateway saves a JVM and a hop. This is temporary: the module's code stays in the repository, commented out in the root `<modules>`, in the `Dockerfile` and in `tests.yml`, and compose, `images.yml` and the Prometheus configs no longer mention it. It comes back when we need what Caddy does not give, see [Getaway](../architecture/modules/getaway.md#bringing-it-back).
+
+The routes are in `docker/caddy/api.Caddyfile`:
+
+| Match | Upstream | What happens |
+|---|---|---|
+| `/graphql`, `/graphiql`, `/api/client/**`, any method | `CLIENT_API_URI` | passed through |
+| `PUT` and `OPTIONS` on `/<MINIO_BUCKET>/**` | `MINIO_URI` | presigned uploads; body capped at 5 MiB (`413` above it, the same 5242880 bytes as the web client's limit). For an HTTP upstream Caddy keeps the `Host` header, so the signature over the public host still matches |
+| `GET /files/**` | `MINIO_URI` | rewritten to `/<MINIO_BUCKET>/**`, response gets `Cache-Control: public, max-age=31536000, immutable` |
+| anything else | | `404`: no bucket listing, no `DELETE`, no MinIO admin or health paths |
+
+- **No CORS in Caddy.** The only cross-origin request a browser makes here is the presigned `PUT`, and the storage answers it: MinIO allows any origin by default, and in production the browser uploads straight to Backblaze B2 (`S3_PUBLIC_ENDPOINT` in the web client), where the bucket's own CORS rules apply. GraphQL is called only from the Next.js server, and images load as `<img>`. `WEB_ORIGIN_PATTERNS` is read by nothing that runs today.
+- **No access log and no metrics**, by decision. There is no Prometheus target for it, so `TargetDown` does not cover it either.
+- **Compose.** The `caddy` service lives in `docker-compose.yml` and starts with the infrastructure, because in development mode nothing else serves `:8080`. It runs `api.Caddyfile` alone in plain HTTP on `:8080` (`API_DOMAIN` is not passed to it) and reaches `Client-API` in IDEA at `host.docker.internal:8082`; `docker-compose.services.yml` switches `CLIENT_API_URI` to `client-api:8082`. `MINIO_URI` and `MINIO_BUCKET` come from the environment as for the other services. Memory limit `CADDY_MEMORY`, 128m.
+- **Production.** `docker/caddy/Caddyfile` does `import api.Caddyfile` for `API_DOMAIN` (TLS by Caddy) and serves `ADMIN_DOMAIN` and `AUTH_DOMAIN` next to it. Its container needs the whole `docker/caddy` directory mounted (the import is relative) and `API_DOMAIN`, `CLIENT_API_URI`, `MINIO_URI`, `MINIO_BUCKET` in its environment. Missing variables fall back to the container defaults silently, and a missing `MINIO_URI` means `/files` goes to `http://minio:9000` instead of B2. For an HTTPS upstream like B2, Caddy sends the upstream's own `Host`; that is what `/files` needs, and production does not upload through Caddy.
+- **Checking a change.** `docker compose exec caddy caddy validate --config /etc/caddy/api.Caddyfile --adapter caddyfile`, then `docker compose restart caddy`. For the production file, run `caddy adapt` in a throwaway container with `API_DOMAIN`, `ADMIN_DOMAIN` and `AUTH_DOMAIN` set.
 
 ## pgAdmin
 
