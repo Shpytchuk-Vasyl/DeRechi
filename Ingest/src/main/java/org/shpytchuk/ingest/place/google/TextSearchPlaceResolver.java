@@ -1,7 +1,7 @@
 package org.shpytchuk.ingest.place.google;
 
 import org.jspecify.annotations.Nullable;
-import org.shpytchuk.ingest.config.PlacesProperties;
+import org.shpytchuk.ingest.config.places.PlacesProperties;
 import org.shpytchuk.ingest.exception.StageUnavailableException;
 import org.shpytchuk.ingest.place.PlaceResolver;
 import org.shpytchuk.ingest.place.ResolvedPlace;

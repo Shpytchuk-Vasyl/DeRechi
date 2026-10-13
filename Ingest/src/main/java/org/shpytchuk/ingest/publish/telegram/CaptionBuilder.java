@@ -1,7 +1,7 @@
 package org.shpytchuk.ingest.publish.telegram;
 
 import org.jspecify.annotations.Nullable;
-import org.shpytchuk.ingest.config.BotProperties;
+import org.shpytchuk.ingest.config.bot.BotProperties;
 import org.shpytchuk.ingest.model.ItemKind;
 import org.shpytchuk.ingest.model.Money;
 import org.springframework.context.MessageSource;

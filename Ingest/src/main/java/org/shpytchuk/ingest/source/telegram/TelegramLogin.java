@@ -6,7 +6,7 @@ import it.tdlight.client.SimpleTelegramClientBuilder;
 import it.tdlight.client.SimpleTelegramClientFactory;
 import it.tdlight.jni.TdApi;
 import lombok.extern.slf4j.Slf4j;
-import org.shpytchuk.ingest.config.TelegramProperties;
+import org.shpytchuk.ingest.config.telegram.TelegramProperties;
 import org.springframework.boot.Banner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;

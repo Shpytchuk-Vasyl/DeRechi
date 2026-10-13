@@ -4,7 +4,7 @@ import io.awspring.cloud.s3.ObjectMetadata;
 import io.awspring.cloud.s3.S3Operations;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.shpytchuk.ingest.config.StorageProperties;
+import org.shpytchuk.ingest.config.storage.StorageProperties;
 import org.shpytchuk.ingest.exception.IngestException;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;

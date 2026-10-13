@@ -1,7 +1,7 @@
 package org.shpytchuk.ingest.client;
 
 import org.jspecify.annotations.Nullable;
-import org.shpytchuk.ingest.config.ApiProperties;
+import org.shpytchuk.ingest.config.client.ApiProperties;
 import org.shpytchuk.ingest.exception.IngestException;
 import org.shpytchuk.ingest.exception.RejectedItemException;
 import org.shpytchuk.ingest.model.ItemKind;

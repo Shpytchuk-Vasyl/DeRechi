@@ -3,7 +3,7 @@ package org.shpytchuk.ingest.publish.telegram;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.shpytchuk.ingest.config.BotProperties;
+import org.shpytchuk.ingest.config.bot.BotProperties;
 import org.shpytchuk.ingest.exception.IngestException;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;

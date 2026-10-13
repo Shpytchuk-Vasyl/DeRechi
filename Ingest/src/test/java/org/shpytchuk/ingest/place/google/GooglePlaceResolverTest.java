@@ -2,7 +2,7 @@ package org.shpytchuk.ingest.place.google;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.shpytchuk.ingest.config.PlacesProperties;
+import org.shpytchuk.ingest.config.places.PlacesProperties;
 import org.shpytchuk.ingest.exception.IngestException;
 import org.shpytchuk.ingest.exception.StageUnavailableException;
 import org.shpytchuk.ingest.place.ResolvedPlace;

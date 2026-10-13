@@ -2,7 +2,7 @@ package org.shpytchuk.ingest.client;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.shpytchuk.ingest.config.ApiProperties;
+import org.shpytchuk.ingest.config.client.ApiProperties;
 import org.shpytchuk.ingest.exception.IngestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;

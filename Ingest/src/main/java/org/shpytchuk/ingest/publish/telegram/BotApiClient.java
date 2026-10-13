@@ -3,7 +3,7 @@ package org.shpytchuk.ingest.publish.telegram;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jspecify.annotations.Nullable;
 import org.shpytchuk.ingest.client.HttpCalls;
-import org.shpytchuk.ingest.config.BotProperties;
+import org.shpytchuk.ingest.config.bot.BotProperties;
 import org.shpytchuk.ingest.exception.IngestException;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.retry.RetryTemplate;

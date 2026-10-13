@@ -2,7 +2,7 @@ package org.shpytchuk.ingest.publish.telegram;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.shpytchuk.ingest.config.BotProperties;
+import org.shpytchuk.ingest.config.bot.BotProperties;
 import org.shpytchuk.ingest.exception.IngestException;
 import org.shpytchuk.ingest.exception.StageUnavailableException;
 import org.shpytchuk.ingest.publish.Publication;

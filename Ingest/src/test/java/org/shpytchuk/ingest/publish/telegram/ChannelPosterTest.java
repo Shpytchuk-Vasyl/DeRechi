@@ -1,7 +1,7 @@
 package org.shpytchuk.ingest.publish.telegram;
 
 import org.junit.jupiter.api.Test;
-import org.shpytchuk.ingest.config.BotProperties;
+import org.shpytchuk.ingest.config.bot.BotProperties;
 import org.shpytchuk.ingest.exception.IngestException;
 import org.shpytchuk.ingest.exception.StageUnavailableException;
 import org.shpytchuk.ingest.model.ItemKind;

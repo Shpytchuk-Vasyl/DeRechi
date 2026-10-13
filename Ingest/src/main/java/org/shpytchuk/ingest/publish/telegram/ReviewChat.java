@@ -3,7 +3,7 @@ package org.shpytchuk.ingest.publish.telegram;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
-import org.shpytchuk.ingest.config.BotProperties;
+import org.shpytchuk.ingest.config.bot.BotProperties;
 import org.shpytchuk.ingest.model.Outcome;
 import org.shpytchuk.ingest.publish.Publication;
 import org.shpytchuk.ingest.publish.Publisher;

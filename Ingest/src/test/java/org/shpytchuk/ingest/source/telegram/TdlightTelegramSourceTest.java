@@ -2,7 +2,7 @@ package org.shpytchuk.ingest.source.telegram;
 
 import it.tdlight.jni.TdApi;
 import org.junit.jupiter.api.Test;
-import org.shpytchuk.ingest.config.TelegramProperties;
+import org.shpytchuk.ingest.config.telegram.TelegramProperties;
 import org.shpytchuk.ingest.exception.StageUnavailableException;
 import org.shpytchuk.ingest.source.IncomingPost;
 import org.shpytchuk.ingest.source.PhotoRef;

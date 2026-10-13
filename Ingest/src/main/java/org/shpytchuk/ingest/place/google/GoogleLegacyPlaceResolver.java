@@ -3,7 +3,7 @@ package org.shpytchuk.ingest.place.google;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jspecify.annotations.Nullable;
 import org.shpytchuk.ingest.client.HttpCalls;
-import org.shpytchuk.ingest.config.PlacesProperties;
+import org.shpytchuk.ingest.config.places.PlacesProperties;
 import org.shpytchuk.ingest.exception.IngestException;
 import org.shpytchuk.ingest.place.ResolvedPlace;
 import org.shpytchuk.ingest.source.SourceSettings;

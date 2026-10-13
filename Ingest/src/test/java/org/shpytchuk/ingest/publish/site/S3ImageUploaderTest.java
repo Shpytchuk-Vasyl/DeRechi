@@ -5,7 +5,7 @@ import io.awspring.cloud.s3.S3Exception;
 import io.awspring.cloud.s3.S3Operations;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.shpytchuk.ingest.config.StorageProperties;
+import org.shpytchuk.ingest.config.storage.StorageProperties;
 import org.shpytchuk.ingest.exception.IngestException;
 import org.springframework.util.unit.DataSize;
 

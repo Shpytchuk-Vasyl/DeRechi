@@ -11,7 +11,7 @@ import it.tdlight.jni.TdApi;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
-import org.shpytchuk.ingest.config.TelegramProperties;
+import org.shpytchuk.ingest.config.telegram.TelegramProperties;
 import org.shpytchuk.ingest.exception.IngestException;
 import org.shpytchuk.ingest.exception.StageUnavailableException;
 import org.shpytchuk.ingest.source.IncomingPost;
