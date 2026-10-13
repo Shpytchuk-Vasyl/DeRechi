@@ -108,7 +108,7 @@ sorting, pagination, SEO) read one shared set of notices instead of creating the
 
 - **Marker** `e2eshared<yy><ww>`: the ISO week-numbering year and week in Europe/Kyiv, e.g.
   `e2eshared2641`, plus `E2E_SHARED_SUFFIX`. A new set appears every week, so its notices stay young
-  enough (a "fresh" one is at most ~8 days old, the stale one ~26) and the API's `@WithinDays(30)`
+  enough (a "fresh" one is at most ~8 days old, the oldest ~26) and the API's `@WithinDays(30)`
   holds when a missing one is re-created.
 - **Groups** are found with `?search=<marker>-<group>` (`shared.search.<group>`); no group name is a
   prefix of another. Titles are `<marker>-<group>-<key> <Ukrainian name>`, places

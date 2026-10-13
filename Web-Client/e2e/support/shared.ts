@@ -39,7 +39,6 @@ export type SharedItemKey =
   | "foundPhoto"
   | "lostNoPhoto"
   | "foundBrokenPhoto"
-  | "lostStale"
   | "lostRewardPL"
   | "lostNoReward"
   | "lostZeroReward"
@@ -131,7 +130,6 @@ const DEFINITIONS: Definition[] = [
   def("view", "foundPhoto", "found", { category: "WALLET" }),
   def("view", "lostNoPhoto", "lost", { category: "BAGS", description: null }),
   def("view", "foundBrokenPhoto", "found", { category: "JEWELRY", image: "missing" }),
-  def("view", "lostStale", "lost", { category: "OTHER", offset: -20 }),
   def("view", "lostRewardPL", "lost", { compensation: { amount: 500 }, city: "warsaw" }),
   def("view", "lostNoReward", "lost", { category: "ELECTRONICS" }),
   def("view", "lostZeroReward", "lost", { category: "ANIMALS", compensation: { amount: 0 } }),
@@ -159,7 +157,6 @@ const NAMED: readonly SharedItemKey[] = [
   "foundPhoto",
   "lostNoPhoto",
   "foundBrokenPhoto",
-  "lostStale",
   "lostRewardPL",
   "lostNoReward",
   "lostZeroReward",

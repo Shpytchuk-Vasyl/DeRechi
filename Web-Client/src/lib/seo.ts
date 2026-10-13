@@ -7,7 +7,7 @@ export const SITE_URL = clientEnv.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "")
 
 export const INDEXABLE = !!process.env.VERCEL
 
-export const STALE_AFTER_DAYS = 14
+export const STALE_AFTER_DAYS = 30
 
 const DESCRIPTION_LIMIT = 160
 
@@ -37,6 +37,10 @@ export function snippet(text: string, limit = DESCRIPTION_LIMIT): string {
   const cut = flat.slice(0, limit - 1)
   const lastSpace = cut.lastIndexOf(" ")
   return `${lastSpace > limit / 2 ? cut.slice(0, lastSpace) : cut}…`
+}
+
+export function joinSentences(first: string, second: string): string {
+  return `${/[.!?…]$/.test(first) ? first : `${first}.`} ${second}`
 }
 
 export function jsonLd(data: unknown): string {

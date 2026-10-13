@@ -1,5 +1,4 @@
 import { expect, test } from "../fixtures/base"
-import { ItemDetail } from "../fixtures/pages"
 import { LOCALES } from "../support/data"
 import { env } from "../support/env"
 import { expectAlternates, GLOBAL_NOINDEX, robotsMeta } from "../support/seo"
@@ -84,17 +83,5 @@ test.describe("SEO", () => {
       const answer = await request.get(new URL(`/en${path}`, env.baseURL).toString())
       expect(answer.status(), `${path || "/"} answers`).toBe(200)
     }
-  })
-})
-
-test.describe("stale item pages", () => {
-  test("an item older than 14 days is noindex (but followed)", async ({ page, go, t, shared }) => {
-    const item = shared.items.lostStale
-    await go(item.path)
-    await expect(new ItemDetail(page, t, "lost").heading(item.title)).toBeVisible()
-
-    await expect(robotsMeta(page)).toHaveCount(1)
-    await expect(robotsMeta(page)).toHaveAttribute("content", /(^|,\s*)noindex(,|$)/)
-    await expect(robotsMeta(page)).not.toHaveAttribute("content", /nofollow/)
   })
 })

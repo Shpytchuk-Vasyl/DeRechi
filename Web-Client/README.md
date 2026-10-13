@@ -302,8 +302,9 @@ host (`INDEXABLE` in `src/lib/seo.ts`): `next dev`, a local `pnpm start` and a L
 answer `noindex` on every page and `Disallow: /` in `robots.txt`, so a tunnel or a shared link
 never puts `localhost:3000` into an index.
 
-A notice older than `STALE_AFTER_DAYS` answers `noindex, follow` and drops out of the sitemap:
-the API has no status yet, so age stands in for "resolved". The sitemap is split with
+A notice older than `STALE_AFTER_DAYS` (30) answers `noindex, follow` and drops out of the sitemap.
+It is the same age at which `Worker` archives the notice (`derechi.archive.max-age`), so the two
+change together; the threshold only covers the gap until the next archiving run. The sitemap is split with
 `generateSitemaps` into `pages` plus one chunk per kind and calendar month (`lost-0`,
 `found-1`, …), each a date window walked with the cursor, and `robots.txt` lists all of them.
 

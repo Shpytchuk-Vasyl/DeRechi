@@ -4,7 +4,8 @@ vi.mock("@/lib/env/client", () => ({
   clientEnv: { NEXT_PUBLIC_SITE_URL: "https://derechi.example/" },
 }))
 
-const { absoluteUrl, isStale, jsonLd, pageAlternates, sitemapIds, snippet } = await import("./seo")
+const { absoluteUrl, isStale, joinSentences, jsonLd, pageAlternates, sitemapIds, snippet } =
+  await import("./seo")
 
 describe("seo", () => {
   it("points every locale and x-default at the same path", () => {
@@ -46,6 +47,18 @@ describe("seo", () => {
 
   it("cuts mid-word when there is no space in the first half", () => {
     expect(snippet("x".repeat(30), 10)).toBe(`${"x".repeat(9)}…`)
+  })
+
+  it("ends the first sentence with a period before the second", () => {
+    expect(joinSentences("Animals · Lviv · Oct 13, 2026", "A dog ran away.")).toBe(
+      "Animals · Lviv · Oct 13, 2026. A dog ran away.",
+    )
+  })
+
+  it("adds no second period after a date abbreviation", () => {
+    expect(joinSentences("Тварини · Гречани · 13 жовт. 2026 р.", "Собака утекла.")).toBe(
+      "Тварини · Гречани · 13 жовт. 2026 р. Собака утекла.",
+    )
   })
 
   it("splits the sitemap into static pages and one chunk per kind and month", () => {
