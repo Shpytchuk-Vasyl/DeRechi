@@ -1,6 +1,7 @@
 {
   "app": {
     "name": "DeRechi",
+    "homeTitle": "DeRechi · Загублені та знайдені речі",
     "titleTemplate": "{page} · DeRechi",
     "description": "Оголошення про загублені та знайдені речі. Публікація за хвилину, без реєстрації."
   },
@@ -176,7 +177,7 @@
     "openPhoto": "Відкрити фото на весь екран",
     "closePhoto": "Закрити",
     "noPhoto": "Без фото",
-    "metaTitle": "{kind}: {title} – {place}, {date}",
+    "metaTitle": "{title} – {place}, {date}",
     "metaSummary": "{category} · {place} · {date}"
   },
   "claim": {

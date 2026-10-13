@@ -252,7 +252,7 @@ test.describe("mascot", () => {
 })
 
 test.describe("JSON-LD", () => {
-  test("WebSite with a SearchAction and FAQPage, every block valid JSON", async ({
+  test("WebSite with its publisher and a SearchAction, FAQPage, every block valid JSON", async ({
     page,
     go,
     t,
@@ -260,14 +260,25 @@ test.describe("JSON-LD", () => {
   }) => {
     await go("/")
     const blocks = await readJsonLd(page)
-    const home = `${env.siteURL.replace(/\/$/, "")}/${appLocale}`
+    const site = env.siteURL.replace(/\/$/, "")
+    const home = `${site}/${appLocale}`
 
     const website = blocks.find((block) => block["@type"] === "WebSite")
     expect(website).toMatchObject({
       "@context": "https://schema.org",
       "@type": "WebSite",
       name: t("app.name"),
+      alternateName: ["Де речі", "derechi.site"],
+      description: t("app.description"),
+      inLanguage: appLocale,
       url: home,
+      publisher: {
+        "@type": "Organization",
+        name: t("app.name"),
+        url: `${site}/`,
+        logo: `${site}/apple-icon.png`,
+        sameAs: ["https://t.me/derechi_ua"],
+      },
       potentialAction: {
         "@type": "SearchAction",
         target: {

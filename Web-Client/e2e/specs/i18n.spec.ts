@@ -5,7 +5,7 @@ import { type ItemKind, LOCALES, type Locale } from "../support/data"
 import { waitForHydration } from "../support/hydration"
 import { type Translator, translator, untranslated } from "../support/i18n"
 import { walkKeyPages } from "../support/key-pages"
-import { expectAlternates } from "../support/seo"
+import { expectAlternates, expectItemIndexing } from "../support/seo"
 import type { SharedGroup, SharedItemKey } from "../support/shared"
 import { allowDocumentStatus, LOCALE_COOKIE, otherLocale, pathnameOf } from "../support/site"
 import { expectNoHorizontalScroll } from "../support/viewport"
@@ -56,10 +56,10 @@ const FORMAT_ITEMS: {
   key: SharedItemKey
   currency: string
   locales: readonly Locale[]
-  alternates: boolean
+  indexing: boolean
 }[] = [
-  { key: "lostFull", currency: "UAH", locales: LOCALES, alternates: true },
-  { key: "lostRewardPL", currency: "PLN", locales: ["pl"], alternates: false },
+  { key: "lostFull", currency: "UAH", locales: LOCALES, indexing: true },
+  { key: "lostRewardPL", currency: "PLN", locales: ["pl"], indexing: false },
 ]
 
 function switchFrom(locale: Locale): Locale {
@@ -175,10 +175,10 @@ for (const locale of LOCALES) {
     }
 
     test.describe("item page formats", () => {
-      for (const { key, currency, alternates } of FORMAT_ITEMS.filter((it) =>
+      for (const { key, currency, indexing } of FORMAT_ITEMS.filter((it) =>
         it.locales.includes(locale),
       )) {
-        test(`${key}: date, country and reward in the language's format${alternates ? ", canonical and hreflang" : ""}`, async ({
+        test(`${key}: date, country and reward in the language's format${indexing ? ", canonical, indexed only in Ukrainian" : ""}`, async ({
           page,
           go,
           t,
@@ -199,7 +199,7 @@ for (const locale of LOCALES) {
           const amount = await browserMoney(page, locale, reward, currency)
           await expect(detail.reward(amount)).toBeVisible()
 
-          if (alternates) await expectAlternates(page, locale, item.path)
+          if (indexing) await expectItemIndexing(page, locale, item.path)
         })
       }
     })

@@ -25,6 +25,15 @@ export async function readJsonLd(page: Page): Promise<Record<string, unknown>[]>
   })
 }
 
+export async function expectItemIndexing(page: Page, locale: Locale, path: string): Promise<void> {
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", siteUrl(locale, path))
+  await expect(page.locator('link[rel="alternate"][hreflang]')).toHaveCount(0)
+  if (locale !== "uk") {
+    await expect(robotsMeta(page)).toHaveAttribute("content", /(^|,\s*)noindex(,|$)/)
+    await expect(robotsMeta(page)).not.toHaveAttribute("content", /nofollow/)
+  }
+}
+
 export async function expectAlternates(page: Page, locale: Locale, path: string): Promise<void> {
   const canonical = page.locator('link[rel="canonical"]')
   await expect(canonical).toHaveCount(1)

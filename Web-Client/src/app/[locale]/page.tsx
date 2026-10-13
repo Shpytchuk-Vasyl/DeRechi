@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { getLocale, getTranslations } from "next-intl/server"
 import { MascotRoamer } from "@/components/mascot/mascot-roamer"
-import { absoluteUrl, jsonLd, pageAlternates } from "@/lib/seo"
+import { absoluteUrl, jsonLd, pageAlternates, SITE_URL } from "@/lib/seo"
 import Benefits from "@/screens/home/benefits/benefits"
 import ClosingCall from "@/screens/home/closing-call"
 import Explainer from "@/screens/home/explainer/explainer"
@@ -10,12 +10,26 @@ import Hero from "@/screens/home/hero"
 import QuickSearch from "@/screens/home/quick-search/quick-search"
 import RecentRail from "@/screens/home/rail/recent-rail"
 
-function websiteJsonLd(locale: string, name: string) {
+const ALTERNATE_NAMES = ["Де речі", "derechi.site"]
+
+const TELEGRAM_CHANNEL_URL = "https://t.me/derechi_ua"
+
+function websiteJsonLd(locale: string, name: string, description: string) {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name,
+    alternateName: ALTERNATE_NAMES,
+    description,
+    inLanguage: locale,
     url: absoluteUrl(locale),
+    publisher: {
+      "@type": "Organization",
+      name,
+      url: `${SITE_URL}/`,
+      logo: `${SITE_URL}/apple-icon.png`,
+      sameAs: [TELEGRAM_CHANNEL_URL],
+    },
     potentialAction: {
       "@type": "SearchAction",
       target: {
@@ -33,7 +47,20 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>
 }): Promise<Metadata> {
   const { locale } = await params
-  return { alternates: pageAlternates(locale, "") }
+  const t = await getTranslations({ locale, namespace: "app" })
+  const title = t("homeTitle")
+
+  return {
+    title: { absolute: title },
+    alternates: pageAlternates(locale, ""),
+    openGraph: {
+      type: "website",
+      siteName: t("name"),
+      locale,
+      title,
+      description: t("description"),
+    },
+  }
 }
 
 export default async function HomePage() {
@@ -66,7 +93,9 @@ export default async function HomePage() {
       <script
         type="application/ld+json"
         // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD has no other outlet
-        dangerouslySetInnerHTML={{ __html: jsonLd(websiteJsonLd(locale, t("name"))) }}
+        dangerouslySetInnerHTML={{
+          __html: jsonLd(websiteJsonLd(locale, t("name"), t("description"))),
+        }}
       />
     </>
   )

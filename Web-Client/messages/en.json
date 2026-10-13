@@ -1,6 +1,7 @@
 {
   "app": {
     "name": "DeRechi",
+    "homeTitle": "DeRechi · Lost and found",
     "titleTemplate": "{page} · DeRechi",
     "description": "Lost and found notices for your city. Post in a minute, no account needed."
   },
@@ -176,7 +177,7 @@
     "openPhoto": "Open the photo full screen",
     "closePhoto": "Close",
     "noPhoto": "No photo",
-    "metaTitle": "{kind}: {title} – {place}, {date}",
+    "metaTitle": "{title} – {place}, {date}",
     "metaSummary": "{category} · {place} · {date}"
   },
   "claim": {

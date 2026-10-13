@@ -1,6 +1,7 @@
 {
   "app": {
     "name": "DeRechi",
+    "homeTitle": "DeRechi · Rzeczy zgubione i znalezione",
     "titleTemplate": "{page} · DeRechi",
     "description": "Ogłoszenia o rzeczach zgubionych i znalezionych. Dodasz w minutę, bez konta."
   },
@@ -176,7 +177,7 @@
     "openPhoto": "Otwórz zdjęcie na pełnym ekranie",
     "closePhoto": "Zamknij",
     "noPhoto": "Bez zdjęcia",
-    "metaTitle": "{kind}: {title} – {place}, {date}",
+    "metaTitle": "{title} – {place}, {date}",
     "metaSummary": "{category} · {place} · {date}"
   },
   "claim": {

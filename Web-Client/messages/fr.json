@@ -1,6 +1,7 @@
 {
   "app": {
     "name": "DeRechi",
+    "homeTitle": "DeRechi · Objets perdus et trouvés",
     "titleTemplate": "{page} · DeRechi",
     "description": "Objets perdus et trouvés de votre ville. Une annonce en une minute, sans compte."
   },
@@ -176,7 +177,7 @@
     "openPhoto": "Ouvrir la photo en plein écran",
     "closePhoto": "Fermer",
     "noPhoto": "Sans photo",
-    "metaTitle": "{kind} : {title} – {place}, {date}",
+    "metaTitle": "{title} – {place}, {date}",
     "metaSummary": "{category} · {place} · {date}"
   },
   "claim": {

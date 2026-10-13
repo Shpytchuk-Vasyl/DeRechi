@@ -97,7 +97,8 @@ The second queue and the scheduled `ClaimFollowUpJob` implement the response flo
 [../../features/claims.md](../../features/claims.md): notify the author in the language of
 their phone number, remind both sides, archive the notice on confirmation or a week after the
 last response. The same job also archives every notice whose `date` is more than
-`derechi.archive.max-age` (30 days) ago, claims or not. `ItemArchiver` is the only code that
+`derechi.archive.max-age` (30 days) ago, claims or not; Web-Client stops indexing a notice at the
+same age (`STALE_AFTER_DAYS` in `src/lib/seo.ts`), so the two change together. `ItemArchiver` is the only code that
 archives a notice: the admin "Archive" button arrives here as `ARCHIVE_REQUESTED` on the third
 queue (`ArchiveListener`), and the confirmed return, the quiet-notice and the stale-notice rules
 call it directly. Archiving re-points the notice's

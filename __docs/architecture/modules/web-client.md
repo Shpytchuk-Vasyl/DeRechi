@@ -51,6 +51,32 @@ in `Web-Client/README.md`; the entry side is in [../file-storage.md](../file-sto
   LAN address works when testing from a phone; in production the B2 bucket's CORS rules must
   list the site. `WEB_ORIGIN_PATTERNS` belongs to the `Getaway` module and is read by
   nothing while it is not deployed.
+- **Archive age** (`derechi.archive.max-age` in `Worker`, 30 days): `STALE_AFTER_DAYS` in
+  `src/lib/seo.ts` is the same number. A notice that old answers `noindex` and leaves the
+  sitemap, and `Worker` archives it on its next run; change both together.
+- **Notice titles** (the web form or `Ingest`): the page title and the share card print the title
+  as it is, with no lost/found prefix or badge, because titles from `Ingest` already start with
+  the verb. A title without one ("Синій рюкзак") does not say on those whether it was lost or found.
+- **Photo formats**: the share card draws only JPEG and PNG photos; a notice whose photo is WebP or
+  GIF gets the card without it.
+
+## Search
+
+How search engines see the site; the details are in the "Search" section of `Web-Client/README.md`.
+
+- **One language per notice.** A notice's text is the same in all five locales, so only its `/uk/`
+  page is indexed (`ITEM_LOCALE` in `src/lib/seo.ts`): it has a self `canonical` and no `hreflang`,
+  the other four answer `noindex, follow`, and the sitemap lists notices by `/uk/` URL alone. The
+  home, list and legal pages stay indexed in every locale with `hreflang`.
+- **Sitemap.** `robots.txt` lists `pages.xml` and one file per kind and calendar month
+  (`lost-0`, `found-1`, …). A month without notices lists its kind's list page, because Search
+  Console rejects a sitemap without a `<url>`.
+- **Home.** The `<title>` is `app.homeTitle` ("DeRechi · Загублені та знайдені речі" and its
+  translations). The `WebSite` JSON-LD carries `alternateName` ("Де речі", "derechi.site") and a
+  `publisher` with the logo and `sameAs` the Telegram channel (`t.me/derechi_ua`): if the channel
+  moves, update `src/app/[locale]/page.tsx`.
+- **Share cards.** Every notice page has its own `opengraph-image` (1200×630: photo, title, place,
+  date), drawn with Nunito loaded from Google Fonts; the other pages share one card per locale.
 
 ## Feature flags
 

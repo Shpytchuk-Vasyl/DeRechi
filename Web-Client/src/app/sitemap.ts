@@ -4,7 +4,7 @@ import { paths } from "@/i18n/paths"
 import { routing } from "@/i18n/routing"
 import { CACHE } from "@/lib/cache"
 import { toIsoDate } from "@/lib/intl/dates"
-import { absoluteUrl, isStale, SITEMAP_KINDS as KINDS, sitemapIds } from "@/lib/seo"
+import { absoluteUrl, ITEM_LOCALE, isStale, SITEMAP_KINDS as KINDS, sitemapIds } from "@/lib/seo"
 
 export const revalidate = 3600
 
@@ -25,6 +25,15 @@ function alternates(path: string) {
   }
 }
 
+function pageEntry(path: string): MetadataRoute.Sitemap[number] {
+  return {
+    url: absoluteUrl(routing.defaultLocale, path),
+    changeFrequency: path === "" ? "daily" : "hourly",
+    priority: path === "" ? 1 : 0.8,
+    alternates: alternates(path),
+  }
+}
+
 function pageEntries(): MetadataRoute.Sitemap {
   const pages: MetadataRoute.Sitemap = [
     "",
@@ -33,12 +42,7 @@ function pageEntries(): MetadataRoute.Sitemap {
     paths.report("lost"),
     paths.report("found"),
     paths.safety,
-  ].map((path) => ({
-    url: absoluteUrl(routing.defaultLocale, path),
-    changeFrequency: path === "" ? "daily" : "hourly",
-    priority: path === "" ? 1 : 0.8,
-    alternates: alternates(path),
-  }))
+  ].map(pageEntry)
 
   const documents: MetadataRoute.Sitemap = [paths.terms, paths.privacy].map((path) => ({
     url: absoluteUrl(routing.defaultLocale, path),
@@ -79,11 +83,10 @@ async function itemEntries(kind: ItemKind, back: number): Promise<MetadataRoute.
     .filter((item) => !isStale(item.date))
     .slice(0, MAX_URLS)
     .map((item) => ({
-      url: absoluteUrl(routing.defaultLocale, paths.item(kind, item.id)),
+      url: absoluteUrl(ITEM_LOCALE, paths.item(kind, item.id)),
       // The notice's own date: there is no "updated at" in the API yet (see README).
       lastModified: item.date,
       priority: 0.6,
-      alternates: alternates(paths.item(kind, item.id)),
     }))
 }
 
@@ -102,5 +105,6 @@ export default async function sitemap({
     return []
   }
 
-  return itemEntries(kind as ItemKind, Number(back))
+  const entries = await itemEntries(kind as ItemKind, Number(back))
+  return entries.length > 0 ? entries : [pageEntry(paths.list(kind as ItemKind))]
 }

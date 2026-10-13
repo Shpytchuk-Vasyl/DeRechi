@@ -1,6 +1,7 @@
 {
   "app": {
     "name": "DeRechi",
+    "homeTitle": "DeRechi · Fundsachen und Verlustmeldungen",
     "titleTemplate": "{page} · DeRechi",
     "description": "Fundsachen und Verlustmeldungen für deine Stadt. In einer Minute aufgegeben, ohne Konto."
   },
@@ -176,7 +177,7 @@
     "openPhoto": "Foto im Vollbild öffnen",
     "closePhoto": "Schließen",
     "noPhoto": "Kein Foto",
-    "metaTitle": "{kind}: {title} – {place}, {date}",
+    "metaTitle": "{title} – {place}, {date}",
     "metaSummary": "{category} · {place} · {date}"
   },
   "claim": {

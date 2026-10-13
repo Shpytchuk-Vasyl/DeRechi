@@ -75,6 +75,8 @@ Vitest, colocated as `<name>.test.ts`, no browser and no running backend:
   failures, which cache tags are revalidated, and `claimStatus` refusing a malformed id.
 - `lib/claim-cookie.test.ts`, `lib/item-search.test.ts` (query string to filter and back),
   `lib/intl/country.test.ts`, `lib/intl/dates.test.ts`, `lib/seo.test.ts`.
+- `app/sitemap.test.ts` with `@/api/items` mocked: a notice is listed once by its `/uk/` URL
+  without `hreflang`, and a month without notices lists the list page instead of an empty file.
 - `lib/uploads/presign.test.ts` and `presign.integration.test.ts`, see "Uploads" below.
 
 React components are not unit-tested; `async` server components are not supported by
@@ -291,11 +293,22 @@ passes driver's tokens in as values.
 
 Every page sets its own `canonical` and one `hreflang` per locale (plus `x-default`) through
 `pageAlternates` in `src/lib/seo.ts`; the layout's alternates alone would point every page at
-the locale's home. Notice pages get a title of the form `Lost: Keys – Lviv, 12 Sept 2026`,
+the locale's home. Notice pages get a title of the form `Keys – Lviv, 12 Sept 2026` (the notice's own title, no kind prefix),
 breadcrumbs and an `ItemPage` in JSON-LD; the home page adds `WebSite` with a `SearchAction`.
 JSON-LD goes into the page only through `jsonLd()` in `src/lib/seo.ts`: `JSON.stringify` leaves `<`
 as is, so a notice titled `</script><script>…` would otherwise run as a script on its own page.
-Pages without a photo inherit the generated card from `[locale]/opengraph-image.tsx`.
+
+Notice pages are the exception to `hreflang`: the notice text is the same in every locale, so only
+the `ITEM_LOCALE` (`uk`) copy is indexed. Each copy keeps a self `canonical` and no `hreflang`, the
+other four answer `noindex, follow`, and the sitemap lists notices by their `/uk/` URL alone.
+
+Each notice has its own `opengraph-image.tsx` (`src/screens/found_lost/item-og-image.tsx`): photo,
+title, place and date. There is no lost/found badge: notice titles mostly start with the verb
+already ("Загублено …"), and the badge only repeated it. Only JPEG and PNG photos are drawn (`next/og` reads no
+WebP); the rest, and a notice without a photo, get the text-only card. Both cards load Nunito from
+Google Fonts through `src/lib/og-font.ts`, subset to the card's text, so the cards use the site's
+font rather than the `next/og` default (Geist). Other pages inherit the generic card from
+`[locale]/opengraph-image.tsx`.
 
 Nothing is indexable unless `NODE_ENV` is `production` **and** `NEXT_PUBLIC_SITE_URL` is a public
 host (`INDEXABLE` in `src/lib/seo.ts`): `next dev`, a local `pnpm start` and a LAN address all
@@ -307,6 +320,8 @@ It is the same age at which `Worker` archives the notice (`derechi.archive.max-a
 change together; the threshold only covers the gap until the next archiving run. The sitemap is split with
 `generateSitemaps` into `pages` plus one chunk per kind and calendar month (`lost-0`,
 `found-1`, …), each a date window walked with the cursor, and `robots.txt` lists all of them.
+A month without notices lists its kind's list page instead: Search Console rejects a `<urlset>`
+without a `<url>` ("Missing XML tag").
 
 The list pages accept `?after=<cursor>`: the page is rendered from that cursor and its
 metadata carries `<link rel="next">` to the following one, so a crawler can walk past the

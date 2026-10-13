@@ -20,7 +20,7 @@ export type Visit = (label: string) => Promise<void>
 export async function openHome({ page, t, go }: WalkContext): Promise<void> {
   await go("/")
   await expect(page.getByRole("main")).toBeVisible()
-  await expect(page).toHaveTitle(t("app.name"))
+  await expect(page).toHaveTitle(t("app.homeTitle"))
 }
 
 export async function openList(ctx: WalkContext, item: SharedItem): Promise<void> {

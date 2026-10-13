@@ -15,7 +15,7 @@ import { countryName } from "@/lib/intl/country"
 import { formatNoticeDate, fromIsoDate } from "@/lib/intl/dates"
 import { formatMoney } from "@/lib/intl/money"
 import { mapsUrl } from "@/lib/maps"
-import { absoluteUrl, isStale, joinSentences, jsonLd, pageAlternates, snippet } from "@/lib/seo"
+import { absoluteUrl, ITEM_LOCALE, isStale, joinSentences, jsonLd, snippet } from "@/lib/seo"
 import ClaimCard from "@/screens/found_lost/claim/claim-card"
 import PhotoViewer from "@/screens/found_lost/photo-viewer"
 
@@ -227,7 +227,6 @@ export async function itemMetadata(kind: ItemKind, locale: string, id: string): 
 
   const date = format.dateTime(new Date(item.date), { dateStyle: "medium" })
   const title = t("metaTitle", {
-    kind: kind === "lost" ? t("lost") : t("found"),
     title: item.title,
     place: item.place.name,
     date,
@@ -238,19 +237,14 @@ export async function itemMetadata(kind: ItemKind, locale: string, id: string): 
     date,
   })
   const description = snippet(item.description ? joinSentences(summary, item.description) : summary)
-  const path = `/${kind}/${id}`
+  const indexed = locale === ITEM_LOCALE && !isStale(item.date)
 
   return {
     title,
     description,
-    alternates: pageAlternates(locale, path),
-    ...(isStale(item.date) ? { robots: { index: false, follow: true } } : {}),
-    openGraph: {
-      type: "article",
-      title,
-      description,
-      images: item.image ? [{ url: absoluteFileUrl(item.image), alt: item.title }] : undefined,
-    },
+    alternates: { canonical: `/${locale}${paths.item(kind, id)}` },
+    ...(indexed ? {} : { robots: { index: false, follow: true } }),
+    openGraph: { type: "article", title, description },
   }
 }
 

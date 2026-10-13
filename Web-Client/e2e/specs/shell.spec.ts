@@ -159,7 +159,7 @@ test.describe("external requests", () => {
     const item = shared.items.foundPhoto
 
     await go("/")
-    await expect(page).toHaveTitle(t("app.name"))
+    await expect(page).toHaveTitle(t("app.homeTitle"))
     await go(`/found?search=${shared.search.view}`)
     await expect(new ItemCard(page, t).byTitle(item.title)).toBeVisible()
     await go(item.path)

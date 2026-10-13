@@ -9,6 +9,8 @@ export const INDEXABLE = !!process.env.VERCEL
 
 export const STALE_AFTER_DAYS = 30
 
+export const ITEM_LOCALE = "uk"
+
 const DESCRIPTION_LIMIT = 160
 
 export function isStale(date: string, now = new Date()): boolean {

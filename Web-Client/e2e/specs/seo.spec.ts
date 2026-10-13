@@ -85,3 +85,32 @@ test.describe("SEO", () => {
     }
   })
 })
+
+test.describe("item pages", () => {
+  for (const key of ["foundPhoto", "lostNoPhoto"] as const) {
+    test(`${key}: og:image is a 1200×630 PNG of the notice`, async ({
+      page,
+      go,
+      request,
+      shared,
+    }) => {
+      await go(shared.items[key].path)
+
+      const image = page.locator('meta[property="og:image"]')
+      await expect(image).toHaveCount(1)
+      await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute(
+        "content",
+        "1200",
+      )
+      await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute(
+        "content",
+        "630",
+      )
+
+      const url = new URL((await image.getAttribute("content")) ?? "")
+      const response = await request.get(new URL(url.pathname + url.search, env.baseURL).toString())
+      expect(response.status()).toBe(200)
+      expect(response.headers()["content-type"]).toBe("image/png")
+    })
+  }
+})
