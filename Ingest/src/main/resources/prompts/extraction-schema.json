@@ -12,11 +12,11 @@
     },
     "title": {
       "type": ["string", "null"],
-      "description": "at most 100 characters, in the language of the post"
+      "description": "at most 100 characters, in the language of the post, Ukrainian when the post is in Russian; for a document or another thing with its owner's name, that name: \"Знайдено Леокарту на ім'я Столяр Максим\""
     },
     "description": {
       "type": ["string", "null"],
-      "description": "at most 250 characters, in the language of the post, neutral, no contacts and no names of people"
+      "description": "at most 250 characters, in the language of the post, Ukrainian when the post is in Russian, neutral, no contacts and no names of people except the owner's name in the title"
     },
     "category": {
       "type": ["string", "null"],
@@ -28,7 +28,7 @@
     },
     "placeText": {
       "type": ["string", "null"],
-      "description": "the most specific place as a Google Maps search query: official name, nominative, no prepositions, no city"
+      "description": "the most specific place as a Google Maps search query: official name, nominative, no prepositions, no city, Ukrainian when the post is in Russian"
     },
     "city": {
       "type": ["string", "null"]

@@ -15,23 +15,34 @@ emails with `[EMAIL_1]`, ... Parts of the photos may be blurred on purpose.
 ## Rules
 
 - Extract, never invent. A field that is neither in the text nor on the photos is `null`.
+- Never answer in Russian. When the post is in Russian, or mixes Russian with Ukrainian, write
+  `title`, `description` and `placeText` in Ukrainian: translate the meaning, and give streets and
+  places their Ukrainian names ("улица Сумская" → "вулиця Сумська").
 - `isNotice`: `true` only when the author lost or found a concrete item, animal or document and wants
   it back to its owner. Advertising, news, job posts, fundraising, greetings, channel announcements,
   "seen a lost pet" reposts without any contact and other chatter are `isNotice: false` with every
   other field `null`.
 - `kind`: `LOST` when the author lost the thing and searches for it, `FOUND` when the author found it
   and looks for the owner.
-- `title`: at most 100 characters, in the language of the post, says what was lost or found
-  (for example "Знайдено гаманець", "Zgubiony telefon Samsung").
-- `description`: at most 250 characters, in the language of the post. A neutral summary of what,
-  where and when. No phone numbers, emails, usernames, links, and no names of people (neither the
-  owner's name written on a document nor the author's name).
+- `title`: at most 100 characters, in the language of the post (Ukrainian for a Russian post), says
+  what was lost or found (for example "Знайдено гаманець", "Zgubiony telefon Samsung").
+  - When the thing carries its owner's name (a passport, ID, driver's licence, student or transport
+    card, bank card, badge) and the post or a photo gives that name, put it into the title, so it
+    is clear whose it is: "Знайдено Леокарту на ім'я Столяр Максим", "Загублено посвідчення водія
+    на ім'я Скрипка Степан".
+  - Only the name written on the thing or the one the post says it is issued to ("на ім'я ...").
+    Write it as given, surname and first name. Never the name of the author or of the contact
+    person.
+- `description`: at most 250 characters, in the language of the post (Ukrainian for a Russian
+  post). A neutral summary of what, where and when. No phone numbers, emails, usernames, links,
+  and no names of people except the owner's name that is in the title.
 - `category`: one key from the category list in the message, `OTHER` when nothing fits.
 - `date`: `yyyy-MM-dd`, the day the thing was lost or found. Resolve relative dates ("yesterday
   evening", "on Saturday") from `postDate`, never from `today`. `null` when the post does not say.
 - `placeText`: the most specific place from the post, rewritten as a Google Maps search query.
   Never shown to people, only searched. Without the city. `null` when there is none.
-  - Use the name a map knows, in the nominative case, in the language of the post: street and
+  - Use the name a map knows, in the nominative case, in the language of the post (Ukrainian for a
+    Russian post): street and
     house, crossroads as two streets, a landmark, shop, market, mall, park, station or stop.
   - Drop prepositions and filler ("біля", "на", "в районі", "koło", "near") and the word for the
     item.
@@ -71,7 +82,7 @@ Example 1. `postDate: 2026-10-08`, a photo of a Lviv transport card "Леока�
 </post>
 
 ```json
-{"isNotice": true, "kind": "FOUND", "title": "Знайдено Леокарту",
+{"isNotice": true, "kind": "FOUND", "title": "Знайдено Леокарту на ім'я Іваненко Петро",
  "description": "Знайдено іменну Леокарту на перехресті вулиць Наукова та Кульпарківська.",
  "category": "DOCUMENTS", "date": null, "placeText": "вулиця Наукова та вулиця Кульпарківська",
  "city": null, "compensation": null, "contactPhoneRef": null, "socialMedias": ["TELEGRAM"],
@@ -106,4 +117,19 @@ Example 3. `postDate: 2026-10-07`, `chatCity: Львів`, no photo:
  "placeText": "Національний університет «Львівська політехніка»", "city": null,
  "compensation": null, "contactPhoneRef": "PHONE_1", "socialMedias": null,
  "confidence": 0.9, "rejectReason": null}
+```
+
+Example 4. `postDate: 2026-10-09`, `chatCity: Харків`, no photo, the post is in Russian:
+
+<post>
+Вчера потерял связку ключей с красным брелоком возле метро Научная. Верну за вознаграждение
+300 грн. [PHONE_1]
+</post>
+
+```json
+{"isNotice": true, "kind": "LOST", "title": "Загублено зв'язку ключів з червоним брелоком",
+ "description": "Загублено зв'язку ключів з червоним брелоком біля станції метро «Наукова» 8 жовтня.",
+ "category": "KEYS", "date": "2026-10-08", "placeText": "станція метро Наукова", "city": null,
+ "compensation": {"amount": 300, "currency": "UAH"}, "contactPhoneRef": "PHONE_1",
+ "socialMedias": null, "confidence": 0.9, "rejectReason": null}
 ```
