@@ -268,7 +268,7 @@ test.describe("JSON-LD", () => {
       "@context": "https://schema.org",
       "@type": "WebSite",
       name: t("app.name"),
-      alternateName: ["Де речі", "derechi.site"],
+      alternateName: t.raw("app.alternateNames"),
       description: t("app.description"),
       inLanguage: appLocale,
       url: home,

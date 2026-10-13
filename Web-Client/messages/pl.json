@@ -1,6 +1,7 @@
 {
   "app": {
     "name": "DeRechi",
+    "alternateNames": ["Де речі", "derechi.site"],
     "homeTitle": "DeRechi · Rzeczy zgubione i znalezione",
     "titleTemplate": "{page} · DeRechi",
     "description": "Ogłoszenia o rzeczach zgubionych i znalezionych. Dodasz w minutę, bez konta."
@@ -46,6 +47,8 @@
     "seeAllFound": "Wszystkie znalezione rzeczy",
     "recentLost": "Ostatnio zgubione",
     "seeAllLost": "Wszystkie zgubione rzeczy",
+    "citiesTitle": "Biuro rzeczy znalezionych w Twoim mieście",
+    "citiesPick": "Wybierz miasto",
     "recentFoundError": "Nie udało się wczytać ostatnich znalezionych rzeczy.",
     "recentLostError": "Nie udało się wczytać ostatnich zgubionych rzeczy.",
     "foundTitle": "Masz cudzą rzecz?",
@@ -156,6 +159,7 @@
   "item": {
     "lost": "Zgubione",
     "found": "Znalezione",
+    "cityLink": "Wszystkie ogłoszenia {in}",
     "reward": "Nagroda {amount}",
     "lostOn": "Zgubiono",
     "foundOn": "Znaleziono",
@@ -418,5 +422,106 @@
     "text": "Właśnie aktualizujemy DeRechi. Wkrótce wracamy, dziękujemy za cierpliwość.",
     "home": "Na stronę główną",
     "metaDescription": "DeRechi jest chwilowo niedostępny z powodu prac technicznych."
+  },
+  "city": {
+    "kyiv": {
+      "name": "Kijów",
+      "in": "w Kijowie"
+    },
+    "lviv": {
+      "name": "Lwów",
+      "in": "we Lwowie"
+    },
+    "kharkiv": {
+      "name": "Charków",
+      "in": "w Charkowie"
+    },
+    "odesa": {
+      "name": "Odessa",
+      "in": "w Odessie"
+    },
+    "dnipro": {
+      "name": "Dniepr",
+      "in": "w Dnieprze"
+    },
+    "zaporizhzhia": {
+      "name": "Zaporoże",
+      "in": "w Zaporożu"
+    },
+    "vinnytsia": {
+      "name": "Winnica",
+      "in": "w Winnicy"
+    },
+    "lutsk": {
+      "name": "Łuck",
+      "in": "w Łucku"
+    },
+    "zhytomyr": {
+      "name": "Żytomierz",
+      "in": "w Żytomierzu"
+    },
+    "uzhhorod": {
+      "name": "Użhorod",
+      "in": "w Użhorodzie"
+    },
+    "ivano-frankivsk": {
+      "name": "Iwano-Frankiwsk",
+      "in": "w Iwano-Frankiwsku"
+    },
+    "kropyvnytskyi": {
+      "name": "Kropywnycki",
+      "in": "w Kropywnyckim"
+    },
+    "mykolaiv": {
+      "name": "Mikołajów",
+      "in": "w Mikołajowie"
+    },
+    "poltava": {
+      "name": "Połtawa",
+      "in": "w Połtawie"
+    },
+    "rivne": {
+      "name": "Równe",
+      "in": "w Równem"
+    },
+    "sumy": {
+      "name": "Sumy",
+      "in": "w Sumach"
+    },
+    "ternopil": {
+      "name": "Tarnopol",
+      "in": "w Tarnopolu"
+    },
+    "kherson": {
+      "name": "Chersoń",
+      "in": "w Chersoniu"
+    },
+    "khmelnytskyi": {
+      "name": "Chmielnicki",
+      "in": "w Chmielnickim"
+    },
+    "cherkasy": {
+      "name": "Czerkasy",
+      "in": "w Czerkasach"
+    },
+    "chernivtsi": {
+      "name": "Czerniowce",
+      "in": "w Czerniowcach"
+    },
+    "chernihiv": {
+      "name": "Czernihów",
+      "in": "w Czernihowie"
+    }
+  },
+  "cityPage": {
+    "title": "Biuro rzeczy znalezionych {in}",
+    "description": "Rzeczy zgubione i znalezione {in}: świeże ogłoszenia ze zdjęciem i miejscem. Dodaj swoje w minutę, bez konta.",
+    "heroTitle": "Zgubione {in}? Ktoś mógł to znaleźć",
+    "heroText": "Biuro rzeczy znalezionych {in}: opisz swoją zgubę albo przejrzyj znaleziska z okolicy.",
+    "found": "Znalezione {in}",
+    "lost": "Zgubione {in}",
+    "seeAllFound": "Wszystkie znalezione w pobliżu",
+    "seeAllLost": "Wszystkie zgubione w pobliżu",
+    "empty": "Na razie brak ogłoszeń."
   }
 }

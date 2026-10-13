@@ -75,6 +75,13 @@ How search engines see the site; the details are in the "Search" section of `Web
   translations). The `WebSite` JSON-LD carries `alternateName` ("Де речі", "derechi.site") and a
   `publisher` with the logo and `sameAs` the Telegram channel (`t.me/derechi_ua`): if the channel
   moves, update `src/app/[locale]/page.tsx`.
+- **City pages.** `/{locale}/{city}` for Kyiv and the regional centres (`src/lib/cities.ts`, a centre
+  and a radius each) lists the found and lost notices within the radius through the `near`
+  filter, so the backend has no notion of a city. A city page is the home page without the map
+  (its own file, so the two can diverge), with the hero, the search and the rails about the city.
+  The home page links the cities from a static map of Ukraine (Natural Earth outline in Ukraine's
+  point of view, Crimea included), a notice page links the city its coordinates fall into, and that city is added after the place in the
+  notice's `<title>` ("Привокзальний ринок, Львів"). A city without live notices answers `noindex` and is left out of the sitemap.
 - **Share cards.** Every notice page has its own `opengraph-image` (1200×630: photo, title, place,
   date), drawn with Nunito loaded from Google Fonts; the other pages share one card per locale.
 

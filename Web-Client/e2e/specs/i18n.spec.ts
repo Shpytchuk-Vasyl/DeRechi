@@ -18,7 +18,7 @@ type KeyPage = {
 }
 
 const KEY_PAGES: KeyPage[] = [
-  { path: "/", status: 200, title: (t) => t("app.name") },
+  { path: "/", status: 200, title: (t) => t("app.homeTitle") },
   {
     path: "/lost",
     status: 200,
@@ -41,6 +41,12 @@ const KEY_PAGES: KeyPage[] = [
     title: (t) => t("app.titleTemplate", { page: t("safety.title") }),
   },
   { path: "/terms", status: 200, title: (t, h1) => t("app.titleTemplate", { page: h1 }) },
+  {
+    path: "/lviv",
+    status: 200,
+    title: (t) => t("app.titleTemplate", { page: t("cityPage.title", { in: t("city.lviv.in") }) }),
+    alternates: true,
+  },
   { path: "/nope-e2e", status: 404, title: (t) => t("app.name") },
 ]
 

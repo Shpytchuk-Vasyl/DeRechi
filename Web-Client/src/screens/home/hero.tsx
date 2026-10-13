@@ -8,18 +8,25 @@ import { SafetyLink, SafetyNote } from "@/components/safety/safety-note"
 import { paths } from "@/i18n/paths"
 import HeroScene from "@/screens/home/hero-scene"
 
-export default async function HomeHero(props: React.ComponentProps<typeof Card>) {
-  const t = await getTranslations("home")
-  const tn = await getTranslations("nav")
+type Props = React.ComponentProps<typeof Card> & { city?: string }
+
+export default async function HomeHero({ city, ...props }: Props) {
+  const [t, tn, tp, tc] = await Promise.all([
+    getTranslations("home"),
+    getTranslations("nav"),
+    getTranslations("cityPage"),
+    getTranslations("city"),
+  ])
+  const where = city ? tc(`${city}.in`) : null
 
   return (
     <Card variant="hero" {...props}>
       <div className="grid items-center gap-8 lg:grid-cols-[1.3fr_1fr]">
         <Stack gap={5}>
           <Stack gap={2}>
-            <Heading level={1}>{t("heroTitle")}</Heading>
+            <Heading level={1}>{where ? tp("heroTitle", { in: where }) : t("heroTitle")}</Heading>
             <Text size="lg" muted>
-              {t("heroText")}
+              {where ? tp("heroText", { in: where }) : t("heroText")}
             </Text>
           </Stack>
 
@@ -43,7 +50,7 @@ export default async function HomeHero(props: React.ComponentProps<typeof Card>)
         </Stack>
 
         <div className="hidden lg:block">
-          <HeroScene />
+          <HeroScene place={city ? tc(`${city}.name`) : undefined} />
         </div>
       </div>
     </Card>

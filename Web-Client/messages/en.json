@@ -1,6 +1,7 @@
 {
   "app": {
     "name": "DeRechi",
+    "alternateNames": ["Де речі", "derechi.site"],
     "homeTitle": "DeRechi · Lost and found",
     "titleTemplate": "{page} · DeRechi",
     "description": "Lost and found notices for your city. Post in a minute, no account needed."
@@ -46,6 +47,8 @@
     "seeAllFound": "See all found items",
     "recentLost": "Recently lost",
     "seeAllLost": "See all lost items",
+    "citiesTitle": "Lost and found in your city",
+    "citiesPick": "Choose a city",
     "recentFoundError": "The latest found notices could not be loaded.",
     "recentLostError": "The latest lost notices could not be loaded.",
     "foundTitle": "Found something that isn't yours?",
@@ -156,6 +159,7 @@
   "item": {
     "lost": "Lost",
     "found": "Found",
+    "cityLink": "All notices {in}",
     "reward": "Reward {amount}",
     "lostOn": "Lost on",
     "foundOn": "Found on",
@@ -418,5 +422,106 @@
     "text": "DeRechi is being updated right now. We will be back soon, thank you for your patience.",
     "home": "Go to the home page",
     "metaDescription": "DeRechi is temporarily unavailable due to technical work."
+  },
+  "city": {
+    "kyiv": {
+      "name": "Kyiv",
+      "in": "in Kyiv"
+    },
+    "lviv": {
+      "name": "Lviv",
+      "in": "in Lviv"
+    },
+    "kharkiv": {
+      "name": "Kharkiv",
+      "in": "in Kharkiv"
+    },
+    "odesa": {
+      "name": "Odesa",
+      "in": "in Odesa"
+    },
+    "dnipro": {
+      "name": "Dnipro",
+      "in": "in Dnipro"
+    },
+    "zaporizhzhia": {
+      "name": "Zaporizhzhia",
+      "in": "in Zaporizhzhia"
+    },
+    "vinnytsia": {
+      "name": "Vinnytsia",
+      "in": "in Vinnytsia"
+    },
+    "lutsk": {
+      "name": "Lutsk",
+      "in": "in Lutsk"
+    },
+    "zhytomyr": {
+      "name": "Zhytomyr",
+      "in": "in Zhytomyr"
+    },
+    "uzhhorod": {
+      "name": "Uzhhorod",
+      "in": "in Uzhhorod"
+    },
+    "ivano-frankivsk": {
+      "name": "Ivano-Frankivsk",
+      "in": "in Ivano-Frankivsk"
+    },
+    "kropyvnytskyi": {
+      "name": "Kropyvnytskyi",
+      "in": "in Kropyvnytskyi"
+    },
+    "mykolaiv": {
+      "name": "Mykolaiv",
+      "in": "in Mykolaiv"
+    },
+    "poltava": {
+      "name": "Poltava",
+      "in": "in Poltava"
+    },
+    "rivne": {
+      "name": "Rivne",
+      "in": "in Rivne"
+    },
+    "sumy": {
+      "name": "Sumy",
+      "in": "in Sumy"
+    },
+    "ternopil": {
+      "name": "Ternopil",
+      "in": "in Ternopil"
+    },
+    "kherson": {
+      "name": "Kherson",
+      "in": "in Kherson"
+    },
+    "khmelnytskyi": {
+      "name": "Khmelnytskyi",
+      "in": "in Khmelnytskyi"
+    },
+    "cherkasy": {
+      "name": "Cherkasy",
+      "in": "in Cherkasy"
+    },
+    "chernivtsi": {
+      "name": "Chernivtsi",
+      "in": "in Chernivtsi"
+    },
+    "chernihiv": {
+      "name": "Chernihiv",
+      "in": "in Chernihiv"
+    }
+  },
+  "cityPage": {
+    "title": "Lost and found {in}",
+    "description": "Lost and found items {in}: fresh notices with a photo and a place. Post yours in a minute, no account needed.",
+    "heroTitle": "Lost it {in}? Someone may have found it",
+    "heroText": "Lost and found {in}: describe what you lost, or look through what has been handed in nearby.",
+    "found": "Found {in}",
+    "lost": "Lost {in}",
+    "seeAllFound": "All found items nearby",
+    "seeAllLost": "All lost items nearby",
+    "empty": "No notices yet."
   }
 }

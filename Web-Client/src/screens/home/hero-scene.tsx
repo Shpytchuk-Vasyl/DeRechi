@@ -39,7 +39,7 @@ const PIECES: { src: StaticImageData; className: string; size: string }[] = [
   },
 ]
 
-export default async function HeroScene() {
+export default async function HeroScene({ place }: { place?: string }) {
   const t = await getTranslations("home.sample.keys")
 
   return (
@@ -63,7 +63,7 @@ export default async function HeroScene() {
       <span className="absolute bottom-[26%] left-1/2 z-20 -translate-x-1/2 -rotate-3 rounded-pill shadow-ink/20 shadow-lg">
         <Badge tone="yellow">
           <MapPin className="size-3.5" />
-          {t("place")}
+          {place ?? t("place")}
         </Badge>
       </span>
     </div>

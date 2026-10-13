@@ -1,6 +1,7 @@
 {
   "app": {
     "name": "DeRechi",
+    "alternateNames": ["Де речі", "derechi.site"],
     "homeTitle": "DeRechi · Fundsachen und Verlustmeldungen",
     "titleTemplate": "{page} · DeRechi",
     "description": "Fundsachen und Verlustmeldungen für deine Stadt. In einer Minute aufgegeben, ohne Konto."
@@ -46,6 +47,8 @@
     "seeAllFound": "Alle Fundsachen ansehen",
     "recentLost": "Zuletzt verloren",
     "seeAllLost": "Alle Verlustmeldungen",
+    "citiesTitle": "Fundbüro in deiner Stadt",
+    "citiesPick": "Stadt wählen",
     "recentFoundError": "Die neuesten Fundmeldungen konnten nicht geladen werden.",
     "recentLostError": "Die neuesten Verlustmeldungen konnten nicht geladen werden.",
     "foundTitle": "Etwas gefunden, das dir nicht gehört?",
@@ -156,6 +159,7 @@
   "item": {
     "lost": "Verloren",
     "found": "Gefunden",
+    "cityLink": "Alle Meldungen {in}",
     "reward": "Finderlohn {amount}",
     "lostOn": "Verloren am",
     "foundOn": "Gefunden am",
@@ -418,5 +422,106 @@
     "text": "Wir aktualisieren DeRechi gerade. Wir sind bald zurück, danke für deine Geduld.",
     "home": "Zur Startseite",
     "metaDescription": "DeRechi ist wegen Wartungsarbeiten vorübergehend nicht verfügbar."
+  },
+  "city": {
+    "kyiv": {
+      "name": "Kyjiw",
+      "in": "in Kyjiw"
+    },
+    "lviv": {
+      "name": "Lwiw",
+      "in": "in Lwiw"
+    },
+    "kharkiv": {
+      "name": "Charkiw",
+      "in": "in Charkiw"
+    },
+    "odesa": {
+      "name": "Odessa",
+      "in": "in Odessa"
+    },
+    "dnipro": {
+      "name": "Dnipro",
+      "in": "in Dnipro"
+    },
+    "zaporizhzhia": {
+      "name": "Saporischschja",
+      "in": "in Saporischschja"
+    },
+    "vinnytsia": {
+      "name": "Winnyzja",
+      "in": "in Winnyzja"
+    },
+    "lutsk": {
+      "name": "Luzk",
+      "in": "in Luzk"
+    },
+    "zhytomyr": {
+      "name": "Schytomyr",
+      "in": "in Schytomyr"
+    },
+    "uzhhorod": {
+      "name": "Uschhorod",
+      "in": "in Uschhorod"
+    },
+    "ivano-frankivsk": {
+      "name": "Iwano-Frankiwsk",
+      "in": "in Iwano-Frankiwsk"
+    },
+    "kropyvnytskyi": {
+      "name": "Kropywnyzkyj",
+      "in": "in Kropywnyzkyj"
+    },
+    "mykolaiv": {
+      "name": "Mykolajiw",
+      "in": "in Mykolajiw"
+    },
+    "poltava": {
+      "name": "Poltawa",
+      "in": "in Poltawa"
+    },
+    "rivne": {
+      "name": "Riwne",
+      "in": "in Riwne"
+    },
+    "sumy": {
+      "name": "Sumy",
+      "in": "in Sumy"
+    },
+    "ternopil": {
+      "name": "Ternopil",
+      "in": "in Ternopil"
+    },
+    "kherson": {
+      "name": "Cherson",
+      "in": "in Cherson"
+    },
+    "khmelnytskyi": {
+      "name": "Chmelnyzkyj",
+      "in": "in Chmelnyzkyj"
+    },
+    "cherkasy": {
+      "name": "Tscherkassy",
+      "in": "in Tscherkassy"
+    },
+    "chernivtsi": {
+      "name": "Czernowitz",
+      "in": "in Czernowitz"
+    },
+    "chernihiv": {
+      "name": "Tschernihiw",
+      "in": "in Tschernihiw"
+    }
+  },
+  "cityPage": {
+    "title": "Fundbüro {in}",
+    "description": "Verlorene und gefundene Sachen {in}: aktuelle Meldungen mit Foto und Ort. In einer Minute aufgegeben, ohne Konto.",
+    "heroTitle": "Verloren {in}? Vielleicht hat es schon jemand gefunden",
+    "heroText": "Fundbüro {in}: Beschreibe deinen Verlust oder sieh durch, was in der Nähe abgegeben wurde.",
+    "found": "Gefunden {in}",
+    "lost": "Verloren {in}",
+    "seeAllFound": "Alle Fundsachen in der Nähe",
+    "seeAllLost": "Alle Verlustmeldungen in der Nähe",
+    "empty": "Noch keine Meldungen."
   }
 }

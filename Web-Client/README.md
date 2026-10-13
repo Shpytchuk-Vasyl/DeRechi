@@ -76,7 +76,10 @@ Vitest, colocated as `<name>.test.ts`, no browser and no running backend:
 - `lib/claim-cookie.test.ts`, `lib/item-search.test.ts` (query string to filter and back),
   `lib/intl/country.test.ts`, `lib/intl/dates.test.ts`, `lib/seo.test.ts`.
 - `app/sitemap.test.ts` with `@/api/items` mocked: a notice is listed once by its `/uk/` URL
-  without `hreflang`, and a month without notices lists the list page instead of an empty file.
+  without `hreflang`, a month without notices lists the list page instead of an empty file, and a
+  city page is among the pages only while the city has notices.
+- `lib/cities.test.ts`: slug lookup, a place on a city's edge falls into it, the city areas do not
+  overlap, and every city in the registry has a name in the bundles.
 - `lib/uploads/presign.test.ts` and `presign.integration.test.ts`, see "Uploads" below.
 
 React components are not unit-tested; `async` server components are not supported by
@@ -322,6 +325,35 @@ change together; the threshold only covers the gap until the next archiving run.
 `found-1`, …), each a date window walked with the cursor, and `robots.txt` lists all of them.
 A month without notices lists its kind's list page instead: Search Console rejects a `<urlset>`
 without a `<url>` ("Missing XML tag").
+
+`/{locale}/{city}` (`src/app/[locale]/[city]`, `src/screens/city/city-page.tsx`) is a lost and found
+page per city of `src/lib/cities.ts`: Kyiv and the regional centres not under occupation, each a
+centre and a radius. It is the home page's sections without the map, put together in its own file
+on purpose, so either page can diverge: the hero names the city ("Де речі у Львові?", the scene's
+badge), the search and the category chips add the city's `lat`/`lon`, and the rails list the newest
+found and lost notices within its radius (`near`), their "see all" opening the list around the
+centre with the list's own 10 km. Its JSON-LD is the home page's `WebSite` plus a `CollectionPage`
+about the `City`, with a search around it and the breadcrumbs (`cityPageJsonLd` in `src/lib/seo.ts`).
+Only the registry's slugs exist (`dynamicParams = false`), any other single segment is still a 404.
+A city without live notices answers `noindex, follow` and stays out of `pages.xml` (`cityHasNotices`
+in `src/api/cities.ts`, which counts a failed query as not empty).
+
+The home page links the cities from a map (`src/screens/home/city-map`): a static outline of Ukraine
+styled as a fridge magnet, with a purple `MapPin` per city. With a mouse (`pointer-fine`) a city's
+name shows on hover or focus; on touch screens every name is always shown, at 9px on a phone, where
+a hyphenated name wraps (`w-min`) and Ivano-Frankivsk, Lutsk and Khmelnytskyi keep their pin but not
+the name (`UNLABELLED_ON_PHONE`), as there is no room in the west. `LABEL_SIDE` puts the other names
+where they do not cover a neighbour on a phone. Below `lg` a "choose a city" select under the map
+opens the page too.
+`outline.ts` is generated: Natural Earth 1:10m countries in Ukraine's point of view (Crimea and the
+whole east within Ukraine, public domain), the main polygon simplified (Douglas-Peucker, 5 units of
+1000) and smoothed with quadratic curves, projected equirectangularly at 48.4°N; `MAP` keeps the
+projection, so a pin is placed from a city's `lat`/`lon` alone. A notice page links the city its
+coordinates fall into (`cityOf`); that city's name is also added
+after the place in the notice's `<title>` (`withCity`: "Привокзальний ринок, Львів"), since people
+search by city, not by street, unless the place already names it. Names and the
+"in <city>" forms are in the bundles' `city` namespace, so a new city is a registry entry plus
+`city.<slug>` in all five bundles (`cities.test.ts` checks that they match).
 
 The list pages accept `?after=<cursor>`: the page is rendered from that cursor and its
 metadata carries `<link rel="next">` to the following one, so a crawler can walk past the

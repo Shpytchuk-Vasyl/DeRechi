@@ -10,6 +10,7 @@ import { Skeleton, Skeletons } from "@/components/pouf/skeleton"
 import { Heading, Text } from "@/components/pouf/text"
 import { Link } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
+import { cityOf, withCity } from "@/lib/cities"
 import { absoluteFileUrl } from "@/lib/env/client"
 import { countryName } from "@/lib/intl/country"
 import { formatNoticeDate, fromIsoDate } from "@/lib/intl/dates"
@@ -33,10 +34,12 @@ export default async function ItemDetailPage({ kind, id, compact = false }: Prop
 
   const t = await getTranslations("item")
   const tc = await getTranslations("category")
+  const tcity = await getTranslations("city")
   const tn = await getTranslations("nav")
   const format = await getFormatter()
   const locale = await getLocale()
   const maps = mapsUrl(item.place.lat, item.place.lon)
+  const city = cityOf(item.place)
 
   return (
     <>
@@ -127,6 +130,11 @@ export default async function ItemDetailPage({ kind, id, compact = false }: Prop
               ) : null}
             </dd>
           </dl>
+          {city ? (
+            <Link href={paths.city(city.slug)} className="mt-4 inline-flex font-extrabold">
+              {t("cityLink", { in: tcity(`${city.slug}.in`) })}
+            </Link>
+          ) : null}
 
           <Heading level={2} className="mt-7 text-xl">
             {t("description")}
@@ -219,16 +227,18 @@ export async function itemMetadata(kind: ItemKind, locale: string, id: string): 
   const item = await fetchItem(kind, id)
   if (!item) return {}
 
-  const [t, tc, format] = await Promise.all([
+  const [t, tc, tcity, format] = await Promise.all([
     getTranslations({ locale, namespace: "item" }),
     getTranslations({ locale, namespace: "category" }),
+    getTranslations({ locale, namespace: "city" }),
     getFormatter({ locale }),
   ])
+  const city = cityOf(item.place)
 
   const date = format.dateTime(new Date(item.date), { dateStyle: "medium" })
   const title = t("metaTitle", {
     title: item.title,
-    place: item.place.name,
+    place: withCity(item.place.name, city ? tcity(`${city.slug}.name`) : undefined),
     date,
   })
   const summary = t("metaSummary", {

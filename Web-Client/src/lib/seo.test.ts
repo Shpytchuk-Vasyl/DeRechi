@@ -4,8 +4,16 @@ vi.mock("@/lib/env/client", () => ({
   clientEnv: { NEXT_PUBLIC_SITE_URL: "https://derechi.example/" },
 }))
 
-const { absoluteUrl, isStale, joinSentences, jsonLd, pageAlternates, sitemapIds, snippet } =
-  await import("./seo")
+const {
+  absoluteUrl,
+  cityPageJsonLd,
+  isStale,
+  joinSentences,
+  jsonLd,
+  pageAlternates,
+  sitemapIds,
+  snippet,
+} = await import("./seo")
 
 describe("seo", () => {
   it("points every locale and x-default at the same path", () => {
@@ -53,6 +61,34 @@ describe("seo", () => {
     expect(joinSentences("Animals · Lviv · Oct 13, 2026", "A dog ran away.")).toBe(
       "Animals · Lviv · Oct 13, 2026. A dog ran away.",
     )
+  })
+
+  it("describes a city page as part of the site, about the city, with a search around it", () => {
+    const site = { name: "DeRechi", alternateNames: ["Де речі"], description: "Site" }
+    const page = { title: "Бюро знахідок у Львові", description: "City", home: "Головна" }
+    const city = { slug: "lviv", name: "Львів", lat: 49.8397, lon: 24.0297 }
+
+    const [website, cityPage] = cityPageJsonLd("uk", site, page, city)
+
+    expect(website).toMatchObject({ "@type": "WebSite", url: "https://derechi.example/uk" })
+    expect(cityPage).toMatchObject({
+      "@type": "CollectionPage",
+      name: "Бюро знахідок у Львові",
+      url: "https://derechi.example/uk/lviv",
+      about: { "@type": "City", name: "Львів", geo: { latitude: 49.8397, longitude: 24.0297 } },
+      potentialAction: {
+        target: {
+          urlTemplate:
+            "https://derechi.example/uk/found?lat=49.8397&lon=24.0297&search={search_term_string}",
+        },
+      },
+      breadcrumb: {
+        itemListElement: [
+          { position: 1, name: "Головна", item: "https://derechi.example/uk" },
+          { position: 2, name: "Львів", item: "https://derechi.example/uk/lviv" },
+        ],
+      },
+    })
   })
 
   it("adds no second period after a date abbreviation", () => {

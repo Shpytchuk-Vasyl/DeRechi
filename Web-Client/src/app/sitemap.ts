@@ -1,8 +1,10 @@
 import type { MetadataRoute } from "next"
+import { cityHasNotices } from "@/api/cities"
 import { fetchItems, type ItemKind } from "@/api/items"
 import { paths } from "@/i18n/paths"
 import { routing } from "@/i18n/routing"
 import { CACHE } from "@/lib/cache"
+import { CITIES } from "@/lib/cities"
 import { toIsoDate } from "@/lib/intl/dates"
 import { absoluteUrl, ITEM_LOCALE, isStale, SITEMAP_KINDS as KINDS, sitemapIds } from "@/lib/seo"
 
@@ -34,7 +36,7 @@ function pageEntry(path: string): MetadataRoute.Sitemap[number] {
   }
 }
 
-function pageEntries(): MetadataRoute.Sitemap {
+async function pageEntries(): Promise<MetadataRoute.Sitemap> {
   const pages: MetadataRoute.Sitemap = [
     "",
     paths.list("lost"),
@@ -51,7 +53,13 @@ function pageEntries(): MetadataRoute.Sitemap {
     alternates: alternates(path),
   }))
 
-  return [...pages, ...documents]
+  const cities = await Promise.all(
+    CITIES.map(async (city) =>
+      (await cityHasNotices(city)) ? pageEntry(paths.city(city.slug)) : null,
+    ),
+  )
+
+  return [...pages, ...documents, ...cities.filter((entry) => entry !== null)]
 }
 
 function monthWindow(back: number, now = new Date()): { dateFrom: string; dateTo: string } {

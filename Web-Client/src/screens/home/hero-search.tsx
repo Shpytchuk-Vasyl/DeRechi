@@ -8,7 +8,7 @@ import { useTypewriter } from "@/hooks/use-typewriter"
 import { useRouter } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
 
-export default function HeroSearch() {
+export default function HeroSearch({ near }: { near?: Record<string, string> }) {
   const t = useTranslations("home")
   const router = useRouter()
   const reduceMotion = useReducedMotion()
@@ -29,7 +29,11 @@ export default function HeroSearch() {
   function submit(event: React.SubmitEvent) {
     event.preventDefault()
     const search = query.trim()
-    router.push(search ? { pathname: paths.list("found"), query: { search } } : paths.list("lost"))
+    router.push(
+      search
+        ? { pathname: paths.list("found"), query: { search, ...near } }
+        : { pathname: paths.list("lost"), query: near },
+    )
   }
 
   const kbd = (chunks: ReactNode) => (
@@ -52,7 +56,7 @@ export default function HeroSearch() {
 
       <p id={hintId} className="px-1 font-bold text-[13px] text-muted-foreground">
         <span className="pointer-coarse:hidden">{t.rich("searchHintDesktop", { kbd })}</span>
-        <span className="pointer-coarse:inline hidden">{t.rich("searchHintTouch", { kbd })}</span>
+        <span className="pointer-fine:hidden">{t.rich("searchHintTouch", { kbd })}</span>
       </p>
     </form>
   )

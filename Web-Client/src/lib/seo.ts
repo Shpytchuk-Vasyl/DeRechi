@@ -57,6 +57,76 @@ const JSON_LD_ESCAPES: Record<string, string> = {
   "\u2029": "\\u2029",
 }
 
+const TELEGRAM_CHANNEL_URL = "https://t.me/derechi_ua"
+
+export type SiteInfo = { name: string; alternateNames: string[]; description: string }
+
+export type CityInfo = { slug: string; name: string; lat: number; lon: number }
+
+function searchAction(urlTemplate: string) {
+  return {
+    "@type": "SearchAction",
+    target: { "@type": "EntryPoint", urlTemplate },
+    "query-input": "required name=search_term_string",
+  }
+}
+
+export function websiteJsonLd(locale: string, site: SiteInfo) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: site.name,
+    alternateName: site.alternateNames,
+    description: site.description,
+    inLanguage: locale,
+    url: absoluteUrl(locale),
+    publisher: {
+      "@type": "Organization",
+      name: site.name,
+      url: `${SITE_URL}/`,
+      logo: `${SITE_URL}/apple-icon.png`,
+      sameAs: [TELEGRAM_CHANNEL_URL],
+    },
+    potentialAction: searchAction(`${absoluteUrl(locale, "/found")}?search={search_term_string}`),
+  }
+}
+
+export function cityPageJsonLd(
+  locale: string,
+  site: SiteInfo,
+  page: { title: string; description: string; home: string },
+  city: CityInfo,
+) {
+  const url = absoluteUrl(locale, `/${city.slug}`)
+  return [
+    websiteJsonLd(locale, site),
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name: page.title,
+      description: page.description,
+      inLanguage: locale,
+      url,
+      isPartOf: { "@type": "WebSite", name: site.name, url: absoluteUrl(locale) },
+      about: {
+        "@type": "City",
+        name: city.name,
+        geo: { "@type": "GeoCoordinates", latitude: city.lat, longitude: city.lon },
+      },
+      potentialAction: searchAction(
+        `${absoluteUrl(locale, "/found")}?lat=${city.lat}&lon=${city.lon}&search={search_term_string}`,
+      ),
+      breadcrumb: {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: page.home, item: absoluteUrl(locale) },
+          { "@type": "ListItem", position: 2, name: city.name, item: url },
+        ],
+      },
+    },
+  ]
+}
+
 export const SITEMAP_KINDS: ItemKind[] = ["lost", "found"]
 
 const SITEMAP_MONTHS_BACK = Math.ceil(STALE_AFTER_DAYS / 30) + 1

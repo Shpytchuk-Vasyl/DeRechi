@@ -4,16 +4,21 @@ import { fetchItems, type ItemKind } from "@/api/items"
 import { ItemCard } from "@/components/items/item-card"
 import { ErrorNote } from "@/components/pouf/feedback"
 import { Row, Spacer, Stack } from "@/components/pouf/layout"
-import { Heading } from "@/components/pouf/text"
+import { Heading, Text } from "@/components/pouf/text"
+import type { NearInput } from "@/graphql/generated/graphql"
 import SeeAllLink from "./see-all-link"
 
 const RAIL_SIZE = 5
 
 type Props = {
   kind: ItemKind
+  near?: NearInput
+  title?: string
+  seeAll?: { label: string; query: Record<string, string> }
+  empty?: string
 }
 
-export default async function RecentRail({ kind }: Props) {
+export default async function RecentRail({ kind, near, title, seeAll, empty }: Props) {
   const t = await getTranslations("home")
   const headingId = `recent-${kind}-heading`
 
@@ -22,10 +27,12 @@ export default async function RecentRail({ kind }: Props) {
       <section aria-labelledby={headingId}>
         <Row gap={3} align="center">
           <Heading level={2} id={headingId}>
-            {t(kind === "found" ? "recentFound" : "recentLost")}
+            {title ?? t(kind === "found" ? "recentFound" : "recentLost")}
           </Heading>
           <Spacer />
-          <SeeAllLink kind={kind}>{t(kind === "found" ? "seeAllFound" : "seeAllLost")}</SeeAllLink>
+          <SeeAllLink kind={kind} query={seeAll?.query}>
+            {seeAll?.label ?? t(kind === "found" ? "seeAllFound" : "seeAllLost")}
+          </SeeAllLink>
         </Row>
         <ErrorBoundary
           fallback={
@@ -34,18 +41,21 @@ export default async function RecentRail({ kind }: Props) {
             </ErrorNote>
           }
         >
-          <RailItems kind={kind} />
+          <RailItems kind={kind} near={near} empty={empty} />
         </ErrorBoundary>
       </section>
     </Stack>
   )
 }
 
-async function RailItems({ kind }: Props) {
-  const { items } = await fetchItems(kind, { first: RAIL_SIZE })
+async function RailItems({ kind, near, empty }: Pick<Props, "kind" | "near" | "empty">) {
+  const { items } = await fetchItems(kind, {
+    first: RAIL_SIZE,
+    ...(near ? { filter: { near } } : {}),
+  })
 
   if (items.length === 0) {
-    return null
+    return empty ? <Text muted>{empty}</Text> : null
   }
 
   return (
