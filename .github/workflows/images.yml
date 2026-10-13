@@ -9,13 +9,27 @@ on:
   #     - "tests/**"
   #     - "**/*.md"
   workflow_dispatch:
+    inputs:
+      target:
+        description: Image to build (default = all of them)
+        type: choice
+        default: default
+        options:
+          - default
+          - postgis
+          - db-postgres
+          - client-api
+          - admin-api
+          - worker
+          - notification
+          - ingest
 
 permissions:
   contents: read
   packages: write
 
 concurrency:
-  group: images
+  group: images-${{ inputs.target || 'default' }}
   cancel-in-progress: true
 
 jobs:
@@ -53,6 +67,7 @@ jobs:
         with:
           source: .
           files: docker-bake.hcl
+          targets: ${{ inputs.target || 'default' }}
           push: true
           vars: |
             REGISTRY=${{ steps.registry.outputs.name }}

@@ -88,7 +88,12 @@ Two caches survive between runs:
 - **`~/.m2`.** A runner starts with an empty builder, and BuildKit does not put `--mount=type=cache` into the GitHub cache. `reproducible-containers/buildkit-cache-dance` moves the mount in and out of `actions/cache`, keyed by the hash of every `pom.xml` and the wrapper properties. Without it every run downloads all dependencies and Maven itself.
 - **Layers**, `type=gha` with a scope per image and the default `min` mode: only the layers of the final images, such as the `apt-get` of `ingest` and the dictionaries of `postgis`. The build stage is not exported: any commit changes its input, so it would be uploaded on every run and never read back.
 
-A new image is a new target in `docker-bake.hcl` (and in its `default` group), not a change to the workflow.
+Run workflow has a `target` dropdown: `default` (the bake group, every image) or one target, handed to bake as
+`targets`. A single image still compiles the whole reactor, it just builds and pushes one final stage. The
+concurrency group is per choice, so a new run cancels only an older run of the same choice.
+
+A new image is a new target in `docker-bake.hcl` (and in its `default` group) plus an option in the workflow's
+`target` dropdown; without the option it is still built by `default`.
 
 ### Context
 
