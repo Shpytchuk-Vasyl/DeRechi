@@ -32,7 +32,7 @@ class CaptionBuilderTest {
                 "ТЦ Ocean Plaza", DATE, new Money(500, "UAH"), null, "https://derechi.site/uk/lost/42", "Бюро знахідок Київ");
 
         assertThat(uk.caption(post, PHOTO_LIMIT)).isEqualTo("""
-                🔴 Загублено: Чорний гаманець
+                🔴 Чорний гаманець
                 📍 ТЦ Ocean Plaza
                 📅 09.10.2026
                 💰 Винагорода: 500 UAH
@@ -49,7 +49,7 @@ class CaptionBuilderTest {
                 new byte[]{1}, "https://derechi.site/uk/found/7", "Загублено Львів");
 
         assertThat(uk.caption(post, PHOTO_LIMIT)).isEqualTo("""
-                🟢 Знайдено: Ключі
+                🟢 Ключі
                 📍 Площа Ринок
                 📅 09.10.2026
 
@@ -100,7 +100,7 @@ class CaptionBuilderTest {
     void englishIsTheFallback() {
         String caption = builder("de").caption(post("Bag", null, new Money(5, "EUR"), "https://x/de/lost/1"), PHOTO_LIMIT);
 
-        assertThat(caption).startsWith("🔴 Lost: Bag").contains("💰 Reward: 5 EUR").contains("Source: Chat");
+        assertThat(caption).startsWith("🔴 Bag").contains("💰 Reward: 5 EUR").contains("Source: Chat");
     }
 
     @Test
@@ -137,7 +137,7 @@ class CaptionBuilderTest {
         String caption = uk.caption(post, 250);
 
         assertThat(caption.length()).isLessThanOrEqualTo(250);
-        assertThat(caption).doesNotContain("опис").contains("Загублено: Дуже довга назва").contains("…\n📍");
+        assertThat(caption).doesNotContain("опис").contains("🔴 Дуже довга назва").contains("…\n📍");
     }
 
     @Test

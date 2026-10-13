@@ -29,8 +29,7 @@ public class CaptionBuilder {
 
     public String caption(ChannelPost post, int limit) {
         boolean lost = post.kind() == ItemKind.LOST;
-        String label = new StringBuilder(lost ? "🔴 " : "🟢 ")
-                .append(text(lost ? "channel.lost.title" : "channel.found.title")).append(": ").toString();
+        String label = lost ? "🔴 " : "🟢 ";
         String details = details(post);
         String footer = footer(post, lost);
         int fixed = label.length() + details.length() + footer.length();

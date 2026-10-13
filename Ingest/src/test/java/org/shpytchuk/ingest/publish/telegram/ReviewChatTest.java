@@ -54,7 +54,7 @@ class ReviewChatTest {
         verify(bot).sendPhoto(eq("-500"), eq(PHOTO), caption.capture());
         verify(bot, never()).sendPhoto(anyString(), eq(second), anyString());
         assertThat(caption.getValue())
-                .startsWith(header + "\n\n🟢 Знайдено: Ключі")
+                .startsWith(header + "\n\n🟢 Ключі")
                 .contains("Посилання ще немає")
                 .doesNotContain("<pre>");
         assertThat(caption.getValue().length()).isLessThanOrEqualTo(CaptionBuilder.PHOTO_LIMIT);
@@ -64,7 +64,7 @@ class ReviewChatTest {
         assertThat(text.getValue())
                 .startsWith(header + "\n\n<pre>{\n")
                 .contains("\"title\" : \"Гаманець &lt;чорний&gt;\"")
-                .doesNotContain("Знайдено: Ключі")
+                .doesNotContain("🟢 Ключі")
                 .endsWith("}</pre>");
     }
 
@@ -83,7 +83,7 @@ class ReviewChatTest {
         ArgumentCaptor<String> text = ArgumentCaptor.forClass(String.class);
         verify(bot).sendMessage(eq("-500"), text.capture());
         verify(bot, never()).sendPhoto(anyString(), any(), anyString());
-        assertThat(text.getValue()).contains("Знайдено: Ключі").endsWith("}</pre>");
+        assertThat(text.getValue()).contains("🟢 Ключі").endsWith("}</pre>");
     }
 
     @Test
@@ -93,7 +93,7 @@ class ReviewChatTest {
         ArgumentCaptor<String> text = ArgumentCaptor.forClass(String.class);
         verify(bot).sendMessage(eq("-500"), text.capture());
         verify(bot, never()).sendPhoto(anyString(), any(), anyString());
-        assertThat(text.getValue()).startsWith("<b>not_notice</b>\nChat\n\n<pre>").doesNotContain("Знайдено");
+        assertThat(text.getValue()).startsWith("<b>not_notice</b>\nChat\n\n<pre>").doesNotContain("🟢");
     }
 
     @Test

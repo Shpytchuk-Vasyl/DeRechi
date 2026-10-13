@@ -36,7 +36,7 @@ class ChannelPosterTest {
         long id = poster(properties("@derechi", "")).post(post);
 
         assertThat(id).isEqualTo(11);
-        verify(bot).sendPhoto(eq("@derechi"), eq(PHOTO), startsWith("🟢 Знайдено: Ключі"));
+        verify(bot).sendPhoto(eq("@derechi"), eq(PHOTO), startsWith("🟢 Ключі"));
         verify(bot, never()).sendMessage(anyString(), anyString());
     }
 
@@ -47,7 +47,7 @@ class ChannelPosterTest {
         long id = poster(properties("@derechi", "")).post(post(null, "https://derechi.site/uk/found/7"));
 
         assertThat(id).isEqualTo(12);
-        verify(bot).sendMessage(eq("@derechi"), startsWith("🟢 Знайдено: Ключі"));
+        verify(bot).sendMessage(eq("@derechi"), startsWith("🟢 Ключі"));
     }
 
     @Test
