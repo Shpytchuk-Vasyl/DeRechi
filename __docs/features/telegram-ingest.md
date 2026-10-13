@@ -35,7 +35,7 @@ One row per post that reached the model (migration `012`), keyed by source, chan
 | `FAILED` | retries exhausted. Delete the row and the next start's catch-up takes the post again, if it is younger than the catch-up window |
 | `NEEDS_CHECK` | found in `PUBLISHING` after a crash, or the GraphQL call ended unclearly: check on the site whether the notice exists. Never retried automatically |
 
-A stage that is not configured (no OpenRouter or Places key, Client-API unreachable) records nothing (`outcome=unavailable`), so the post comes back with the next catch-up once the stage works.
+A stage that is not configured (no OpenRouter or Places key, Client-API unreachable) records nothing (`outcome=unavailable`), so the post comes back with the next catch-up once the stage works. A post over `OPENROUTER_DAILY_LIMIT` records nothing either (`outcome=budget`): `IngestQueue` keeps it aside (`derechi.ingest.postponed`) and queues it again when the limit resets at the next UTC midnight; the same post arriving meanwhile is not queued twice. A restart forgets the postponed posts, but the catch-up brings them back, since the ledger has no row for them.
 
 ## Running it
 
@@ -51,7 +51,7 @@ Every variable is in [environment variables](../deployment/environment-variables
 
 ## Metrics and alerts
 
-`derechi.ingest.posts{outcome}`, `derechi.ingest.phone.source{source}`, `derechi.ingest.llm.duration{model}`, `derechi.ingest.llm.cost{model}` (USD), `derechi.ingest.image.redacted{mode}`, `derechi.ingest.published{publisher,outcome}`, `derechi.ingest.queue`, `derechi.ingest.telegram.authorized`, `derechi.ingest.facebook.authorized`, `derechi.ingest.facebook.polls{group,outcome}`, `derechi.ingest.last.received` (epoch seconds). Alerts `IngestUnauthorized`, `FacebookUnauthorized` and `IngestStalled`, see [monitoring](../deployment/monitoring.md).
+`derechi.ingest.posts{outcome}`, `derechi.ingest.phone.source{source}`, `derechi.ingest.llm.duration{model}`, `derechi.ingest.llm.cost{model}` (USD), `derechi.ingest.image.redacted{mode}`, `derechi.ingest.published{publisher,outcome}`, `derechi.ingest.queue`, `derechi.ingest.postponed`, `derechi.ingest.telegram.authorized`, `derechi.ingest.facebook.authorized`, `derechi.ingest.facebook.polls{group,outcome}`, `derechi.ingest.last.received` (epoch seconds). Alerts `IngestUnauthorized`, `FacebookUnauthorized` and `IngestStalled`, see [monitoring](../deployment/monitoring.md).
 
 ## Known gaps
 

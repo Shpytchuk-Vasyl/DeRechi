@@ -3,6 +3,7 @@ package org.shpytchuk.ingest.extraction.openrouter;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 
@@ -29,6 +30,10 @@ public class DailyCallCounter {
         }
         count++;
         return true;
+    }
+
+    public Instant nextReset() {
+        return today().plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
     }
 
     private LocalDate today() {

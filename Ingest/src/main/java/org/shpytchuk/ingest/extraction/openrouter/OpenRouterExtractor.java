@@ -78,7 +78,8 @@ public class OpenRouterExtractor implements Extractor {
             throw new StageUnavailableException("OpenRouter API key is not configured");
         }
         if (!counter.tryAcquire(properties.dailyLimit())) {
-            throw new BudgetExceededException("The daily limit of " + properties.dailyLimit() + " OpenRouter calls is used up");
+            throw new BudgetExceededException("The daily limit of " + properties.dailyLimit() + " OpenRouter calls is used up",
+                    counter.nextReset());
         }
         CompletionRequest body = body(request);
         long started = System.nanoTime();

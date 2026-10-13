@@ -6,7 +6,6 @@ import org.jspecify.annotations.Nullable;
 import org.shpytchuk.ingest.client.DeRechiApi;
 import org.shpytchuk.ingest.config.IngestProperties;
 import org.shpytchuk.ingest.entity.PostStatus;
-import org.shpytchuk.ingest.exception.BudgetExceededException;
 import org.shpytchuk.ingest.exception.IngestException;
 import org.shpytchuk.ingest.exception.StageUnavailableException;
 import org.shpytchuk.ingest.extraction.*;
@@ -68,9 +67,6 @@ public class IngestPipeline {
         } catch (StageUnavailableException e) {
             metrics.outcome(Outcome.UNAVAILABLE);
             log.warn("Post {} left for the next catch-up: {}", post.key(), e.getMessage());
-        } catch (BudgetExceededException e) {
-            finish(post, Outcome.BUDGET, null);
-            log.warn("Post {} skipped: {}", post.key(), e.getMessage());
         } catch (IngestException e) {
             ledger.record(post, PostStatus.FAILED, null, null);
             metrics.outcome(Outcome.FAILED);

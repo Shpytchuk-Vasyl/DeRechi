@@ -7,6 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.shpytchuk.ingest.client.DeRechiApi;
 import org.shpytchuk.ingest.config.IngestProperties;
 import org.shpytchuk.ingest.entity.PostStatus;
+import org.shpytchuk.ingest.exception.BudgetExceededException;
 import org.shpytchuk.ingest.exception.IngestException;
 import org.shpytchuk.ingest.exception.StageUnavailableException;
 import org.shpytchuk.ingest.extraction.Extraction;
@@ -49,6 +50,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
@@ -177,6 +179,18 @@ class IngestPipelineTest {
         verify(ledger, never()).record(any(), any(), any(), any());
         verifyNoInteractions(output);
         assertThat(count("unavailable")).isEqualTo(1);
+    }
+
+    @Test
+    void anOverBudgetPostIsHandedBackWithoutARecord() {
+        BudgetExceededException budget = new BudgetExceededException("The daily limit is used up",
+                Instant.parse("2026-10-11T00:00:00Z"));
+        when(extractor.extract(any())).thenThrow(budget);
+
+        assertThatThrownBy(() -> pipeline().process(post("Загубив гаманець 067 123 45 67", List.of())))
+                .isSameAs(budget);
+        verify(ledger, never()).record(any(), any(), any(), any());
+        verifyNoInteractions(output);
     }
 
     @Test

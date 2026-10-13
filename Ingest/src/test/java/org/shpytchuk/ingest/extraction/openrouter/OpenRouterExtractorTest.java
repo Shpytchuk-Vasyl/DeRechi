@@ -322,7 +322,9 @@ class OpenRouterExtractorTest {
                 .andRespond(withSuccess(response(ANSWER, MAIN, 0.001), MediaType.APPLICATION_JSON));
 
         extractor.extract(request(List.of()));
-        assertThatThrownBy(() -> extractor.extract(request(List.of()))).isInstanceOf(BudgetExceededException.class);
+        assertThatThrownBy(() -> extractor.extract(request(List.of())))
+                .isInstanceOfSatisfying(BudgetExceededException.class,
+                        e -> assertThat(e.retryAt()).isEqualTo(Instant.parse("2026-10-11T00:00:00Z")));
 
         clock.set(Instant.parse("2026-10-11T00:00:01Z"));
         extractor.extract(request(List.of()));
