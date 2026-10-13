@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @NoRepositoryBean
@@ -21,4 +22,7 @@ public interface ThingRepository<T extends Thing> extends JpaRepository<T, Long>
     List<Double> rankAll(@Param("ids") List<Long> ids,
                          @Param("regconfig") String regconfig,
                          @Param("title") String title);
+
+    @Query("SELECT t.id FROM #{#entityName} t WHERE t.date < :cutoff ORDER BY t.id")
+    List<Long> findIdsDatedBefore(@Param("cutoff") LocalDate cutoff);
 }

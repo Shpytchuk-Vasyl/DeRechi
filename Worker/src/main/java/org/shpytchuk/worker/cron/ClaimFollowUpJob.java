@@ -3,6 +3,7 @@ package org.shpytchuk.worker.cron;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
+import org.shpytchuk.worker.config.ArchiveProperties;
 import org.shpytchuk.worker.config.ClaimsProperties;
 import org.shpytchuk.worker.entity.matching.Claim;
 import org.shpytchuk.worker.repository.ClaimRepository;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Component;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.function.Predicate;
@@ -31,6 +34,7 @@ public class ClaimFollowUpJob {
     private final ClaimFollowUps followUps;
     private final ItemArchiver archiver;
     private final ClaimsProperties properties;
+    private final ArchiveProperties archive;
     private final Clock clock;
 
     @Scheduled(fixedDelayString = "${derechi.claims.check-every}")
@@ -59,6 +63,10 @@ public class ClaimFollowUpJob {
                         id -> archiver.archive(kind, id)),
                 new Step("archive of quiet item", "quiet items archived",
                         () -> quietItems(claims, now.minus(properties.archiveAfter())),
+                        id -> archiver.archive(kind, id)),
+                new Step("archive of stale item", "stale items archived",
+                        () -> kinds.of(kind).items().findIdsDatedBefore(
+                                LocalDate.ofInstant(now, ZoneOffset.UTC).minus(archive.maxAge())),
                         id -> archiver.archive(kind, id)),
                 new Step("deletion of expired claim", "expired claims deleted",
                         () -> ids(claims.findByCreatedAtLessThanEqualOrderByIdAsc(now.minus(properties.retention()))),

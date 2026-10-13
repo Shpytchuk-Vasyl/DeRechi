@@ -51,6 +51,7 @@ derechi:
     retention: P365D
   archive:
     queue: worker.archive
+    max-age: P30D
 
 server:
   port: 8085

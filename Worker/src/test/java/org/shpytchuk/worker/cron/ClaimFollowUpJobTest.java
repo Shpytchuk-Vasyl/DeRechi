@@ -5,8 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.shpytchuk.worker.entity.lost.LostItemClaim;
 import org.shpytchuk.worker.repository.ContactInfoRepository;
-import org.shpytchuk.worker.repository.found.FoundItemClaimRepository;
+import org.shpytchuk.worker.repository.SimilarItemRepository;
 import org.shpytchuk.worker.repository.lost.LostItemClaimRepository;
+import org.shpytchuk.worker.repository.lost.LostItemHistoryRepository;
+import org.shpytchuk.worker.repository.lost.LostItemRepository;
 import org.shpytchuk.worker.service.ClaimNotifier;
 import org.shpytchuk.worker.service.ItemArchiver;
 import org.shpytchuk.worker.service.ItemKind;
@@ -18,6 +20,7 @@ import org.springframework.amqp.AmqpConnectException;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +41,7 @@ class ClaimFollowUpJobTest {
 
     private static final Instant NOW = Instant.parse("2026-10-01T12:00:00Z");
 
+    private LostItemRepository lostItems;
     private LostItemClaimRepository lostClaims;
     private ContactInfoRepository contactInfos;
     private ClaimNotifier notifier;
@@ -46,15 +50,17 @@ class ClaimFollowUpJobTest {
 
     @BeforeEach
     void setUp() {
+        lostItems = mock(LostItemRepository.class);
         lostClaims = mock(LostItemClaimRepository.class);
         contactInfos = mock(ContactInfoRepository.class);
         notifier = mock(ClaimNotifier.class);
         archiver = mock(ItemArchiver.class);
 
         Clock clock = Clock.fixed(NOW, ZoneOffset.UTC);
-        ItemKinds kinds = Kinds.of(lostClaims, mock(FoundItemClaimRepository.class));
+        ItemKinds kinds = Kinds.lost(lostItems, mock(LostItemHistoryRepository.class), lostClaims,
+                mock(SimilarItemRepository.class));
         ClaimFollowUps followUps = new ClaimFollowUps(kinds, notifier, contactInfos, clock);
-        job = new ClaimFollowUpJob(kinds, followUps, archiver, Fixtures.PROPERTIES, clock);
+        job = new ClaimFollowUpJob(kinds, followUps, archiver, Fixtures.PROPERTIES, Fixtures.ARCHIVE, clock);
     }
 
     @Test
@@ -140,6 +146,16 @@ class ClaimFollowUpJobTest {
     }
 
     @Test
+    void archivesItemsDatedMoreThanTheMaxAgeAgoInUtc() {
+        when(lostItems.findIdsDatedBefore(LocalDate.of(2026, 9, 1))).thenReturn(List.of(7L, 8L));
+
+        job.run();
+
+        verify(archiver).archive(ItemKind.LOST, 7L);
+        verify(archiver).archive(ItemKind.LOST, 8L);
+    }
+
+    @Test
     void deletesExpiredClaimsWithTheirContacts() {
         LostItemClaim claim = Fixtures.lostClaim("+380671234567");
         claim.getContactInfo().setId(77L);
@@ -167,13 +183,14 @@ class ClaimFollowUpJobTest {
 
         job.run();
 
-        InOrder order = inOrder(lostClaims, notifier, archiver);
+        InOrder order = inOrder(lostClaims, lostItems, notifier, archiver);
         order.verify(lostClaims).findByItemNotNullAndConfirmedAtNullAndAuthorRemindedAtNullAndCreatedAtLessThanEqualOrderByIdAsc(any());
         order.verify(notifier).remindAuthor(ItemKind.LOST, reminded);
         order.verify(lostClaims).findByItemNotNullAndConfirmedAtNullAndClaimantRemindedAtNullAndAuthorRemindedAtLessThanEqualOrderByIdAsc(any());
         order.verify(lostClaims).findByItemNotNullAndConfirmedAtNotNull();
         order.verify(archiver).archive(ItemKind.LOST, 5L);
         order.verify(lostClaims).findByItemNotNullAndCreatedAtLessThanEqual(any());
+        order.verify(lostItems).findIdsDatedBefore(any());
         order.verify(lostClaims).findByCreatedAtLessThanEqualOrderByIdAsc(any());
     }
 }

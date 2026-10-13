@@ -1,5 +1,6 @@
 package org.shpytchuk.worker.support;
 
+import org.shpytchuk.worker.config.ArchiveProperties;
 import org.shpytchuk.worker.config.ClaimsProperties;
 import org.shpytchuk.worker.entity.found.FoundItemClaim;
 import org.shpytchuk.worker.entity.lost.LostItemClaim;
@@ -19,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.UUID;
 
 public final class Fixtures {
@@ -26,6 +28,8 @@ public final class Fixtures {
     public static final ClaimsProperties PROPERTIES = new ClaimsProperties(
             "worker.claims", "derechi.notifications", "http://localhost:3000/",
             Duration.ofMinutes(10), Duration.ofDays(1), Duration.ofDays(1), Duration.ofDays(7), Duration.ofDays(365));
+
+    public static final ArchiveProperties ARCHIVE = new ArchiveProperties("worker.archive", Period.ofDays(30));
 
 
     private Fixtures() {

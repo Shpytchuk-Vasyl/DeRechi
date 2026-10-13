@@ -59,6 +59,8 @@ Anything else falls through to the default `INTERNAL_ERROR`.
 
 The aspect has `@Order(0)`, so it sits outside the transaction interceptor and fires only after the insert has committed; a failing `create` publishes nothing (`ItemEventAspectTest.doesNotPublishWhenCreateThrows`). The flip side: if RabbitMQ is unreachable at that moment the row is already committed but the publish throws and the mutation returns an error. There is no outbox, so such a notice simply never gets matched.
 
+A notice lives 30 days from its `date`, the day the thing was lost or found, not the day it was posted. After that `Worker` archives it whether it has claims or not (`ClaimFollowUpJob`, step "archive of stale item", `derechi.archive.max-age: P30D`, days in UTC, `date` strictly before today minus 30 days): a notice dated 1 September is still listed on 1 October and goes on the first run of 2 October. Since `Client-API` accepts a `date` up to 30 days back, a notice posted with an old date is listed for only the days it has left. Claims archive it earlier, see [Claims](claims.md).
+
 ## Home page figures
 
 `stats` is answered by `FoundItemStatisticsController` → `FoundItemStatisticsService` with two counts over found notices only:
@@ -79,7 +81,7 @@ One row in `lost_item` or `found_item`, one `contact_info` row per notice, one `
 - No update or delete for the public. The code is there in `ItemService` and the schema, commented out, waiting for an authentication story on `Client-API`.
 - No ownership: a notice is not tied to a Keycloak user, so "my notices" cannot be built yet.
 - Phone masking assumes a five-digit visible prefix, which fits Ukrainian numbers best.
-- The home page figures are approximate. "Returned" counts every archived found notice, including those archived a week after the last claim without a confirmation or archived by staff; counting claims with `confirmed_at` would be exact. "Found today" reads the date the finder entered, not when the notice was posted: there is no `created_at` column.
+- The home page figures are approximate. "Returned" counts every archived found notice, including those archived a week after the last claim without a confirmation, archived by staff or archived 30 days after their `date`; counting claims with `confirmed_at` would be exact. "Found today" reads the date the finder entered, not when the notice was posted: there is no `created_at` column.
 - Days in `stats` start at midnight UTC, which is 02:00 or 03:00 in Kyiv.
 
 ## Where to look

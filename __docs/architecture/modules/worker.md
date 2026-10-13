@@ -79,9 +79,11 @@ query)` used by `rankAll`, and the same `dwithin` that `Client-API` has. It is w
 The second queue and the scheduled `ClaimFollowUpJob` implement the response flow described in
 [../../features/claims.md](../../features/claims.md): notify the author in the language of
 their phone number, remind both sides, archive the notice on confirmation or a week after the
-last response. `ItemArchiver` is the only code that archives a notice: the admin "Archive"
-button arrives here as `ARCHIVE_REQUESTED` on the third queue (`ArchiveListener`), and the
-confirmed return and the quiet-notice rule call it directly. Archiving re-points the notice's
+last response. The same job also archives every notice whose `date` is more than
+`derechi.archive.max-age` (30 days) ago, claims or not. `ItemArchiver` is the only code that
+archives a notice: the admin "Archive" button arrives here as `ARCHIVE_REQUESTED` on the third
+queue (`ArchiveListener`), and the confirmed return, the quiet-notice and the stale-notice rules
+call it directly. Archiving re-points the notice's
 claims at the history copy instead of deleting them, which is why this module writes to the
 item, history and claim tables. Texts live in this module's own five `messages*.properties`.
 
@@ -141,6 +143,7 @@ derechi:
     retention: P365D
   archive:
     queue: worker.archive
+    max-age: P30D
 spring:
   rabbitmq:
     listener:

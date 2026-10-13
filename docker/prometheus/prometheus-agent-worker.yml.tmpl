@@ -12,6 +12,8 @@ scrape_configs:
         labels: { application: Worker }
       - targets: ["notification:9084"]
         labels: { application: Notification }
+      - targets: ["ingest:9086"]
+        labels: { application: Ingest }
     metric_relabel_configs:
       - source_labels: [__name__]
         regex: "spring_data_repository_invocations_.*|graphql_datafetcher_.*|.+_active_seconds_.*|tomcat_sessions_.*"

@@ -55,7 +55,8 @@ class ClaimsConfigTests {
                     "derechi.claims.claimant-reminder-after=P1D",
                     "derechi.claims.archive-after=P7D",
                     "derechi.claims.retention=P365D",
-                    "derechi.archive.queue=worker.archive");
+                    "derechi.archive.queue=worker.archive",
+                    "derechi.archive.max-age=P30D");
 
     @Test
     void registersOneHandlerBeanPerKindAndVerb() {
