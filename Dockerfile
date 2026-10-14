@@ -16,6 +16,11 @@ COPY Ingest Ingest
 
 RUN --mount=type=cache,target=/root/.m2,sharing=locked ./mvnw -B --strict-checksums -DskipTests package
 
+RUN for jar in */target/*.jar; do \
+      java -Djarmode=tools -jar "$jar" extract --layers --application-filename app.jar \
+        --destination "layers/${jar%%/*}"; \
+    done
+
 FROM eclipse-temurin:26-jre AS ingest
 WORKDIR /app
 
@@ -29,7 +34,10 @@ RUN useradd --system --uid 1001 spring \
  && chown spring /app/tdlib
 USER spring
 
-COPY --from=build /workspace/Ingest/target/*.jar app.jar
+COPY --from=build /workspace/layers/Ingest/dependencies/ ./
+COPY --from=build /workspace/layers/Ingest/spring-boot-loader/ ./
+COPY --from=build /workspace/layers/Ingest/snapshot-dependencies/ ./
+COPY --from=build /workspace/layers/Ingest/application/ ./
 
 ENV JAVA_OPTS="--enable-native-access=ALL-UNNAMED"
 ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar \"$@\"", "--"]
@@ -41,7 +49,10 @@ WORKDIR /app
 RUN useradd --system --uid 1001 spring
 USER spring
 
-COPY --from=build /workspace/${MODULE}/target/*.jar app.jar
+COPY --from=build /workspace/layers/${MODULE}/dependencies/ ./
+COPY --from=build /workspace/layers/${MODULE}/spring-boot-loader/ ./
+COPY --from=build /workspace/layers/${MODULE}/snapshot-dependencies/ ./
+COPY --from=build /workspace/layers/${MODULE}/application/ ./
 
 ENV JAVA_OPTS=""
 ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar"]

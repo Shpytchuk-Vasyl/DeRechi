@@ -18,6 +18,10 @@ COPY Worker Worker
 COPY Notification Notification
 COPY Ingest Ingest
 RUN --mount=type=cache,target=/root/.m2,sharing=locked ./mvnw -B --strict-checksums -DskipTests package
+RUN for jar in */target/*.jar; do \
+      java -Djarmode=tools -jar "$jar" extract --layers --application-filename app.jar \
+        --destination "layers/${jar%%/*}"; \
+    done
 
 FROM eclipse-temurin:26-jre AS ingest
 # ... Tesseract, /app/tdlib, argument-forwarding entrypoint, see below
@@ -27,14 +31,19 @@ ARG MODULE
 WORKDIR /app
 RUN useradd --system --uid 1001 spring
 USER spring
-COPY --from=build /workspace/${MODULE}/target/*.jar app.jar
+COPY --from=build /workspace/layers/${MODULE}/dependencies/ ./
+COPY --from=build /workspace/layers/${MODULE}/spring-boot-loader/ ./
+COPY --from=build /workspace/layers/${MODULE}/snapshot-dependencies/ ./
+COPY --from=build /workspace/layers/${MODULE}/application/ ./
 ENV JAVA_OPTS=""
 ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar"]
 ```
 
 **Build stage.** Identical for every service: it copies the whole reactor and runs `package` once. Because the stage does not depend on `MODULE`, Docker reuses its layer for all six images, so building the stack compiles the reactor one time, not six. The `--mount=type=cache` keeps `~/.m2` between builds, which is what makes a rebuild after a one-line change take seconds instead of downloading every dependency again. `sharing=locked` stops the parallel image builds from writing to that cache at the same time. `--strict-checksums` fails a download whose checksum does not match. Without it, Maven only warns and keeps the broken jar in the cache, and every later build fails with `ZipException ... zip END header not found`. If that error appears anyway, clear the cache with `docker builder prune --filter type=exec.cachemount -f`.
 
-**Runtime stage.** A JRE-only image, a non-root `spring` user and the single fat jar of the requested module. `JAVA_OPTS` is empty by default and is where compose injects heap limits and any `-D` flags. It must stay the **last** stage: a compose service without `build.target` gets the last stage, and every service except `ingest` relies on that.
+**Layers.** After `package` the build stage splits every fat jar into Spring Boot's layers (`java -Djarmode=tools ... extract --layers`): `dependencies` (the released libraries, 80+ MB), `spring-boot-loader` and `snapshot-dependencies` (both empty for us, kept so the `COPY` lines never miss a folder) and `application` (`app.jar`, our classes, a few hundred KB, with a manifest `Class-Path` into `lib/`). The runtime stage copies them as four layers, least changed first. A code change rebuilds only the last one, so CI pushes and `docker compose pull` downloads a few hundred KB per service instead of the whole fat jar; the dependency layer changes only when a library does. The extracted libraries keep the timestamps of their jar entries, which keeps that layer identical between builds.
+
+**Runtime stage.** A JRE-only image, a non-root `spring` user and the layers of the requested module, started with `java -jar /app/app.jar` like a fat jar. `JAVA_OPTS` is empty by default and is where compose injects heap limits and any `-D` flags. It must stay the **last** stage: a compose service without `build.target` gets the last stage, and every service except `ingest` relies on that.
 
 **`ingest` stage.** Ingest has its own final stage, picked by `build.target: ingest` in compose, for two reasons:
 

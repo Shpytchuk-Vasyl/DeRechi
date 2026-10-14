@@ -63,8 +63,8 @@ same directory on disk for the same reason.
 ## Why the jar is executable
 
 `spring-boot-maven-plugin` is bound to `package`, as in the services. The root `Dockerfile`
-copies `${MODULE}/target/*.jar` and runs it with `java -jar`, so the `db-postgres` image
-needs a repackaged jar. `repackage` moves the classes under `BOOT-INF/classes/`, which a
+splits `${MODULE}/target/*.jar` into Spring Boot's layers and runs it with `java -jar`, so the
+`db-postgres` image needs a repackaged jar. `repackage` moves the classes under `BOOT-INF/classes/`, which a
 dependent module could not read. That is acceptable only because nobody depends on
 `DB-Postgres`. The integration tests in `Client-API` and `Admin-API` read `changelog/` from
 disk, not from the jar. If a module ever needs the entities as a dependency, give the
