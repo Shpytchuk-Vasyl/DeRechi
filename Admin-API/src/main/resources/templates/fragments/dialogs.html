@@ -27,7 +27,14 @@
         <div class="card" tabindex="-1" autofocus>
             <header class="card-header">
                 <div class="card-header-title is-block">
-                    <p class="title is-5 mb-2" th:text="${item.title}">Назва</p>
+                    <p class="title is-5 mb-2" th:with="source=${sources?.get(scope + ':' + item.id)}">
+                        <span th:text="${item.title}">Назва</span>
+                        <a class="ml-2 is-size-6 has-text-grey" target="_blank" rel="noopener noreferrer"
+                           th:if="${source != null}" th:href="${source}" th:title="#{action.openSource}"
+                           th:aria-label="#{action.openSource}">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </p>
                     <div class="tags mb-0">
                         <span class="tag is-light is-rounded" th:text="'#' + ${item.id}">#1</span>
                         <span class="tag is-info is-light is-rounded" th:text="#{category.__${item.categoryKey}__}">OTHER</span>

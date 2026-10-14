@@ -7,6 +7,7 @@ import org.shpytchuk.adminapi.config.MapsConfig;
 import org.shpytchuk.adminapi.form.ItemFormValidator;
 import org.shpytchuk.adminapi.model.GlobalModelAdvice;
 import org.shpytchuk.adminapi.model.ItemModel;
+import org.shpytchuk.adminapi.service.ingest.SourceLinks;
 import org.shpytchuk.adminapi.service.ImageStorage;
 import org.shpytchuk.adminapi.config.SecurityConfig;
 import org.shpytchuk.adminapi.repository.thing.ThingCategoryRepository;
@@ -44,6 +45,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         Formats.class, Plurals.class, SocialMediaIcons.class,
         LostItemControllerTests.TestClients.class})
 class ItemFormPlaceSearchTests {
+
+    @MockitoBean
+    SourceLinks sourceLinks;
 
     @Autowired
     private MockMvc mockMvc;

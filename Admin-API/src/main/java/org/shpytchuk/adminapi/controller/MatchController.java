@@ -11,6 +11,8 @@ import org.shpytchuk.adminapi.security.RequirePermission;
 import org.shpytchuk.adminapi.security.Scope;
 import org.shpytchuk.adminapi.service.matching.MatchNotificationService;
 import org.shpytchuk.adminapi.service.matching.MatchService;
+import org.shpytchuk.adminapi.view.detail.ItemView;
+import org.shpytchuk.adminapi.view.matching.CandidateView;
 import org.shpytchuk.adminapi.view.matching.MatchRow;
 import org.shpytchuk.adminapi.view.matching.NotifiedMatch;
 import org.shpytchuk.adminapi.view.Pager;
@@ -20,6 +22,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping(MatchController.BASE_PATH)
@@ -46,6 +50,7 @@ public class MatchController {
         model.addAttribute("matches", matches);
         model.addAttribute("pages", Pager.of(matches));
         model.addAttribute("titleKey", "page.matches");
+        sources(model, matches.getContent());
         itemModel.forFilter(model, filter);
         return "matches";
     }
@@ -56,8 +61,10 @@ public class MatchController {
                              @RequestParam(defaultValue = "0") int page,
                              @ModelAttribute("filter") ItemFilter filter,
                              Model model) {
-        model.addAttribute("row", matchService.rowWithAllCandidates(lostItemId));
+        MatchRow row = matchService.rowWithAllCandidates(lostItemId);
+        model.addAttribute("row", row);
         model.addAttribute("page", page);
+        sources(model, List.of(row));
         return CELL;
     }
 
@@ -75,6 +82,14 @@ public class MatchController {
 
         model.addAttribute("lost", notified.lost());
         model.addAttribute("candidate", notified.candidate());
+        itemModel.forSources(model, Scope.LOST_ITEM, List.of(notified.lost().id()));
+        itemModel.forSources(model, Scope.FOUND_ITEM, List.of(notified.candidate().found().id()));
         return ROW;
+    }
+
+    private void sources(Model model, List<MatchRow> rows) {
+        itemModel.forSources(model, Scope.LOST_ITEM, rows.stream().map(row -> row.lost().id()).toList());
+        itemModel.forSources(model, Scope.FOUND_ITEM, rows.stream().flatMap(row -> row.candidates().stream())
+                .map(CandidateView::found).map(ItemView::id).distinct().toList());
     }
 }

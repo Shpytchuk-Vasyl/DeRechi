@@ -9,7 +9,9 @@ import java.time.Instant;
 @Table(name = "ingest_post",
         uniqueConstraints = @UniqueConstraint(name = "ingest_post_source_channel_external_uq",
                 columnNames = {"source", "channel", "external_id"}),
-        indexes = @Index(name = "ingest_post_phone_hash_idx", columnList = "phone_hash, created_at"))
+        indexes = {
+                @Index(name = "ingest_post_phone_hash_idx", columnList = "phone_hash, created_at"),
+                @Index(name = "ingest_post_item_idx", columnList = "item_kind, item_id")})
 public class IngestPost {
 
     @Id

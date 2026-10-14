@@ -1,5 +1,6 @@
 package org.shpytchuk.adminapi.controller;
 
+import org.shpytchuk.adminapi.service.ingest.SourceLinks;
 import org.junit.jupiter.api.Test;
 import org.shpytchuk.adminapi.config.CountriesConfig;
 import org.shpytchuk.adminapi.config.GlobalExceptionHandler;
@@ -69,6 +70,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         Formats.class, Plurals.class, SocialMediaIcons.class,
         MatchControllerTests.TestClients.class})
 class MatchControllerTests {
+
+    @MockitoBean
+    SourceLinks sourceLinks;
 
     @Autowired
     private MockMvc mockMvc;

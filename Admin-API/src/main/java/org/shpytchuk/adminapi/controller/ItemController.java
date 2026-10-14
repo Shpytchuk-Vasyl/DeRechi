@@ -89,6 +89,7 @@ public abstract class ItemController<T extends Thing> {
         model.addAttribute("items", items);
         model.addAttribute("claims", service.claims(items.getContent().stream().map(ItemView::id).toList()));
         model.addAttribute("pages", Pager.of(items));
+        itemModel.forSources(model, kind.scope(), items.getContent().stream().map(ItemView::id).toList());
 
         SortView sort = SortView.of(items.getSort());
         model.addAttribute("sort", sort);

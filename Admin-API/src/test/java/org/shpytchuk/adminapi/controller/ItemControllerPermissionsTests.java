@@ -17,6 +17,7 @@ import org.shpytchuk.adminapi.form.ItemForm;
 import org.shpytchuk.adminapi.form.ItemFormValidator;
 import org.shpytchuk.adminapi.model.GlobalModelAdvice;
 import org.shpytchuk.adminapi.model.ItemModel;
+import org.shpytchuk.adminapi.service.ingest.SourceLinks;
 import org.shpytchuk.adminapi.repository.thing.ThingCategoryRepository;
 import org.shpytchuk.adminapi.security.Action;
 import org.shpytchuk.adminapi.security.Permissions;
@@ -90,6 +91,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         Formats.class, Plurals.class, SocialMediaIcons.class,
         ItemControllerPermissionsTests.TestClients.class})
 class ItemControllerPermissionsTests {
+
+    @MockitoBean
+    SourceLinks sourceLinks;
 
     private record Route(String name, Action action,
                          Function<String, MockHttpServletRequestBuilder> request,
