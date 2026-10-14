@@ -2,6 +2,7 @@ package org.shpytchuk.ingest.source.facebook;
 
 import org.jspecify.annotations.Nullable;
 import org.shpytchuk.ingest.exception.IngestException;
+import org.shpytchuk.ingest.exception.StageUnavailableException;
 import org.shpytchuk.ingest.source.PhotoRef;
 import org.springframework.web.util.HtmlUtils;
 import tools.jackson.core.JacksonException;
@@ -29,6 +30,7 @@ class FacebookParser {
     private static final Pattern USER_ID = Pattern.compile("\"USER_ID\":\"(\\d+)\"");
     private static final Pattern FB_DTSG = Pattern.compile("\"DTSGInitialData\",\\[],\\{\"token\":\"([^\"]+)\"");
     private static final Pattern LSD = Pattern.compile("\"LSD\",\\[],\\{\"token\":\"([^\"]+)\"");
+    private static final String ANONYMOUS = "0";
     private static final String ERROR_PREFIX = "for (;;);";
     private static final String FEED_PAGE_INFO_LABEL = "group_feed$page_info";
     private static final String DISCUSSION = "DISCUSSION";
@@ -40,6 +42,9 @@ class FacebookParser {
     }
 
     GroupPage groupPage(String html) {
+        String userId = find(USER_ID, html).filter(id -> !ANONYMOUS.equals(id))
+                .orElseThrow(() -> new StageUnavailableException(
+                        "Facebook session is not logged in, refresh FACEBOOK_COOKIES"));
         String lsd = find(LSD, html).orElseThrow(() -> new IngestException("Facebook group page has no LSD token"));
         Feed feed = new Feed();
         JsonNode variables = null;
@@ -55,10 +60,10 @@ class FacebookParser {
             }
         }
         if (variables == null) {
-            throw new IngestException("Facebook group page has no feed query");
+            throw new IngestException("Facebook group page \"" + title(html) + "\" has no feed query");
         }
-        return new GroupPage(find(USER_ID, html).orElse(GroupPage.ANONYMOUS), find(FB_DTSG, html).orElse(null), lsd,
-                title(html), variables, feed.page(), scriptUrls(html));
+        return new GroupPage(userId, find(FB_DTSG, html).orElse(null), lsd, title(html), variables, feed.page(),
+                scriptUrls(html));
     }
 
     FeedPage feedPage(String body) {

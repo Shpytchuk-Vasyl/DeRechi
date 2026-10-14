@@ -2,6 +2,7 @@ package org.shpytchuk.ingest.source.facebook;
 
 import org.junit.jupiter.api.Test;
 import org.shpytchuk.ingest.exception.IngestException;
+import org.shpytchuk.ingest.exception.StageUnavailableException;
 import org.shpytchuk.ingest.source.PhotoRef;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -21,7 +22,6 @@ class FacebookParserTest {
     void readsTheSessionTokensAndTheFeedQueryOfTheGroupPage() {
         GroupPage page = parser.groupPage(FacebookFixtures.page());
 
-        assertThat(page.loggedIn()).isTrue();
         assertThat(page.userId()).isEqualTo("100000000000001");
         assertThat(page.fbDtsg()).isEqualTo("dtsg-token");
         assertThat(page.lsd()).isEqualTo("lsd-token");
@@ -47,16 +47,35 @@ class FacebookParserTest {
     }
 
     @Test
-    void anAnonymousPageIsNotLoggedIn() {
-        GroupPage page = parser.groupPage(FacebookFixtures.anonymousPage());
+    void anAnonymousPageMakesTheSourceUnavailable() {
+        assertThatThrownBy(() -> parser.groupPage(FacebookFixtures.anonymousPage()))
+                .isInstanceOf(StageUnavailableException.class)
+                .hasMessageContaining("FACEBOOK_COOKIES");
+    }
 
-        assertThat(page.loggedIn()).isFalse();
-        assertThat(page.fbDtsg()).isNull();
+    @Test
+    void aLoginPageWithoutTheFeedMakesTheSourceUnavailable() {
+        String login = "<title>Log in to Facebook</title><script>[\"LSD\",[],{\"token\":\"lsd-token\"}],"
+                + "{\"USER_ID\":\"0\"}</script>";
+
+        assertThatThrownBy(() -> parser.groupPage(login))
+                .isInstanceOf(StageUnavailableException.class)
+                .hasMessageContaining("FACEBOOK_COOKIES");
+    }
+
+    @Test
+    void aLoggedInPageWithoutTheFeedFailsWithItsTitle() {
+        String checkpoint = "<title>Security check</title><script>[\"LSD\",[],{\"token\":\"lsd-token\"}],"
+                + "{\"USER_ID\":\"100000000000001\"}</script>";
+
+        assertThatThrownBy(() -> parser.groupPage(checkpoint))
+                .isInstanceOf(IngestException.class)
+                .hasMessageContaining("\"Security check\" has no feed query");
     }
 
     @Test
     void aPageWithoutTheLsdTokenFails() {
-        assertThatThrownBy(() -> parser.groupPage("<html><title>Facebook</title></html>"))
+        assertThatThrownBy(() -> parser.groupPage("<title>Facebook</title>\"USER_ID\":\"100000000000001\""))
                 .isInstanceOf(IngestException.class)
                 .hasMessageContaining("LSD");
     }

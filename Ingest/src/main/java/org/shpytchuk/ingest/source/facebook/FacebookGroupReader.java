@@ -3,7 +3,6 @@ package org.shpytchuk.ingest.source.facebook;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
 import org.shpytchuk.ingest.exception.IngestException;
-import org.shpytchuk.ingest.exception.StageUnavailableException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.node.ObjectNode;
@@ -41,9 +40,6 @@ class FacebookGroupReader {
     GroupFeed read(String group, Instant since) {
         URI url = URI.create(FacebookClient.ORIGIN + "/groups/" + group + "/?sorting_setting=CHRONOLOGICAL");
         GroupPage page = parser.groupPage(client.page(url));
-        if (!page.loggedIn()) {
-            throw new StageUnavailableException("Facebook session is not logged in, refresh FACEBOOK_COOKIES");
-        }
         List<FacebookStory> stories = new ArrayList<>(page.feed().stories());
         String cursor = page.feed().nextCursor();
         for (int pages = 1; pages < maxPages && cursor != null && !reached(stories, since); pages++) {
