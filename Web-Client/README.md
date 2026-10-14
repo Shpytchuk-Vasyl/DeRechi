@@ -93,6 +93,15 @@ message, digest, stack, method, path without the query string, route), so the ho
 can filter them. Request headers and the query string stay out: they carry cookies, claim ids and
 search terms. Errors in the browser are not collected.
 
+## Analytics
+
+Vercel Web Analytics (`@vercel/analytics`) and Speed Insights (`@vercel/speed-insights`, Core Web
+Vitals from real visits) both live in `SiteAnalytics` (`src/components/layout/site-analytics.tsx`),
+loaded with `next/dynamic` and `ssr: false`. The locale layout renders it only when
+`process.env.VERCEL` is set, so `next dev`, the e2e build and any other host load neither script.
+Each one also has to be enabled in the Vercel project's dashboard; until then the component sends
+nothing. Neither sets cookies.
+
 ## Locales
 
 `en` (fallback), `uk`, `pl`, `de`, `fr`: the same five the admin panel ships, sharing its

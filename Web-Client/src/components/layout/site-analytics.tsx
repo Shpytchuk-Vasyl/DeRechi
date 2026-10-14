@@ -6,6 +6,16 @@ const Analytics = dynamic(() => import("@vercel/analytics/next").then((mod) => m
   ssr: false,
 })
 
+const SpeedInsights = dynamic(
+  () => import("@vercel/speed-insights/next").then((mod) => mod.SpeedInsights),
+  { ssr: false },
+)
+
 export function SiteAnalytics() {
-  return <Analytics />
+  return (
+    <>
+      <Analytics />
+      <SpeedInsights />
+    </>
+  )
 }
