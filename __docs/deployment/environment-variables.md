@@ -208,6 +208,7 @@ except where the table says otherwise. An empty `TELEGRAM_API_ID`/`TELEGRAM_API_
 | `FACEBOOK_MAX_PAGES` | `10` | same | feed pages (three posts each) read per group and poll at most |
 | `FACEBOOK_CATCH_UP_MAX_AGE` | `PT48H` | same | how far back the first poll after a start reads |
 | `FACEBOOK_TIMEOUT` | `PT30S` | same | per request to Facebook |
+| `FACEBOOK_ACTIVE_HOURS` | empty (all day) | `07:00-22:00` | Facebook is read only within these hours, in each group's local time (the time zone of its region); outside them no request is made and the next poll waits for the start plus up to `FACEBOOK_POLL_JITTER`. A range may cross midnight (`22:00-02:00`); a malformed value fails the start |
 | `TELEGRAM_BOT_API_URL` | `https://api.telegram.org` | same | Bot API base URL |
 | `TELEGRAM_BOT_TOKEN` | empty | same | the bot that posts to our channel and to the review chat |
 | `TELEGRAM_PUBLISH_CHAT` | empty | same | our public channel: id (`-100...`) or `@username` |

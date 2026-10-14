@@ -18,9 +18,11 @@ public record FacebookProperties(
         Duration requestPause,
         int maxPages,
         Duration catchUpMaxAge,
-        Duration timeout) {
+        Duration timeout,
+        String activeHours) {
 
     private static final String GROUPS_PROPERTY = "derechi.facebook.groups";
+    private static final String ACTIVE_HOURS_PROPERTY = "derechi.facebook.active-hours";
     private static final String DEFAULT_REGION = "UA";
     private static final String DEFAULT_LOCALE = "uk";
     private static final String DEFAULT_USER_AGENT =
@@ -36,11 +38,17 @@ public record FacebookProperties(
         maxPages = maxPages <= 0 ? 10 : maxPages;
         catchUpMaxAge = catchUpMaxAge == null ? Duration.ofHours(48) : catchUpMaxAge;
         timeout = timeout == null ? Duration.ofSeconds(30) : timeout;
+        activeHours = activeHours == null ? "" : activeHours.trim();
         SourceSettingsParser.parse(GROUPS_PROPERTY, groups, DEFAULT_REGION, DEFAULT_LOCALE);
+        ActiveHours.parse(ACTIVE_HOURS_PROPERTY, activeHours);
     }
 
     public boolean configured() {
         return !cookies.isEmpty() && !groupSettings().isEmpty();
+    }
+
+    public ActiveHours hours() {
+        return ActiveHours.parse(ACTIVE_HOURS_PROPERTY, activeHours);
     }
 
     public Map<String, SourceSettings> groupSettings() {

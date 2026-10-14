@@ -98,6 +98,28 @@ class FacebookPostSourceTest {
     }
 
     @Test
+    void groupsAreReadInsideTheirLocalActiveHours() {
+        FacebookPostSource source = started(properties("c_user=1; xs=2", "zzter=Тернопіль", "07:00-22:00"));
+
+        source.poll();
+
+        assertThat(received).isNotEmpty();
+    }
+
+    @Test
+    void outsideTheActiveHoursNothingIsRequestedAndTheNextPollWaitsForTheMorning() {
+        FacebookPostSource source = started(properties("c_user=1; xs=2", "zzter=Тернопіль", "07:00-17:00"));
+
+        source.poll();
+
+        verifyNoInteractions(client);
+        ArgumentCaptor<Instant> next = ArgumentCaptor.forClass(Instant.class);
+        verify(scheduler, times(2)).schedule(any(Runnable.class), next.capture());
+        Instant kyivSevenTomorrow = Instant.parse("2026-10-14T04:00:00Z");
+        assertThat(next.getValue()).isBetween(kyivSevenTomorrow, kyivSevenTomorrow.plus(Duration.ofMinutes(20)));
+    }
+
+    @Test
     void theNextPollTakesOnlyWhatIsNewSinceTheLastOne() {
         FacebookPostSource source = started(properties("c_user=1; xs=2", "zzter=Тернопіль"));
         source.poll();
@@ -171,7 +193,11 @@ class FacebookPostSourceTest {
     }
 
     private static FacebookProperties properties(String cookies, String groups) {
+        return properties(cookies, groups, "");
+    }
+
+    private static FacebookProperties properties(String cookies, String groups, String activeHours) {
         return new FacebookProperties(cookies, groups, null, Duration.ofHours(1), Duration.ofMinutes(20), Duration.ZERO,
-                5, Duration.ofHours(48), Duration.ofSeconds(5));
+                5, Duration.ofHours(48), Duration.ofSeconds(5), activeHours);
     }
 }

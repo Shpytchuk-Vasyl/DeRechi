@@ -3,6 +3,7 @@ package org.shpytchuk.ingest.source.facebook;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
+import org.shpytchuk.ingest.config.facebook.ActiveHours;
 import org.shpytchuk.ingest.config.facebook.FacebookProperties;
 import org.shpytchuk.ingest.exception.IngestException;
 import org.shpytchuk.ingest.exception.StageUnavailableException;
@@ -19,7 +20,9 @@ import java.net.URI;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalTime;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -75,8 +78,8 @@ public class FacebookPostSource implements PostSource {
         }
         this.sink = sink;
         scheduleIn(FIRST_POLL);
-        log.info("Facebook source started: {} groups every {} plus up to {}", properties.groupSettings().size(),
-                properties.pollEvery(), properties.pollJitter());
+        log.info("Facebook source started: {} groups every {} plus up to {}, active hours {}",
+                properties.groupSettings().size(), properties.pollEvery(), properties.pollJitter(), properties.activeHours());
     }
 
     @Override
@@ -90,9 +93,16 @@ public class FacebookPostSource implements PostSource {
     }
 
     void poll() {
+        Instant next = clock.instant().plus(properties.pollEvery()).plus(randomUpTo(properties.pollJitter()));
         try {
+            Map<String, SourceSettings> awake = awakeGroups();
+            if (awake.isEmpty()) {
+                next = nextOpening().plus(randomUpTo(properties.pollJitter()));
+                log.debug("Facebook is not polled outside {}, next poll at {}", properties.activeHours(), next);
+                return;
+            }
             boolean first = true;
-            for (Map.Entry<String, SourceSettings> group : properties.groupSettings().entrySet()) {
+            for (Map.Entry<String, SourceSettings> group : awake.entrySet()) {
                 if (!first) {
                     pause();
                 }
@@ -100,8 +110,27 @@ public class FacebookPostSource implements PostSource {
                 read(group.getKey(), group.getValue());
             }
         } finally {
-            scheduleIn(properties.pollEvery().plus(randomUpTo(properties.pollJitter())));
+            scheduler.schedule(this::poll, next);
         }
+    }
+
+    private Map<String, SourceSettings> awakeGroups() {
+        ActiveHours hours = properties.hours();
+        Map<String, SourceSettings> awake = new LinkedHashMap<>();
+        properties.groupSettings().forEach((group, settings) -> {
+            if (hours.contains(LocalTime.ofInstant(clock.instant(), settings.zone()))) {
+                awake.put(group, settings);
+            }
+        });
+        return awake;
+    }
+
+    private Instant nextOpening() {
+        ActiveHours hours = properties.hours();
+        return properties.groupSettings().values().stream()
+                .map(settings -> hours.nextOpening(clock.instant().atZone(settings.zone())).toInstant())
+                .min(Comparator.naturalOrder())
+                .orElseThrow();
     }
 
     private void read(String group, SourceSettings settings) {

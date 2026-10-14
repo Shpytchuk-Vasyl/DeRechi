@@ -77,6 +77,7 @@ derechi:
     max-pages: ${FACEBOOK_MAX_PAGES:10}
     catch-up-max-age: ${FACEBOOK_CATCH_UP_MAX_AGE:PT18H}
     timeout: ${FACEBOOK_TIMEOUT:PT30S}
+    active-hours: ${FACEBOOK_ACTIVE_HOURS:07:00-22:00}
 
   bot:
     api-url: ${TELEGRAM_BOT_API_URL:https://api.telegram.org}
