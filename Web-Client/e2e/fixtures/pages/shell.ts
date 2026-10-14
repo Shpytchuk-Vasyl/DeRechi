@@ -60,6 +60,14 @@ export class Shell {
     return this.page.getByRole("menuitem", { name: LANGUAGE_NAMES[code], exact: true })
   }
 
+  feedbackButton(): Locator {
+    return this.header().getByRole("link", { name: this.t("nav.feedback"), exact: true })
+  }
+
+  feedbackFooterLink(): Locator {
+    return this.footer().getByRole("link", { name: this.t("nav.feedbackLink"), exact: true })
+  }
+
   async switchLocale(code: Locale): Promise<void> {
     await this.languageButton().click()
     await this.languageItem(code).click()

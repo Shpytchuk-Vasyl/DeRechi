@@ -292,6 +292,7 @@
   from {
     transform: scaleX(0);
   }
+
   to {
     transform: scaleX(1);
   }
@@ -307,6 +308,7 @@
   100% {
     translate: 0 0;
   }
+
   50% {
     translate: 0 -10px;
   }
@@ -359,6 +361,19 @@
 }
 
 /* ------------------------------------------------------------------ */
+/* Tally feedback popup: scrolled by our page, with our scrollbar     */
+/* ------------------------------------------------------------------ */
+
+.tally-overlay .tally-popup iframe {
+  max-height: none;
+}
+
+.tally-overlay .tally-popup > div {
+  max-height: 70dvh;
+  background-color: var(--color-bg);
+}
+
+/* ------------------------------------------------------------------ */
 /* Знайда, the mascot                                                  */
 /* ------------------------------------------------------------------ */
 
@@ -384,23 +399,29 @@
 .znaida-roam {
   transition: translate 1s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
 .znaida-roam-top {
   translate: 0 104%;
 }
+
 .znaida-roam-top.znaida-roam-out {
   translate: 0 4%;
 }
+
 .znaida-roam-right {
   rotate: 90deg;
   translate: -104% 0;
 }
+
 .znaida-roam-right.znaida-roam-out {
   translate: -4% 0;
 }
+
 .znaida-roam-left {
   rotate: -90deg;
   translate: 104% 0;
 }
+
 .znaida-roam-left.znaida-roam-out {
   translate: 4% 0;
 }
@@ -411,10 +432,12 @@
   100% {
     transform: scaleY(1);
   }
+
   50% {
     transform: scaleY(1.35);
   }
 }
+
 .znaida-alive .znaida-tongue {
   transform-origin: 0 0;
   transform-box: fill-box;
@@ -427,9 +450,11 @@
   rotate: calc(var(--look, 0) * -8deg);
   transition: rotate 400ms ease-out;
 }
+
 .znaida-ear-left {
   transform-origin: 100% 0;
 }
+
 .znaida-ear-right {
   transform-origin: 0 0;
 }
@@ -439,16 +464,20 @@
   100% {
     transform: rotate(0deg);
   }
+
   30% {
     transform: rotate(-3deg);
   }
+
   60% {
     transform: rotate(2deg);
   }
 }
+
 .znaida-alive .znaida-ear {
   animation: znaida-ear 1.6s ease-in-out infinite;
 }
+
 .znaida-alive .znaida-ear-right {
   animation-direction: reverse;
   animation-delay: -0.5s;

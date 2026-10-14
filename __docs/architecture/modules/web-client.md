@@ -93,6 +93,7 @@ time: flipping one means a rebuild and redeploy of the web client, not a restart
 | Variable | Default | Effect |
 |---|---|---|
 | `NEXT_PUBLIC_SMS_OUTAGE` | `true` | The claim form shows a one-time warning toast that SMS is down and emails arrive as usual. Nothing is blocked. Turn it on when SMS-fly is unavailable or `SMS_FLY_API_KEY` is empty in `Notification`. |
+| `NEXT_PUBLIC_TALLY_FORM` | empty | The feedback form on Tally: one form id (`wA1b2C`) for every language, or `uk=wA1b2C,en=xY9z8W` (the visitor's language, else `uk`, else the first). Empty hides the feedback icon in the header and the footer link. See [Feedback](#feedback). |
 | `NEXT_PUBLIC_MAINTENANCE` | `false` | Technical work. `src/proxy.ts` rewrites every page except the home page, `/terms` and `/privacy` to the `/{locale}/maintenance` route handler, so the closed URL answers 503 with `Retry-After: 3600` and search engines keep it indexed (Google's advice for planned downtime). `/api/*` (the Fourthwall webhook among them) and files stay outside the proxy, so they keep working. With the flag off the route is a 404. |
 
 Maintenance mode only closes the web client. The admin panel and the backend stay up, and
@@ -118,3 +119,13 @@ unit-tested. The list of test files is in `Web-Client/README.md`.
 
 The web client is not part of the Docker Compose setup or the `Dockerfile`; it runs with
 pnpm on the developer machine or wherever Next.js is deployed.
+
+## Feedback
+
+Feedback goes to a [Tally](https://tally.so) form, not to our backend: replies come by Tally's email notifications, and nothing is stored in our database.
+
+- The icon next to the language switcher (`FeedbackButton`) is a link to `https://tally.so/r/<form>?page=…`, the form of the visitor's language. A plain click loads Tally's `embed.js` on demand and opens the form as a modal popup (`Tally.openPopup`, hidden field `page`; as wide as the screen up to 600 px, as Tally takes the width in pixels only and itself keeps the popup inside a narrow screen), so no third-party script runs before the visitor asks for it; a middle or modified click opens the form page in a new tab. When the script does not load (Tally is down or blocked), nothing throws: the visitor gets a warning toast that the form is unavailable (`nav.feedbackUnavailable`) and stays on the page; the next click tries again.
+- `page` is the path without the locale, and a claim page loses its token (`/claims/<token>` becomes `/claims`), as the token confirms a return. Tally's popup would also send the full path as `originPage` (and every query parameter of the page): the site passes `originPage` with the same safe value, which overrides it.
+- The scrollbar is ours, not Tally's: a form taller than the screen would scroll inside Tally's iframe, with a grey scrollbar our styles cannot reach (another origin). `globals.css` lifts Tally's cap on the iframe (`max-height: none`), so it takes the form's full height, and caps Tally's own container instead (the screen minus 40 px, the margin Tally keeps at the sides). That container already has `overflow-y: auto` and lives in our page, so it scrolls with the site's lavender scrollbar. The close button is inside the form and scrolls away with it; a click on the dimmed page closes the popup too. The selectors (`.tally-overlay .tally-popup iframe`, `.tally-overlay .tally-popup > div`) rely on the class names and markup Tally's embed adds to our page: if an update changes them, the rules stop matching and the popup goes back to Tally's own scrolling.
+- The footer has a Contact column with the same form as a plain link in a new tab (`page=footer`).
+- The forms themselves live in Tally, one per language: how to build them is in [Feedback forms](../../processes/feedback-forms.md).

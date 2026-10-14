@@ -22,7 +22,11 @@
     "privacy": "Datenschutz",
     "safety": "Sicherheit",
     "footerNotices": "Anzeigen",
-    "footerDocuments": "Dokumente"
+    "footerDocuments": "Dokumente",
+    "feedback": "Feedback",
+    "footerContact": "Kontakt",
+    "feedbackLink": "Feedback geben",
+    "feedbackUnavailable": "Das Feedback-Formular ist gerade nicht verfügbar, bitte versuchen Sie es später"
   },
   "home": {
     "heroTitle": "Verloren? Vielleicht hat es schon jemand gefunden",

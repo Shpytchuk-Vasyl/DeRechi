@@ -59,6 +59,9 @@ export const env = {
     region: pick(e.S3_REGION) ?? "us-east-1",
     expiresIn: Number(pick(e.S3_UPLOAD_EXPIRES_SECONDS) ?? 300),
   },
+  get tallyForm(): string {
+    return required("NEXT_PUBLIC_TALLY_FORM", pick(e.NEXT_PUBLIC_TALLY_FORM))
+  },
 }
 
 export const secrets = {

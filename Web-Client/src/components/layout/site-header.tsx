@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server"
 import { BrandMark } from "@/components/layout/brand-mark"
+import { FeedbackButton } from "@/components/layout/feedback-button"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 import { ReportButton } from "@/components/layout/report-button"
 import { Row, Spacer } from "@/components/pouf/layout"
@@ -38,6 +39,7 @@ export async function SiteHeader() {
           <ReportButton />
         </span>
         <LocaleSwitcher />
+        <FeedbackButton />
       </Row>
     </header>
   )

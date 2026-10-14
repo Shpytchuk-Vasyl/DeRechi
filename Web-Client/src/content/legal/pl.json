@@ -119,6 +119,10 @@
           [
             "dane kontaktowe: numer telefonu, adres e-mail i komunikatory, które wysyłasz autorowi ogłoszenia."
           ],
+          "Gdy wysyłasz opinię o stronie:",
+          [
+            "treść opinii, jej temat, ocenę lub zrzut ekranu, jeśli je dodałeś, adres e-mail, jeśli zostawiłeś go do odpowiedzi, a także stronę, z której otworzyłeś formularz."
+          ],
           "Nie mamy kont ani haseł, więc nie przechowujemy o Tobie żadnych innych danych.",
           "Nie umieszczaj w ogłoszeniu informacji o zdrowiu, wyznaniu, danych biometrycznych ani innych danych wrażliwych, ani o sobie, ani o innych.",
           "Podczas odwiedzin strony serwer, jak każdy serwer WWW, może rejestrować dane techniczne żądania: adres IP, typ przeglądarki i czas wejścia, aby chronić serwis przed nadużyciami."
@@ -139,9 +143,9 @@
             "aby przekazać Twoje dane kontaktowe autorowi ogłoszenia, na które odpowiadasz;",
             "aby przypomnieć obu stronom o zamknięciu ogłoszenia, gdy rzecz wróci do właściciela;",
             "aby chronić stronę przed spamem i nadużyciami;",
-            "[SIMILAR FINDS NOTIFICATIONS: TO BE DESCRIBED]"
+            "aby odpowiedzieć na Twoją opinię i ulepszać stronę."
           ],
-          "Podstawą przetwarzania jest Twoja zgoda, której udzielasz, publikując ogłoszenie lub odpowiadając na nie."
+          "Podstawą przetwarzania jest Twoja zgoda, której udzielasz, publikując ogłoszenie, odpowiadając na nie lub wysyłając opinię o stronie."
         ]
       },
       {
@@ -157,7 +161,9 @@
           [
             "Google Maps Platform: mapa, podpowiedzi adresów i ustalanie adresu na podstawie współrzędnych w formularzu ogłoszenia; tekst, który wpisujesz w pole miejsca, oraz współrzędne są przekazywane Google;",
             "Vercel BotID: sprawdzenie, czy formularz wysyła człowiek, a nie bot;",
-            "[EMAIL AND SMS PROVIDER, HOSTING: TO BE ADDED]"
+            "Tally (tally.so): formularz opinii o stronie; wszystko, co w nim wpiszesz, jest przechowywane przez Tally. Skrypt Tally ładuje się dopiero wtedy, gdy otworzysz formularz;",
+            "Brevo: wysyłanie e-maili o odpowiedziach na Twoje ogłoszenia oraz przypomnień; Brevo otrzymuje adres e-mail odbiorcy i treść wiadomości wraz z przekazywanymi przez nas danymi kontaktowymi;",
+            "SMS-fly: wysyłanie tych samych wiadomości SMS-em; SMS-fly otrzymuje numer telefonu odbiorcy i treść wiadomości."
           ],
           "Usługi te przetwarzają dane zgodnie z własnymi politykami prywatności, w tym również w innych krajach. Nie sprzedajemy Twoich danych ani nie przekazujemy ich reklamodawcom."
         ]
@@ -179,7 +185,8 @@
         "heading": "8. Jak długo przechowujemy dane",
         "body": [
           "Ogłoszenie jest przechowywane, dopóki nie zostanie zdjęte z publikacji. Następnie trafia do archiwum i nie jest już wyświetlane na stronie. W archiwum ogłoszenie jest przechowywane przez rok, po czym usuwamy je wraz z danymi kontaktowymi autora.",
-          "Dane kontaktowe wysłane w odpowiedzi na ogłoszenie przechowujemy przez rok od odpowiedzi, niezależnie od tego, czy ogłoszenie jest nadal opublikowane, czy już zarchiwizowane; potem je usuwamy. Ogłoszenie z odpowiedziami zostaje zamknięte, gdy jedna ze stron potwierdzi zwrot rzeczy, albo około tygodnia po ostatniej odpowiedzi."
+          "Dane kontaktowe wysłane w odpowiedzi na ogłoszenie przechowujemy przez rok od odpowiedzi, niezależnie od tego, czy ogłoszenie jest nadal opublikowane, czy już zarchiwizowane; potem je usuwamy. Ogłoszenie z odpowiedziami zostaje zamknięte, gdy jedna ze stron potwierdzi zwrot rzeczy, albo około tygodnia po ostatniej odpowiedzi.",
+          "Opinie o stronie przechowujemy w Tally nie dłużej niż rok, po czym je usuwamy."
         ]
       },
       {

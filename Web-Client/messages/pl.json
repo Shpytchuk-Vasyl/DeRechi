@@ -22,7 +22,11 @@
     "privacy": "Prywatność",
     "safety": "Bezpieczeństwo",
     "footerNotices": "Ogłoszenia",
-    "footerDocuments": "Dokumenty"
+    "footerDocuments": "Dokumenty",
+    "feedback": "Opinia",
+    "footerContact": "Kontakt",
+    "feedbackLink": "Zostaw opinię",
+    "feedbackUnavailable": "Formularz opinii jest teraz niedostępny, spróbuj później"
   },
   "home": {
     "heroTitle": "Zgubione? Ktoś mógł to znaleźć",

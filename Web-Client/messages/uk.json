@@ -22,7 +22,11 @@
     "privacy": "Конфіденційність",
     "safety": "Безпека",
     "footerNotices": "Оголошення",
-    "footerDocuments": "Документи"
+    "footerDocuments": "Документи",
+    "feedback": "Відгук",
+    "footerContact": "Звʼязок",
+    "feedbackLink": "Залишити відгук",
+    "feedbackUnavailable": "Форма відгуку зараз недоступна, спробуйте пізніше"
   },
   "home": {
     "heroTitle": "Де речі? А їх уже знайшли",

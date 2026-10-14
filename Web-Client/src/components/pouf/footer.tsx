@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 
 export interface FooterColumn {
   title: string
-  links: { label: string; href: string }[]
+  links: { label: string; href: string; external?: boolean }[]
 }
 
 interface FooterProps {
@@ -23,16 +23,28 @@ export function Footer({ brand, tagline, columns = [] }: FooterProps) {
           {columns.map((col) => (
             <nav key={col.title} className="flex flex-col gap-2" aria-label={col.title}>
               <span className="text-xs font-black tracking-[1.5px] uppercase text-muted">{col.title}</span>
-              {col.links.map((l) => (
-                <Link
-                  key={`${l.href}-${l.label}`}
-                  href={l.href}
-                  className="font-extrabold no-underline hover:text-muted transition-colors"
-                  prefetch={false}
-                >
-                  {l.label}
-                </Link>
-              ))}
+              {col.links.map((l) =>
+                l.external ? (
+                  <a
+                    key={`${l.href}-${l.label}`}
+                    href={l.href}
+                    target="_blank"
+                    rel="noopener"
+                    className="font-extrabold no-underline hover:text-muted transition-colors"
+                  >
+                    {l.label}
+                  </a>
+                ) : (
+                  <Link
+                    key={`${l.href}-${l.label}`}
+                    href={l.href}
+                    className="font-extrabold no-underline hover:text-muted transition-colors"
+                    prefetch={false}
+                  >
+                    {l.label}
+                  </Link>
+                ),
+              )}
             </nav>
           ))}
         </div>

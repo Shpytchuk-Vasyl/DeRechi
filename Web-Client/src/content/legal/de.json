@@ -119,6 +119,10 @@
           [
             "Kontaktdaten: Telefonnummer, E-Mail-Adresse und Messenger, die Sie dem Verfasser der Anzeige senden."
           ],
+          "Wenn Sie uns Feedback zur Website senden:",
+          [
+            "den Text, sein Thema, die Bewertung oder einen Screenshot, sofern Sie sie hinzugefügt haben, Ihre E-Mail-Adresse, sofern Sie sie für eine Antwort angegeben haben, sowie die Seite, von der aus Sie das Formular geöffnet haben."
+          ],
           "Wir haben keine Konten und Passwörter, daher speichern wir keine weiteren Daten über Sie.",
           "Fügen Sie Ihrer Anzeige keine Angaben zu Gesundheit, Religion, biometrischen Merkmalen oder andere sensible Daten hinzu, weder über sich selbst noch über andere.",
           "Beim Besuch der Website kann der Server, wie jeder Webserver, technische Daten der Anfrage erfassen, nämlich IP-Adresse, Browsertyp und Zeitpunkt des Zugriffs, um Missbrauch abzuwehren."
@@ -139,9 +143,9 @@
             "um Ihre Kontaktdaten an den Verfasser der Anzeige weiterzugeben, auf die Sie geantwortet haben;",
             "um beide Seiten daran zu erinnern, die Anzeige zu schließen, sobald der Gegenstand zurück ist;",
             "um die Website vor Spam und Missbrauch zu schützen;",
-            "[SIMILAR FINDS NOTIFICATIONS: TO BE DESCRIBED]"
+            "um auf Ihr Feedback zu antworten und die Website zu verbessern."
           ],
-          "Rechtsgrundlage der Verarbeitung ist Ihre Einwilligung, die Sie mit der Veröffentlichung einer Anzeige oder mit einer Antwort darauf erteilen."
+          "Rechtsgrundlage der Verarbeitung ist Ihre Einwilligung, die Sie mit der Veröffentlichung einer Anzeige, mit einer Antwort darauf oder mit dem Senden von Feedback zur Website erteilen."
         ]
       },
       {
@@ -157,7 +161,9 @@
           [
             "Google Maps Platform: Karte, Adressvorschläge und Ermittlung der Adresse anhand von Koordinaten im Anzeigenformular; der Text, den Sie in das Ortsfeld eingeben, und die Koordinaten werden an Google übermittelt;",
             "Vercel BotID: Prüfung, dass das Formular von einem Menschen und nicht von einem Bot gesendet wird;",
-            "[EMAIL AND SMS PROVIDER, HOSTING: TO BE ADDED]"
+            "Tally (tally.so): das Feedback-Formular; alles, was Sie dort eingeben, wird bei Tally gespeichert. Das Skript von Tally wird erst geladen, wenn Sie das Formular öffnen;",
+            "Brevo: Versand von E-Mails über Antworten auf Ihre Anzeigen und von Erinnerungen; Brevo erhält die E-Mail-Adresse des Empfängers und den Text der E-Mail einschließlich der Kontaktdaten, die wir weitergeben;",
+            "SMS-fly: Versand derselben Nachrichten per SMS; SMS-fly erhält die Telefonnummer des Empfängers und den Text der Nachricht."
           ],
           "Diese Dienste verarbeiten Daten nach ihren eigenen Datenschutzrichtlinien, auch in anderen Ländern. Wir verkaufen Ihre Daten nicht und geben sie nicht an Werbetreibende weiter."
         ]
@@ -179,7 +185,8 @@
         "heading": "8. Wie lange Daten gespeichert werden",
         "body": [
           "Eine Anzeige wird gespeichert, bis sie von der Veröffentlichung genommen wird. Danach wird sie ins Archiv verschoben und auf der Website nicht mehr angezeigt. Im Archiv wird die Anzeige ein Jahr lang aufbewahrt und danach zusammen mit den Kontaktdaten des Verfassers gelöscht.",
-          "Kontaktdaten, die als Antwort auf eine Anzeige gesendet wurden, werden ein Jahr ab der Antwort gespeichert, egal ob die Anzeige noch veröffentlicht oder schon archiviert ist; danach werden sie gelöscht. Eine Anzeige mit Antworten wird geschlossen, sobald eine Seite die Rückgabe bestätigt, oder etwa eine Woche nach der letzten Antwort."
+          "Kontaktdaten, die als Antwort auf eine Anzeige gesendet wurden, werden ein Jahr ab der Antwort gespeichert, egal ob die Anzeige noch veröffentlicht oder schon archiviert ist; danach werden sie gelöscht. Eine Anzeige mit Antworten wird geschlossen, sobald eine Seite die Rückgabe bestätigt, oder etwa eine Woche nach der letzten Antwort.",
+          "Feedback zur Website wird bei Tally höchstens ein Jahr gespeichert und danach von uns gelöscht."
         ]
       },
       {

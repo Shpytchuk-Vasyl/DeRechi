@@ -22,7 +22,11 @@
     "privacy": "Privacy",
     "safety": "Safety",
     "footerNotices": "Notices",
-    "footerDocuments": "Documents"
+    "footerDocuments": "Documents",
+    "feedback": "Feedback",
+    "footerContact": "Contact",
+    "feedbackLink": "Leave feedback",
+    "feedbackUnavailable": "The feedback form is unavailable right now, please try again later"
   },
   "home": {
     "heroTitle": "Lost it? Someone may have found it",

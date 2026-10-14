@@ -76,6 +76,8 @@ Needs the WebKit build once: `pnpm exec playwright install webkit`.
 The photo upload needs `S3_PUBLIC_ENDPOINT`, `S3_ACCESS_KEY` and `S3_SECRET_KEY` in `.env.local`. App
 flags (`NEXT_PUBLIC_SMS_OUTAGE`, `S3_MAX_UPLOAD_BYTES`, `NEXT_PUBLIC_SITE_URL`) come from `.env.local`
 too, so the tests expect what the running site was built with. Restart the site after changing them.
+`NEXT_PUBLIC_TALLY_FORM` must be set for the feedback test: any form id works, as the test answers
+Tally's `embed.js` with a stub and never reaches tally.so.
 
 Nothing is skipped by the environment: a missing precondition fails the test. The site is built
 without `NEXT_PUBLIC_MAINTENANCE` (`/maintenance` must be a 404) and without `VERCEL` (every page is

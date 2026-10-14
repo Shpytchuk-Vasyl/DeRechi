@@ -22,7 +22,11 @@
     "privacy": "Confidentialité",
     "safety": "Sécurité",
     "footerNotices": "Annonces",
-    "footerDocuments": "Documents"
+    "footerDocuments": "Documents",
+    "feedback": "Avis",
+    "footerContact": "Contact",
+    "feedbackLink": "Donner votre avis",
+    "feedbackUnavailable": "Le formulaire d’avis est indisponible pour le moment, réessayez plus tard"
   },
   "home": {
     "heroTitle": "Perdu ? Quelqu’un l’a peut-être trouvé",

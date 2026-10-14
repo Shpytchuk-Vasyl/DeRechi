@@ -21,6 +21,7 @@ function flag(name: string, value: string | undefined, fallback: boolean): boole
 export const clientEnv = {
   NEXT_PUBLIC_SITE_URL: url("NEXT_PUBLIC_SITE_URL", process.env.NEXT_PUBLIC_SITE_URL),
   NEXT_PUBLIC_MAPS_API_KEY: process.env.NEXT_PUBLIC_MAPS_API_KEY,
+  NEXT_PUBLIC_TALLY_FORM: process.env.NEXT_PUBLIC_TALLY_FORM,
   NEXT_PUBLIC_FILES_URL: url("NEXT_PUBLIC_FILES_URL", process.env.NEXT_PUBLIC_FILES_URL),
   NEXT_PUBLIC_SMS_OUTAGE: flag("NEXT_PUBLIC_SMS_OUTAGE", process.env.NEXT_PUBLIC_SMS_OUTAGE, true),
   NEXT_PUBLIC_MAINTENANCE: flag(

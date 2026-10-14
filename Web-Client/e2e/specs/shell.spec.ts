@@ -1,7 +1,9 @@
+import { feedbackForm } from "../../src/lib/feedback"
 import { expect, test } from "../fixtures/base"
 import { ItemCard, ItemDetail, Shell } from "../fixtures/pages"
 import type { BottomTab } from "../fixtures/pages/shell"
 import type { ItemKind } from "../support/data"
+import { env } from "../support/env"
 import { recordForeignHosts } from "../support/hosts"
 
 const KINDS: ItemKind[] = ["lost", "found"]
@@ -170,5 +172,68 @@ test.describe("external requests", () => {
     await expect(page.getByRole("main")).toBeVisible()
 
     expect(foreign(), "hosts outside env.allowedHosts").toEqual([])
+  })
+})
+
+test.describe("feedback", () => {
+  const TALLY_EMBED = "https://tally.so/widgets/embed.js"
+  const TALLY_STUB =
+    "window.__tally = []; window.Tally = { openPopup: (id, options) => window.__tally.push({ id, options }) }"
+
+  test("the header icon opens the form of the language as a Tally popup, the footer links to it", async ({
+    page,
+    go,
+    t,
+    shared,
+    appLocale,
+  }) => {
+    await page.route(TALLY_EMBED, (route) =>
+      route.fulfill({ contentType: "text/javascript", body: TALLY_STUB }),
+    )
+    const shell = new Shell(page, t)
+    const form = feedbackForm(env.tallyForm, appLocale)
+    const item = shared.items.lostFull
+
+    await go(item.path)
+    await expect(shell.feedbackFooterLink()).toHaveAttribute(
+      "href",
+      `https://tally.so/r/${form}?page=footer`,
+    )
+    await expect(shell.feedbackFooterLink()).toHaveAttribute("target", "_blank")
+
+    await shell.feedbackButton().click()
+
+    await expect
+      .poll(() => page.evaluate(() => (window as unknown as { __tally?: unknown[] }).__tally))
+      .toEqual([
+        {
+          id: form,
+          options: {
+            layout: "modal",
+            width: 600,
+            autoClose: 3000,
+            hiddenFields: { page: item.path, originPage: item.path },
+          },
+        },
+      ])
+    await expect(page).toHaveURL(new RegExp(`/${appLocale}${item.path}$`))
+  })
+
+  test("when Tally does not load, the site says the form is unavailable and stays where it is", async ({
+    page,
+    go,
+    t,
+    appLocale,
+    consoleErrors,
+  }) => {
+    consoleErrors.allow(/tally\.so/, "the test aborts Tally's script on purpose")
+    await page.route(TALLY_EMBED, (route) => route.abort())
+    const shell = new Shell(page, t)
+
+    await go("/lost")
+    await shell.feedbackButton().click()
+
+    await expect(page.getByText(t("nav.feedbackUnavailable"), { exact: true })).toBeVisible()
+    await expect(page).toHaveURL(new RegExp(`/${appLocale}/lost$`))
   })
 })

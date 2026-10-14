@@ -119,6 +119,10 @@
           [
             "your contacts: the phone number, email address and messengers you send to the notice's author."
           ],
+          "When you send feedback about the site:",
+          [
+            "the text, its topic, the rating or screenshot if you added them, your email address if you left it for a reply, and the page you opened the form from."
+          ],
           "We have no accounts or passwords, so we keep no other data about you.",
           "Don't put information about health, religion, biometrics or other sensitive data in a notice, about yourself or anyone else.",
           "When you visit the site, the server, like any web server, may record technical details of the request, such as the IP address, browser type and time, to protect against abuse."
@@ -139,9 +143,9 @@
             "to pass your contacts to the author of the notice you responded to;",
             "to remind both sides to close the notice once the item is back;",
             "to protect the site from spam and abuse;",
-            "[SIMILAR FINDS NOTIFICATIONS: TO BE DESCRIBED]"
+            "to answer your feedback and improve the site."
           ],
-          "The legal basis is your consent, which you give by posting a notice or by responding to one."
+          "The legal basis is your consent, which you give by posting a notice, by responding to one or by sending feedback about the site."
         ]
       },
       {
@@ -157,7 +161,9 @@
           [
             "Google Maps Platform: the map, address suggestions and looking up an address from coordinates in the notice form; what you type into the place field, and the coordinates, are sent to Google;",
             "Vercel BotID: checks that the form is sent by a person, not a bot;",
-            "[EMAIL AND SMS PROVIDER, HOSTING: TO BE ADDED]"
+            "Tally (tally.so): the feedback form; everything you enter in it is stored by Tally. Tally's script loads only when you open the form;",
+            "Brevo: sending emails about responses to your notices and reminders; Brevo receives the recipient's email address and the text of the email, including the contacts we pass on;",
+            "SMS-fly: sending the same messages by SMS; SMS-fly receives the recipient's phone number and the text of the message."
           ],
           "These services process data under their own privacy policies, including in other countries. We don't sell your data or pass it to advertisers."
         ]
@@ -179,7 +185,8 @@
         "heading": "8. How long we keep data",
         "body": [
           "A notice is kept until it is taken down. After that it moves to an archive and is no longer shown on the site. It is kept in the archive for one year and then deleted together with the author's contacts.",
-          "Contacts sent in response to a notice are kept for one year from the response, whether the notice is still published or archived; after that they are deleted. A notice with responses is closed when either side confirms that the item is back, or about a week after the last response."
+          "Contacts sent in response to a notice are kept for one year from the response, whether the notice is still published or archived; after that they are deleted. A notice with responses is closed when either side confirms that the item is back, or about a week after the last response.",
+          "Feedback about the site is kept in Tally for no longer than one year, after which we delete it."
         ]
       },
       {

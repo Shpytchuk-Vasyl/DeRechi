@@ -157,7 +157,10 @@ function Autocomplete({
           const best = results[0]
           if (!best) throw new Error("No address at this position")
 
-          const name = addressWithoutCountry(best.formatted_address, best.address_components).slice(0, MAX_PLACE_NAME)
+          const name = addressWithoutCountry(best.formatted_address, best.address_components).slice(
+            0,
+            MAX_PLACE_NAME,
+          )
           if (input.current) input.current.value = name
           latest.current({
             id: best.place_id,
