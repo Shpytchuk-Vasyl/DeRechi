@@ -19,7 +19,7 @@ import java.util.Optional;
 public class GooglePlaceResolver extends TextSearchPlaceResolver {
 
     private static final String OPERATION = "Google Places search";
-    private static final String FIELD_MASK = "places.id,places.displayName,places.location,places.addressComponents";
+    private static final String FIELD_MASK = "places.id,places.displayName,places.formattedAddress,places.location,places.addressComponents";
 
     private final RestClient restClient;
     private final RetryTemplate retry;
@@ -56,7 +56,7 @@ public class GooglePlaceResolver extends TextSearchPlaceResolver {
             return Optional.empty();
         }
         String name = first.displayName() == null ? null : first.displayName().text();
-        return place(first.id(), name, first.location().latitude(), first.location().longitude(), first.country());
+        return place(first.id(), name, first.formattedAddress(), first.location().latitude(), first.location().longitude(), first.country(), chat.locale());
     }
 
     private record SearchRequest(String textQuery, String languageCode, String regionCode, int pageSize) {
@@ -65,7 +65,8 @@ public class GooglePlaceResolver extends TextSearchPlaceResolver {
     private record SearchResponse(@Nullable List<Place> places) {
     }
 
-    private record Place(@Nullable String id, @Nullable LocalizedText displayName, @Nullable LatLng location,
+    private record Place(@Nullable String id, @Nullable LocalizedText displayName,
+                         @Nullable String formattedAddress, @Nullable LatLng location,
                          @Nullable List<AddressComponent> addressComponents) {
 
         @Nullable String country() {

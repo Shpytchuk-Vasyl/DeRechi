@@ -36,6 +36,7 @@ class GooglePlaceResolverTest {
 
     private static final String CROSSROADS = """
             {"places": [{"id": "ChIJcrossroads", "displayName": {"text": "вулиця Наукова", "languageCode": "uk"},
+              "formattedAddress": "вулиця Наукова, Львів, Львівська область, Україна, 79000",
               "location": {"latitude": 49.8125, "longitude": 24.0144},
               "addressComponents": [
                 {"longText": "Львів", "shortText": "Львів", "types": ["locality", "political"]},
@@ -67,7 +68,7 @@ class GooglePlaceResolverTest {
         server.expect(requestTo(SEARCH))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(header("X-Goog-Api-Key", "places-key"))
-                .andExpect(header("X-Goog-FieldMask", "places.id,places.displayName,places.location,places.addressComponents"))
+                .andExpect(header("X-Goog-FieldMask", "places.id,places.displayName,places.formattedAddress,places.location,places.addressComponents"))
                 .andExpect(jsonPath("$.textQuery").value("перехрестя Наукова / Кульпарківська, Львів"))
                 .andExpect(jsonPath("$.languageCode").value("uk"))
                 .andExpect(jsonPath("$.regionCode").value("UA"))
@@ -77,7 +78,22 @@ class GooglePlaceResolverTest {
         Optional<ResolvedPlace> place = resolver.resolve("перехрестя Наукова / Кульпарківська", null, LVIV);
 
         server.verify();
-        assertThat(place).contains(new ResolvedPlace("ChIJcrossroads", "вулиця Наукова", 49.8125, 24.0144, "UA"));
+        assertThat(place).contains(new ResolvedPlace("ChIJcrossroads", "вулиця Наукова, Львів, Львівська область", 49.8125, 24.0144, "UA"));
+    }
+
+    @Test
+    void putsTheAddressAfterAVenueNameAndDropsTheCountryAndThePostcode() {
+        String venue = """
+                {"places": [{"id": "ChIJmagnus", "displayName": {"text": "Магнус"},
+                  "formattedAddress": "вулиця Зелена, 100, Львів, Львівська область, Україна, 79000",
+                  "location": {"latitude": 49.8, "longitude": 24.0},
+                  "addressComponents": [{"shortText": "UA", "types": ["country", "political"]}]}]}
+                """;
+        server.expect(requestTo(SEARCH)).andRespond(withSuccess(venue, MediaType.APPLICATION_JSON));
+
+        Optional<ResolvedPlace> place = resolver.resolve("Магнус", null, LVIV);
+
+        assertThat(place.map(ResolvedPlace::name)).contains("Магнус, вулиця Зелена, 100, Львів, Львівська область");
     }
 
     @Test

@@ -14,6 +14,7 @@ import type { ItemKind } from "@/api/items"
 import { searchPlaces } from "@/app/actions/places"
 import { useCountry } from "@/components/country/country-provider"
 import { Field, inputClasses } from "@/components/pouf/Input"
+import { addressWithoutCountry } from "@/lib/address"
 import { clientEnv } from "@/lib/env/client"
 import { normaliseCountryCode } from "@/lib/intl/country"
 import { MAX_PLACE_NAME } from "@/schema/report-schema"
@@ -156,7 +157,7 @@ function Autocomplete({
           const best = results[0]
           if (!best) throw new Error("No address at this position")
 
-          const name = best.formatted_address.slice(0, MAX_PLACE_NAME)
+          const name = addressWithoutCountry(best.formatted_address, best.address_components).slice(0, MAX_PLACE_NAME)
           if (input.current) input.current.value = name
           latest.current({
             id: best.place_id,

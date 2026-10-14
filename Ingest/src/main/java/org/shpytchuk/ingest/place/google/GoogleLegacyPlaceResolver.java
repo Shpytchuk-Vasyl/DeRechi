@@ -65,7 +65,7 @@ public class GoogleLegacyPlaceResolver extends TextSearchPlaceResolver {
             return Optional.empty();
         }
         String country = country(first.formattedAddress(), chat.locale()).orElse(chat.region());
-        return place(first.placeId(), first.name(), first.geometry().location().lat(), first.geometry().location().lng(), country);
+        return place(first.placeId(), first.name(), first.formattedAddress(), first.geometry().location().lat(), first.geometry().location().lng(), country, chat.locale());
     }
 
     static Optional<String> country(@Nullable String formattedAddress, String language) {
