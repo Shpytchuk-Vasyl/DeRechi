@@ -29,7 +29,7 @@ class CaptionBuilderTest {
     @Test
     void lostCaptionInUkrainian() {
         ChannelPost post = new ChannelPost(ItemKind.LOST, "Чорний гаманець", "Шкіряний, з карткою ПриватБанку",
-                "ТЦ Ocean Plaza", DATE, new Money(500, "UAH"), null, "https://derechi.site/uk/lost/42");
+                "ТЦ Ocean Plaza", DATE, new Money(500, "UAH"), null, "https://derechi.site/uk/lost/42", "Київ", "WALLET");
 
         assertThat(uk.caption(post, PHOTO_LIMIT)).isEqualTo("""
                 🔴 Чорний гаманець
@@ -39,7 +39,33 @@ class CaptionBuilderTest {
 
                 Шкіряний, з карткою ПриватБанку
 
-                Знайшли? Залиште свої контакти тут, автор отримає їх: https://derechi.site/uk/lost/42""");
+                Знайшли? Залиште свої контакти тут, автор отримає їх: https://derechi.site/uk/lost/42
+
+                #Київ #Загублено #Гаманці""");
+    }
+
+    @Test
+    void cityWithAHyphenAndTheOtherCategoryGiveNoBrokenOrEmptyHashtags() {
+        ChannelPost post = new ChannelPost(ItemKind.FOUND, "Ключі", null, "Площа Ринок", DATE, null,
+                new byte[]{1}, "https://derechi.site/uk/found/7", "Івано-Франківськ", "OTHER");
+
+        assertThat(uk.caption(post, PHOTO_LIMIT)).endsWith("https://derechi.site/uk/found/7\n\n#Івано_Франківськ #Знайдено");
+    }
+
+    @Test
+    void withoutACityOnlyTheKindIsTagged() {
+        ChannelPost post = new ChannelPost(ItemKind.LOST, "Собака", null, "Парк", DATE, null,
+                null, "https://x/uk/lost/1", null, "ANIMALS");
+
+        assertThat(uk.caption(post, PHOTO_LIMIT)).endsWith("\n\n#Загублено #Тварини");
+    }
+
+    @Test
+    void cityNamesBecomeSafeHashtags() {
+        assertThat(CaptionBuilder.hashtag("Львів")).isEqualTo("#Львів");
+        assertThat(CaptionBuilder.hashtag(" Кам'янець-Подільський ")).isEqualTo("#Кам_янець_Подільський");
+        assertThat(CaptionBuilder.hashtag("  ")).isNull();
+        assertThat(CaptionBuilder.hashtag(null)).isNull();
     }
 
     @Test
@@ -52,7 +78,9 @@ class CaptionBuilderTest {
                 📍 Площа Ринок
                 📅 09.10.2026
 
-                Ваше? Залиште свої контакти тут, автор отримає їх: https://derechi.site/uk/found/7""");
+                Ваше? Залиште свої контакти тут, автор отримає їх: https://derechi.site/uk/found/7
+
+                #Знайдено""");
     }
 
     @Test
@@ -108,7 +136,7 @@ class CaptionBuilderTest {
         String caption = uk.caption(post, PHOTO_LIMIT);
 
         assertThat(caption.length()).isLessThanOrEqualTo(PHOTO_LIMIT).isGreaterThan(PHOTO_LIMIT - 20);
-        assertThat(caption).contains("слово слово…\n\n").contains("Сумка").endsWith("https://x/uk/lost/1");
+        assertThat(caption).contains("слово слово…\n\n").contains("Сумка").endsWith("https://x/uk/lost/1\n\n#Загублено");
     }
 
     @Test

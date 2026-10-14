@@ -8,6 +8,7 @@ import org.shpytchuk.ingest.place.ResolvedPlace;
 import org.shpytchuk.ingest.source.SourceSettings;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -18,6 +19,9 @@ abstract class TextSearchPlaceResolver implements PlaceResolver {
 
     private static final int NAME_LENGTH = 100;
     private static final Pattern ADDRESS_PARTS = Pattern.compile("\\s*,\\s*");
+    private static final Pattern POSTAL_CODE = Pattern.compile("\\d{5}|\\d{2}-\\d{3}");
+    private static final Pattern REGION = Pattern.compile(
+            "(?iu).*(област|oblast|województwo|voivodeship|республіка|republic).*");
 
     private final PlacesProperties properties;
 
@@ -45,7 +49,7 @@ abstract class TextSearchPlaceResolver implements PlaceResolver {
 
     protected static Optional<ResolvedPlace> place(@Nullable String id, @Nullable String name, @Nullable String address,
                                                    double lat, double lon, @Nullable String countryCode, String language) {
-        String trimmed = label(name, withoutCountry(address, countryCode, language));
+        String trimmed = withoutRegion(label(name, withoutCountry(address, countryCode, language)));
         if (id == null || trimmed.isEmpty() || countryCode == null) {
             return Optional.empty();
         }
@@ -78,5 +82,17 @@ abstract class TextSearchPlaceResolver implements PlaceResolver {
             return full.isEmpty() ? title : full;
         }
         return title.isEmpty() ? full : title + ", " + full;
+    }
+
+    static String withoutRegion(String name) {
+        List<String> parts = new ArrayList<>(Arrays.asList(ADDRESS_PARTS.split(name)));
+        while (parts.size() > 1 && isRegionOrPostalCode(parts.getLast())) {
+            parts.removeLast();
+        }
+        return String.join(", ", parts);
+    }
+
+    private static boolean isRegionOrPostalCode(String part) {
+        return POSTAL_CODE.matcher(part).matches() || REGION.matcher(part).matches();
     }
 }

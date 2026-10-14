@@ -78,11 +78,11 @@ class GoogleLegacyPlaceResolverTest {
         Optional<ResolvedPlace> place = resolver.resolve("перехрестя Наукова / Кульпарківська", null, LVIV);
 
         server.verify();
-        assertThat(place).contains(new ResolvedPlace("ChIJcrossroads", "вулиця Наукова, Львів, Львівська область", 49.8125, 24.0144, "UA"));
+        assertThat(place).contains(new ResolvedPlace("ChIJcrossroads", "вулиця Наукова, Львів", 49.8125, 24.0144, "UA"));
     }
 
     @Test
-    void putsTheAddressAfterAVenueNameAndDropsTheCountryAndThePostcode() {
+    void putsTheAddressAfterAVenueNameAndDropsTheRegionTheCountryAndThePostcode() {
         String venue = """
                 {"status": "OK", "results": [{"place_id": "ChIJmagnus", "name": "Магнус",
                   "formatted_address": "вулиця Зелена, 100, Львів, Львівська область, Україна, 79000",
@@ -92,7 +92,7 @@ class GoogleLegacyPlaceResolverTest {
 
         Optional<ResolvedPlace> place = resolver.resolve("Магнус", null, LVIV);
 
-        assertThat(place.map(ResolvedPlace::name)).contains("Магнус, вулиця Зелена, 100, Львів, Львівська область");
+        assertThat(place.map(ResolvedPlace::name)).contains("Магнус, вулиця Зелена, 100, Львів");
     }
 
     @Test

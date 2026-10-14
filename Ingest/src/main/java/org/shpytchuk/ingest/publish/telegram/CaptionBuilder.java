@@ -10,6 +10,10 @@ import org.springframework.stereotype.Component;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Objects;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class CaptionBuilder {
@@ -19,6 +23,8 @@ public class CaptionBuilder {
 
     private static final String ELLIPSIS = "…";
     private static final String DESCRIPTION_SEPARATOR = "\n\n";
+    private static final String CATEGORY_HASHTAG = "channel.hashtag.category.";
+    private static final Pattern NON_WORD = Pattern.compile("[^\\p{L}\\p{N}]+");
     private static final DateTimeFormatter DATE = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     private final MessageSourceAccessor messages;
@@ -72,7 +78,30 @@ public class CaptionBuilder {
         } else {
             html.append(text("channel.preview.noLink"));
         }
+        String hashtags = hashtags(post);
+        if (!hashtags.isEmpty()) {
+            html.append("\n\n").append(hashtags);
+        }
         return html.toString();
+    }
+
+    private String hashtags(ChannelPost post) {
+        String kind = messages.getMessage(post.kind() == ItemKind.LOST ? "channel.hashtag.lost" : "channel.hashtag.found");
+        String category = post.category() == null ? null
+                : messages.getMessage(CATEGORY_HASHTAG + post.category(), (String) null);
+        return Stream.of(post.city(), kind, category)
+                .map(CaptionBuilder::hashtag)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.joining(" "));
+    }
+
+    static @Nullable String hashtag(@Nullable String word) {
+        if (word == null) {
+            return null;
+        }
+        String tag = NON_WORD.matcher(word.strip()).replaceAll("_").replaceAll("^_+|_+$", "");
+        return tag.isEmpty() ? null : "#" + tag;
     }
 
     private String text(String key) {

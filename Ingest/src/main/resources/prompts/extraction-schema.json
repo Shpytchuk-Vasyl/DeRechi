@@ -31,7 +31,8 @@
       "description": "the most specific place as a Google Maps search query: official name, nominative, no prepositions, no city, Ukrainian when the post is in Russian"
     },
     "city": {
-      "type": ["string", "null"]
+      "type": ["string", "null"],
+      "description": "the town, nominative, in the language of the post (Ukrainian for a Russian post): Львів, Київ, Kraków"
     },
     "compensation": {
       "type": ["object", "null"],

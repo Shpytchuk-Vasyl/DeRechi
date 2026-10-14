@@ -57,6 +57,8 @@ emails with `[EMAIL_1]`, ... Parts of the photos may be blurred on purpose.
     the stop or the place named next to it, otherwise `null`.
 - `city`: only when the post names it or it is unambiguous from the post. Do not guess it from the
   language, and do not copy `chatCity` into it: `chatCity` only helps to understand local names.
+  Write the town's own name in the nominative case, in the language of the post (Ukrainian for a
+  Russian post): "у Львові" → "Львів", "в Харькове" → "Харків".
 - `contactPhoneRef`: the placeholder (`PHONE_1`, ...) that is the contact for this notice. `null`
   when there is no phone or it is unclear which one is the contact.
 - `socialMedias`: only `TELEGRAM`, `VIBER`, `WHATSAPP`, and only when the post asks to write there
