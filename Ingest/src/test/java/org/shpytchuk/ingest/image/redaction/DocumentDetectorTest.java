@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DocumentDetectorTest {
 
     static final List<String> KEYWORDS = List.of("паспорт", "passport", "посвідчення", "посвідка", "свідоцтво",
-            "водійськ", "id-картк", "айді", "ідентифікац", "леокарт", "студентськ", "пенсійн", "військов",
+            "водійськ", "id-картк", "айді", "ідентифікац", "леокарт", "студентськ", "пенсійн", "військовий квит", "військового квит", "військово-обліков",
             "dowód", "legitymacja", "paszport", "personalausweis", "reisepass", "führerschein",
             "carte d'identité", "permis de conduire", "обʼєднан");
 
@@ -92,6 +92,21 @@ class DocumentDetectorTest {
 
         assertThat(bare.mentionsDocument("паспорт")).isFalse();
         assertThat(bare.looksLikeDocument(List.of(line("P<UKRSHEVCHENKO<<TARAS<<<<<<<<<<<<<<<<<<<<<")))).isTrue();
+    }
+
+    @Test
+    void printedTextNeedsSeveralLines() {
+        OcrLine word = new OcrLine("Знайдено", new Rectangle(0, 0, 10, 10), 90);
+        assertThat(detector.hasPrintedText(List.of(word, word))).isFalse();
+        assertThat(detector.hasPrintedText(List.of(word, word, word))).isTrue();
+        assertThat(detector.hasPrintedText(List.of(word, word, new OcrLine("--", new Rectangle(0, 0, 10, 10), 90)))).isFalse();
+    }
+
+    @Test
+    void militaryBackpackIsNotAMilitaryID() {
+        assertThat(detector.mentionsDocument("Загублено рюкзак військового")).isFalse();
+        assertThat(detector.mentionsDocument("Знайдено військовий квиток")).isTrue();
+        assertThat(detector.mentionsDocument("Загублено військового квитка")).isTrue();
     }
 
     @Test

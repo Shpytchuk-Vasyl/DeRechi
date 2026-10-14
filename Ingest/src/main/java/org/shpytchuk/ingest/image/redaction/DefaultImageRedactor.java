@@ -62,7 +62,8 @@ public class DefaultImageRedactor implements ImageRedactor {
         List<OcrLine> lines = lines(picture);
         List<Rectangle> faces = faces(picture);
         if (documentHint || documentDetector.looksLikeDocument(lines)
-                || documentDetector.portraitOnTheLeft(faces, picture.getWidth())) {
+                || documentDetector.hasPrintedText(lines)
+                && documentDetector.portraitOnTheLeft(faces, picture.getWidth())) {
             return document(picture, faces);
         }
         int hidden = 0;

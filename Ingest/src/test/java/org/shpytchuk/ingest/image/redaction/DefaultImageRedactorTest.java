@@ -118,12 +118,23 @@ class DefaultImageRedactorTest {
     void portraitOnTheLeftMakesADocument() {
         faces.found = List.of(PORTRAIT_BOX);
 
-        RedactedImage result = redactor(ocr(line("Mustermann Erika 12.08.64", TEXT_BOX))).redact(stripes(), false);
+        RedactedImage result = redactor(ocr(line("Mustermann Erika 12.08.64", TEXT_BOX), line("Geburtsort Berlin", PHONE_BOX),
+                line("Gültig bis 2030", CARD_BOX))).redact(stripes(), false);
 
         assertThat(result.mode()).isEqualTo(RedactionMode.DOCUMENT);
         BufferedImage out = decode(result);
         assertThat(Images.variance(out, UNTOUCHED)).isLessThan(BLURRED);
         assertThat(Images.variance(out, PORTRAIT_BOX)).isGreaterThan(SHARP);
+    }
+
+    @Test
+    void portraitOnTheLeftWithoutPrintedTextIsAnOrdinaryPhoto() {
+        faces.found = List.of(PORTRAIT_BOX);
+
+        RedactedImage result = redactor(ocr()).redact(stripes(), false);
+
+        assertThat(result.mode()).isEqualTo(RedactionMode.NONE);
+        assertThat(Images.variance(decode(result), UNTOUCHED)).isGreaterThan(SHARP);
     }
 
     @Test

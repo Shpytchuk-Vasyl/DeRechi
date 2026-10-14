@@ -121,7 +121,7 @@ derechi:
     # empty = OCR off (development only); the Docker image sets it
     tessdata: ${TESSDATA_PREFIX:}
     languages: ${REDACTION_OCR_LANGUAGES:ukr+eng}
-    document-keywords: ${REDACTION_DOCUMENT_KEYWORDS:паспорт,passport,посвід,свідоцтв,водійськ,id-картк,айді,ідентифікац,леокарт,студентськ,пенсійн,військов,dowód,legitymacja,paszport,personalausweis,reisepass,führerschein,carte d'identité,permis de conduire}
+    document-keywords: ${REDACTION_DOCUMENT_KEYWORDS:паспорт,passport,посвід,свідоцтв,водійськ,id-картк,айді,ідентифікац,леокарт,студентськ,пенсійн,військовий квит,військового квит,військовому квит,військовим квит,військово-обліков,dowód,legitymacja,paszport,personalausweis,reisepass,führerschein,carte d'identité,permis de conduire}
     face-model: ${REDACTION_FACE_MODEL:classpath:models/face_detection_yunet_2023mar.onnx}
     face-score: ${REDACTION_FACE_SCORE:0.6}
     document-mode: ${REDACTION_DOCUMENT_MODE:PARTIAL}

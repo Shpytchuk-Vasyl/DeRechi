@@ -22,6 +22,8 @@ public class DocumentDetector {
     private static final int MAX_DOCUMENT_FACES = 3;
     private static final double PORTRAIT_MAX_CENTER = 0.4;
     private static final double PORTRAIT_MIN_WIDTH = 0.06;
+    private static final int PORTRAIT_MIN_TEXT_LINES = 3;
+    private static final int TEXT_LINE_MIN_CHARACTERS = 3;
 
     private final List<String> keywords;
 
@@ -37,6 +39,11 @@ public class DocumentDetector {
     public boolean looksLikeDocument(List<OcrLine> lines) {
         List<String> texts = lines.stream().map(OcrLine::text).toList();
         return texts.stream().anyMatch(DocumentDetector::isMrzLine) || mentionsDocument(String.join("\n", texts));
+    }
+
+    public boolean hasPrintedText(List<OcrLine> lines) {
+        return lines.stream().filter(line -> line.text().chars().filter(Character::isLetterOrDigit).count()
+                >= TEXT_LINE_MIN_CHARACTERS).count() >= PORTRAIT_MIN_TEXT_LINES;
     }
 
     public boolean portraitOnTheLeft(List<Rectangle> faces, int imageWidth) {
