@@ -95,7 +95,7 @@ class RedactionReportIT {
         List<Rectangle> faces = faceDetector.faces(picture);
         List<Boolean> contacts = lines.stream().map(redactor::hasContact).toList();
         boolean document = documentDetector.looksLikeDocument(lines)
-                || documentDetector.hasPrintedText(lines) && documentDetector.portraitOnTheLeft(faces, picture.getWidth());
+                || documentDetector.looksLikePortraitDocument(faces, lines, picture.getWidth());
 
         Files.write(output.resolve(base + ".redacted.jpg"), redacted.jpeg());
         ImageIO.write(debug(picture, lines, contacts, faces), "png", output.resolve(base + ".debug.png").toFile());

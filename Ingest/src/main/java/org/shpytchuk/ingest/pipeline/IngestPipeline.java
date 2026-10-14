@@ -164,12 +164,16 @@ public class IngestPipeline {
             return;
         }
 
+        // =========== step: unblur what the model says is not a document ===========
+        boolean document = DOCUMENTS_CATEGORY.equals(extraction.category());
+        photos = document ? photos : withoutGuessedDocuments(post, photos);
+
         // =========== step: hand the notice to the output ===========
         Notice notice = new Notice(extraction.kind(), Notices.cut(extraction.title(), Notices.TITLE_MAX),
                 Notices.cut(extraction.description(), Notices.DESCRIPTION_MAX), date,
                 Notices.compensation(extraction.compensation()), categoryId, place, decision.contactPhone(),
                 Notices.socialMedias(extraction.socialMedias(), authorPhone != null),
-                publicPhoto(photos, DOCUMENTS_CATEGORY.equals(extraction.category())), phoneHash);
+                publicPhoto(photos, document), phoneHash);
 
         publishers.publish(post, notice, result, redacted(photos));
     }
@@ -239,6 +243,22 @@ public class IngestPipeline {
         ledger.record(post, PostStatus.SKIPPED, phoneHash, null);
         metrics.outcome(outcome);
         log.info("Post {} skipped: {}", post.key(), outcome.tag());
+    }
+
+    private List<Photo> withoutGuessedDocuments(IncomingPost post, List<Photo> photos) {
+        List<Photo> checked = new ArrayList<>();
+        for (Photo photo : photos) {
+            RedactionMode mode = photo.redacted().mode();
+            if (mode != RedactionMode.DOCUMENT && mode != RedactionMode.FULL) {
+                checked.add(photo);
+                continue;
+            }
+            RedactedImage again = redactor.redactOnPhotoEvidence(photo.original());
+            log.debug("Post {} photo is not a document by the model: redacted as {} instead of {}", post.key(),
+                    again.mode(), mode);
+            checked.add(new Photo(photo.original(), again));
+        }
+        return checked;
     }
 
     private static List<byte[]> redacted(List<Photo> photos) {

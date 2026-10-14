@@ -159,6 +159,27 @@ class DefaultImageRedactorTest {
     }
 
     @Test
+    void photoEvidenceIgnoresAPortraitOnTheLeft() {
+        faces.found = List.of(PORTRAIT_BOX);
+
+        RedactedImage result = redactor(ocr(line("Знайдено гаманець", TEXT_BOX))).redactOnPhotoEvidence(stripes());
+
+        assertThat(result.mode()).isEqualTo(RedactionMode.NONE);
+        assertThat(Images.variance(decode(result), UNTOUCHED)).isGreaterThan(SHARP);
+    }
+
+    @Test
+    void photoEvidenceStillBlursPhonesAndKeepsADocumentReadByOcr() {
+        faces.found = List.of(FACE_BOX);
+
+        RedactedImage phones = redactor(ocr(line("Тел. 067 123 45 67", PHONE_BOX))).redactOnPhotoEvidence(stripes());
+        RedactedImage document = redactor(ocr(line("ПАСПОРТ ГРОМАДЯНИНА УКРАЇНИ", PHONE_BOX))).redactOnPhotoEvidence(stripes());
+
+        assertThat(phones.mode()).isEqualTo(RedactionMode.PHONES);
+        assertThat(document.mode()).isEqualTo(RedactionMode.DOCUMENT);
+    }
+
+    @Test
     void documentRecognizedByMachineReadableZone() {
         faces.found = List.of(FACE_BOX);
         List<OcrLine> lines = List.of(line("P<UKRSHEVCHENKO<<TARAS<<<<<<<<<<<<<<<<<<<<<", PHONE_BOX),

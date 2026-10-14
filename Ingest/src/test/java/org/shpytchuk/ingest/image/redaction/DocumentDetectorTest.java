@@ -103,6 +103,19 @@ class DocumentDetectorTest {
     }
 
     @Test
+    void portraitAnywhereNeedsMoreTextThanOneOnTheLeft() {
+        OcrLine word = new OcrLine("Прізвище", new Rectangle(0, 0, 10, 10), 90);
+        List<Rectangle> left = List.of(new Rectangle(60, 200, 160, 200));
+        List<Rectangle> right = List.of(new Rectangle(700, 200, 160, 200));
+
+        assertThat(detector.looksLikePortraitDocument(left, List.of(word, word, word), 1000)).isTrue();
+        assertThat(detector.looksLikePortraitDocument(right, List.of(word, word, word), 1000)).isFalse();
+        assertThat(detector.looksLikePortraitDocument(right, java.util.Collections.nCopies(6, word), 1000)).isTrue();
+        assertThat(detector.looksLikePortraitDocument(left, List.of(), 1000)).isFalse();
+        assertThat(detector.looksLikePortraitDocument(List.of(), java.util.Collections.nCopies(9, word), 1000)).isFalse();
+    }
+
+    @Test
     void militaryBackpackIsNotAMilitaryID() {
         assertThat(detector.mentionsDocument("Загублено рюкзак військового")).isFalse();
         assertThat(detector.mentionsDocument("Знайдено військовий квиток")).isTrue();

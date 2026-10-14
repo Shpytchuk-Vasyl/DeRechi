@@ -345,3 +345,8 @@ button.card-footer-item {
     position-anchor: --languages;
     min-width: 11rem;
 }
+
+@media screen and (max-width: 768px) {
+    .section { padding-left: 0; padding-right: 0; }
+    .container.is-fluid { padding-left: 0.75rem; padding-right: 0.75rem; }
+}

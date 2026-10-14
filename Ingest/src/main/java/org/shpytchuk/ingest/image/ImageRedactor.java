@@ -8,6 +8,9 @@ public interface ImageRedactor {
      */
     RedactedImage redact(byte[] image, boolean documentHint);
 
+
+    RedactedImage redactOnPhotoEvidence(byte[] image);
+
     RedactedImage blurFully(byte[] image);
 
     boolean mentionsDocument(String text);

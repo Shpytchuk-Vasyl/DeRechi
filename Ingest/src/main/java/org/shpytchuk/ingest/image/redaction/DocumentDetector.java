@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import java.awt.Rectangle;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
@@ -23,6 +24,7 @@ public class DocumentDetector {
     private static final double PORTRAIT_MAX_CENTER = 0.4;
     private static final double PORTRAIT_MIN_WIDTH = 0.06;
     private static final int PORTRAIT_MIN_TEXT_LINES = 3;
+    private static final int PORTRAIT_ELSEWHERE_MIN_TEXT_LINES = 6;
     private static final int TEXT_LINE_MIN_CHARACTERS = 3;
 
     private final List<String> keywords;
@@ -42,16 +44,37 @@ public class DocumentDetector {
     }
 
     public boolean hasPrintedText(List<OcrLine> lines) {
-        return lines.stream().filter(line -> line.text().chars().filter(Character::isLetterOrDigit).count()
-                >= TEXT_LINE_MIN_CHARACTERS).count() >= PORTRAIT_MIN_TEXT_LINES;
+        return printedTextLines(lines) >= PORTRAIT_MIN_TEXT_LINES;
     }
 
     public boolean portraitOnTheLeft(List<Rectangle> faces, int imageWidth) {
-        if (faces.isEmpty() || faces.size() > MAX_DOCUMENT_FACES) {
+        return portrait(faces, imageWidth).map(face -> onTheLeft(face, imageWidth)).orElse(false);
+    }
+
+    public boolean looksLikePortraitDocument(List<Rectangle> faces, List<OcrLine> lines, int imageWidth) {
+        Optional<Rectangle> portrait = portrait(faces, imageWidth);
+        if (portrait.isEmpty()) {
             return false;
         }
+        long needed = onTheLeft(portrait.get(), imageWidth) ? PORTRAIT_MIN_TEXT_LINES : PORTRAIT_ELSEWHERE_MIN_TEXT_LINES;
+        return printedTextLines(lines) >= needed;
+    }
+
+    private static Optional<Rectangle> portrait(List<Rectangle> faces, int imageWidth) {
+        if (faces.isEmpty() || faces.size() > MAX_DOCUMENT_FACES) {
+            return Optional.empty();
+        }
         Rectangle largest = faces.stream().max(Comparator.comparingInt(face -> face.width * face.height)).orElseThrow();
-        return largest.width >= imageWidth * PORTRAIT_MIN_WIDTH && largest.getCenterX() < imageWidth * PORTRAIT_MAX_CENTER;
+        return largest.width >= imageWidth * PORTRAIT_MIN_WIDTH ? Optional.of(largest) : Optional.empty();
+    }
+
+    private static boolean onTheLeft(Rectangle face, int imageWidth) {
+        return face.getCenterX() < imageWidth * PORTRAIT_MAX_CENTER;
+    }
+
+    private static long printedTextLines(List<OcrLine> lines) {
+        return lines.stream().filter(line -> line.text().chars().filter(Character::isLetterOrDigit).count()
+                >= TEXT_LINE_MIN_CHARACTERS).count();
     }
 
     /**

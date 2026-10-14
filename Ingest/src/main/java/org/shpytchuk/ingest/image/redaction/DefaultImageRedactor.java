@@ -58,12 +58,20 @@ public class DefaultImageRedactor implements ImageRedactor {
 
     @Override
     public RedactedImage redact(byte[] image, boolean documentHint) {
+        return redact(image, documentHint, true);
+    }
+
+    @Override
+    public RedactedImage redactOnPhotoEvidence(byte[] image) {
+        return redact(image, false, false);
+    }
+
+    private RedactedImage redact(byte[] image, boolean documentHint, boolean portraitCounts) {
         BufferedImage picture = decode(image);
         List<OcrLine> lines = lines(picture);
         List<Rectangle> faces = faces(picture);
         if (documentHint || documentDetector.looksLikeDocument(lines)
-                || documentDetector.hasPrintedText(lines)
-                && documentDetector.portraitOnTheLeft(faces, picture.getWidth())) {
+                || portraitCounts && documentDetector.looksLikePortraitDocument(faces, lines, picture.getWidth())) {
             return document(picture, faces);
         }
         int hidden = 0;
