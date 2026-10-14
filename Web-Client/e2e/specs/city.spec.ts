@@ -1,5 +1,5 @@
 import { expect, test } from "../fixtures/base"
-import { ItemCard } from "../fixtures/pages"
+import { ItemCard, RouteDialog } from "../fixtures/pages"
 import { HomePage } from "../fixtures/pages/home-page"
 import { env } from "../support/env"
 import { readJsonLd } from "../support/seo"
@@ -73,6 +73,26 @@ test.describe("city pages", () => {
         name: t("cityPage.heroTitle", { in: t("city.kyiv.in") }),
       }),
     ).toBeVisible()
+  })
+
+  test("the city link in a notice dialog closes the dialog and opens the city", async ({
+    page,
+    go,
+    t,
+    shared,
+  }) => {
+    const item = shared.items.lostFull
+    const dialog = new RouteDialog(page, t)
+    await go(`/lost?search=${shared.search.view}`)
+    await new ItemCard(page, t).byTitle(item.title).click()
+    await dialog.expectOpen()
+
+    await dialog.root
+      .getByRole("link", { name: t("item.cityLink", { in: t("city.lviv.in") }) })
+      .click()
+
+    await expect(page).toHaveURL(/\/lviv$/)
+    await expect(dialog.root).toBeHidden()
   })
 
   test("a notice page links to the page of its city", async ({ page, go, t, shared }) => {
