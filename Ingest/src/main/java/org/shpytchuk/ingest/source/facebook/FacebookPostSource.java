@@ -107,7 +107,9 @@ public class FacebookPostSource implements PostSource {
                     pause();
                 }
                 first = false;
-                read(group.getKey(), group.getValue());
+                if (!read(group.getKey(), group.getValue())) {
+                    break;
+                }
             }
         } finally {
             scheduler.schedule(this::poll, next);
@@ -133,7 +135,7 @@ public class FacebookPostSource implements PostSource {
                 .orElseThrow();
     }
 
-    private void read(String group, SourceSettings settings) {
+    private boolean read(String group, SourceSettings settings) {
         Instant started = clock.instant();
         Instant from = since.getOrDefault(group, started.minus(properties.catchUpMaxAge()));
         try {
@@ -147,6 +149,12 @@ public class FacebookPostSource implements PostSource {
             since.put(group, started.minus(OVERLAP));
             polled(group, "ok");
             log.info("Facebook group {} read: {} posts since {}", group, fresh.size(), from);
+        } catch (FacebookCheckpointException e) {
+            authorized.set(0);
+            polled(group, "checkpoint");
+            log.warn("Facebook group {} was not read, the other groups wait for the next poll: {}", group,
+                    e.getMessage());
+            return false;
         } catch (StageUnavailableException e) {
             authorized.set(0);
             polled(group, "unauthorized");
@@ -155,6 +163,7 @@ public class FacebookPostSource implements PostSource {
             polled(group, "failed");
             log.warn("Facebook group {} was not read: {}", group, e.getMessage());
         }
+        return true;
     }
 
     private static IncomingPost post(String group, String name, SourceSettings settings, FacebookStory story) {

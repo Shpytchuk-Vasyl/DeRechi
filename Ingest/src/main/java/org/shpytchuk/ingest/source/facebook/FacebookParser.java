@@ -30,6 +30,7 @@ class FacebookParser {
     private static final Pattern USER_ID = Pattern.compile("\"USER_ID\":\"(\\d+)\"");
     private static final Pattern FB_DTSG = Pattern.compile("\"DTSGInitialData\",\\[],\\{\"token\":\"([^\"]+)\"");
     private static final Pattern LSD = Pattern.compile("\"LSD\",\\[],\\{\"token\":\"([^\"]+)\"");
+    private static final Pattern CHECKPOINTED = Pattern.compile("\"is_checkpointed\":true");
     private static final String ANONYMOUS = "0";
     private static final String ERROR_PREFIX = "for (;;);";
     private static final String FEED_PAGE_INFO_LABEL = "group_feed$page_info";
@@ -45,7 +46,7 @@ class FacebookParser {
         String userId = find(USER_ID, html).filter(id -> !ANONYMOUS.equals(id))
                 .orElseThrow(() -> new StageUnavailableException(
                         "Facebook session is not logged in, refresh FACEBOOK_COOKIES"));
-        String lsd = find(LSD, html).orElseThrow(() -> new IngestException("Facebook group page has no LSD token"));
+        String lsd = find(LSD, html).orElseThrow(() -> unreadable(html, "Facebook group page has no LSD token"));
         Feed feed = new Feed();
         JsonNode variables = null;
         Matcher scripts = JSON_SCRIPT.matcher(html);
@@ -60,7 +61,7 @@ class FacebookParser {
             }
         }
         if (variables == null) {
-            throw new IngestException("Facebook group page \"" + title(html) + "\" has no feed query");
+            throw unreadable(html, "Facebook group page \"" + title(html) + "\" has no feed query");
         }
         return new GroupPage(userId, find(FB_DTSG, html).orElse(null), lsd, title(html), variables, feed.page(),
                 scriptUrls(html));
@@ -117,6 +118,10 @@ class FacebookParser {
             }
         }
         return null;
+    }
+
+    private static RuntimeException unreadable(String html, String problem) {
+        return CHECKPOINTED.matcher(html).find() ? new FacebookCheckpointException() : new IngestException(problem);
     }
 
     private static Optional<String> find(Pattern pattern, String text) {

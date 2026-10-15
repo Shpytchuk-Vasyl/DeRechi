@@ -28,6 +28,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -142,6 +143,20 @@ class FacebookPostSourceTest {
         assertThat(registry.get("derechi.ingest.facebook.polls").tag("group", "zzter").tag("outcome", "unauthorized")
                 .counter().count()).isEqualTo(1);
         assertThat(received).isNotEmpty().allSatisfy(post -> assertThat(post.key().channel()).isEqualTo("lviv_lost"));
+    }
+
+    @Test
+    void aCheckpointStopsThePollBeforeTheOtherGroups() {
+        when(client.page(ZZTER)).thenReturn(FacebookFixtures.checkpointPage());
+        FacebookPostSource source = started(properties("c_user=1; xs=2", "zzter=Тернопіль;lviv_lost=Львів"));
+
+        source.poll();
+
+        verify(client, never()).page(LVIV);
+        assertThat(received).isEmpty();
+        assertThat(registry.get("derechi.ingest.facebook.authorized").gauge().value()).isZero();
+        assertThat(registry.get("derechi.ingest.facebook.polls").tag("group", "zzter").tag("outcome", "checkpoint")
+                .counter().count()).isEqualTo(1);
     }
 
     @Test

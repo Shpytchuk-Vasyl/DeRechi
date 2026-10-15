@@ -24,6 +24,11 @@ final class FacebookFixtures {
         return read("group-page.html");
     }
 
+    static String checkpointPage() {
+        return "<title>Facebook</title><script>[\"LSD\",[],{\"token\":\"lsd-token\"}],"
+                + "{\"USER_ID\":\"100000000000001\",\"is_checkpointed\":true}</script>";
+    }
+
     static String anonymousPage() {
         return page().replace("\"USER_ID\":\"100000000000001\"", "\"USER_ID\":\"0\"")
                 .replace("[\"DTSGInitialData\",[],{\"token\":\"dtsg-token\"},258],", "");
