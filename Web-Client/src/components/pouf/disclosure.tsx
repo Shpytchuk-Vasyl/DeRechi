@@ -4,7 +4,7 @@ import * as RCollapse from '@radix-ui/react-collapsible'
 import { cn } from 'cn'
 import { buttonClasses } from './Button'
 import { useState, type ReactNode } from 'react'
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import { m, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Icon } from './Icon'
 import { toneClass, type Tone } from './tone'
 
@@ -47,14 +47,14 @@ export function Tabs({ tabs, value, onChange, tone = 'blue' }: TabsProps) {
                 forceMount
                 asChild
               >
-                <motion.div
+                <m.div
                   initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -6 }}
                   transition={{ duration: reduceMotion ? 0.01 : 0.18, ease: 'easeOut' }}
                 >
                   {t.content}
-                </motion.div>
+                </m.div>
               </RTabs.Content>
             ),
         )}
@@ -124,14 +124,14 @@ export function Collapsible({ children, trigger, open: controlledOpen, onOpenCha
         </button>
       </RCollapse.Trigger>
       <RCollapse.Content className="pouf-collapsible__content" forceMount>
-        <motion.div
+        <m.div
           initial={false}
           animate={{ height: open ? 'auto' : 0, opacity: open ? 1 : 0 }}
           transition={{ duration: reduceMotion ? 0 : 0.2, ease: [0.2, 0.9, 0.3, 1] }}
           style={{ overflow: 'hidden' }}
         >
           <div className="pouf-collapsible__body">{children}</div>
-        </motion.div>
+        </m.div>
       </RCollapse.Content>
     </RCollapse.Root>
   )

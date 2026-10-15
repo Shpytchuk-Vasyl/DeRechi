@@ -55,7 +55,12 @@ export default async function HomeExplainer({ kind }: { kind: ItemKind }) {
           ))}
         </Stack>
         <div className="text-center">
-          <LinkButton href={paths.report(kind)} tone={kind === "found" ? "up" : "down"} size="lg">
+          <LinkButton
+            href={paths.report(kind)}
+            tone={kind === "found" ? "up" : "down"}
+            size="lg"
+            prefetch={false}
+          >
             {tn(kind === "found" ? "reportFound" : "reportLost")}
           </LinkButton>
         </div>

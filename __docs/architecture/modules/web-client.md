@@ -99,6 +99,19 @@ time: flipping one means a rebuild and redeploy of the web client, not a restart
 Maintenance mode only closes the web client. The admin panel and the backend stay up, and
 the reminder links (`/{locale}/claims/{token}`) lead to the maintenance page too while it is on.
 
+## Bundle size
+
+- Links to the report form (`paths.report(...)`) carry `prefetch={false}`: a prefetch pulls in
+  the form's client chunks (zod, react-hook-form, react-day-picker, Google Maps), about 100 KiB
+  of JS the page with the link never runs. The form loads on click instead; `LinkButton` passes
+  `prefetch` through.
+- framer-motion goes through `LazyMotion` (`MotionProvider` in the locale layout, `strict`):
+  components render `m.div`, not `motion.div`, and the animation features (`domMax`, as the
+  toasts animate `layout`) load as a separate chunk after hydration. A `motion.*` component
+  under the provider throws.
+- `pnpm next experimental-analyze --output` writes the bundle analysis to
+  `.next/diagnostics/analyze`, to compare the bundles before and after a change.
+
 ## Commands
 
 ```bash

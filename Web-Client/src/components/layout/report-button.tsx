@@ -10,10 +10,18 @@ export function ReportButton() {
   const pathname = usePathname()
 
   if (pathname === paths.list("found")) {
-    return <LinkButton href={paths.report("found")}>{t("reportFound")}</LinkButton>
+    return (
+      <LinkButton href={paths.report("found")} prefetch={false}>
+        {t("reportFound")}
+      </LinkButton>
+    )
   }
   if (pathname === paths.list("lost")) {
-    return <LinkButton href={paths.report("lost")}>{t("reportLost")}</LinkButton>
+    return (
+      <LinkButton href={paths.report("lost")} prefetch={false}>
+        {t("reportLost")}
+      </LinkButton>
+    )
   }
   return null
 }

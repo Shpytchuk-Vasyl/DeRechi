@@ -11,6 +11,7 @@ export function LinkButton({
   variant = "solid",
   block,
   target,
+  prefetch,
   children,
 }: {
   href: string
@@ -19,12 +20,14 @@ export function LinkButton({
   variant?: "solid" | "quiet"
   block?: boolean
   target?: "_blank"
+  prefetch?: boolean
   children: ReactNode
 }) {
   return (
     <Link
       href={href}
       target={target}
+      prefetch={prefetch}
       rel={target === "_blank" ? "noopener noreferrer" : undefined}
       className={cx(buttonClasses({ size, variant, block }), "no-underline", toneClass(tone))}
     >

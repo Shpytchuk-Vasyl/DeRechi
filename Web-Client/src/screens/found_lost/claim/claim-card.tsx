@@ -54,7 +54,7 @@ export default function ClaimCard({ kind, id, countryCode, contact }: Props) {
 
         <p className="mt-5 text-muted-foreground text-sm">
           {tc("orPost")}{" "}
-          <Link href={paths.report(otherKind)} className="font-bold underline">
+          <Link href={paths.report(otherKind)} prefetch={false} className="font-bold underline">
             {otherKind === "lost" ? tn("reportLost") : tn("reportFound")}
           </Link>
         </p>

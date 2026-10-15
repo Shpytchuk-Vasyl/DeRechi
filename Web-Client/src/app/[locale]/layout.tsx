@@ -5,6 +5,7 @@ import { hasLocale, NextIntlClientProvider } from "next-intl"
 import { getTranslations } from "next-intl/server"
 import { fetchCountries } from "@/api/countries"
 import { CountryProvider } from "@/components/country/country-provider"
+import { MotionProvider } from "@/components/effects/motion-provider"
 import { MobileNav } from "@/components/layout/mobile-nav"
 import { SiteAnalytics } from "@/components/layout/site-analytics"
 import { SiteFooter } from "@/components/layout/site-footer"
@@ -73,17 +74,19 @@ export default async function LocaleLayout({
       <body className="flex min-h-full flex-col">
         <NextIntlClientProvider>
           <CountryProvider countries={countries}>
-            <div className="container mx-auto flex w-full flex-1 flex-col p-4 max-md:pb-[calc(96px+env(safe-area-inset-bottom))] md:p-8 lg:px-16 xl:px-32">
-              <SiteHeader />
-              <main className="flex-1 pt-8">{children}</main>
-              {modal}
-              <SiteFooter />
-            </div>
-            <MobileNav />
+            <MotionProvider>
+              <div className="container mx-auto flex w-full flex-1 flex-col p-4 max-md:pb-[calc(96px+env(safe-area-inset-bottom))] md:p-8 lg:px-16 xl:px-32">
+                <SiteHeader />
+                <main className="flex-1 pt-8">{children}</main>
+                {modal}
+                <SiteFooter />
+              </div>
+              <MobileNav />
 
-            <div className="pouf-toasts">
-              <Toaster />
-            </div>
+              <div className="pouf-toasts">
+                <Toaster />
+              </div>
+            </MotionProvider>
           </CountryProvider>
         </NextIntlClientProvider>
         {process.env.VERCEL ? <SiteAnalytics /> : null}

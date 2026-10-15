@@ -2,7 +2,7 @@ import * as RMenu from '@radix-ui/react-dropdown-menu'
 import * as RContext from '@radix-ui/react-context-menu'
 import { cn } from 'cn'
 import type { ReactElement, ReactNode } from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
+import { m, useReducedMotion } from 'framer-motion'
 import { renderIcon, type IconLike } from './Icon'
 
 export interface MenuEntry {
@@ -36,7 +36,7 @@ export function DropdownMenu({ children, items, label }: DropdownMenuProps) {
       </RMenu.Trigger>
       <RMenu.Portal>
         <RMenu.Content className="pouf-menu" sideOffset={8} align="start" asChild>
-          <motion.div
+          <m.div
             initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: -4 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: reduceMotion ? 0.01 : 0.14, ease: 'easeOut' }}
@@ -55,7 +55,7 @@ export function DropdownMenu({ children, items, label }: DropdownMenuProps) {
                 </RMenu.Item>
               )
             })}
-          </motion.div>
+          </m.div>
         </RMenu.Content>
       </RMenu.Portal>
     </RMenu.Root>
@@ -74,7 +74,7 @@ export function ContextMenu({ children, items }: ContextMenuProps) {
       <RContext.Trigger className="pouf-context-anchor">{children}</RContext.Trigger>
       <RContext.Portal>
         <RContext.Content className="pouf-menu" asChild>
-          <motion.div
+          <m.div
             initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: reduceMotion ? 0.01 : 0.14, ease: 'easeOut' }}
@@ -93,7 +93,7 @@ export function ContextMenu({ children, items }: ContextMenuProps) {
                 </RContext.Item>
               )
             })}
-          </motion.div>
+          </m.div>
         </RContext.Content>
       </RContext.Portal>
     </RContext.Root>

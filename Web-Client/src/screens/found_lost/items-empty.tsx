@@ -48,7 +48,11 @@ export default async function ItemsEmpty({ kind, search }: Props) {
         {t(kind === "found" ? "emptyFoundHint" : "emptyLostHint")}
       </Empty>
       <Row justify="center">
-        <LinkButton href={paths.report(other)} tone={other === "found" ? "up" : "down"}>
+        <LinkButton
+          href={paths.report(other)}
+          tone={other === "found" ? "up" : "down"}
+          prefetch={false}
+        >
           {tn(other === "found" ? "reportFound" : "reportLost")}
         </LinkButton>
       </Row>

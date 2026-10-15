@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { cn } from 'cn'
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import { m, AnimatePresence, useReducedMotion } from 'framer-motion'
 import type { ReactNode } from 'react'
 import { Icon } from './Icon'
 
@@ -53,7 +53,7 @@ export function Toast({ id, severity, children, onDismiss }: ToastProps) {
   }, [critical, id, onDismiss])
 
   return (
-    <motion.div
+    <m.div
       className={cn('pouf-toast', critical ? 'tone-down' : 'tone-info')}
       role={critical ? 'alert' : 'status'}
       aria-live={critical ? 'assertive' : 'polite'}
@@ -67,7 +67,7 @@ export function Toast({ id, severity, children, onDismiss }: ToastProps) {
       <button type="button" className="pouf-toast__close" onClick={() => onDismiss(id)} aria-label="Dismiss notification">
         <Icon name="close" size="sm" />
       </button>
-    </motion.div>
+    </m.div>
   )
 }
 

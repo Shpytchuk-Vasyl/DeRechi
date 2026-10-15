@@ -42,6 +42,7 @@ export function MobileNav() {
       {under("/found") || under("/lost") ? (
         <Link
           href={paths.report(reportKind)}
+          prefetch={false}
           aria-label={reportKind === "found" ? t("reportFound") : t("reportLost")}
           className="cushion-control fixed right-4 bottom-[calc(100px+env(safe-area-inset-bottom,0px))] z-40 grid size-14 place-items-center rounded-pill bg-purple text-(--on-accent) transition-transform active:translate-y-0.5 md:hidden"
         >

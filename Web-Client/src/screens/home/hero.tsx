@@ -31,10 +31,10 @@ export default async function HomeHero({ city, ...props }: Props) {
           </Stack>
 
           <div className="grid gap-3 sm:grid-cols-2">
-            <LinkButton href={paths.report("found")} tone="up" size="lg" block>
+            <LinkButton href={paths.report("found")} tone="up" size="lg" block prefetch={false}>
               {tn("reportFound")}
             </LinkButton>
-            <LinkButton href={paths.report("lost")} tone="down" size="lg" block>
+            <LinkButton href={paths.report("lost")} tone="down" size="lg" block prefetch={false}>
               {tn("reportLost")}
             </LinkButton>
           </div>

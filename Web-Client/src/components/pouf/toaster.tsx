@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import { m, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { useTranslations } from 'next-intl'
 import { Icon } from './Icon'
 import type { IconName } from './Icon'
@@ -112,7 +112,7 @@ function ToastItem({ t, onDismiss }: { t: ToastEntry; onDismiss: (id: string) =>
   }, [sticky, t.duration, t.id, onDismiss])
 
   return (
-    <motion.div
+    <m.div
       className={`pouf-toast pouf-toast--${t.variant}`}
       role={t.variant === 'error' ? 'alert' : 'status'}
       aria-live={t.variant === 'error' ? 'assertive' : 'polite'}
@@ -134,7 +134,7 @@ function ToastItem({ t, onDismiss }: { t: ToastEntry; onDismiss: (id: string) =>
       <button type="button" className="pouf-toast__close" onClick={() => onDismiss(t.id)} aria-label={tc('dismissNotification')}>
         <Icon name="close" size="sm" />
       </button>
-    </motion.div>
+    </m.div>
   )
 }
 

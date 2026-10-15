@@ -1,7 +1,7 @@
 "use client"
 
 import { cx } from "class-variance-authority"
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
+import { AnimatePresence, m, useReducedMotion } from "framer-motion"
 import { type ReactElement, type ReactNode, useEffect, useState } from "react"
 import { Card } from "@/components/pouf/card"
 import { Blob } from "@/components/pouf/media"
@@ -42,7 +42,7 @@ export function AutoTabs({ tabs, intervalMs = 4000 }: Props) {
         ))}
       </div>
       <AnimatePresence mode="wait">
-        <motion.div
+        <m.div
           role="tabpanel"
           aria-label={current.title}
           key={current.id}
@@ -53,7 +53,7 @@ export function AutoTabs({ tabs, intervalMs = 4000 }: Props) {
           className="grid h-full min-h-64 place-items-center rounded-control bg-bg p-6 lg:order-1"
         >
           {current.panel}
-        </motion.div>
+        </m.div>
       </AnimatePresence>
     </Card>
   )
