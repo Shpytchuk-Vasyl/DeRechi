@@ -32,14 +32,17 @@ docker exec -it derechi-postgres psql -U derechi -d derechi
 
 The topology is not declared by the applications. The one-shot `rabbitmq-init` container imports `docker/rabbitmq/definitions.json` over the management API (`POST /api/definitions`) after every start of the broker, and the services wait for it to finish:
 
-| Exchange (topic) | Queue (quorum) | Binding | Dead letter |
-|---|---|---|---|
-| `derechi.items` | `worker.items` | `item.*.created` | `derechi.items.dlx` -> `worker.items.dlq` |
-| `derechi.items` | `worker.claims` | `item.*.claimed`, `item.*.returned`, `item.*.paid` | `derechi.items.dlx` -> `worker.claims.dlq` |
-| `derechi.items` | `worker.archive` | `item.*.archive` | `derechi.items.dlx` -> `worker.archive.dlq` |
-| `derechi.notifications` | `notification.events` | `notification.#` | `derechi.notifications.dlx` -> `notification.events.dlq` |
+One queue per consuming service; every queue dead-letters into `dead-letter.exchange` (direct) with its own name as the key:
 
-A new queue or binding is a change to `definitions.json` and takes effect on the next `docker compose up`. The import only adds and updates: a removed or narrowed binding stays until it is deleted in the UI, and a queue whose arguments changed makes the import fail (`docker compose logs rabbitmq-init`).
+| Queue (quorum) | Exchange (topic) and binding | Dead letter |
+|---|---|---|
+| `worker.queue` | `notice.status.exchange`: `notice.*.created`, `notice.*.returned`; `claims.exchange`: `claim.*.claimed`, `claim.*.paid`; `notice.action.exchange`: `notice.*.archive` | `dead-letter.exchange` -> `worker.dlq` |
+| `notification.queue` | `notification.exchange`: `notification.#` | `dead-letter.exchange` -> `notification.dlq` |
+| `ingest.queue` | `notice.status.exchange`: `notice.*.created`, `notice.*.returned`, `notice.*.archived` | `dead-letter.exchange` -> `ingest.dlq` |
+
+`ingest.queue` has no consumer yet (`Ingest` does not read RabbitMQ), so it keeps every status event until one appears.
+
+A new queue or binding is a change to `definitions.json` and takes effect on the next `docker compose up`. The import only adds and updates: a removed or narrowed binding stays until it is deleted in the UI, the exchanges and queues of the previous topology (`derechi.items`, `derechi.notifications`, `worker.items`, `worker.claims`, `worker.archive`, `notification.events` and their `.dlx`/`.dlq`) stay on an old volume and on a hosted broker until they are deleted by hand, and a queue whose arguments changed makes the import fail (`docker compose logs rabbitmq-init`).
 
 `definitions.json` holds no users. The broker's only user is `RABBITMQ_USER` / `RABBITMQ_PASSWORD`, created by the image on the first start of an empty volume. That is why the import does not happen at boot through `rabbitmq.conf`: when definitions are imported at boot, RabbitMQ skips creating the default user, so the password could not come from the environment.
 

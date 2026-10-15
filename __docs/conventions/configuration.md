@@ -61,9 +61,9 @@ Application-specific settings live under the `derechi` prefix and are bound to a
 | `derechi.storage` | `StorageProperties` (`bucket`, `public-url`, `max-size`) | Admin-API |
 | `derechi.maps` | `MapsProperties` (`api-key`, `region`) | Admin-API |
 | `derechi.notifications` | `NotificationProperties` (`exchange`, `routing-key`) | Admin-API |
-| `derechi.claims` | `ClaimsProperties` (`exchange`, `unlock-limit`, `unlock-window`) | Client-API |
+| `derechi.claims` | `ClaimsProperties` (`unlock-limit`, `unlock-window`) | Client-API |
 | `derechi.fourthwall` | `FourthwallProperties` (`api-url`, `shop-url`, `username`, `password`, `webhook-secret`, `price`, `product-name`, `product-description`, `connect-timeout` 3s, `read-timeout` 10s) | Client-API |
-| `derechi.items.queue` | read with `${...}` in `@RabbitListener` | Worker |
+| `derechi.worker.queue` | read with `${...}` in `@RabbitListener` | Worker |
 | `derechi.notification.queue` | read with `${...}` in `@RabbitListener` | Notification |
 
 `derechi.countries` is declared in both `Admin-API` and `Client-API` and must list the same countries; see [add-a-country](../extending/add-a-country.md).

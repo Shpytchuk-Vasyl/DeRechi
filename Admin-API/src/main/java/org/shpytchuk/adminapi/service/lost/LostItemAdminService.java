@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class LostItemAdminService extends ArchivableAdminItemService<LostItem> {
 
-    private static final String ARCHIVE_ROUTING_KEY = "item.lost.archive";
+    private static final String ARCHIVE_ROUTING_KEY = "notice.lost.archive";
 
     private final SimilarItemRepository similarItemRepository;
 

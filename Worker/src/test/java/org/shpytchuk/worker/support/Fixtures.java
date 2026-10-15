@@ -26,10 +26,10 @@ import java.util.UUID;
 public final class Fixtures {
 
     public static final ClaimsProperties PROPERTIES = new ClaimsProperties(
-            "worker.claims", "derechi.notifications", "http://localhost:3000/",
+            "notification.exchange", "http://localhost:3000/",
             Duration.ofMinutes(10), Duration.ofDays(1), Duration.ofDays(1), Duration.ofDays(7), Duration.ofDays(365));
 
-    public static final ArchiveProperties ARCHIVE = new ArchiveProperties("worker.archive", Period.ofDays(30));
+    public static final ArchiveProperties ARCHIVE = new ArchiveProperties(Period.ofDays(30));
 
 
     private Fixtures() {

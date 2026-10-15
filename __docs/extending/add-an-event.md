@@ -28,27 +28,27 @@ Each module has its own copy of `EventType` and `EventTypeScanner`; they are del
 
 2. **Event class, consumer side.** `Worker/src/main/java/org/shpytchuk/worker/event/ItemArchivedEvent.java` with the same id and the same property names. The existing consumer-side events are mutable classes with Lombok (`@Getter @Setter @NoArgsConstructor`); a record works too as long as the property names match.
 
-3. **Broker topology.** `docker/rabbitmq/definitions.json` is imported into the broker by `rabbitmq-init` on every `docker compose up`. Decide whether the event fits an existing exchange (`derechi.items` for item lifecycle, `derechi.notifications` for anything that ends in a message to a person) or needs a new one. For a new consumer, add:
+3. **Broker topology.** `docker/rabbitmq/definitions.json` is imported into the broker by `rabbitmq-init` on every `docker compose up`. Decide whether the event fits an existing exchange (`notice.status.exchange` for facts about a notice, `claims.exchange` for claims, `notice.action.exchange` for requests to act on a notice, `notification.exchange` for anything that ends in a message to a person) or needs a new one. Every consuming service has exactly one queue, so a consumer that already exists only gets a binding from the exchange to its queue. For a new consuming service, add:
 
-   - a quorum queue with `x-dead-letter-exchange` pointing at the matching `.dlx`;
-   - its `.dlq` queue bound to the dead-letter exchange with `#`;
-   - a binding from the topic exchange with a routing-key pattern.
+   - a quorum queue `<service>.queue` with `x-dead-letter-exchange: dead-letter.exchange` and `x-dead-letter-routing-key: <service>.queue`;
+   - its `<service>.dlq` bound to `dead-letter.exchange` with the key `<service>.queue`;
+   - bindings from the topic exchanges with routing-key patterns.
 
-   Routing keys follow `<entity>.<kind>.<verb>`: `item.lost.created`, `item.found.created`, `notification.match.found`. For the example: `item.lost.archived` and `item.found.archived`, and the existing `worker.items` queue bound with a second pattern `item.*.archived`.
+   Routing keys follow `<entity>.<kind>.<verb>` and never repeat across exchanges: `notice.lost.created`, `claim.found.paid`, `notification.match.found`. For the example: `notice.lost.archived` and `notice.found.archived` on `notice.status.exchange` (already bound to `ingest.queue`), and `worker.queue` bound with a further pattern `notice.*.archived`.
 
    The broker only reads this file when its data volume is empty. On a dev box that means `docker compose down -v rabbitmq` (or `down -v` for everything) and `up -d`, or add the objects by hand in the management UI at `http://localhost:15672` and mirror them into the file.
 
 4. **Publish.** In the service, after the state change:
 
    ```java
-   rabbitTemplate.convertAndSend(properties.exchange(), "item.lost.archived", new ItemArchivedEvent(id, "LOST"));
+   rabbitTemplate.convertAndSend(properties.exchange(), "notice.lost.archived", new ItemArchivedEvent(id, "LOST"));
    ```
 
-   `Admin-API` keeps exchange and routing key in `derechi.notifications.*` (`NotificationProperties`); `Client-API` hard-codes them in `ItemEventAspect`. Prefer a `@ConfigurationProperties` record for anything new. Publishing inside a `@Transactional` method sends before commit; if that matters, publish from an `@AfterReturning` aspect with `@Order(0)` as `Client-API` does in `ItemEventAspect` and `ClaimEventAspect`, and make sure the advised method owns the outermost transaction.
+   `Admin-API` keeps exchange and routing key in `derechi.notifications.*` (`NotificationProperties`) and `derechi.archive.exchange`; `Client-API` keeps the exchanges in `event/Exchanges` and builds the keys with `ItemKind.noticeKey` / `claimKey`. Prefer a `@ConfigurationProperties` record for anything new. Publishing inside a `@Transactional` method sends before commit; if that matters, publish from an `@AfterReturning` aspect with `@Order(0)` as `Client-API` does in `ItemEventAspect` and `ClaimEventAspect`, and make sure the advised method owns the outermost transaction.
 
-5. **Consume.** Either a new `@RabbitListener` on a new queue, or, when reusing a queue, extend the dispatch. Every Worker listener resolves its handler with `RoutingKeyDispatcher<H>`: built from the handler beans and a `routingKey()` function, `resolve(message)` reads the received routing key and throws `AmqpRejectAndDontRequeueException` for a key nobody handles (`ItemCreatedListener` and `ClaimListener` dispatch to handler beans, `ArchiveListener` to an `ItemKind`). A new handler for an existing queue is therefore one more bean with its own `routingKey()`. A listener method is typed to one event class, so a second event type on the same queue needs a second `@RabbitListener` method (Spring AMQP picks by payload type) or a separate queue. The separate queue is the simpler option.
+5. **Consume.** A service reads its one queue through one listener class. In `Worker` that is `WorkerQueueListener`: `@RabbitListener` on the class and a `@RabbitHandler` method per event class (the converter picks the class from `__TypeId__`, Spring the method by its parameter). Each method resolves its handler with `RoutingKeyDispatcher<H>`: built from the handler beans and a `routingKey()` function, `resolve(message)` reads the received routing key and throws `AmqpRejectAndDontRequeueException` for a key nobody handles (`onItemCreated` and `onClaim` dispatch to handler beans, `onArchiveRequested` to an `ItemKind`). A new handler for an event the service already reads is one more bean with its own `routingKey()`; a new event class is one more `@RabbitHandler` method. Never add a second `@RabbitListener` on the same queue: two listeners on one queue compete, and each message reaches only one of them.
 
-   Queue names come from properties (`derechi.items.queue`, `derechi.notification.queue`), so add `derechi.<something>.queue` to the consumer's `application.yaml` and reference it as `@RabbitListener(queues = "${...}")`.
+   Queue names come from properties (`derechi.worker.queue`, `derechi.notification.queue`); a new consuming service adds `derechi.<service>.queue` to its `application.yaml` and references it as `@RabbitListener(queues = "${...}")`.
 
 6. **Failure policy.** Consumers already set `spring.rabbitmq.listener.simple.retry.max-retries: 2` (Boot 4's name; the old `max-attempts` is silently ignored) and `default-requeue-rejected: false`, so a failing message is attempted three times in-process and then dead-letters. Throw for transient failures; throw `AmqpRejectAndDontRequeueException` for messages that can never succeed so they go to the DLQ immediately.
 

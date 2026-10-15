@@ -12,14 +12,31 @@ The exchanges, queues and bindings are not declared by the applications. They co
 the management API after every broker start; the services in compose wait for it to finish.
 Changing the topology means editing that file and running `docker compose up -d` again.
 
-| Exchange (topic) | Queue | Binding key | Dead-letter exchange | DLQ |
-|---|---|---|---|---|
-| `derechi.items` | `worker.items` | `item.*.created` | `derechi.items.dlx` | `worker.items.dlq` (bound with `item.*.created`) |
-| `derechi.items` | `worker.claims` | `item.*.claimed`, `item.*.returned`, `item.*.paid` | `derechi.items.dlx` | `worker.claims.dlq` (bound with the same three patterns) |
-| `derechi.items` | `worker.archive` | `item.*.archive` | `derechi.items.dlx` | `worker.archive.dlq` (bound with `item.*.archive`) |
-| `derechi.notifications` | `notification.events` | `notification.#` | `derechi.notifications.dlx` | `notification.events.dlq` (bound with `#`) |
+**One queue per consuming service.** Exchanges are split by what the message is about, and a
+service's queue binds every key it wants from any of them:
 
-All eight queues are quorum queues (`x-queue-type: quorum`), durable, on the default vhost.
+| Exchange | Routing keys | Producer | Bound queues |
+|---|---|---|---|
+| `notice.status.exchange` (topic) | `notice.<kind>.created`, `notice.<kind>.returned`, `notice.<kind>.archived` | `Client-API` (`created`, `returned`); nobody publishes `archived` yet | `worker.queue` (`created`, `returned`), `ingest.queue` (all three) |
+| `claims.exchange` (topic) | `claim.<kind>.claimed`, `claim.<kind>.paid` | `Client-API` | `worker.queue` |
+| `notice.action.exchange` (topic) | `notice.<kind>.archive` | `Admin-API` | `worker.queue` |
+| `notification.exchange` (topic) | `notification.match.found`, `notification.claim.*` | `Admin-API`, `Worker` | `notification.queue` (`notification.#`) |
+| `dead-letter.exchange` (direct) | the name of the queue that rejected the message | RabbitMQ | `worker.dlq`, `notification.dlq`, `ingest.dlq` |
+
+`<kind>` is `lost` or `found`. A key never repeats across exchanges (`notice.` and `claim.`
+prefixes), so a consumer tells events apart by the routing key alone. `notice.status.exchange`
+carries facts about a notice, `notice.action.exchange` carries requests to act on one: a
+subscriber to notice statuses never receives an order to archive.
+
+Every queue dead-letters into `dead-letter.exchange` with `x-dead-letter-routing-key` set to
+its own name, and each DLQ is bound by that name, so a rejection lands in exactly its own DLQ
+however many queues share the original routing key.
+
+A second consumer of an event is a binding of its service's queue to that key; the producer
+does not change. `ingest.queue` is bound already, but `Ingest` does not read RabbitMQ yet, so
+the queue keeps every status event until a consumer appears.
+
+All six queues are quorum queues (`x-queue-type: quorum`), durable, on the default vhost.
 The user is `derechi` / `derechi` with full permissions; the management UI is on 15672 and
 Prometheus metrics on 15692.
 
@@ -27,11 +44,11 @@ Prometheus metrics on 15692.
 
 | Event | Type id | Producer | Exchange and routing key | Consumer |
 |---|---|---|---|---|
-| `ItemCreatedEvent` | `ITEM_CREATED` | `Client-API`, `ItemEventAspect` after `ItemService.create(...)` returns | `derechi.items`, `item.lost.created` or `item.found.created` | `Worker`, `ItemCreatedListener` |
-| `NotificationRequestedEvent` | `NOTIFICATION` | `Admin-API`, `MatchNotificationService.notifyOwner(...)` | `derechi.notifications`, `notification.match.found` (from `derechi.notifications.routing-key`) | `Notification`, `NotificationRequestedListener` |
-| `ClaimEvent` | `CLAIM` | `Client-API`, `ClaimEventAspect` after `ClaimService.claim(..)` / `confirm(..)` / `markPaid(..)` returns | `derechi.items`, `item.<kind>.claimed`, `item.<kind>.returned`, `item.<kind>.paid` | `Worker`, `ClaimListener` |
-| `ArchiveRequestedEvent` | `ARCHIVE_REQUESTED` | `Admin-API`, `AdminItemService.archive(id, actor)` | `derechi.items`, `item.lost.archive`, `item.found.archive` (exchange from `derechi.archive.exchange`) | `Worker`, `ArchiveListener` |
-| `NotificationRequestedEvent` | `NOTIFICATION` | `Worker`, `ClaimNotifier` | `derechi.notifications`, `notification.claim.created`, `notification.claim.reminder`, `notification.claim.unlocked` | `Notification`, `NotificationRequestedListener` |
+| `ItemCreatedEvent` | `ITEM_CREATED` | `Client-API`, `ItemEventAspect` after `ItemService.create(...)` returns | `notice.status.exchange`, `notice.lost.created` or `notice.found.created` | `Worker`, `WorkerQueueListener.onItemCreated` |
+| `ClaimEvent` | `CLAIM` | `Client-API`, `ClaimEventAspect` after `ClaimService.claim(..)` / `confirm(..)` / `markPaid(..)` returns | `claims.exchange`, `claim.<kind>.claimed`, `claim.<kind>.paid`; `notice.status.exchange`, `notice.<kind>.returned` | `Worker`, `WorkerQueueListener.onClaim` |
+| `ArchiveRequestedEvent` | `ARCHIVE_REQUESTED` | `Admin-API`, `AdminItemService.archive(id, actor)` | `notice.action.exchange` (from `derechi.archive.exchange`), `notice.lost.archive`, `notice.found.archive` | `Worker`, `WorkerQueueListener.onArchiveRequested` |
+| `NotificationRequestedEvent` | `NOTIFICATION` | `Admin-API`, `MatchNotificationService.notifyOwner(...)` | `notification.exchange`, `notification.match.found` (from `derechi.notifications.routing-key`) | `Notification`, `NotificationRequestedListener` |
+| `NotificationRequestedEvent` | `NOTIFICATION` | `Worker`, `ClaimNotifier` | `notification.exchange`, `notification.claim.created`, `notification.claim.reminder`, `notification.claim.unlocked` | `Notification`, `NotificationRequestedListener` |
 
 `ItemCreatedEvent` carries only what matching needs: `id`, `date`, `category` (id), `lat`,
 `lon`, `title`. The routing key says whether it was a lost or a found notice; the payload
@@ -42,19 +59,35 @@ producer), `phone`, `email`, `socialMedias` and a `deduplicationKey`. Contacts t
 channel does not need are sent as `null`; see
 [../features/match-notifications.md](../features/match-notifications.md).
 
-`ClaimEvent` carries only the claim `id` and `ArchiveRequestedEvent` the item `id` plus the
-admin's login for the log; the routing key says the kind and the verb, and `Worker`
-reads the rest from the shared database. That is why it is published after the commit, by
-`ClaimEventAspect` with the same `@Order(0)` trick as `ItemEventAspect`; the advice skips a
-`repeated` result, so a second claim from the same person or a second click on a confirm link
-sends nothing. See [../features/claims.md](../features/claims.md).
+`ClaimEvent` carries only the claim `id`, also on `notice.<kind>.returned`: that status event
+names the claim that confirmed the return, not the notice. `ArchiveRequestedEvent` carries the
+item `id` plus the admin's login for the log. The routing key says the kind and the verb, and
+`Worker` reads the rest from the shared database. That is why it is published after the
+commit, by `ClaimEventAspect` with the same `@Order(0)` trick as `ItemEventAspect`; the advice
+skips a `repeated` result, so a second claim from the same person or a second click on a
+confirm link sends nothing. See [../features/claims.md](../features/claims.md).
 
 The producer side of `Admin-API` is a plain `RabbitTemplate.convertAndSend(exchange, key,
 event)`. In `Client-API` the publish is an AspectJ `@AfterReturning` advice on every
 `ItemService.create(..)`, which takes the routing key from the advised service's kind
-(`service.kind().routingKey("created")`, bound with `target(service)`; `ItemKind` in `entity/`). The reason it is an aspect rather than a line in the service is
-that the event must not be published when the transaction fails, and the advice runs only on
-a normal return.
+(`service.kind().noticeKey("created")`, bound with `target(service)`; `ItemKind` in `entity/`)
+and the exchange from `event/Exchanges`. The reason it is an aspect rather than a line in the
+service is that the event must not be published when the transaction fails, and the advice
+runs only on a normal return.
+
+## One queue, several events
+
+`Worker` reads everything from `worker.queue` through one class, `WorkerQueueListener`:
+`@RabbitListener(queues = "${derechi.worker.queue}")` on the class and a `@RabbitHandler`
+method per payload class. With several handler methods the converter cannot infer the type
+from a parameter, so it takes the class from `__TypeId__` (see below) and Spring calls the
+method whose parameter accepts it. Within one payload class `RoutingKeyDispatcher` picks the
+handler by the received routing key: `ClaimEvent` arrives as `claimed`, `returned` and `paid`
+for both kinds. A payload class without a method lands in the `@RabbitHandler(isDefault = true)`
+method, which rejects it.
+
+Never put a second `@RabbitListener` on the same queue: two listeners on one queue are
+competing consumers, and each message goes to one of them at random.
 
 ## Serialization
 
@@ -92,17 +125,24 @@ spring:
           max-retries: 2
 ```
 
-A failing message is retried in-process three times, then rejected without requeue, and the
-queue's dead-letter exchange moves it to the matching `.dlq`. Nothing consumes the DLQs; they
+A failing message is retried in-process three times, then rejected without requeue, and
+`dead-letter.exchange` moves it to the service's `.dlq`. Nothing consumes the DLQs; they
 are there to be inspected in the management UI. The `DeadLetters` alert fires when any
 `.dlq` holds a ready message for a minute; how to inspect and replay is in
 [../deployment/monitoring.md](../deployment/monitoring.md#dead-letter-queues).
 
 Three things skip the retry on purpose by throwing `AmqpRejectAndDontRequeueException`:
 
-- `ItemCreatedListener`, `ClaimListener` and `ArchiveListener` when no handler is registered for the received routing key;
+- `WorkerQueueListener` when no handler is registered for the received routing key;
+- `WorkerQueueListener` when no `@RabbitHandler` method takes the payload class;
 - `NotificationRequestedListener` when the sender throws, since a retry at the NotifyHub
   level has already happened (`notify.retry.max-attempts: 3`).
+
+`Worker` dispatches by the received routing key, and a replay changes it: "Move messages" and
+"Publish message" in the management UI publish through the default exchange, so the message
+comes back with the key `worker.queue` and is rejected again. Replay into `worker.queue` has to
+go through the original exchange with the original key; see
+[../deployment/monitoring.md](../deployment/monitoring.md#dead-letter-queues).
 
 Idempotency on the notification side comes from `deduplicationKey`: `NotificationSender`
 hands NotifyHub `<event key>:<CHANNEL>`, NotifyHub keeps a one-hour window
@@ -114,10 +154,11 @@ restart, so a redelivery after a restart or to a second instance is sent again. 
 ## Local development
 
 `docker compose up -d rabbitmq rabbitmq-init` is enough. The import runs on every `up` and is
-additive: a new queue or binding appears on an existing volume, but a binding that was
-*narrowed* (the items DLQ went from `#` to `item.*.created`) keeps its old pattern until it is
-deleted in the UI or the volume is recreated, and a changed queue argument makes the import
-fail. Services connect to `${RABBITMQ_HOST:localhost}:5672` from `application.yaml`, and the
-container override sets `RABBITMQ_HOST=rabbitmq`. There is no RabbitMQ in the test
-suite: the aspect and the sender are tested with a mocked template, see
-[../conventions/testing.md](../conventions/testing.md).
+additive: a new queue or binding appears on an existing volume, but nothing is ever removed.
+The exchanges and queues of the previous topology (`derechi.items`, `derechi.notifications`,
+`worker.items`, `worker.claims`, `worker.archive`, `notification.events` and their `.dlx`/`.dlq`)
+stay on an old volume until they are deleted in the UI or the volume is recreated, and a
+changed queue argument makes the import fail. Services connect to
+`${RABBITMQ_HOST:localhost}:5672` from `application.yaml`, and the container override sets
+`RABBITMQ_HOST=rabbitmq`. There is no RabbitMQ in the test suite: the aspect and the sender
+are tested with a mocked template, see [../conventions/testing.md](../conventions/testing.md).

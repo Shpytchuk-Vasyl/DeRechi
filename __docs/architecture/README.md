@@ -21,14 +21,14 @@ business logic (identity, file storage, mail, metrics) is an off-the-shelf conta
                  │  MinIO (S3)  │◀─upload──│Client-API│ │ Keycloak     │
                  │  derechi-    │          │  (8082)  │ │ (8180)       │
                  │  files       │          └────┬─────┘ └──────▲───────┘
-                 └──────▲───────┘               │ item.*.created      │ OIDC login
+                 └──────▲───────┘               │ notice.*.created    │ OIDC login
                         │                       ▼                     │
                         │                ┌─────────────┐        ┌─────┴────────┐
   administrator ────────┼───────────────▶│  RabbitMQ   │        │  Admin-API   │◀── administrator
-  (browser, 8083)       │                │ derechi.*   │◀───────│  (8083)      │    (browser)
+  (browser, 8083)       │                │ *.exchange  │◀───────│  (8083)      │    (browser)
                         │                └──┬──────┬───┘ notif. │ MVC+Thymeleaf│
                         │                   │      │            └──────┬───────┘
-                        │     item.*.created│      │notification.#     │
+                        │   notice.*.created│      │notification.#     │
                         │                   ▼      ▼                   │
                         │     ┌──────────────────┐ ┌──────────────┐    │
                         │     │ Worker           │ │ Notification │    │
@@ -74,8 +74,8 @@ Two things in the picture are deliberate and worth knowing before reading furthe
    Caddy (`/graphql`). `Client-API` validates the input, resolves the place's country and
    the reward currency, and saves `place`, `contact_info` and the item.
 3. An aspect around `ItemService.create` publishes an `ItemCreatedEvent` to the
-   `derechi.items` exchange with the routing key `item.lost.created` or `item.found.created`.
-4. `Worker` consumes it from `worker.items`, looks for notices of the
+   `notice.status.exchange` exchange with the routing key `notice.lost.created` or `notice.found.created`.
+4. `Worker` consumes it from `worker.queue`, looks for notices of the
    opposite kind in the same category, within three days and twenty kilometres, sharing at least
    two words with the title, ranks them by full-text similarity, and stores the top five in
    `similar_item`.
@@ -86,11 +86,11 @@ Two things in the picture are deliberate and worth knowing before reading furthe
    candidate found items from `similar_item`, best match first.
 2. The administrator presses "Notify" on a candidate and picks a channel (all, email, phone,
    or a messenger). `MatchNotificationService` builds a localized `NotificationRequestedEvent`
-   with only the contacts that channel needs, publishes it to `derechi.notifications` with
+   with only the contacts that channel needs, publishes it to `notification.exchange` with
    the key `notification.match.found`, and stamps `notified_at` / `notified_by` on the row.
-3. `Notification` consumes it from `notification.events` and hands it to NotifyHub, which
+3. `Notification` consumes it from `notification.queue` and hands it to NotifyHub, which
    sends an email (Mailpit in development) and an SMS when a phone is present. Delivery
-   failures are retried three times and then parked in `notification.events.dlq`.
+   failures are retried three times and then parked in `notification.dlq`.
 
 ## Pages
 

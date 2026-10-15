@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 class MatchNotificationServiceTest {
 
     private static final NotificationProperties PROPERTIES =
-            new NotificationProperties("derechi.notifications", "notification.match.found");
+            new NotificationProperties("notification.exchange", "notification.match.found");
 
     private SimilarItemRepository repository;
     private RabbitTemplate rabbitTemplate;
@@ -74,7 +74,7 @@ class MatchNotificationServiceTest {
         NotifiedMatch notified = service.notifyOwner(1L, 2L, "admin@derechi.local", NotifyChannel.ALL);
 
         var event = forClass(NotificationRequestedEvent.class);
-        verify(rabbitTemplate).convertAndSend(eq("derechi.notifications"), eq("notification.match.found"), event.capture());
+        verify(rabbitTemplate).convertAndSend(eq("notification.exchange"), eq("notification.match.found"), event.capture());
 
         assertThat(event.getValue().email()).isEqualTo("owner@example.com");
         assertThat(event.getValue().phone()).isEqualTo("+380671234567");
@@ -103,7 +103,7 @@ class MatchNotificationServiceTest {
         service.notifyOwner(1L, 2L, "admin@derechi.local", NotifyChannel.ALL);
 
         var event = forClass(NotificationRequestedEvent.class);
-        verify(rabbitTemplate).convertAndSend(eq("derechi.notifications"), eq("notification.match.found"), event.capture());
+        verify(rabbitTemplate).convertAndSend(eq("notification.exchange"), eq("notification.match.found"), event.capture());
         assertThat(event.getValue().message())
                 .contains("Знайдений рюкзак")
                 .doesNotContain("null", " та ", "{6}");

@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.shpytchuk.clientapi.config.ClaimsProperties;
 import org.shpytchuk.clientapi.dto.ClaimDto;
 import org.shpytchuk.clientapi.entity.ItemKind;
 import org.shpytchuk.clientapi.event.ClaimEvent;
@@ -16,7 +15,6 @@ import org.shpytchuk.clientapi.service.lost.LostClaimService;
 import org.shpytchuk.clientapi.event.EventPublisher;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +29,8 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class ClaimEventAspectTest {
 
-    private static final String EXCHANGE = "derechi.items";
+    private static final String CLAIMS = "claims.exchange";
+    private static final String NOTICE_STATUS = "notice.status.exchange";
     private static final ContactInfoInput CONTACT = new ContactInfoInput("+48501234567", "claimant@example.com", List.of());
 
     @Mock
@@ -57,7 +56,7 @@ class ClaimEventAspectTest {
 
         proxy(lostClaimService).claim(1L, CONTACT);
 
-        verify(publisher).publish(eq(EXCHANGE), eq("item.lost.claimed"), captor.capture());
+        verify(publisher).publish(eq(CLAIMS), eq("claim.lost.claimed"), captor.capture());
         assertThat(captor.getValue()).isEqualTo(new ClaimEvent(7L));
     }
 
@@ -67,7 +66,7 @@ class ClaimEventAspectTest {
 
         proxy(foundClaimService).claim(2L, CONTACT);
 
-        verify(publisher).publish(eq(EXCHANGE), eq("item.found.claimed"), any(ClaimEvent.class));
+        verify(publisher).publish(eq(CLAIMS), eq("claim.found.claimed"), any(ClaimEvent.class));
     }
 
     @Test
@@ -85,7 +84,7 @@ class ClaimEventAspectTest {
 
         proxy(foundClaimService).confirm("token");
 
-        verify(publisher).publish(eq(EXCHANGE), eq("item.found.returned"), eq(new ClaimEvent(8L)));
+        verify(publisher).publish(eq(NOTICE_STATUS), eq("notice.found.returned"), eq(new ClaimEvent(8L)));
     }
 
     @Test
@@ -106,7 +105,7 @@ class ClaimEventAspectTest {
 
         proxy(lostClaimService).markPaid(7L);
 
-        verify(publisher).publish(eq(EXCHANGE), eq("item.lost.paid"), eq(new ClaimEvent(7L)));
+        verify(publisher).publish(eq(CLAIMS), eq("claim.lost.paid"), eq(new ClaimEvent(7L)));
     }
 
     @Test
@@ -115,7 +114,7 @@ class ClaimEventAspectTest {
 
         proxy(foundClaimService).markPaid(8L);
 
-        verify(publisher).publish(eq(EXCHANGE), eq("item.found.paid"), eq(new ClaimEvent(8L)));
+        verify(publisher).publish(eq(CLAIMS), eq("claim.found.paid"), eq(new ClaimEvent(8L)));
     }
 
     @Test
@@ -149,7 +148,7 @@ class ClaimEventAspectTest {
 
     private <T> T proxy(T target) {
         AspectJProxyFactory factory = new AspectJProxyFactory(target);
-        factory.addAspect(new ClaimEventAspect(publisher, new ClaimsProperties(EXCHANGE, 1, Duration.ofDays(7))));
+        factory.addAspect(new ClaimEventAspect(publisher));
         return factory.getProxy();
     }
 }

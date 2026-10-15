@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class FoundItemAdminService extends ArchivableAdminItemService<FoundItem> {
 
-    private static final String ARCHIVE_ROUTING_KEY = "item.found.archive";
+    private static final String ARCHIVE_ROUTING_KEY = "notice.found.archive";
 
     private final SimilarItemRepository similarItemRepository;
 

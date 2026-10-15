@@ -76,7 +76,8 @@ the admin panel and in the notification sent to the owner.
 The kind of a notice is `ItemKind` (`entity/ItemKind.java`, `LOST` and `FOUND`): the one place
 that knows the lower-case `label()` used in URLs, product references and logs, the
 `entityName()` / `claimEntityName()` of `NotFoundException` messages and the
-`routingKey(verb)` shape `item.<kind>.<verb>`. Entities answer `kind()` (`Thing`, `Claim` and
+routing key shapes `noticeKey(verb)` = `notice.<kind>.<verb>` and `claimKey(verb)` =
+`claim.<kind>.<verb>`; the exchange names are the constants in `event/Exchanges`. Entities answer `kind()` (`Thing`, `Claim` and
 their subclasses), and so do the per-kind services; nothing decides lost or found by
 `instanceof` or by a string.
 
@@ -89,8 +90,8 @@ author email becomes `null`, a claimant's email is stored as the input normalise
 transaction.
 
 `ItemEventAspect` is an `@AfterReturning` advice on `ItemService+.create(..)` that publishes
-an `ItemCreatedEvent` to `derechi.items` with `service.kind().routingKey("created")`, that is
-`item.lost.created` or `item.found.created`; the advised service is bound with `target(service)`.
+an `ItemCreatedEvent` to `notice.status.exchange` with `service.kind().noticeKey("created")`, that is
+`notice.lost.created` or `notice.found.created`; the advised service is bound with `target(service)`.
 See [../messaging.md](../messaging.md) for why it is an aspect.
 
 `FoundItemStatisticsService` (`service/found/`) answers `stats` with two counts:
@@ -99,10 +100,11 @@ and `FoundItemRepository.countByDate` for today in UTC. `FoundItemHistory` is co
 this module for that query only; nothing here writes history, archiving stays in `Worker`.
 
 `ClaimService` (per kind) and `ReturnService` record responses to a notice; `ClaimEventAspect`
-publishes a `ClaimEvent` with `item.<kind>.claimed` / `item.<kind>.returned` / `item.<kind>.paid`
+publishes a `ClaimEvent` with `claim.<kind>.claimed` / `notice.<kind>.returned` / `claim.<kind>.paid`
 after `claim(..)`, `confirm(..)` or `markPaid(..)` returns a non-repeated result, the same
 `@AfterReturning` + `@Order(0)` pattern as `ItemEventAspect`, with the key from the advised
-service's `kind()`. The exchange is `derechi.claims.exchange`. The item is read with a plain
+service's `kind()`. `claimed` and `paid` go to `claims.exchange`, `returned` to
+`notice.status.exchange` (`event/Exchanges`). The item is read with a plain
 `findById`, without a row lock, so two simultaneous claims with the same phone or email can
 both be recorded. Planned: a `PESSIMISTIC_WRITE` lock on the item row.
 
@@ -128,7 +130,6 @@ derechi:
     supported: [UA, PL, DE, FR]
     fallback: UA
   claims:
-    exchange: derechi.items
     unlock-limit: 1
     unlock-window: P7D
   fourthwall:

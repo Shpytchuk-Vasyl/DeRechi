@@ -57,8 +57,8 @@ class PaidHandlerTest {
 
     @Test
     void routingKeysFollowTheKind() {
-        assertThat(lostHandler.routingKey()).isEqualTo("item.lost.paid");
-        assertThat(foundHandler.routingKey()).isEqualTo("item.found.paid");
+        assertThat(lostHandler.routingKey()).isEqualTo("claim.lost.paid");
+        assertThat(foundHandler.routingKey()).isEqualTo("claim.found.paid");
     }
 
     @Test
@@ -124,7 +124,7 @@ class PaidHandlerTest {
 
     private NotificationRequestedEvent published() {
         ArgumentCaptor<NotificationRequestedEvent> event = ArgumentCaptor.forClass(NotificationRequestedEvent.class);
-        verify(rabbitTemplate).convertAndSend(eq("derechi.notifications"), eq(ClaimNotifier.UNLOCKED_ROUTING_KEY),
+        verify(rabbitTemplate).convertAndSend(eq("notification.exchange"), eq(ClaimNotifier.UNLOCKED_ROUTING_KEY),
                 event.capture());
         return event.getValue();
     }

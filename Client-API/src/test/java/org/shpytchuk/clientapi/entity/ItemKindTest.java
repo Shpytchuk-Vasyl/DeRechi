@@ -15,11 +15,11 @@ class ItemKindTest {
 
     @Test
     void buildsTheRoutingKeysWorkerIsBoundTo() {
-        assertThat(LOST.routingKey("created")).isEqualTo("item.lost.created");
-        assertThat(FOUND.routingKey("created")).isEqualTo("item.found.created");
-        assertThat(LOST.routingKey("claimed")).isEqualTo("item.lost.claimed");
-        assertThat(FOUND.routingKey("returned")).isEqualTo("item.found.returned");
-        assertThat(LOST.routingKey("paid")).isEqualTo("item.lost.paid");
+        assertThat(LOST.noticeKey("created")).isEqualTo("notice.lost.created");
+        assertThat(FOUND.noticeKey("created")).isEqualTo("notice.found.created");
+        assertThat(FOUND.noticeKey("returned")).isEqualTo("notice.found.returned");
+        assertThat(LOST.claimKey("claimed")).isEqualTo("claim.lost.claimed");
+        assertThat(LOST.claimKey("paid")).isEqualTo("claim.lost.paid");
     }
 
     @Test

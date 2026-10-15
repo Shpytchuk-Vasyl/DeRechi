@@ -48,7 +48,8 @@ import static org.mockito.Mockito.when;
 
 class ClaimControllerTests extends AbstractGraphQlTests {
 
-    private static final String EXCHANGE = "derechi.items";
+    private static final String CLAIMS = "claims.exchange";
+    private static final String NOTICE_STATUS = "notice.status.exchange";
     private static final String PHONE = "+48501234567";
     private static final String EMAIL = "claimant@example.com";
 
@@ -165,7 +166,7 @@ class ClaimControllerTests extends AbstractGraphQlTests {
     void publishesTheLostClaimedEventWithTheClaimId() {
         Long claimId = claimLostId(lostItem("ChIJrynok").getId(), claimant(PHONE, EMAIL));
 
-        assertThat(published("item.lost.claimed").id()).isEqualTo(claimId);
+        assertThat(published(CLAIMS, "claim.lost.claimed").id()).isEqualTo(claimId);
     }
 
     @Test
@@ -173,7 +174,7 @@ class ClaimControllerTests extends AbstractGraphQlTests {
         Long claimId = claimFound(foundItem("ChIJrynok").getId(), claimant(PHONE, EMAIL))
                 .path("claimFoundItem.id").entity(Long.class).get();
 
-        assertThat(published("item.found.claimed").id()).isEqualTo(claimId);
+        assertThat(published(CLAIMS, "claim.found.claimed").id()).isEqualTo(claimId);
     }
 
     @Test
@@ -188,7 +189,7 @@ class ClaimControllerTests extends AbstractGraphQlTests {
         assertThat(lostClaimRepository.count()).isEqualTo(1);
         assertThat(contactInfoRepository.count()).isEqualTo(2);
         verify(rabbitTemplate, times(1))
-                .convertAndSend(eq(EXCHANGE), eq("item.lost.claimed"), any(ClaimEvent.class));
+                .convertAndSend(eq(CLAIMS), eq("claim.lost.claimed"), any(ClaimEvent.class));
     }
 
     @Test
@@ -217,7 +218,7 @@ class ClaimControllerTests extends AbstractGraphQlTests {
 
         assertThat(foundClaimRepository.count()).isEqualTo(1);
         verify(rabbitTemplate, times(1))
-                .convertAndSend(eq(EXCHANGE), eq("item.found.claimed"), any(ClaimEvent.class));
+                .convertAndSend(eq(CLAIMS), eq("claim.found.claimed"), any(ClaimEvent.class));
     }
 
     @Test
@@ -242,7 +243,7 @@ class ClaimControllerTests extends AbstractGraphQlTests {
 
         assertThat(second).isNotEqualTo(first);
         verify(rabbitTemplate, times(2))
-                .convertAndSend(eq(EXCHANGE), eq("item.lost.claimed"), any(ClaimEvent.class));
+                .convertAndSend(eq(CLAIMS), eq("claim.lost.claimed"), any(ClaimEvent.class));
     }
 
     @Test
@@ -292,7 +293,7 @@ class ClaimControllerTests extends AbstractGraphQlTests {
         confirm(token).path("confirmReturn").entity(Boolean.class).isEqualTo(true);
 
         assertThat(lostClaimRepository.findById(claimId).orElseThrow().getConfirmedAt()).isNotNull();
-        assertThat(published("item.lost.returned").id()).isEqualTo(claimId);
+        assertThat(published(NOTICE_STATUS, "notice.lost.returned").id()).isEqualTo(claimId);
     }
 
     @Test
@@ -304,7 +305,7 @@ class ClaimControllerTests extends AbstractGraphQlTests {
         confirm(token).path("confirmReturn").entity(Boolean.class).isEqualTo(true);
 
         assertThat(foundClaimRepository.findById(claimId).orElseThrow().getConfirmedAt()).isNotNull();
-        assertThat(published("item.found.returned").id()).isEqualTo(claimId);
+        assertThat(published(NOTICE_STATUS, "notice.found.returned").id()).isEqualTo(claimId);
     }
 
     @Test
@@ -318,7 +319,7 @@ class ClaimControllerTests extends AbstractGraphQlTests {
 
         assertThat(lostClaimRepository.findById(claimId).orElseThrow().getConfirmedAt()).isEqualTo(firstStamp);
         verify(rabbitTemplate, times(1))
-                .convertAndSend(eq(EXCHANGE), eq("item.lost.returned"), any(ClaimEvent.class));
+                .convertAndSend(eq(NOTICE_STATUS), eq("notice.lost.returned"), any(ClaimEvent.class));
     }
 
     @Test
@@ -423,7 +424,7 @@ class ClaimControllerTests extends AbstractGraphQlTests {
         assertThat(stored.getPaymentProductId()).isEqualTo("prod-1");
         assertThat(stored.getPaymentVariantId()).isEqualTo("var-1");
         lostClaim(itemId, claimId).path("lostItemClaim.checkoutUrl").entity(String.class).isEqualTo(CHECKOUT);
-        verify(rabbitTemplate, never()).convertAndSend(eq(EXCHANGE), eq("item.lost.paid"), any(ClaimEvent.class));
+        verify(rabbitTemplate, never()).convertAndSend(eq(CLAIMS), eq("claim.lost.paid"), any(ClaimEvent.class));
     }
 
     @Test
@@ -632,7 +633,7 @@ class ClaimControllerTests extends AbstractGraphQlTests {
 
         assertThat(firstStamp).isNotNull();
         assertThat(lostClaimRepository.findById(claimId).orElseThrow().getPaidAt()).isEqualTo(firstStamp);
-        assertThat(published("item.lost.paid").id()).isEqualTo(claimId);
+        assertThat(published(CLAIMS, "claim.lost.paid").id()).isEqualTo(claimId);
     }
 
     private GraphQlTester.Response lostClaim(Long itemId, Long claimId) {
@@ -655,9 +656,9 @@ class ClaimControllerTests extends AbstractGraphQlTests {
         return tester.document(document).variable("itemId", itemId).variable("id", claimId).execute();
     }
 
-    private ClaimEvent published(String routingKey) {
+    private ClaimEvent published(String exchange, String routingKey) {
         ArgumentCaptor<ClaimEvent> captor = ArgumentCaptor.forClass(ClaimEvent.class);
-        verify(rabbitTemplate).convertAndSend(eq(EXCHANGE), eq(routingKey), captor.capture());
+        verify(rabbitTemplate).convertAndSend(eq(exchange), eq(routingKey), captor.capture());
         return captor.getValue();
     }
 

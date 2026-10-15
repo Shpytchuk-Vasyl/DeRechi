@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
-/** Client-API publishes item.*.created, Worker finds candidates and writes similar_item. */
+/** Client-API publishes notice.*.created, Worker finds candidates and writes similar_item. */
 class ItemMatchingIT extends StackIT {
 
     @Test

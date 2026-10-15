@@ -38,11 +38,10 @@ spring:
           max-retries: 2
 
 derechi:
-  items:
-    queue: worker.items
+  worker:
+    queue: worker.queue
   claims:
-    queue: worker.claims
-    exchange: derechi.notifications
+    exchange: notification.exchange
     site-url: ${DERECHI_SITE_URL:http://localhost:3000}
     check-every: PT10M
     author-reminder-after: P1D
@@ -50,7 +49,6 @@ derechi:
     archive-after: P7D
     retention: P365D
   archive:
-    queue: worker.archive
     max-age: P30D
 
 server:

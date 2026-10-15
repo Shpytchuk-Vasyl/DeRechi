@@ -39,8 +39,8 @@ class ItemMatchHandlerTest {
 
     @Test
     void routingKeysFollowTheKindOfTheNewNotice() {
-        assertThat(new ItemMatchHandler<>(lost(), search(FoundItem.class)).routingKey()).isEqualTo("item.lost.created");
-        assertThat(new ItemMatchHandler<>(found(), search(LostItem.class)).routingKey()).isEqualTo("item.found.created");
+        assertThat(new ItemMatchHandler<>(lost(), search(FoundItem.class)).routingKey()).isEqualTo("notice.lost.created");
+        assertThat(new ItemMatchHandler<>(found(), search(LostItem.class)).routingKey()).isEqualTo("notice.found.created");
     }
 
     @Test

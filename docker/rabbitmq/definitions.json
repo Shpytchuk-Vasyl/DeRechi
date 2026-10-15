@@ -13,7 +13,7 @@
   "policies": [],
   "exchanges": [
     {
-      "name": "derechi.items",
+      "name": "notification.exchange",
       "vhost": "/",
       "type": "topic",
       "durable": true,
@@ -22,7 +22,7 @@
       "arguments": {}
     },
     {
-      "name": "derechi.items.dlx",
+      "name": "notice.status.exchange",
       "vhost": "/",
       "type": "topic",
       "durable": true,
@@ -31,7 +31,7 @@
       "arguments": {}
     },
     {
-      "name": "derechi.notifications",
+      "name": "claims.exchange",
       "vhost": "/",
       "type": "topic",
       "durable": true,
@@ -40,9 +40,18 @@
       "arguments": {}
     },
     {
-      "name": "derechi.notifications.dlx",
+      "name": "notice.action.exchange",
       "vhost": "/",
       "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "dead-letter.exchange",
+      "vhost": "/",
+      "type": "direct",
       "durable": true,
       "auto_delete": false,
       "internal": false,
@@ -51,17 +60,18 @@
   ],
   "queues": [
     {
-      "name": "worker.items",
+      "name": "notification.queue",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
       "arguments": {
         "x-queue-type": "quorum",
-        "x-dead-letter-exchange": "derechi.items.dlx"
+        "x-dead-letter-exchange": "dead-letter.exchange",
+        "x-dead-letter-routing-key": "notification.queue"
       }
     },
     {
-      "name": "worker.items.dlq",
+      "name": "notification.dlq",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
@@ -70,17 +80,18 @@
       }
     },
     {
-      "name": "worker.claims",
+      "name": "worker.queue",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
       "arguments": {
         "x-queue-type": "quorum",
-        "x-dead-letter-exchange": "derechi.items.dlx"
+        "x-dead-letter-exchange": "dead-letter.exchange",
+        "x-dead-letter-routing-key": "worker.queue"
       }
     },
     {
-      "name": "worker.claims.dlq",
+      "name": "worker.dlq",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
@@ -89,36 +100,18 @@
       }
     },
     {
-      "name": "notification.events",
+      "name": "ingest.queue",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
       "arguments": {
         "x-queue-type": "quorum",
-        "x-dead-letter-exchange": "derechi.notifications.dlx"
+        "x-dead-letter-exchange": "dead-letter.exchange",
+        "x-dead-letter-routing-key": "ingest.queue"
       }
     },
     {
-      "name": "notification.events.dlq",
-      "vhost": "/",
-      "durable": true,
-      "auto_delete": false,
-      "arguments": {
-        "x-queue-type": "quorum"
-      }
-    },
-    {
-      "name": "worker.archive",
-      "vhost": "/",
-      "durable": true,
-      "auto_delete": false,
-      "arguments": {
-        "x-queue-type": "quorum",
-        "x-dead-letter-exchange": "derechi.items.dlx"
-      }
-    },
-    {
-      "name": "worker.archive.dlq",
+      "name": "ingest.dlq",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
@@ -129,99 +122,99 @@
   ],
   "bindings": [
     {
-      "source": "derechi.items",
+      "source": "notification.exchange",
       "vhost": "/",
-      "destination": "worker.items",
-      "destination_type": "queue",
-      "routing_key": "item.*.created",
-      "arguments": {}
-    },
-    {
-      "source": "derechi.items.dlx",
-      "vhost": "/",
-      "destination": "worker.items.dlq",
-      "destination_type": "queue",
-      "routing_key": "item.*.created",
-      "arguments": {}
-    },
-    {
-      "source": "derechi.items",
-      "vhost": "/",
-      "destination": "worker.claims",
-      "destination_type": "queue",
-      "routing_key": "item.*.claimed",
-      "arguments": {}
-    },
-    {
-      "source": "derechi.items",
-      "vhost": "/",
-      "destination": "worker.claims",
-      "destination_type": "queue",
-      "routing_key": "item.*.returned",
-      "arguments": {}
-    },
-    {
-      "source": "derechi.items.dlx",
-      "vhost": "/",
-      "destination": "worker.claims.dlq",
-      "destination_type": "queue",
-      "routing_key": "item.*.claimed",
-      "arguments": {}
-    },
-    {
-      "source": "derechi.items.dlx",
-      "vhost": "/",
-      "destination": "worker.claims.dlq",
-      "destination_type": "queue",
-      "routing_key": "item.*.returned",
-      "arguments": {}
-    },
-    {
-      "source": "derechi.notifications",
-      "vhost": "/",
-      "destination": "notification.events",
+      "destination": "notification.queue",
       "destination_type": "queue",
       "routing_key": "notification.#",
       "arguments": {}
     },
     {
-      "source": "derechi.notifications.dlx",
+      "source": "notice.status.exchange",
       "vhost": "/",
-      "destination": "notification.events.dlq",
+      "destination": "worker.queue",
       "destination_type": "queue",
-      "routing_key": "#",
+      "routing_key": "notice.*.created",
       "arguments": {}
     },
     {
-      "source": "derechi.items",
+      "source": "notice.status.exchange",
       "vhost": "/",
-      "destination": "worker.archive",
+      "destination": "worker.queue",
       "destination_type": "queue",
-      "routing_key": "item.*.archive",
+      "routing_key": "notice.*.returned",
       "arguments": {}
     },
     {
-      "source": "derechi.items.dlx",
+      "source": "claims.exchange",
       "vhost": "/",
-      "destination": "worker.archive.dlq",
+      "destination": "worker.queue",
       "destination_type": "queue",
-      "routing_key": "item.*.archive",
+      "routing_key": "claim.*.claimed",
       "arguments": {}
     },
     {
-      "source": "derechi.items",
+      "source": "claims.exchange",
       "vhost": "/",
-      "destination": "worker.claims",
+      "destination": "worker.queue",
       "destination_type": "queue",
-      "routing_key": "item.*.paid",
+      "routing_key": "claim.*.paid",
       "arguments": {}
     },
     {
-      "source": "derechi.items.dlx",
+      "source": "notice.action.exchange",
       "vhost": "/",
-      "destination": "worker.claims.dlq",
+      "destination": "worker.queue",
       "destination_type": "queue",
-      "routing_key": "item.*.paid",
+      "routing_key": "notice.*.archive",
+      "arguments": {}
+    },
+    {
+      "source": "notice.status.exchange",
+      "vhost": "/",
+      "destination": "ingest.queue",
+      "destination_type": "queue",
+      "routing_key": "notice.*.created",
+      "arguments": {}
+    },
+    {
+      "source": "notice.status.exchange",
+      "vhost": "/",
+      "destination": "ingest.queue",
+      "destination_type": "queue",
+      "routing_key": "notice.*.returned",
+      "arguments": {}
+    },
+    {
+      "source": "notice.status.exchange",
+      "vhost": "/",
+      "destination": "ingest.queue",
+      "destination_type": "queue",
+      "routing_key": "notice.*.archived",
+      "arguments": {}
+    },
+    {
+      "source": "dead-letter.exchange",
+      "vhost": "/",
+      "destination": "notification.dlq",
+      "destination_type": "queue",
+      "routing_key": "notification.queue",
+      "arguments": {}
+    },
+    {
+      "source": "dead-letter.exchange",
+      "vhost": "/",
+      "destination": "worker.dlq",
+      "destination_type": "queue",
+      "routing_key": "worker.queue",
+      "arguments": {}
+    },
+    {
+      "source": "dead-letter.exchange",
+      "vhost": "/",
+      "destination": "ingest.dlq",
+      "destination_type": "queue",
+      "routing_key": "ingest.queue",
       "arguments": {}
     }
   ]

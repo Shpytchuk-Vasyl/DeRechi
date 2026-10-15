@@ -36,7 +36,7 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class ItemEventAspectTest {
 
-    private static final String EXCHANGE = "derechi.items";
+    private static final String EXCHANGE = "notice.status.exchange";
 
     private static final ItemInput INPUT = new ItemInput(
             "Ключі", null, LocalDate.of(2026, 9, 1), new MoneyInput(500, null), "keys.png", 2L,
@@ -71,7 +71,7 @@ class ItemEventAspectTest {
 
         proxy(lostItemService).create(INPUT);
 
-        verify(publisher).publish(eq(EXCHANGE), eq("item.lost.created"), any(ItemCreatedEvent.class));
+        verify(publisher).publish(eq(EXCHANGE), eq("notice.lost.created"), any(ItemCreatedEvent.class));
     }
 
     @Test
@@ -80,7 +80,7 @@ class ItemEventAspectTest {
 
         proxy(foundItemService).create(INPUT);
 
-        verify(publisher).publish(eq(EXCHANGE), eq("item.found.created"), any(ItemCreatedEvent.class));
+        verify(publisher).publish(eq(EXCHANGE), eq("notice.found.created"), any(ItemCreatedEvent.class));
     }
 
     @Test
@@ -90,7 +90,7 @@ class ItemEventAspectTest {
 
         proxy(lostItemService).create(INPUT);
 
-        verify(publisher).publish(eq(EXCHANGE), eq("item.lost.created"), captor.capture());
+        verify(publisher).publish(eq(EXCHANGE), eq("notice.lost.created"), captor.capture());
         ItemCreatedEvent event = captor.getValue();
         assertThat(event.id).isEqualTo(1L);
         assertThat(event.title).isEqualTo("Ключі");

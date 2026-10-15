@@ -16,8 +16,12 @@ public enum ItemKind {
         return segment;
     }
 
-    public String routingKey(String verb) {
-        return "item." + segment + "." + verb;
+    public String noticeKey(String verb) {
+        return "notice." + segment + "." + verb;
+    }
+
+    public String claimKey(String verb) {
+        return "claim." + segment + "." + verb;
     }
 
     public ItemKind opposite() {

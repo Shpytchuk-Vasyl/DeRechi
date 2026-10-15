@@ -141,7 +141,7 @@ alpha-2 code, has no currency in the JDK, or `fallback` is not in the list.
 
 ## Messaging and notifications
 
-### A message ended up in `worker.items.dlq`, `worker.claims.dlq`, `worker.archive.dlq` or `notification.events.dlq`
+### A message ended up in `worker.dlq` or `notification.dlq`
 
 After three failed attempts the listener rejects the message and the broker dead-letters it.
 A minute later the `DeadLetters` alert fires and Alertmanager mails it (into Mailpit locally);
@@ -149,7 +149,8 @@ how to replay or drop the messages is in
 [deployment/monitoring.md](../deployment/monitoring.md#dead-letter-queues). Open the queue in the management UI and "Get messages": the `x-death` header carries the
 reason. The usual causes:
 
-- the routing key has no handler (`No handler for the key ...` in `Worker`);
+- the routing key has no handler (`No handler for the key ...` in `Worker`); after a replay
+  through "Move messages" the key is `worker.queue`, see the replay notes in monitoring;
 - the payload's `__TypeId__` does not match any `@EventType` in the consumer, typically after
   renaming an event in one module but not the other;
 - a real exception in the handler (database down, entity missing); fix the cause, then re-create the
@@ -166,7 +167,7 @@ SMTP host (Mailpit locally).
 ### Notify clicked, nothing in Mailpit
 
 In order: is `Notification` running (`http://localhost:9084/actuator/health`, the management
-port); is the message on `notification.events` or in its DLQ; does the lost item's contact
+port); is the message on `notification.queue` or in `notification.dlq`; does the lost item's contact
 have an email (the `EMAIL` and `ALL` channels need it, `PHONE` and the messengers do not); was
 the same match notified within the last hour (NotifyHub deduplicates by key with a one-hour
 TTL, in memory: per instance, and forgotten on restart). The `Notification` log

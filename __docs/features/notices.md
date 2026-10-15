@@ -55,7 +55,7 @@ Anything else falls through to the default `INTERNAL_ERROR`.
 
 ## What happens after a notice is created
 
-`ItemEventAspect` wraps every `ItemService.create(..)` with `@AfterReturning` and publishes an `ItemCreatedEvent` (`id`, `date`, `category`, `lat`, `lon`, `title`) to the `derechi.items` exchange. The routing key is `item.lost.created` or `item.found.created`: the aspect binds the service that ran (`target(service)`) and asks its `kind()`, an `ItemKind`, for `routingKey("created")`. `Worker` consumes it, see [Automatic matching](automatic-matching.md).
+`ItemEventAspect` wraps every `ItemService.create(..)` with `@AfterReturning` and publishes an `ItemCreatedEvent` (`id`, `date`, `category`, `lat`, `lon`, `title`) to the `notice.status.exchange` exchange. The routing key is `notice.lost.created` or `notice.found.created`: the aspect binds the service that ran (`target(service)`) and asks its `kind()`, an `ItemKind`, for `noticeKey("created")`. `Worker` consumes it, see [Automatic matching](automatic-matching.md).
 
 The aspect has `@Order(0)`, so it sits outside the transaction interceptor and fires only after the insert has committed; a failing `create` publishes nothing (`ItemEventAspectTest.doesNotPublishWhenCreateThrows`). The flip side: if RabbitMQ is unreachable at that moment the row is already committed but the publish throws and the mutation returns an error. There is no outbox, so such a notice simply never gets matched.
 

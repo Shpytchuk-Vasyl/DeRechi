@@ -81,7 +81,7 @@ class LostItemControllerTests extends AbstractGraphQlTests {
                 .path("createLostItem.id").hasValue();
 
         verify(rabbitTemplate).convertAndSend(
-                eq("derechi.items"), eq("item.lost.created"), any(ItemCreatedEvent.class));
+                eq("notice.status.exchange"), eq("notice.lost.created"), any(ItemCreatedEvent.class));
     }
 
     @Test

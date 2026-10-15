@@ -148,8 +148,7 @@ the YAML and must match Admin-API's list. The Fourthwall client's timeouts are Y
 | `POSTGRES_*`, `RABBITMQ_*` | see above | see above | |
 | `DERECHI_SITE_URL` | `http://localhost:3000` | same | public address of the web client, used for the links in claim messages |
 
-The queue names `worker.items`, `worker.claims` and `worker.archive` are `derechi.items.queue`,
-`derechi.claims.queue` and `derechi.archive.queue` in the YAML, not environment variables.
+The queue name `worker.queue` is `derechi.worker.queue` in the YAML, not an environment variable.
 
 ## Notification
 

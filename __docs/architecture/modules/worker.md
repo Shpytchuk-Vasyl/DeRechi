@@ -7,21 +7,24 @@ has no HTTP API; the only endpoints are actuator's.
 | | |
 |---|---|
 | Port | 8085 (serves nothing public); actuator on the management port 9085 |
-| Consumes | queue `worker.items`, bound to `derechi.items` with `item.*.created`; queue `worker.claims`, bound with `item.*.claimed`, `item.*.returned` and `item.*.paid`; queue `worker.archive`, bound with `item.*.archive` |
-| Produces | `NotificationRequestedEvent` on `derechi.notifications` (`notification.claim.*`) |
+| Consumes | one queue, `worker.queue`, bound to `notice.status.exchange` with `notice.*.created` and `notice.*.returned`, to `claims.exchange` with `claim.*.claimed` and `claim.*.paid`, and to `notice.action.exchange` with `notice.*.archive` |
+| Produces | `NotificationRequestedEvent` on `notification.exchange` (`notification.claim.*`) |
 | Needs | PostgreSQL, RabbitMQ |
 | Stack | Spring AMQP, Spring Data JPA, Hibernate Spatial + JTS, optimaize `language-detector`, libphonenumber, ShedLock, Lombok |
 
 ## Flow
 
-1. `ItemCreatedListener` receives an `ItemCreatedEvent` (`id`, `date`, `category`, `lat`,
-   `lon`, `title`) and hands the message to its `RoutingKeyDispatcher<ItemCreatedHandler>`,
-   a map `routing key → handler` built from all handler beans. The three listeners share that
-   class; a key nobody handles throws `AmqpRejectAndDontRequeueException` (straight to the
-   DLQ, no retry), and two handlers for one key fail startup.
+1. `WorkerQueueListener` reads everything from `worker.queue`: `@RabbitListener` on the class
+   and a `@RabbitHandler` method per event class, picked by the `__TypeId__` header. Its
+   `onItemCreated` receives an `ItemCreatedEvent` (`id`, `date`, `category`, `lat`,
+   `lon`, `title`) and hands the message to a `RoutingKeyDispatcher<ItemCreatedHandler>`,
+   a map `routing key → handler` built from all handler beans. Every handler method dispatches
+   through that class; a key nobody handles throws `AmqpRejectAndDontRequeueException` (straight
+   to the DLQ, no retry), and two handlers for one key fail startup. An event class without a
+   method lands in the `@RabbitHandler(isDefault = true)` method, which rejects it the same way.
 2. `ItemMatchHandler<T>` is one class and two `@Transactional` beans from `ItemSearchConfig`:
-   `lostItemCreatedHandler` (`item.lost.created`) searches **found** items,
-   `foundItemCreatedHandler` (`item.found.created`) searches **lost** items. Each bean holds
+   `lostItemCreatedHandler` (`notice.lost.created`) searches **found** items,
+   `foundItemCreatedHandler` (`notice.found.created`) searches **lost** items. Each bean holds
    the `KindOps` of the kind that arrived and the `ItemService` of the opposite kind.
 3. `ItemService<T>.findAllMostSuitable(event)` (two beans from `ItemSearchConfig`, one per
    entity type) runs the query and ranks the result.
@@ -93,14 +96,14 @@ and `match_rank_cfg(regconfig, doc, title)`, the latter used by `rankAll`, and t
 
 ## Claims
 
-The second queue and the scheduled `ClaimFollowUpJob` implement the response flow described in
+The claim events on the same queue and the scheduled `ClaimFollowUpJob` implement the response flow described in
 [../../features/claims.md](../../features/claims.md): notify the author in the language of
 their phone number, remind both sides, archive the notice on confirmation or a week after the
 last response. The same job also archives every notice whose `date` is more than
 `derechi.archive.max-age` (30 days) ago, claims or not; Web-Client stops indexing a notice at the
 same age (`STALE_AFTER_DAYS` in `src/lib/seo.ts`), so the two change together. `ItemArchiver` is the only code that
-archives a notice: the admin "Archive" button arrives here as `ARCHIVE_REQUESTED` on the third
-queue (`ArchiveListener`), and the confirmed return, the quiet-notice and the stale-notice rules
+archives a notice: the admin "Archive" button arrives here as `ARCHIVE_REQUESTED` with
+`notice.<kind>.archive` (`WorkerQueueListener.onArchiveRequested`), and the confirmed return, the quiet-notice and the stale-notice rules
 call it directly. Archiving re-points the notice's
 claims at the history copy instead of deleting them, which is why this module writes to the
 item, history and claim tables. Texts live in this module's own five `messages*.properties`.
@@ -112,10 +115,12 @@ column of `similar_item` is its own (`insertMatches`, `deleteMatches`). `ItemKin
 claim handlers and the job take an `ItemKind` and never switch on it.
 
 The claim handlers (`ClaimedHandler`, `ReturnedHandler`, `PaidHandler`, one instance per kind,
-`routingKey()` = `item.<kind>.<verb>`) are registered by `ClaimsConfig.ClaimHandlers`, a Spring
-`BeanRegistrar` that loops over `ItemKind.values()`. They are registered one by one on purpose:
-a list returned from a single `@Bean` would neither get the `@Transactional` proxy
-(`PaidHandler.handle`) nor be collected into the `List<ClaimHandler>` of `ClaimListener`.
+each answering its own `routingKey()`: `claim.<kind>.claimed`, `notice.<kind>.returned`,
+`claim.<kind>.paid`, built by `ItemKind.claimKey` / `noticeKey`) are registered by
+`ClaimsConfig.ClaimHandlers`, a Spring `BeanRegistrar` that loops over `ItemKind.values()`. They
+are registered one by one on purpose: a list returned from a single `@Bean` would neither get
+the `@Transactional` proxy (`PaidHandler.handle`) nor be collected into the `List<ClaimHandler>`
+of `WorkerQueueListener`.
 `ClaimsConfigTests` pins both.
 
 `ClaimNotifier` has one render-and-publish path; the four messages it sends are the enum
@@ -138,7 +143,7 @@ The `entity` package is a copy of the shared schema, laid out like `DB-Postgres`
 (`thing`, `lost`, `found`, `detail`, `matching`), with one addition: `Thing` has a
 `@Transient Double orderMatch` that carries the rank from the query to the insert.
 
-Packages by role: `listener` takes messages off the queues and dispatches by routing key
+Packages by role: `listener` takes messages off `worker.queue` and dispatches by routing key
 (`RoutingKeyDispatcher`), `handler` holds one handler bean per routing key (`ItemKind` + verb;
 the classes are parameterized by kind), `cron` the scheduled follow-up, `service` the work
 itself (`ClaimNotifier`, `ItemArchiver`, `ItemService`) and the per-kind `KindOps` behind
@@ -148,11 +153,10 @@ itself (`ClaimNotifier`, `ItemArchiver`, `ItemService`) and the per-kind `KindOp
 
 ```yaml
 derechi:
-  items:
-    queue: worker.items
+  worker:
+    queue: worker.queue
   claims:
-    queue: worker.claims
-    exchange: derechi.notifications
+    exchange: notification.exchange
     site-url: ${DERECHI_SITE_URL:http://localhost:3000}
     check-every: PT10M
     author-reminder-after: P1D
@@ -160,7 +164,6 @@ derechi:
     archive-after: P7D
     retention: P365D
   archive:
-    queue: worker.archive
     max-age: P30D
 spring:
   rabbitmq:
@@ -195,14 +198,13 @@ SQL because this module's `Place` maps only the id and the coordinate):
 
 Unit tests: `LanguageResolverTest`, `PhoneLocalesTest`, `ClaimNotifierTest` (mocked
 `RabbitTemplate`, real bundles), `ClaimMessageTest` (routing, bundle and dedup keys, recipients),
-`RoutingKeyDispatcherTest`, `ItemCreatedListenerTest`, `ClaimListenerTest` and
-`ArchiveListenerTest` (dispatch), `ItemMatchHandlerTest` (which column each kind takes, through
+`RoutingKeyDispatcherTest` and `WorkerQueueListenerTest` (dispatch), `ItemMatchHandlerTest` (which column each kind takes, through
 the repository's real default methods), `KindOpsTest` and `ItemKindsTest`, `ClaimHandlersTest`
 (what `claimed` and `returned` do, replays), `PaidHandlerTest`, `ItemArchiverTest`,
 `ClaimFollowUpJobTest` (publish-then-stamp order, newest-claim rule, retention, step order),
 `RabbitConfigTest` (the type ids read from Client-API and Admin-API, the one written for
 Notification) and `MessagesTest` (bundle parity). `ClaimsConfigTests` starts a small context with
-`ApplicationContextRunner`: six handler beans, all of them reachable through `ClaimListener`, the
+`ApplicationContextRunner`: six handler beans, all of them reachable through `WorkerQueueListener`, the
 `@Transactional` proxy on `PaidHandler`. `WorkerApplicationTests` starts the context
 on the test container with `ddl-auto=validate`, so the scheduled job never touches the developer
 database. `insert into similar_item` by hand (see the root `README.md`) is still how the match

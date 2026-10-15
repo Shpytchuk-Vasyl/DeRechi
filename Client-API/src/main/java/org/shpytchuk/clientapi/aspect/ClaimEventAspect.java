@@ -4,10 +4,10 @@ import lombok.AllArgsConstructor;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.shpytchuk.clientapi.config.ClaimsProperties;
 import org.shpytchuk.clientapi.dto.ClaimDto;
 import org.shpytchuk.clientapi.event.ClaimEvent;
 import org.shpytchuk.clientapi.event.EventPublisher;
+import org.shpytchuk.clientapi.event.Exchanges;
 import org.shpytchuk.clientapi.service.ClaimService;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -25,7 +25,6 @@ public class ClaimEventAspect {
     private static final String PAID = "paid";
 
     private final EventPublisher publisher;
-    private final ClaimsProperties properties;
 
     @Pointcut("execution(* org.shpytchuk.clientapi.service.ClaimService+.claim(..))")
     public void claimed() {
@@ -41,23 +40,23 @@ public class ClaimEventAspect {
 
     @AfterReturning(pointcut = "claimed() && target(service)", returning = "claim")
     public void publishClaimed(ClaimService<?, ?> service, ClaimDto claim) {
-        publish(service, claim, CLAIMED);
+        publish(Exchanges.CLAIMS, service.kind().claimKey(CLAIMED), claim);
     }
 
     @AfterReturning(pointcut = "confirmed() && target(service)", returning = "claim")
     public void publishReturned(ClaimService<?, ?> service, Optional<ClaimDto> claim) {
-        claim.ifPresent(dto -> publish(service, dto, RETURNED));
+        claim.ifPresent(dto -> publish(Exchanges.NOTICE_STATUS, service.kind().noticeKey(RETURNED), dto));
     }
 
     @AfterReturning(pointcut = "paid() && target(service)", returning = "claim")
     public void publishPaid(ClaimService<?, ?> service, Optional<ClaimDto> claim) {
-        claim.ifPresent(dto -> publish(service, dto, PAID));
+        claim.ifPresent(dto -> publish(Exchanges.CLAIMS, service.kind().claimKey(PAID), dto));
     }
 
-    private void publish(ClaimService<?, ?> service, ClaimDto claim, String verb) {
+    private void publish(String exchange, String routingKey, ClaimDto claim) {
         if (claim.repeated()) {
             return;
         }
-        publisher.publish(properties.exchange(), service.kind().routingKey(verb), new ClaimEvent(claim.id()));
+        publisher.publish(exchange, routingKey, new ClaimEvent(claim.id()));
     }
 }

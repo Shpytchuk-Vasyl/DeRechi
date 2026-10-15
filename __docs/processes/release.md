@@ -91,7 +91,7 @@ docker compose --env-file env.prod -f docker-compose.yml -f docker-compose.servi
 - [ ] GraphiQL through Caddy (`/graphiql`) runs `categories` and `countries`, and a
       `createLostItem` mutation succeeds.
 - [ ] `Worker` logs the search for that item and nothing lands in
-      `worker.items.dlq` (or any other `*.dlq`; the `DeadLetters` alert fires otherwise).
+      `worker.dlq` (or any other `*.dlq`; the `DeadLetters` alert fires otherwise).
 - [ ] The admin panel logs in through Keycloak and the Matches page renders.
 - [ ] Notifying a candidate produces an email at the real mail provider (Mailpit only runs
       with the `dev` profile) and the

@@ -108,10 +108,10 @@ derechi:
     public-url: ${MINIO_PUBLIC_URL:http://localhost:9000/${derechi.storage.bucket}}
     max-size: 5MB
   notifications:
-    exchange: derechi.notifications
+    exchange: notification.exchange
     routing-key: notification.match.found
   archive:
-    exchange: derechi.items
+    exchange: notice.action.exchange
 
 server:
   port: 8083

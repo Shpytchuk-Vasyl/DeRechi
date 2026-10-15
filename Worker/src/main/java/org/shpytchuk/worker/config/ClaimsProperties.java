@@ -8,7 +8,6 @@ import java.time.Duration;
 
 @ConfigurationProperties(prefix = "derechi.claims")
 public record ClaimsProperties(
-        String queue,
         String exchange,
         String siteUrl,
         Duration checkEvery,
@@ -18,7 +17,6 @@ public record ClaimsProperties(
         Duration retention) {
 
     public ClaimsProperties {
-        requireText(queue, "queue");
         requireText(exchange, "exchange");
         requireText(siteUrl, "site-url");
         requirePositive(checkEvery, "check-every");

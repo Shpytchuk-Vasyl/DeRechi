@@ -130,7 +130,7 @@ the column headers. Filters bind to `ItemFilter` and turn into `ThingSpecificati
 `MatchNotificationService.notifyOwner(lostId, foundId, actor, channel)` builds a localized
 `NotificationRequestedEvent` (subject and body from the message bundle, in the admin's
 current locale), keeps only the contacts the chosen `NotifyChannel` needs, publishes to
-`derechi.notifications` with the key from `derechi.notifications.routing-key`, stamps
+`notification.exchange` with the key from `derechi.notifications.routing-key`, stamps
 `notified_at` / `notified_by` on the `similar_item` row, and returns a `NotifiedMatch` for
 re-rendering the row. The htmx choreography around it is in
 [../../features/match-notifications.md](../../features/match-notifications.md).
@@ -141,7 +141,7 @@ The lost and found lists and both archives show how many people responded to a n
 the item dialog lists them (phone, email, when, status); the archives look claims up by the
 history copy. `AdminItemService.delete` drops the claims and their contact infos (`ItemClaims`) next to
 `deleteMatches`. Archive does not touch rows at all: `ArchivableAdminItemService.archive`
-publishes `ArchiveRequestedEvent` (`derechi.archive.exchange`, `item.<kind>.archive`) and
+publishes `ArchiveRequestedEvent` (`derechi.archive.exchange` = `notice.action.exchange`, `notice.<kind>.archive`) and
 `Worker` archives the notice; the history services do not have the method. See [../../features/claims.md](../../features/claims.md).
 
 ## Uploads and maps
@@ -165,7 +165,8 @@ and [../../features/places.md](../../features/places.md).
 | `derechi.maps.api-key`, `region` | from `GOOGLE_MAPS_API_KEY`, `UA` | |
 | `derechi.countries.supported`, `fallback` | `[UA, PL, DE, FR]`, `UA` | |
 | `derechi.storage.bucket`, `public-url`, `max-size` | `derechi-files`, `MINIO_PUBLIC_URL`, 5MB | `MINIO_PUBLIC_URL=http://localhost:9000/derechi-files` |
-| `derechi.notifications.exchange`, `routing-key` | `derechi.notifications`, `notification.match.found` | |
+| `derechi.notifications.exchange`, `routing-key` | `notification.exchange`, `notification.match.found` | |
+| `derechi.archive.exchange` | `notice.action.exchange` | |
 | `spring.cloud.aws.s3.endpoint` | `MINIO_ENDPOINT`, `http://localhost:9000` | `MINIO_ENDPOINT=http://minio:9000` |
 | `spring.cloud.aws.credentials.access-key`, `secret-key` | `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`: the application account `derechi-app` / `derechi-app-secret`, not MinIO's root, see [../file-storage.md](../file-storage.md) | `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY` |
 | `spring.security.oauth2.client.provider.keycloak.*` | `issuer-uri` (default profile) | `SPRING_PROFILES_ACTIVE=docker`, `KEYCLOAK_URI`, `KEYCLOAK_PUBLIC_URI` |

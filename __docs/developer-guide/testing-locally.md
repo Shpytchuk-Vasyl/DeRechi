@@ -109,11 +109,10 @@ window. Check at least one non-English locale with `?lang=uk`.
 
 | Queue | Consumer | Fed by |
 |---|---|---|
-| `worker.items` | `Worker` | `derechi.items` with `item.*.created` |
-| `worker.claims` | `Worker` | `derechi.items` with `item.*.claimed`, `item.*.returned`, `item.*.paid` |
-| `worker.archive` | `Worker` | `derechi.items` with `item.*.archive` |
-| `notification.events` | `Notification` | `derechi.notifications` with `notification.#` |
-| `worker.items.dlq`, `worker.claims.dlq`, `worker.archive.dlq`, `notification.events.dlq` | nobody | Dead letters after 3 failed attempts |
+| `worker.queue` | `Worker` | `notice.status.exchange` with `notice.*.created`, `notice.*.returned`; `claims.exchange` with `claim.*.claimed`, `claim.*.paid`; `notice.action.exchange` with `notice.*.archive` |
+| `notification.queue` | `Notification` | `notification.exchange` with `notification.#` |
+| `ingest.queue` | nobody yet | `notice.status.exchange` with `notice.*.created`, `notice.*.returned`, `notice.*.archived`; grows until `Ingest` reads it |
+| `worker.dlq`, `notification.dlq`, `ingest.dlq` | nobody | Dead letters after 3 failed attempts, through `dead-letter.exchange` |
 
 A healthy run leaves the DLQs at zero; otherwise the `DeadLetters` alert lands in Mailpit a
 minute later. A message there can be opened in the UI ("Get messages") to see the payload and

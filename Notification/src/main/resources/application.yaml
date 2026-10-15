@@ -29,7 +29,7 @@ logging:
 
 derechi:
   notification:
-    queue: notification.events
+    queue: notification.queue
   sms-fly:
     api-key: ${SMS_FLY_API_KEY:}
     api-url: ${SMS_FLY_API_URL:https://sms-fly.ua/api/v2/api.php}

@@ -14,26 +14,26 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class RoutingKeyDispatcherTest {
 
     private final RoutingKeyDispatcher<String> dispatcher =
-            new RoutingKeyDispatcher<>(List.of("item.lost.created", "item.found.created"), Function.identity());
+            new RoutingKeyDispatcher<>(List.of("notice.lost.created", "notice.found.created"), Function.identity());
 
     @Test
     void resolvesTheHandlerOfTheReceivedRoutingKey() {
-        assertThat(dispatcher.resolve(message("item.found.created"))).isEqualTo("item.found.created");
-        assertThat(dispatcher.routingKeys()).containsExactlyInAnyOrder("item.lost.created", "item.found.created");
+        assertThat(dispatcher.resolve(message("notice.found.created"))).isEqualTo("notice.found.created");
+        assertThat(dispatcher.routingKeys()).containsExactlyInAnyOrder("notice.lost.created", "notice.found.created");
     }
 
     @Test
     void rejectsAKeyNobodyHandlesWithoutRequeue() {
-        assertThatThrownBy(() -> dispatcher.resolve(message("item.lost.claimed")))
+        assertThatThrownBy(() -> dispatcher.resolve(message("claim.lost.claimed")))
                 .isInstanceOf(AmqpRejectAndDontRequeueException.class)
-                .hasMessage("No handler for the key item.lost.claimed");
+                .hasMessage("No handler for the key claim.lost.claimed");
     }
 
     @Test
     void refusesTwoHandlersForOneKey() {
-        assertThatThrownBy(() -> new RoutingKeyDispatcher<>(List.of("first", "second"), handler -> "item.lost.created"))
+        assertThatThrownBy(() -> new RoutingKeyDispatcher<>(List.of("first", "second"), handler -> "notice.lost.created"))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("item.lost.created")
+                .hasMessageContaining("notice.lost.created")
                 .hasMessageContaining("first")
                 .hasMessageContaining("second");
     }

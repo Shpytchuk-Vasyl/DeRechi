@@ -48,7 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class FourthwallWebhookControllerTests extends AbstractGraphQlTests {
 
-    private static final String EXCHANGE = "derechi.items";
+    private static final String EXCHANGE = "claims.exchange";
 
     @Autowired
     private MockMvc mockMvc;
@@ -102,7 +102,7 @@ class FourthwallWebhookControllerTests extends AbstractGraphQlTests {
                     assertThat(order.getReceivedAt()).isNotNull();
                     assertThat(order.getFoundItemClaim()).isNull();
                 });
-        verify(rabbitTemplate).convertAndSend(EXCHANGE, "item.lost.paid", new ClaimEvent(claim.getId()));
+        verify(rabbitTemplate).convertAndSend(EXCHANGE, "claim.lost.paid", new ClaimEvent(claim.getId()));
         verify(fourthwall).markDownloaded("ord-1", "http://localhost:3000/lost/" + claim.getItem().getId());
     }
 
@@ -115,7 +115,7 @@ class FourthwallWebhookControllerTests extends AbstractGraphQlTests {
         send(orderPlaced("ord-1", "COMPLETED", "var-1", false)).andExpect(status().isOk());
 
         assertThat(lostClaimRepository.findById(claim.getId()).orElseThrow().getPaidAt()).isNotNull();
-        verify(rabbitTemplate).convertAndSend(EXCHANGE, "item.lost.paid", new ClaimEvent(claim.getId()));
+        verify(rabbitTemplate).convertAndSend(EXCHANGE, "claim.lost.paid", new ClaimEvent(claim.getId()));
     }
 
     @Test
@@ -126,7 +126,7 @@ class FourthwallWebhookControllerTests extends AbstractGraphQlTests {
 
         assertThat(foundClaimRepository.findById(claim.getId()).orElseThrow().getPaidAt()).isNotNull();
         assertThat(orderRepository.findByFoundItemClaimIdOrderByIdAsc(claim.getId())).hasSize(1);
-        verify(rabbitTemplate).convertAndSend(EXCHANGE, "item.found.paid", new ClaimEvent(claim.getId()));
+        verify(rabbitTemplate).convertAndSend(EXCHANGE, "claim.found.paid", new ClaimEvent(claim.getId()));
         verify(fourthwall).markDownloaded("ord-2", "http://localhost:3000/found/" + claim.getItem().getId());
     }
 
@@ -169,7 +169,7 @@ class FourthwallWebhookControllerTests extends AbstractGraphQlTests {
         send(body).andExpect(status().isOk());
 
         assertThat(orderRepository.count()).isEqualTo(1);
-        verify(rabbitTemplate, times(1)).convertAndSend(eq(EXCHANGE), eq("item.lost.paid"), any(ClaimEvent.class));
+        verify(rabbitTemplate, times(1)).convertAndSend(eq(EXCHANGE), eq("claim.lost.paid"), any(ClaimEvent.class));
         verify(fourthwall, times(1)).markDownloaded(eq("ord-1"), anyString());
         assertThat(lostClaimRepository.findById(claim.getId()).orElseThrow().getPaidAt()).isNotNull();
     }
@@ -182,7 +182,7 @@ class FourthwallWebhookControllerTests extends AbstractGraphQlTests {
         send(orderPlaced("ord-2", "COMPLETED", "var-1", false)).andExpect(status().isOk());
 
         assertThat(orderRepository.findByLostItemClaimIdOrderByIdAsc(claim.getId())).hasSize(2);
-        verify(rabbitTemplate, times(1)).convertAndSend(eq(EXCHANGE), eq("item.lost.paid"), any(ClaimEvent.class));
+        verify(rabbitTemplate, times(1)).convertAndSend(eq(EXCHANGE), eq("claim.lost.paid"), any(ClaimEvent.class));
         verify(fourthwall).markDownloaded(eq("ord-1"), anyString());
         verify(fourthwall, never()).markDownloaded(eq("ord-2"), anyString());
     }

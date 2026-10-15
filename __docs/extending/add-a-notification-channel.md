@@ -65,7 +65,7 @@ Channel artifacts share the starter's groupId and are named `notify-<channel>`; 
 
 6. **Dedup key.** `deduplicationKey(event, route, recipient)` is `<event.deduplicationKey()>:<CHANNEL>`, falling back to `<recipient>:<CHANNEL>` when the event has no key; a new channel gets its own key automatically. The TTL is `notify.deduplication.ttl` (1 h). The store is NotifyHub's `InMemoryDeduplicationStore`: per instance and lost on restart.
 
-7. **Failure path.** Keep the behaviour: a channel without configuration or without a recipient is skipped; if a send fails, the exception propagates, Spring AMQP retries 3 times and the message goes to `notification.events.dlq`.
+7. **Failure path.** Keep the behaviour: a channel without configuration or without a recipient is skipped; if a send fails, the exception propagates, Spring AMQP retries 3 times and the message goes to `notification.dlq`.
 
 ## Tests to add or update
 

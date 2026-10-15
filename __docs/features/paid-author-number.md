@@ -16,7 +16,7 @@ Nothing on the back end changed, so the feature comes back by restoring the web 
 | Module | State |
 |---|---|
 | Client-API | unchanged: `unlockLostItemClaim` / `unlockFoundItemClaim`, `lostItemClaim` / `foundItemClaim`, the `checkoutUrl` / `paid` / `contactsSent` fields on `Claim`, `PAYMENT_UNAVAILABLE` and `UNLOCK_LIMIT`, the Fourthwall client and the `POST /api/client/webhooks/fourthwall` webhook |
-| Worker | unchanged: `PaidHandler` sends the number on `item.<kind>.paid` |
+| Worker | unchanged: `PaidHandler` sends the number on `claim.<kind>.paid` |
 | DB-Postgres | unchanged: `007-claim-payment`, `008-claim-unlock-limit`, `fourthwall_order` |
 | Web-Client | the dialog, its server actions, the GraphQL documents, the translations, the playground bench and the paid parts of the legal texts are removed (list below) |
 

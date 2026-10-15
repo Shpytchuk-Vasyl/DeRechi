@@ -53,7 +53,7 @@ class FoundItemControllerTests extends AbstractGraphQlTests {
         create("Парасолька");
 
         verify(rabbitTemplate).convertAndSend(
-                eq("derechi.items"), eq("item.found.created"), any(ItemCreatedEvent.class));
+                eq("notice.status.exchange"), eq("notice.found.created"), any(ItemCreatedEvent.class));
     }
 
     @Test

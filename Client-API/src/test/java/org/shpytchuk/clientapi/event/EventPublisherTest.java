@@ -35,7 +35,7 @@ import static org.mockito.Mockito.verify;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class EventPublisherTest {
 
-    private static final String EXCHANGE = "derechi.items";
+    private static final String EXCHANGE = "claims.exchange";
     private static final AmqpConnectException DOWN = new AmqpConnectException(new ConnectException("refused"));
 
     @Mock
@@ -60,9 +60,9 @@ class EventPublisherTest {
 
     @Test
     void sendsStraightAwayWhileTheBrokerIsUp() {
-        publisher.publish(EXCHANGE, "item.lost.claimed", "a");
+        publisher.publish(EXCHANGE, "claim.lost.claimed", "a");
 
-        verify(rabbitTemplate).convertAndSend(EXCHANGE, "item.lost.claimed", "a");
+        verify(rabbitTemplate).convertAndSend(EXCHANGE, "claim.lost.claimed", "a");
         assertThat(publisher.pendingCount()).isZero();
     }
 

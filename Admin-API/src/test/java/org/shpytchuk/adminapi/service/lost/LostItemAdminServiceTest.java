@@ -71,7 +71,7 @@ class LostItemAdminServiceTest {
         ItemFormApplier applier = new ItemFormApplier(categoryRepository, placeRepository,
                 new CountriesProperties(List.of("UA", "PL"), "UA"));
         service = new LostItemAdminService(repository, claimRepository, contactInfoRepository, applier,
-                similarItemRepository, rabbitTemplate, new ArchiveProperties("derechi.items"));
+                similarItemRepository, rabbitTemplate, new ArchiveProperties("notice.action.exchange"));
     }
 
     @Test
@@ -94,7 +94,7 @@ class LostItemAdminServiceTest {
         service.archive(7L, "admin@derechi.local");
 
         ArgumentCaptor<ArchiveRequestedEvent> event = ArgumentCaptor.forClass(ArchiveRequestedEvent.class);
-        verify(rabbitTemplate).convertAndSend(eq("derechi.items"), eq("item.lost.archive"), event.capture());
+        verify(rabbitTemplate).convertAndSend(eq("notice.action.exchange"), eq("notice.lost.archive"), event.capture());
         assertThat(event.getValue().id()).isEqualTo(7L);
         assertThat(event.getValue().actor()).isEqualTo("admin@derechi.local");
         verify(repository, never()).delete(any(LostItem.class));

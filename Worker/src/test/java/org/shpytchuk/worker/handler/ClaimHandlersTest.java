@@ -46,8 +46,8 @@ class ClaimHandlersTest {
 
     @Test
     void routingKeysFollowTheKindAndTheVerb() {
-        assertThat(new ClaimedHandler(ItemKind.LOST, kinds, notifier).routingKey()).isEqualTo("item.lost.claimed");
-        assertThat(new ReturnedHandler(ItemKind.FOUND, kinds, archiver).routingKey()).isEqualTo("item.found.returned");
+        assertThat(new ClaimedHandler(ItemKind.LOST, kinds, notifier).routingKey()).isEqualTo("claim.lost.claimed");
+        assertThat(new ReturnedHandler(ItemKind.FOUND, kinds, archiver).routingKey()).isEqualTo("notice.found.returned");
     }
 
     @Test

@@ -82,7 +82,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = {LostItemController.class, FoundItemController.class,
         LostItemHistoryController.class, FoundItemHistoryController.class},
         properties = {"derechi.admin.client-id=derechi-admin", "derechi.admin.page-size=20",
-                "derechi.notifications.exchange=derechi.notifications",
+                "derechi.notifications.exchange=notification.exchange",
                 "derechi.notifications.routing-key=notification.match.found",
                 "derechi.maps.api-key=",
                 "derechi.countries.supported=UA,PL,DE,FR", "derechi.countries.fallback=UA"})

@@ -23,7 +23,7 @@ All of them are `hx-post` submits of one form to `POST /admin/matches/notify` (p
    - `phone` and `email` of the **owner of the lost item**, each set only if the chosen `NotifyChannel` needs it (`isNeedPhone`, `isNeedEmail`), otherwise `null`;
    - `socialMedias`: the single social network when a messenger channel was chosen, otherwise empty;
    - `deduplicationKey = match:<lostId>:<foundId>`.
-3. Publishes it to the exchange `derechi.notifications` with routing key `notification.match.found` (`derechi.notifications.*` in `application.yaml`).
+3. Publishes it to the exchange `notification.exchange` with routing key `notification.match.found` (`derechi.notifications.*` in `application.yaml`).
 4. Stamps `notified_at` and `notified_by` on the pair and returns a `NotifiedMatch` built from the already-loaded entities, so the row can be re-rendered without another query.
 
 If RabbitMQ is unreachable the `AmqpConnectException` propagates, the row is not stamped, and htmx shows the `data-error` text on the button.
@@ -32,14 +32,14 @@ If RabbitMQ is unreachable the `AmqpConnectException` propagates, the row is not
 
 ## Delivering it (`Notification`)
 
-The queue `notification.events` is bound to `derechi.notifications` with `notification.#`, so one listener handles every notification reason; the routing key says why it was sent. `NotificationRequestedListener` hands the event to `NotificationSender`, which:
+The queue `notification.queue` is bound to `notification.exchange` with `notification.#`, so one listener handles every notification reason; the routing key says why it was sent. `NotificationRequestedListener` hands the event to `NotificationSender`, which:
 
 - sends via `Channel.EMAIL` when `email` is present;
 - sends via `Channel.SMS` when `phone` is present;
 - skips a channel that is not configured under `notify.channels.*` (today: SMS), with a warning;
 - treats a NotifyHub duplicate (key `<event.deduplicationKey>:<CHANNEL>`, TTL 1 h) as sent.
 
-Any other exception is logged and rethrown as `AmqpRejectAndDontRequeueException`; Spring AMQP retries 3 times and then the message lands in `notification.events.dlq`.
+Any other exception is logged and rethrown as `AmqpRejectAndDontRequeueException`; Spring AMQP retries 3 times and then the message lands in `notification.dlq`.
 
 Channels are enabled by configuration presence under `notify.channels.*`. Today only email is configured (SMTP host from `NOTIFY_EMAIL_HOST`, Mailpit in dev at `http://localhost:8025`). Details and the rules for turning on more channels are in [Add a notification channel](../extending/add-a-notification-channel.md).
 

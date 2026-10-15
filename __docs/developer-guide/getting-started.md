@@ -144,16 +144,17 @@ mutation {
 }
 ```
 
-Each mutation publishes an `item.lost.created` or `item.found.created` event on the
-`derechi.items` exchange. Watch the `Worker` log: it says it is searching for
+Each mutation publishes a `notice.lost.created` or `notice.found.created` event on the
+`notice.status.exchange` exchange. Watch the `Worker` log: it says it is searching for
 candidates and how many it saved. The RabbitMQ UI at `http://localhost:15672`
-(`derechi` / `derechi`) shows the message passing through `worker.items`.
+(`derechi` / `derechi`) shows the message passing through `worker.queue` (and piling up in
+`ingest.queue`, which nobody reads yet).
 
 ## 6. See the match and notify the owner
 
 Open **Matches** in the admin panel. The lost wallet lists the found wallet as a candidate
 with its score. Click **Notify**: the admin publishes a `notification.match.found` event,
-`Notification` picks it up from `notification.events` and sends an email through Mailpit.
+`Notification` picks it up from `notification.queue` and sends an email through Mailpit.
 Open `http://localhost:8025` and the message is there. The row now shows who notified and when.
 
 If any step did not happen, [troubleshooting](troubleshooting.md) covers the usual reasons.

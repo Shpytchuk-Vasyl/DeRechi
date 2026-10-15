@@ -10,7 +10,7 @@ public interface ItemCreatedHandler {
     ItemKind kind();
 
     default String routingKey() {
-        return kind().routingKey(VERB);
+        return kind().noticeKey(VERB);
     }
 
     void onItemCreated(ItemCreatedEvent event);

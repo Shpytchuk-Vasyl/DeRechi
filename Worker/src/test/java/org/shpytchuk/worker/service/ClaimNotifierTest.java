@@ -184,7 +184,7 @@ class ClaimNotifierTest {
 
     private NotificationRequestedEvent published(String routingKey) {
         ArgumentCaptor<NotificationRequestedEvent> event = ArgumentCaptor.forClass(NotificationRequestedEvent.class);
-        verify(rabbitTemplate).convertAndSend(eq("derechi.notifications"), eq(routingKey), event.capture());
+        verify(rabbitTemplate).convertAndSend(eq("notification.exchange"), eq(routingKey), event.capture());
         return event.getValue();
     }
 

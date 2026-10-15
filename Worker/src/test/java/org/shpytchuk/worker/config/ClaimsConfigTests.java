@@ -5,7 +5,7 @@ import org.shpytchuk.worker.event.ClaimEvent;
 import org.shpytchuk.worker.handler.ClaimHandler;
 import org.shpytchuk.worker.handler.ClaimedHandler;
 import org.shpytchuk.worker.handler.PaidHandler;
-import org.shpytchuk.worker.listener.ClaimListener;
+import org.shpytchuk.worker.listener.WorkerQueueListener;
 import org.shpytchuk.worker.repository.lost.LostItemClaimRepository;
 import org.shpytchuk.worker.service.ClaimNotifier;
 import org.shpytchuk.worker.service.ItemArchiver;
@@ -40,22 +40,20 @@ import static org.mockito.Mockito.when;
 class ClaimsConfigTests {
 
     private static final Set<String> ROUTING_KEYS = Set.of(
-            "item.lost.claimed", "item.found.claimed",
-            "item.lost.returned", "item.found.returned",
-            "item.lost.paid", "item.found.paid");
+            "claim.lost.claimed", "claim.found.claimed",
+            "notice.lost.returned", "notice.found.returned",
+            "claim.lost.paid", "claim.found.paid");
 
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
-            .withUserConfiguration(ClaimsConfig.class, ClaimListener.class, Collaborators.class)
+            .withUserConfiguration(ClaimsConfig.class, WorkerQueueListener.class, Collaborators.class)
             .withPropertyValues(
-                    "derechi.claims.queue=worker.claims",
-                    "derechi.claims.exchange=derechi.notifications",
+                    "derechi.claims.exchange=notification.exchange",
                     "derechi.claims.site-url=http://localhost:3000",
                     "derechi.claims.check-every=PT10M",
                     "derechi.claims.author-reminder-after=P1D",
                     "derechi.claims.claimant-reminder-after=P1D",
                     "derechi.claims.archive-after=P7D",
                     "derechi.claims.retention=P365D",
-                    "derechi.archive.queue=worker.archive",
                     "derechi.archive.max-age=P30D");
 
     @Test
@@ -73,13 +71,13 @@ class ClaimsConfigTests {
     @Test
     void theListenerCollectsEveryHandler() {
         runner.run(context -> {
-            ClaimListener listener = context.getBean(ClaimListener.class);
+            WorkerQueueListener listener = context.getBean(WorkerQueueListener.class);
 
             for (String routingKey : ROUTING_KEYS) {
                 assertThatCode(() -> listener.onClaim(event(), message(routingKey))).as(routingKey)
                         .doesNotThrowAnyException();
             }
-            assertThatThrownBy(() -> listener.onClaim(event(), message("item.lost.archive")))
+            assertThatThrownBy(() -> listener.onClaim(event(), message("notice.lost.archive")))
                     .isInstanceOf(AmqpRejectAndDontRequeueException.class);
         });
     }

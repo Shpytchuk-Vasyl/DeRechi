@@ -30,8 +30,8 @@ public class PaidHandler implements ClaimHandler {
     }
 
     @Override
-    public String verb() {
-        return VERB;
+    public String routingKey() {
+        return kind.claimKey(VERB);
     }
 
     @Override

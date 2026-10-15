@@ -26,8 +26,8 @@ public class ReturnedHandler implements ClaimHandler {
     }
 
     @Override
-    public String verb() {
-        return VERB;
+    public String routingKey() {
+        return kind.noticeKey(VERB);
     }
 
     @Override

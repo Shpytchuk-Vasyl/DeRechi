@@ -116,7 +116,7 @@ Routing keys, exchange names, base paths and message keys are `static final` con
 
 ```java
 static final String BASE_PATH = "/admin/matches";
-private static final String ROUTING_KEY = "item.found.created";
+private static final String ROUTING_KEY = "notice.found.created";
 private static final String SUBJECT_KEY = "notification.match.subject";
 ```
 
@@ -135,7 +135,7 @@ Routing keys are duplicated between publisher and consumer on purpose (the modul
 | MVC form | `*Form`, `*Filter` | `ItemForm`, `ItemFilter` |
 | GraphQL input / output | `*Input` / `*Dto` | `PlaceInput`, `ItemDto` |
 | RabbitMQ event | `*Event` with `@EventType("...")` | `ItemCreatedEvent` |
-| RabbitMQ consumer | `*Listener` | `ItemCreatedListener` |
+| RabbitMQ consumer | `*Listener`, one per queue | `WorkerQueueListener`, `NotificationRequestedListener` |
 | Test | `*Test` (unit), `*Tests` (Spring slice/integration), `*IT` (needs running infra) | `FormatsTest`, `MatchControllerTests`, `ImageStorageIT` |
 
 Classes are singular nouns; a class that exists only for static helpers is `final` with a private constructor (`Pages`, `Permissions`, `ContactMasker`, `GeoPoints`).

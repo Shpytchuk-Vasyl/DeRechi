@@ -7,11 +7,7 @@ public interface ClaimHandler {
 
     ItemKind kind();
 
-    String verb();
-
-    default String routingKey() {
-        return kind().routingKey(verb());
-    }
+    String routingKey();
 
     void handle(ClaimEvent event);
 }

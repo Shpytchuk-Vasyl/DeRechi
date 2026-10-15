@@ -6,6 +6,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.shpytchuk.clientapi.dto.ItemDto;
 import org.shpytchuk.clientapi.event.EventPublisher;
+import org.shpytchuk.clientapi.event.Exchanges;
 import org.shpytchuk.clientapi.event.ItemCreatedEvent;
 import org.shpytchuk.clientapi.service.ItemService;
 import org.springframework.core.annotation.Order;
@@ -17,7 +18,6 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class ItemEventAspect {
 
-    private static final String EXCHANGE = "derechi.items";
     private static final String CREATED = "created";
 
     private final EventPublisher publisher;
@@ -28,6 +28,6 @@ public class ItemEventAspect {
 
     @AfterReturning(pointcut = "itemCreated() && target(service)", returning = "created")
     public void publishItemCreated(ItemService<?> service, ItemDto created) {
-        publisher.publish(EXCHANGE, service.kind().routingKey(CREATED), new ItemCreatedEvent(created));
+        publisher.publish(Exchanges.NOTICE_STATUS, service.kind().noticeKey(CREATED), new ItemCreatedEvent(created));
     }
 }

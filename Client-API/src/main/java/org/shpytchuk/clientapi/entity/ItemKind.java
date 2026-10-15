@@ -26,10 +26,14 @@ public enum ItemKind {
     }
 
     /**
-     * {@code item.<kind>.<verb>}. The keys are a contract with Worker and
+     * {@code notice.<kind>.<verb>} and {@code claim.<kind>.<verb>}. The keys are a contract with Worker and
      * {@code docker/rabbitmq/definitions.json}, so the shape is fixed here and nowhere else.
      */
-    public String routingKey(String verb) {
-        return "item." + label + "." + verb;
+    public String noticeKey(String verb) {
+        return "notice." + label + "." + verb;
+    }
+
+    public String claimKey(String verb) {
+        return "claim." + label + "." + verb;
     }
 }

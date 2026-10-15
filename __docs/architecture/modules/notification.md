@@ -7,7 +7,7 @@ the queue and that library. The one channel it owns is SMS (`SmsFlyChannel`, see
 | | |
 |---|---|
 | Port | 8084 (serves nothing public); actuator on the management port 9084 |
-| Consumes | queue `notification.events`, bound to `derechi.notifications` with `notification.#` |
+| Consumes | queue `notification.queue`, bound to `notification.exchange` with `notification.#` |
 | Needs | RabbitMQ, an SMTP server (Mailpit in development), an SMS-fly key for SMS (optional). No database. |
 | Stack | Spring AMQP, `notify-spring-boot-starter` + `notify-email` (NotifyHub 1.1.0) |
 
@@ -84,7 +84,7 @@ Two NotifyHub details that shaped the code:
 `NotificationSender.send(event)`. Any exception becomes an
 `AmqpRejectAndDontRequeueException`: NotifyHub has already retried internally, so Spring
 AMQP's own retry would only triple the attempts; the message goes to
-`notification.events.dlq`.
+`notification.dlq`.
 
 `NotificationSender` walks the routes in `ChannelRoute.ALL`. A `ChannelRoute` is the
 `Channel`, the contact of the event it delivers to and the builder method that carries that
