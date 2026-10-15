@@ -8,8 +8,9 @@ import org.shpytchuk.ingest.client.DeRechiApi;
 import org.shpytchuk.ingest.config.IngestProperties;
 import org.shpytchuk.ingest.entity.PostStatus;
 import org.shpytchuk.ingest.exception.BudgetExceededException;
+import org.shpytchuk.ingest.exception.ClientApiUnavailableException;
 import org.shpytchuk.ingest.exception.IngestException;
-import org.shpytchuk.ingest.exception.StageUnavailableException;
+import org.shpytchuk.ingest.exception.OpenRouterUnavailableException;
 import org.shpytchuk.ingest.extraction.Extraction;
 import org.shpytchuk.ingest.extraction.ExtractionDecision;
 import org.shpytchuk.ingest.extraction.ExtractionPolicy;
@@ -172,7 +173,8 @@ class IngestPipelineTest {
 
     @Test
     void anUnavailableStageIsHandedBackWithoutARecord() {
-        StageUnavailableException unavailable = new StageUnavailableException("OpenRouter key is not configured");
+        OpenRouterUnavailableException unavailable =
+                new OpenRouterUnavailableException("OpenRouter API key is not configured");
         when(extractor.extract(any())).thenThrow(unavailable);
 
         assertThatThrownBy(() -> pipeline().process(post("Загубив гаманець 067 123 45 67", List.of())))
@@ -187,7 +189,7 @@ class IngestPipelineTest {
 
         assertThatThrownBy(() -> pipeline().process(
                 post("Знайшов гаманець 067 123 45 67", List.of(new PhotoRef("1", 800, 600)))))
-                .isInstanceOf(StageUnavailableException.class);
+                .isInstanceOf(ClientApiUnavailableException.class);
         verifyNoInteractions(extractor, redactor, output);
         verify(ledger, never()).record(any(), any(), any(), any());
     }

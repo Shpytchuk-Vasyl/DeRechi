@@ -2,7 +2,7 @@ package org.shpytchuk.ingest.place.google;
 
 import org.jspecify.annotations.Nullable;
 import org.shpytchuk.ingest.config.places.PlacesProperties;
-import org.shpytchuk.ingest.exception.StageUnavailableException;
+import org.shpytchuk.ingest.exception.PlacesUnavailableException;
 import org.shpytchuk.ingest.place.PlaceResolver;
 import org.shpytchuk.ingest.place.ResolvedPlace;
 import org.shpytchuk.ingest.source.SourceSettings;
@@ -32,7 +32,7 @@ abstract class TextSearchPlaceResolver implements PlaceResolver {
     @Override
     public Optional<ResolvedPlace> resolve(@Nullable String placeText, @Nullable String city, SourceSettings chat) {
         if (!properties.configured()) {
-            throw new StageUnavailableException("Google Places API key is not configured");
+            throw new PlacesUnavailableException("Google Places API key is not configured");
         }
         String town = StringUtils.hasText(city) ? city.trim() : chat.defaultCity();
         Optional<ResolvedPlace> place = Optional.empty();

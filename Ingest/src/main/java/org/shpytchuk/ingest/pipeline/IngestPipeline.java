@@ -6,8 +6,8 @@ import org.jspecify.annotations.Nullable;
 import org.shpytchuk.ingest.client.DeRechiApi;
 import org.shpytchuk.ingest.config.IngestProperties;
 import org.shpytchuk.ingest.entity.PostStatus;
+import org.shpytchuk.ingest.exception.ClientApiUnavailableException;
 import org.shpytchuk.ingest.exception.IngestException;
-import org.shpytchuk.ingest.exception.StageUnavailableException;
 import org.shpytchuk.ingest.extraction.*;
 import org.shpytchuk.ingest.image.ImageRedactor;
 import org.shpytchuk.ingest.image.RedactedImage;
@@ -241,8 +241,8 @@ public class IngestPipeline {
         }
     }
 
-    private static StageUnavailableException clientApiUnreachable(IngestException e) {
-        return new StageUnavailableException("Client-API is unreachable: " + e.getMessage());
+    private static ClientApiUnavailableException clientApiUnreachable(IngestException e) {
+        return new ClientApiUnavailableException("Client-API is unreachable: " + e.getMessage());
     }
 
     private void skip(IncomingPost post, Outcome outcome, String phoneHash, ExtractionResult result, List<Photo> photos) {

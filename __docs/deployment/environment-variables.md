@@ -221,7 +221,7 @@ except where the table says otherwise. An empty `TELEGRAM_API_ID`/`TELEGRAM_API_
 | `OPENROUTER_FALLBACK_MODEL` | `qwen/qwen3.5-flash-02-23` | same | sent after `OPENROUTER_MODEL` in OpenRouter's `models` list; empty for none |
 | `OPENROUTER_ROUTING` | `true` | same | OpenRouter-only request fields (`models`, `provider.require_parameters`); `false` for another OpenAI-compatible API under `OPENROUTER_URL`, which rejects them with 400. The fallback model is then not sent |
 | `OPENROUTER_TIMEOUT` / `OPENROUTER_MAX_ATTEMPTS` / `OPENROUTER_RETRY_DELAY` | `PT60S` / `3` / `PT1S` | same | model call timeout, attempts and the first back-off |
-| `OPENROUTER_DAILY_LIMIT` | `300` | same | model calls per UTC day, a safety net; a post over it is postponed to the next UTC day without a ledger row (`budget`), so nothing is lost |
+| `OPENROUTER_DAILY_LIMIT` | `300` | same | model calls per UTC day, a safety net; a post over it is postponed to the next UTC day without a ledger row (`budget`); this counts toward the 3 queue retries of an unavailable stage |
 | `GOOGLE_PLACES_API` | `LEGACY` | same | `LEGACY`: Places API text search (`textsearch/json`); `NEW`: Places API (New) `places:searchText`. Switching is only this variable |
 | `GOOGLE_PLACES_URL` | empty | same | base URL; empty takes the chosen API's own (`https://maps.googleapis.com/maps/api/place` or `https://places.googleapis.com/v1`) |
 | `GOOGLE_PLACES_API_KEY` | empty | same | a server key restricted by IP, not the admin panel's browser key (`GOOGLE_MAPS_API_KEY`) |

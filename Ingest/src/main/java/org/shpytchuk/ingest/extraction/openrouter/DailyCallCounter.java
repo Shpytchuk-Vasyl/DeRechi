@@ -32,6 +32,12 @@ public class DailyCallCounter {
         return true;
     }
 
+    public synchronized void release() {
+        if (count > 0) {
+            count--;
+        }
+    }
+
     public Instant nextReset() {
         return today().plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
     }

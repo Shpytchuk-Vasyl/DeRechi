@@ -7,19 +7,9 @@ import org.shpytchuk.ingest.config.IngestProperties;
 import org.shpytchuk.ingest.config.openrouter.OpenRouterProperties;
 import org.shpytchuk.ingest.exception.BudgetExceededException;
 import org.shpytchuk.ingest.exception.IngestException;
-import org.shpytchuk.ingest.exception.StageUnavailableException;
-import org.shpytchuk.ingest.extraction.Extraction;
-import org.shpytchuk.ingest.extraction.ExtractionRequest;
-import org.shpytchuk.ingest.extraction.ExtractionResult;
-import org.shpytchuk.ingest.extraction.Extractor;
-import org.shpytchuk.ingest.extraction.PromptBuilder;
-import org.shpytchuk.ingest.extraction.openrouter.CompletionRequest.ImagePart;
-import org.shpytchuk.ingest.extraction.openrouter.CompletionRequest.Part;
-import org.shpytchuk.ingest.extraction.openrouter.CompletionRequest.Provider;
-import org.shpytchuk.ingest.extraction.openrouter.CompletionRequest.ResponseFormat;
-import org.shpytchuk.ingest.extraction.openrouter.CompletionRequest.SystemMessage;
-import org.shpytchuk.ingest.extraction.openrouter.CompletionRequest.TextPart;
-import org.shpytchuk.ingest.extraction.openrouter.CompletionRequest.UserMessage;
+import org.shpytchuk.ingest.exception.OpenRouterUnavailableException;
+import org.shpytchuk.ingest.extraction.*;
+import org.shpytchuk.ingest.extraction.openrouter.CompletionRequest.*;
 import org.springframework.core.retry.RetryTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
@@ -75,7 +65,7 @@ public class OpenRouterExtractor implements Extractor {
     @Override
     public ExtractionResult extract(ExtractionRequest request) {
         if (!properties.configured()) {
-            throw new StageUnavailableException("OpenRouter API key is not configured");
+            throw new OpenRouterUnavailableException("OpenRouter API key is not configured");
         }
         if (!counter.tryAcquire(properties.dailyLimit())) {
             throw new BudgetExceededException("The daily limit of " + properties.dailyLimit() + " OpenRouter calls is used up",
@@ -96,6 +86,10 @@ public class OpenRouterExtractor implements Extractor {
         } catch (InvalidAnswer e) {
             throw new IngestException("OpenRouter gave no valid extraction twice: " + e.getMessage());
         } catch (RestClientException e) {
+            if (HttpCalls.notDelivered(e)) {
+                counter.release();
+                throw new OpenRouterUnavailableException("OpenRouter did not take the request: " + HttpCalls.describe(e));
+            }
             throw new IngestException("OpenRouter failed: " + HttpCalls.describe(e));
         }
     }

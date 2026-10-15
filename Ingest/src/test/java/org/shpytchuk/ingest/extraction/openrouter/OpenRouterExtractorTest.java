@@ -7,7 +7,7 @@ import org.shpytchuk.ingest.config.IngestProperties;
 import org.shpytchuk.ingest.config.openrouter.OpenRouterProperties;
 import org.shpytchuk.ingest.exception.BudgetExceededException;
 import org.shpytchuk.ingest.exception.IngestException;
-import org.shpytchuk.ingest.exception.StageUnavailableException;
+import org.shpytchuk.ingest.exception.OpenRouterUnavailableException;
 import org.shpytchuk.ingest.extraction.Extraction;
 import org.shpytchuk.ingest.extraction.ExtractionRequest;
 import org.shpytchuk.ingest.extraction.ExtractionResult;
@@ -247,6 +247,28 @@ class OpenRouterExtractorTest {
     }
 
     @Test
+    void anOpenRouterThatStaysUnavailableIsAnUnavailableStage() {
+        server.expect(ExpectedCount.times(3), requestTo(COMPLETIONS)).andRespond(withStatus(HttpStatus.SERVICE_UNAVAILABLE));
+
+        assertThatThrownBy(() -> extractor.extract(request(List.of())))
+                .isInstanceOf(OpenRouterUnavailableException.class)
+                .hasMessageContaining("HTTP 503");
+        server.verify();
+    }
+
+    @Test
+    void aCallOpenRouterDidNotTakeLeavesTheDailyLimitAlone() {
+        extractor = extractor(properties("secret-key", FALLBACK, 1));
+        server.expect(ExpectedCount.times(3), requestTo(COMPLETIONS)).andRespond(withStatus(HttpStatus.SERVICE_UNAVAILABLE));
+        server.expect(requestTo(COMPLETIONS))
+                .andRespond(withSuccess(response(ANSWER, MAIN, 0.001), MediaType.APPLICATION_JSON));
+
+        assertThatThrownBy(() -> extractor.extract(request(List.of()))).isInstanceOf(OpenRouterUnavailableException.class);
+        extractor.extract(request(List.of()));
+        server.verify();
+    }
+
+    @Test
     void doesNotRetryAClientError() {
         server.expect(ExpectedCount.once(), requestTo(COMPLETIONS))
                 .andRespond(withBadRequest().body("{\"error\":{\"message\":\"secret post text\"}}"));
@@ -310,7 +332,7 @@ class OpenRouterExtractorTest {
     void withoutAKeyMakesNoCall() {
         extractor = extractor(properties(" ", FALLBACK, 300));
 
-        assertThatThrownBy(() -> extractor.extract(request(List.of()))).isInstanceOf(StageUnavailableException.class);
+        assertThatThrownBy(() -> extractor.extract(request(List.of()))).isInstanceOf(OpenRouterUnavailableException.class);
         server.verify();
     }
 
@@ -324,7 +346,7 @@ class OpenRouterExtractorTest {
         extractor.extract(request(List.of()));
         assertThatThrownBy(() -> extractor.extract(request(List.of())))
                 .isInstanceOfSatisfying(BudgetExceededException.class,
-                        e -> assertThat(e.retryAt()).isEqualTo(Instant.parse("2026-10-11T00:00:00Z")));
+                        e -> assertThat(e.retryAt()).contains(Instant.parse("2026-10-11T00:00:00Z")));
 
         clock.set(Instant.parse("2026-10-11T00:00:01Z"));
         extractor.extract(request(List.of()));

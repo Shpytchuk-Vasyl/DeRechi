@@ -1,8 +1,11 @@
 package org.shpytchuk.ingest.exception;
 
-import java.time.Instant;
+import org.shpytchuk.ingest.model.Outcome;
 
-public class BudgetExceededException extends RuntimeException {
+import java.time.Instant;
+import java.util.Optional;
+
+public class BudgetExceededException extends StageUnavailableException {
 
     private final Instant retryAt;
 
@@ -11,7 +14,13 @@ public class BudgetExceededException extends RuntimeException {
         this.retryAt = retryAt;
     }
 
-    public Instant retryAt() {
-        return retryAt;
+    @Override
+    public Optional<Instant> retryAt() {
+        return Optional.of(retryAt);
+    }
+
+    @Override
+    public Outcome outcome() {
+        return Outcome.BUDGET;
     }
 }

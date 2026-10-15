@@ -11,7 +11,7 @@ public enum Outcome {
     NO_PLACE,
     UNSUPPORTED_COUNTRY,
     BUDGET,
-    /** A stage is not configured or Client-API is unreachable; nothing recorded, the next catch-up retries. */
+    /** A stage is not configured or unreachable; nothing recorded, the queue retries it up to 3 times. */
     UNAVAILABLE,
     PREVIEWED,
     PUBLISHED,

@@ -6,7 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.shpytchuk.ingest.config.places.PlacesProperties;
 import org.shpytchuk.ingest.exception.IngestException;
-import org.shpytchuk.ingest.exception.StageUnavailableException;
+import org.shpytchuk.ingest.exception.PlacesUnavailableException;
 import org.shpytchuk.ingest.place.ResolvedPlace;
 import org.shpytchuk.ingest.source.SourceSettings;
 import org.springframework.http.HttpMethod;
@@ -158,7 +158,7 @@ class GoogleLegacyPlaceResolverTest {
     void withoutAKeyMakesNoCall() {
         resolver = resolver("");
 
-        assertThatThrownBy(() -> resolver.resolve("Наукова", "Львів", LVIV)).isInstanceOf(StageUnavailableException.class);
+        assertThatThrownBy(() -> resolver.resolve("Наукова", "Львів", LVIV)).isInstanceOf(PlacesUnavailableException.class);
         server.verify();
     }
 
