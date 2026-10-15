@@ -76,7 +76,7 @@ class FacebookParserTest {
     @Test
     void aCheckpointedAccountMakesTheSourceUnavailable() {
         assertThatThrownBy(() -> parser.groupPage(FacebookFixtures.checkpointPage()))
-                .isInstanceOf(FacebookCheckpointException.class)
+                .isInstanceOf(FacebookActionRequiredException.class)
                 .hasMessageContaining("checkpoint");
     }
 
@@ -84,7 +84,7 @@ class FacebookParserTest {
     void aCheckpointedPageWithoutTheLsdTokenIsACheckpointToo() {
         String checkpoint = FacebookFixtures.checkpointPage().replace("LSD", "NO_LSD");
 
-        assertThatThrownBy(() -> parser.groupPage(checkpoint)).isInstanceOf(FacebookCheckpointException.class);
+        assertThatThrownBy(() -> parser.groupPage(checkpoint)).isInstanceOf(FacebookActionRequiredException.class);
     }
 
     @Test

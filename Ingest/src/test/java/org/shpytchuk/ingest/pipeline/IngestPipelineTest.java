@@ -171,14 +171,25 @@ class IngestPipelineTest {
     }
 
     @Test
-    void unconfiguredStageLeavesThePostForTheNextCatchUp() {
-        when(extractor.extract(any())).thenThrow(new StageUnavailableException("OpenRouter key is not configured"));
+    void anUnavailableStageIsHandedBackWithoutARecord() {
+        StageUnavailableException unavailable = new StageUnavailableException("OpenRouter key is not configured");
+        when(extractor.extract(any())).thenThrow(unavailable);
 
-        pipeline().process(post("Загубив гаманець 067 123 45 67", List.of()));
-
+        assertThatThrownBy(() -> pipeline().process(post("Загубив гаманець 067 123 45 67", List.of())))
+                .isSameAs(unavailable);
         verify(ledger, never()).record(any(), any(), any(), any());
         verifyNoInteractions(output);
-        assertThat(count("unavailable")).isEqualTo(1);
+    }
+
+    @Test
+    void anUnreachableClientApiIsAnUnavailableStageBeforePhotosAndTheModel() {
+        when(api.countries()).thenThrow(new IngestException("countries failed: java.net.ConnectException"));
+
+        assertThatThrownBy(() -> pipeline().process(
+                post("Знайшов гаманець 067 123 45 67", List.of(new PhotoRef("1", 800, 600)))))
+                .isInstanceOf(StageUnavailableException.class);
+        verifyNoInteractions(extractor, redactor, output);
+        verify(ledger, never()).record(any(), any(), any(), any());
     }
 
     @Test

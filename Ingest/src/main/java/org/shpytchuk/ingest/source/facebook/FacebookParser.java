@@ -121,7 +121,7 @@ class FacebookParser {
     }
 
     private static RuntimeException unreadable(String html, String problem) {
-        return CHECKPOINTED.matcher(html).find() ? new FacebookCheckpointException() : new IngestException(problem);
+        return CHECKPOINTED.matcher(html).find() ? new FacebookActionRequiredException(FacebookActionRequiredException.CHECKPOINT) : new IngestException(problem);
     }
 
     private static Optional<String> find(Pattern pattern, String text) {

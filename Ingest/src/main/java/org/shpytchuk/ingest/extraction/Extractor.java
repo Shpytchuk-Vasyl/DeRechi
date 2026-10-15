@@ -9,7 +9,7 @@ public interface Extractor {
     /**
      * Retries transient failures itself.
      *
-     * @throws StageUnavailableException no API key configured
+     * @throws StageUnavailableException no API key configured, or retries of 429/502/503 or a refused connection exhausted
      * @throws BudgetExceededException   the daily limit of calls is used up
      * @throws IngestException           retries exhausted or an answer that never validates
      */

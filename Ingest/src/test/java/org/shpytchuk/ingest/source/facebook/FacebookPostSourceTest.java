@@ -155,7 +155,7 @@ class FacebookPostSourceTest {
         verify(client, never()).page(LVIV);
         assertThat(received).isEmpty();
         assertThat(registry.get("derechi.ingest.facebook.authorized").gauge().value()).isZero();
-        assertThat(registry.get("derechi.ingest.facebook.polls").tag("group", "zzter").tag("outcome", "checkpoint")
+        assertThat(registry.get("derechi.ingest.facebook.polls").tag("group", "zzter").tag("outcome", "action_required")
                 .counter().count()).isEqualTo(1);
     }
 

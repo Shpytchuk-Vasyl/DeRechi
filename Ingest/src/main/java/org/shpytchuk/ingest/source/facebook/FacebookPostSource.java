@@ -149,9 +149,9 @@ public class FacebookPostSource implements PostSource {
             since.put(group, started.minus(OVERLAP));
             polled(group, "ok");
             log.info("Facebook group {} read: {} posts since {}", group, fresh.size(), from);
-        } catch (FacebookCheckpointException e) {
+        } catch (FacebookActionRequiredException e) {
             authorized.set(0);
-            polled(group, "checkpoint");
+            polled(group, "action_required");
             log.warn("Facebook group {} was not read, the other groups wait for the next poll: {}", group,
                     e.getMessage());
             return false;

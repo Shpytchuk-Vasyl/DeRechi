@@ -29,6 +29,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -64,9 +65,6 @@ public class IngestPipeline {
         try {
             run(post);
             log.debug("Post {} done in {} ms", post.key(), millis(started));
-        } catch (StageUnavailableException e) {
-            metrics.outcome(Outcome.UNAVAILABLE);
-            log.warn("Post {} left for the next catch-up: {}", post.key(), e.getMessage());
         } catch (IngestException e) {
             ledger.record(post, PostStatus.FAILED, null, null);
             metrics.outcome(Outcome.FAILED);
@@ -104,8 +102,9 @@ public class IngestPipeline {
 
         // =========== step: mask contacts and redact photos ===========
         MaskedText masked = masker.mask(post.text(), phones);
-        List<Photo> photos = photos(post);
         Map<String, Long> categories = categories();
+        Set<String> countries = countries();
+        List<Photo> photos = photos(post);
 
         // =========== step: extract the notice with the model ===========
         LocalDate today = LocalDate.now(clock.withZone(ZoneOffset.UTC));
@@ -159,7 +158,7 @@ public class IngestPipeline {
             skip(post, Outcome.NO_PLACE, phoneHash, result, photos);
             return;
         }
-        if (!api.countries().contains(place.countryCode())) {
+        if (!countries.contains(place.countryCode())) {
             skip(post, Outcome.UNSUPPORTED_COUNTRY, phoneHash, result, photos);
             return;
         }
@@ -230,8 +229,20 @@ public class IngestPipeline {
         try {
             return api.categories();
         } catch (IngestException e) {
-            throw new StageUnavailableException("Client-API is unreachable: " + e.getMessage());
+            throw clientApiUnreachable(e);
         }
+    }
+
+    private Set<String> countries() {
+        try {
+            return api.countries();
+        } catch (IngestException e) {
+            throw clientApiUnreachable(e);
+        }
+    }
+
+    private static StageUnavailableException clientApiUnreachable(IngestException e) {
+        return new StageUnavailableException("Client-API is unreachable: " + e.getMessage());
     }
 
     private void skip(IncomingPost post, Outcome outcome, String phoneHash, ExtractionResult result, List<Photo> photos) {
