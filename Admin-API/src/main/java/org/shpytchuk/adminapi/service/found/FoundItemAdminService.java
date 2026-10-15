@@ -1,12 +1,14 @@
 package org.shpytchuk.adminapi.service.found;
 
 import org.shpytchuk.adminapi.config.property.ArchiveProperties;
+import org.shpytchuk.adminapi.config.property.NoticeStatusProperties;
 import org.shpytchuk.adminapi.entity.found.FoundItem;
 import org.shpytchuk.adminapi.mapper.ItemFormApplier;
 import org.shpytchuk.adminapi.repository.detail.ContactInfoRepository;
 import org.shpytchuk.adminapi.repository.found.FoundItemClaimRepository;
 import org.shpytchuk.adminapi.repository.found.FoundItemRepository;
 import org.shpytchuk.adminapi.repository.matching.SimilarItemRepository;
+import org.shpytchuk.adminapi.service.AfterCommitPublisher;
 import org.shpytchuk.adminapi.service.ArchivableAdminItemService;
 import org.shpytchuk.adminapi.service.ItemClaims;
 import org.shpytchuk.adminapi.service.ItemKind;
@@ -16,8 +18,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class FoundItemAdminService extends ArchivableAdminItemService<FoundItem> {
 
-    private static final String ARCHIVE_ROUTING_KEY = "notice.found.archive";
-
     private final SimilarItemRepository similarItemRepository;
 
     public FoundItemAdminService(FoundItemRepository repository,
@@ -26,9 +26,11 @@ public class FoundItemAdminService extends ArchivableAdminItemService<FoundItem>
                                  ItemFormApplier applier,
                                  SimilarItemRepository similarItemRepository,
                                  RabbitTemplate rabbitTemplate,
-                                 ArchiveProperties archive) {
+                                 ArchiveProperties archive,
+                                 NoticeStatusProperties noticeStatus,
+                                 AfterCommitPublisher publisher) {
         super(repository, contactInfoRepository, ItemClaims.ofLive(claimRepository, contactInfoRepository),
-                applier, FoundItem::new, ItemKind.FOUND_ITEM, rabbitTemplate, archive, ARCHIVE_ROUTING_KEY);
+                applier, FoundItem::new, ItemKind.FOUND_ITEM, rabbitTemplate, archive, noticeStatus, publisher);
         this.similarItemRepository = similarItemRepository;
     }
 

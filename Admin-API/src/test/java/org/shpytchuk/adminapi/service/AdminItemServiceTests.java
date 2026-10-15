@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.shpytchuk.adminapi.config.CountriesConfig;
 import org.shpytchuk.adminapi.config.property.ArchiveProperties;
+import org.shpytchuk.adminapi.config.property.NoticeStatusProperties;
 import org.shpytchuk.adminapi.entity.detail.ContactInfo;
 import org.shpytchuk.adminapi.entity.detail.ContactInfo.SocialMediaEnum;
 import org.shpytchuk.adminapi.entity.detail.Place;
@@ -65,6 +66,9 @@ class AdminItemServiceTests extends AbstractRepositoryTests {
 
     @MockitoBean
     private RabbitTemplate rabbitTemplate;
+
+    @MockitoBean
+    private AfterCommitPublisher publisher;
 
     private ThingCategory wallets;
     private ThingCategory keys;
@@ -286,7 +290,7 @@ class AdminItemServiceTests extends AbstractRepositoryTests {
     }
 
     @TestConfiguration
-    @EnableConfigurationProperties(ArchiveProperties.class)
+    @EnableConfigurationProperties({ArchiveProperties.class, NoticeStatusProperties.class})
     static class Properties {
     }
 }

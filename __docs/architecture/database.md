@@ -30,8 +30,7 @@ Testcontainers tests can apply the `DB-Postgres` changelog to a fresh container.
 
 Nobody depends on `DB-Postgres`. Each service has its own copy of the entity classes in its
 own `entity` package (`org.shpytchuk.clientapi.entity`, `org.shpytchuk.adminapi.entity`,
-`org.shpytchuk.worker.entity`). The copies can differ: `Worker` has a
-transient `orderMatch` field on `Thing` for ranking, `Client-API` has no history entities.
+`org.shpytchuk.worker.entity`). The copies can differ: `Client-API` has no history entities.
 What they share is the table layout, not the Java types. When a column is added, every copy
 that reads it gets updated; a copy that does not care can ignore the column.
 
@@ -56,6 +55,7 @@ Column types below are what the migrations create. Hibernate validates against t
 | `lost_item_claim`, `found_item_claim` | responses to a notice ("it's mine" / "I found it") | `item_id` (the live notice) or `archived_item_id` (its history copy), exactly one by `CHECK`, `contact_info_id` (the claimant's contacts), `token VARCHAR(36)` unique (reminder links and the unlock dialog), `created_at`, `author_reminded_at`, `claimant_reminded_at`, `confirmed_at`, `payment_product_id`, `payment_variant_id` unique (the Fourthwall product created for the paid phone number), `payment_requested_at` (when the checkout was reserved, counted by the unlock limit; added in 008), `paid_at`, `contacts_sent_at`. Archiving a notice re-points its claims at the history row; they are deleted with their contact infos a year after creation or when the notice is deleted outright; see [../features/claims.md](../features/claims.md) |
 | `fourthwall_order` | every accepted Fourthwall `ORDER_PLACED` webhook | `order_id` unique, `friendly_id`, `status`, `email`, `username`, `amount`, `currency`, `test_mode`, `placed_at`, `received_at`, and the claim it was matched to (`lost_item_claim_id` or `found_item_claim_id`, both nullable, `ON DELETE SET NULL`); see [../features/claims.md](../features/claims.md) |
 | `similar_item` | candidate matches produced by `Worker` | PK `(found_item_id, lost_item_id)`, `match_order DOUBLE PRECISION` (full-text rank, higher is better), `notified_at TIMESTAMPTZ`, `notified_by VARCHAR(100)` (admin username) |
+| `channel_message` | `Ingest`'s record of the notices posted to the Telegram channel | `item_kind VARCHAR(5)`, `item_id`, `message_id` (null while the post is reserved and not sent yet), `created_at`, unique `(item_kind, item_id)`; created by migration 015, no foreign key (the notice may be archived or deleted first); the row goes when the post is deleted; see [../features/telegram-ingest.md](../features/telegram-ingest.md#notices-from-the-site) |
 | `shedlock` | ShedLock's lock rows for `Worker`'s scheduled jobs, so only one instance runs a job at a time | PK `name VARCHAR(64)`, `lock_until`, `locked_at`, `locked_by`; created by migration 009, not an entity, and excluded from Liquibase diffs through `diffExcludeObjects`; see [modules/worker.md](modules/worker.md) |
 
 Two type choices are deliberate:
@@ -80,6 +80,11 @@ where it already exists.
 `<config>` is one of PostgreSQL's built-in configurations (`english`, `german`, `french`,
 `spanish`, `italian`, `russian`), our `ukrainian` and `polish`, or `simple` as the fallback. See
 [modules/worker.md](modules/worker.md).
+
+The public search in `Client-API` matches a query in `ukrainian`, `polish`, `german`, `french` and
+`english` at once, computing `to_tsvector` per row without an index, and every connection that
+searches holds both hunspell dictionaries in memory (about 96 MB). See
+[Search and filtering](../features/search-and-filtering.md#full-text-search).
 
 PostGIS owns a few catalog-like tables (`spatial_ref_sys`, `geometry_columns`, ...). They
 are excluded from Liquibase diffs through `diffExcludeObjects` in `liquibase.properties`,

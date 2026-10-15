@@ -14,7 +14,7 @@ built.
 |---|---|
 | Port | 8083; actuator on the management port 9083 |
 | Entry point | `http://localhost:8083/admin` (`/` redirects there) |
-| Needs | PostgreSQL, RabbitMQ (to publish notifications), MinIO (uploads), Keycloak (login) |
+| Needs | PostgreSQL, RabbitMQ (to publish notifications, archive requests and created or deleted notices), MinIO (uploads), Keycloak (login) |
 | Stack | Spring MVC, Thymeleaf, Spring Security OAuth2 client, Spring Data JPA + Hibernate Spatial, Spring AMQP, Spring Cloud AWS S3, Caffeine, libphonenumber, Lombok |
 
 ## Controllers
@@ -144,6 +144,16 @@ history copy. `AdminItemService.delete` drops the claims and their contact infos
 publishes `ArchiveRequestedEvent` (`derechi.archive.exchange` = `notice.action.exchange`, `notice.<kind>.archive`) and
 `Worker` archives the notice; the history services do not have the method. See [../../features/claims.md](../../features/claims.md).
 
+Creating and deleting a live notice is announced too, so `Worker` matches a notice made in the
+admin panel and `Ingest` mirrors it into the Telegram channel and deletes its post:
+`ArchivableAdminItemService.create` publishes an `ItemCreatedEvent` with `notice.<kind>.created`
+(`ItemCreatedEvent.of(item)`, the same JSON as `Client-API`'s) and `delete` a `NoticeEvent` with
+`notice.<kind>.deleted`, both on `derechi.notice-status.exchange` = `notice.status.exchange`, keys
+from `ItemKind.noticeKey(verb)`. They go through `AfterCommitPublisher`: a
+`@TransactionalEventListener` sends them after the commit, and a broker failure at that point is
+a `WARN`, not an error page. An edit (`update`) publishes nothing, and neither does deleting a
+history notice.
+
 ## Uploads and maps
 
 `ImageStorage` + `UploadController` are described in [../file-storage.md](../file-storage.md).
@@ -167,6 +177,7 @@ and [../../features/places.md](../../features/places.md).
 | `derechi.storage.bucket`, `public-url`, `max-size` | `derechi-files`, `MINIO_PUBLIC_URL`, 5MB | `MINIO_PUBLIC_URL=http://localhost:9000/derechi-files` |
 | `derechi.notifications.exchange`, `routing-key` | `notification.exchange`, `notification.match.found` | |
 | `derechi.archive.exchange` | `notice.action.exchange` | |
+| `derechi.notice-status.exchange` | `notice.status.exchange` | |
 | `spring.cloud.aws.s3.endpoint` | `MINIO_ENDPOINT`, `http://localhost:9000` | `MINIO_ENDPOINT=http://minio:9000` |
 | `spring.cloud.aws.credentials.access-key`, `secret-key` | `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`: the application account `derechi-app` / `derechi-app-secret`, not MinIO's root, see [../file-storage.md](../file-storage.md) | `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY` |
 | `spring.security.oauth2.client.provider.keycloak.*` | `issuer-uri` (default profile) | `SPRING_PROFILES_ACTIVE=docker`, `KEYCLOAK_URI`, `KEYCLOAK_PUBLIC_URI` |
@@ -185,6 +196,7 @@ compression is on for text and JSON.
 | `service/matching/MatchNotificationServiceTest`, `service/lost/LostItemAdminServiceTest` | unit tests with mocked repositories and `RabbitTemplate`, next to the services they cover |
 | `PermissionsTest`, `KeycloakAuthoritiesMapperTest`, `NotifyChannelTest`, `ItemKindTest` (the derived message keys exist in the base bundle), `ItemFilterTest`, `PagesTest`, `FormatsTest`, `CountriesPropertiesTest` | plain unit tests |
 | `RabbitConfigTest` | the `NOTIFICATION` and `ARCHIVE_REQUESTED` type ids on outgoing messages |
+| `service/AfterCommitPublisherTest` | the message waits for the transaction, a broker failure after the commit does not reach the caller |
 | `MessagesTest` | bundle parity across the five languages |
 | `ImageStorageIT` | `@SpringBootTest` against a live MinIO on `localhost:9000`, enabled only when its health endpoint answers |
 | `AdminApiApplicationTests` | context load; needs Keycloak running, fails without it |

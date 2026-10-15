@@ -78,7 +78,8 @@ Two things in the picture are deliberate and worth knowing before reading furthe
 4. `Worker` consumes it from `worker.queue`, looks for notices of the
    opposite kind in the same category, within three days and twenty kilometres, sharing at least
    two words with the title, ranks them by full-text similarity, and stores the top five in
-   `similar_item`.
+   `similar_item`. `Ingest` takes the same event from `ingest.queue` and posts the notice to
+   our Telegram channel; it deletes the post when `Worker` archives the notice.
 
 ### A match is notified
 

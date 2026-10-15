@@ -49,6 +49,10 @@ public abstract class AdminItemService<T extends Thing> {
         return 0;
     }
 
+    protected ItemKind kind() {
+        return kind;
+    }
+
     @Transactional(readOnly = true)
     public Page<ItemView> page(Pageable pageable, ItemFilter filter) {
         return repository.findAll(ThingSpecifications.matching(filter), Pages.safe(pageable)).map(ItemMapper::toView);

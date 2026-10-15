@@ -41,6 +41,16 @@ public class PostLedger {
         return false;
     }
 
+    @Transactional(readOnly = true)
+    public boolean publishing() {
+        return repository.existsByStatus(PostStatus.PUBLISHING);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean owns(ItemKind kind, long itemId) {
+        return repository.existsByItemKindAndItemId(kind, itemId);
+    }
+
     @Transactional
     public long record(IncomingPost post, PostStatus status, @Nullable String phoneHash, @Nullable ItemKind kind) {
         IngestPost row = new IngestPost(post.key(), status, clock.instant());

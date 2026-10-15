@@ -147,8 +147,8 @@ mutation {
 Each mutation publishes a `notice.lost.created` or `notice.found.created` event on the
 `notice.status.exchange` exchange. Watch the `Worker` log: it says it is searching for
 candidates and how many it saved. The RabbitMQ UI at `http://localhost:15672`
-(`derechi` / `derechi`) shows the message passing through `worker.queue` (and piling up in
-`ingest.queue`, which nobody reads yet).
+(`derechi` / `derechi`) shows the message passing through `worker.queue` and `ingest.queue`
+(it piles up in the latter while `Ingest` is not running).
 
 ## 6. See the match and notify the owner
 

@@ -45,10 +45,13 @@ a list that changes between pages can skip or repeat an item. Sorting is `ItemSo
 ### Filtering
 
 `ItemFilterInput` → `ThingSpecifications.byFilter` → `SpecificationBuilder`:
-`search` is a case-insensitive `LIKE` over `title`, `description` and `place.name`;
+`search` is a case-insensitive `LIKE` over `title`, `description` and `place.name` **or** a
+full-text match over `title` and `description` in any of five languages (`ukrainian`, `polish`,
+`german`, `french`, `english`), computed per row without an index;
 `categoryId`, `dateFrom`, `dateTo` are plain predicates; `near` becomes a `dwithin` call
-on `place.coordinate` with a radius in metres. `dwithin` is a custom HQL function registered
-by `SpatialFunctionContributor` (`st_dwithin(?1, CAST(?2 AS geography), ?3)`), declared in
+on `place.coordinate` with a radius in metres. `dwithin` and `matches_words_<config>` are custom HQL
+functions registered by `SpatialFunctionContributor` (`st_dwithin(?1, CAST(?2 AS geography), ?3)`)
+and `FullTextFunctionContributor`, both declared in
 `META-INF/services/org.hibernate.boot.model.FunctionContributor`. Details in
 [../../features/search-and-filtering.md](../../features/search-and-filtering.md).
 
@@ -92,6 +95,8 @@ transaction.
 `ItemEventAspect` is an `@AfterReturning` advice on `ItemService+.create(..)` that publishes
 an `ItemCreatedEvent` to `notice.status.exchange` with `service.kind().noticeKey("created")`, that is
 `notice.lost.created` or `notice.found.created`; the advised service is bound with `target(service)`.
+The event carries what matching needs and what `Ingest` needs for a channel post (`categoryKey`,
+`placeName`, `description`, `compensation`, `currency`, `image`).
 See [../messaging.md](../messaging.md) for why it is an aspect.
 
 `FoundItemStatisticsService` (`service/found/`) answers `stats` with two counts:

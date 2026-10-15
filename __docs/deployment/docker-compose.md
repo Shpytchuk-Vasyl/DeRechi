@@ -74,7 +74,7 @@ A healthcheck exists only where a `depends_on: condition: service_healthy` waits
 
 | Container | Healthcheck (who waits on it) | Memory limit (variable, default) |
 |---|---|---|
-| postgres | `pg_isready` (pgAdmin with the `dev` profile, Keycloak, `db-postgres`) | `POSTGRES_MEMORY`, 1g |
+| postgres | `pg_isready` (pgAdmin with the `dev` profile, Keycloak, `db-postgres`) | `POSTGRES_MEMORY`, 2g: every connection that has used the `ukrainian` and `polish` dictionaries holds them, about 96 MB, see [Search and filtering](../features/search-and-filtering.md#full-text-search) |
 | pgadmin (`dev` profile) | none | `PGADMIN_MEMORY`, 512m |
 | rabbitmq | `rabbitmq-diagnostics ping` (`rabbitmq-init`) | `RABBITMQ_MEMORY`, 512m |
 | keycloak | none | `KEYCLOAK_MEMORY`, 768m |

@@ -1,18 +1,17 @@
 package org.shpytchuk.worker.service;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.shpytchuk.worker.entity.detail.Place;
 import org.shpytchuk.worker.entity.lost.LostItem;
-import org.shpytchuk.worker.entity.thing.Thing;
 import org.shpytchuk.worker.entity.thing.ThingCategory;
 import org.shpytchuk.worker.event.ItemCreatedEvent;
 import org.shpytchuk.worker.language.LanguageResolver;
 import org.shpytchuk.worker.repository.AbstractRepositoryTests;
-import org.shpytchuk.worker.repository.lost.LostItemRepository;
 import org.shpytchuk.worker.support.Fixtures;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Window;
+import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,6 +19,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
+@TestPropertySource(properties = "spring.jpa.properties.hibernate.generate_statistics=true")
 class ItemServiceTests extends AbstractRepositoryTests {
 
     private static final LocalDate DATE = LocalDate.of(2026, 9, 10);
@@ -28,16 +28,13 @@ class ItemServiceTests extends AbstractRepositoryTests {
 
     private static final LanguageResolver LANGUAGES = new LanguageResolver();
 
-    @Autowired
-    private LostItemRepository repository;
-
     private ItemService<LostItem> service;
     private ThingCategory wallets;
     private Place rynok;
 
     @BeforeEach
     void setUp() {
-        service = new ItemService<>(repository, LANGUAGES);
+        service = new ItemService<>(entityManager.getEntityManager(), LostItem.class, LANGUAGES);
         wallets = category("WALLET");
         rynok = place("ChIJrynok", LAT, LON);
     }
@@ -53,9 +50,9 @@ class ItemServiceTests extends AbstractRepositoryTests {
         lost("Wallet", DATE, wallets, place("ChIJzhovkva", 50.0730, 23.9730));
         lost("Wallet", DATE, wallets, place("ChIJkyiv", 50.4501, 30.5234));
 
-        Window<LostItem> found = service.findAllMostSuitable(event("Wallet"));
+        List<MatchCandidate> found = service.findMostSuitable(event("Wallet"));
 
-        assertThat(found.getContent()).extracting(Thing::getId)
+        assertThat(found).extracting(MatchCandidate::id)
                 .containsExactlyInAnyOrder(match.getId(), edgeOfTheWindow.getId(), nearby.getId());
     }
 
@@ -64,14 +61,14 @@ class ItemServiceTests extends AbstractRepositoryTests {
         LostItem byDescription = lost("Purse", "black leather, two zips");
         LostItem byWholeTitle = lost("Black leather wallet", null);
 
-        List<LostItem> found = service.findAllMostSuitable(event("Black leather wallet")).getContent();
+        List<MatchCandidate> found = service.findMostSuitable(event("Black leather wallet"));
 
-        assertThat(found).extracting(Thing::getId).containsExactly(byWholeTitle.getId(), byDescription.getId());
-        for (LostItem candidate : found) {
-            assertThat(candidate.getOrderMatch()).as("rank of %s", candidate.getTitle())
-                    .isCloseTo(rank("english", candidate.getId(), "black | leather | wallet"), within(1e-6));
+        assertThat(found).extracting(MatchCandidate::id).containsExactly(byWholeTitle.getId(), byDescription.getId());
+        for (MatchCandidate candidate : found) {
+            assertThat(candidate.rank()).as("rank of item %d", candidate.id())
+                    .isCloseTo(rank("english", candidate.id(), "black | leather | wallet"), within(1e-6));
         }
-        assertThat(found.get(0).getOrderMatch()).isGreaterThan(found.get(1).getOrderMatch());
+        assertThat(found.get(0).rank()).isGreaterThan(found.get(1).rank());
     }
 
     @Test
@@ -79,8 +76,8 @@ class ItemServiceTests extends AbstractRepositoryTests {
         LostItem wallet = lost("Black leather wallet", null);
         lost("Umbrella", null);
 
-        assertThat(service.findAllMostSuitable(event("Black leather wallet")).getContent())
-                .extracting(Thing::getId).containsExactly(wallet.getId());
+        assertThat(service.findMostSuitable(event("Black leather wallet")))
+                .extracting(MatchCandidate::id).containsExactly(wallet.getId());
     }
 
     @Test
@@ -89,30 +86,30 @@ class ItemServiceTests extends AbstractRepositoryTests {
         lost("Знайдено леокарт десь біля форуму", null);
         lost("Знайдено студентський квиток, Марія", null);
 
-        assertThat(service.findAllMostSuitable(event("паспорт Аля Марія")).getContent())
-                .extracting(Thing::getId).containsExactly(passport.getId());
+        assertThat(service.findMostSuitable(event("паспорт Аля Марія")))
+                .extracting(MatchCandidate::id).containsExactly(passport.getId());
     }
 
     @Test
     void aTypoLeavesOnlyOneSharedWord() {
         lost("Знайдено паспорт на ім'я Марія", null);
 
-        assertThat(service.findAllMostSuitable(event("паспотр Аля Марія")).getContent()).isEmpty();
+        assertThat(service.findMostSuitable(event("паспотр Аля Марія"))).isEmpty();
     }
 
     @Test
     void aOneWordTitleNeedsOneSharedWord() {
         LostItem phone = lost("Знайдено телефон Samsung", null);
 
-        assertThat(service.findAllMostSuitable(event("Телефон")).getContent())
-                .extracting(Thing::getId).containsExactly(phone.getId());
+        assertThat(service.findMostSuitable(event("Телефон")))
+                .extracting(MatchCandidate::id).containsExactly(phone.getId());
     }
 
     @Test
     void aRepeatedWordCountsOnce() {
         lost("Чорний пес", null);
 
-        assertThat(service.findAllMostSuitable(event("Чорний телефон, чорний чохол")).getContent()).isEmpty();
+        assertThat(service.findMostSuitable(event("Чорний телефон, чорний чохол"))).isEmpty();
     }
 
     @Test
@@ -120,10 +117,10 @@ class ItemServiceTests extends AbstractRepositoryTests {
         LostItem firstNameOnly = lost("Знайдено Леокарту на ім'я Максим Петренко", null);
         LostItem fullName = lost("Знайдено Леокарту на ім'я Столяр Максим", null);
 
-        List<LostItem> found = service.findAllMostSuitable(event("Загублено Леокарту Столяр Максим")).getContent();
+        List<MatchCandidate> found = service.findMostSuitable(event("Загублено Леокарту Столяр Максим"));
 
-        assertThat(found).extracting(Thing::getId).containsExactly(fullName.getId(), firstNameOnly.getId());
-        assertThat(found.get(0).getOrderMatch()).isGreaterThan(found.get(1).getOrderMatch());
+        assertThat(found).extracting(MatchCandidate::id).containsExactly(fullName.getId(), firstNameOnly.getId());
+        assertThat(found.get(0).rank()).isGreaterThan(found.get(1).rank());
     }
 
     @Test
@@ -131,10 +128,10 @@ class ItemServiceTests extends AbstractRepositoryTests {
         LostItem umbrella = lost("Парасолька", null);
         LostItem wallet = lost("Чорний шкіряний гаманець", null);
 
-        List<LostItem> found = service.findAllMostSuitable(event("Чорний шкіряний гаманець")).getContent();
+        List<MatchCandidate> found = service.findMostSuitable(event("Чорний шкіряний гаманець"));
 
-        assertThat(found).extracting(Thing::getId).containsExactly(wallet.getId()).doesNotContain(umbrella.getId());
-        assertThat(found.getFirst().getOrderMatch())
+        assertThat(found).extracting(MatchCandidate::id).containsExactly(wallet.getId()).doesNotContain(umbrella.getId());
+        assertThat(found.getFirst().rank())
                 .isCloseTo(rank("ukrainian", wallet.getId(), "чорний | шкіряний | гаманець"), within(1e-6))
                 .isPositive();
     }
@@ -144,10 +141,10 @@ class ItemServiceTests extends AbstractRepositoryTests {
         LostItem umbrella = lost("Parasolka", null);
         LostItem wallet = lost("Czarny skórzany portfel z dokumentami", null);
 
-        List<LostItem> found = service.findAllMostSuitable(event("Czarny skórzany portfel z dokumentami")).getContent();
+        List<MatchCandidate> found = service.findMostSuitable(event("Czarny skórzany portfel z dokumentami"));
 
-        assertThat(found).extracting(Thing::getId).containsExactly(wallet.getId()).doesNotContain(umbrella.getId());
-        assertThat(found.getFirst().getOrderMatch())
+        assertThat(found).extracting(MatchCandidate::id).containsExactly(wallet.getId()).doesNotContain(umbrella.getId());
+        assertThat(found.getFirst().rank())
                 .isCloseTo(rank("polish", wallet.getId(), "czarny | skórzany | portfel | z | dokumentami"),
                         within(1e-6))
                 .isPositive();
@@ -159,24 +156,37 @@ class ItemServiceTests extends AbstractRepositoryTests {
             lost("Wallet " + i, null);
         }
 
-        Window<LostItem> found = service.findAllMostSuitable(event("Wallet"));
+        assertThat(service.findMostSuitable(event("Wallet"))).hasSize(5);
+    }
 
-        assertThat(found.getContent()).hasSize(5);
-        assertThat(found.hasNext()).isTrue();
+    @Test
+    void readsTheCandidatesAndTheirRanksInOneQuery() {
+        for (int i = 0; i < 7; i++) {
+            lost("Wallet " + i, null);
+        }
+        entityManager.flush();
+        entityManager.clear();
+        Statistics statistics = entityManager.getEntityManager().getEntityManagerFactory()
+                .unwrap(SessionFactory.class).getStatistics();
+        statistics.clear();
+
+        assertThat(service.findMostSuitable(event("Wallet"))).hasSize(5);
+
+        assertThat(statistics.getPrepareStatementCount()).isEqualTo(1);
     }
 
     @Test
     void findsNothingWhenTheTitleIsBlank() {
         lost("Wallet", null);
 
-        assertThat(service.findAllMostSuitable(event("  ")).getContent()).isEmpty();
+        assertThat(service.findMostSuitable(event("  "))).isEmpty();
     }
 
     @Test
     void findsNothingWhenNothingIsClose() {
         lost("Wallet", DATE, wallets, place("ChIJkyiv", 50.4501, 30.5234));
 
-        assertThat(service.findAllMostSuitable(event("Wallet")).getContent()).isEmpty();
+        assertThat(service.findMostSuitable(event("Wallet"))).isEmpty();
     }
 
     private ItemCreatedEvent event(String title) {

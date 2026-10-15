@@ -1,6 +1,8 @@
 package org.shpytchuk.worker.specification;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Root;
 import org.hibernate.spatial.predicate.JTSSpatialPredicates;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -43,24 +45,20 @@ public final class ThingSpecifications {
         return (root, query, cb) -> cb.between(root.get("date"), from, to);
     }
 
+    public static Expression<Double> matchRank(Root<? extends Thing> root, CriteriaBuilder cb, String title,
+                                               SearchLanguage language) {
+        return cb.function(language.matchRankFunction(), Double.class, document(root, cb), cb.literal(title));
+    }
+
     private static <T extends Thing> Specification<T> relevantTo(String title, SearchLanguage language) {
-        return (root, query, cb) -> {
-            if (!StringUtils.hasText(title)) {
-                return cb.disjunction();
-            }
+        return (root, query, cb) -> StringUtils.hasText(title)
+                ? cb.isTrue(cb.function(language.sharesWordsFunction(), Boolean.class, document(root, cb),
+                        cb.literal(title)))
+                : cb.disjunction();
+    }
 
-            Expression<String> document = cb.concat(
-                    cb.concat(root.get("title"), " "),
-                    cb.coalesce(root.get("description"), ""));
-
-            if (query != null) {
-                Expression<Double> rank = cb.function(
-                        language.matchRankFunction(), Double.class, document, cb.literal(title));
-                query.orderBy(cb.desc(rank), cb.asc(root.get("id")));
-            }
-            return cb.isTrue(cb.function(
-                    language.sharesWordsFunction(), Boolean.class, document, cb.literal(title)));
-        };
+    private static Expression<String> document(Root<? extends Thing> root, CriteriaBuilder cb) {
+        return cb.concat(cb.concat(root.get("title"), " "), cb.coalesce(root.get("description"), ""));
     }
 
     private static <T extends Thing> Specification<T> nearTo(double lat, double lon) {

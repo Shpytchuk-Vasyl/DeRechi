@@ -49,6 +49,20 @@ public class BotApiClient {
         return send("sendMessage", request -> request.contentType(MediaType.APPLICATION_JSON).body(body));
     }
 
+    public void deleteMessage(String chat, long messageId) {
+        Map<String, Object> body = Map.of("chat_id", chat, "message_id", messageId);
+        try {
+            HttpCalls.execute(retry, "Bot API deleteMessage",
+                    () -> restClient.post().uri("/bot{token}/{method}", token, "deleteMessage")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .body(body)
+                            .retrieve()
+                            .toBodilessEntity());
+        } catch (RuntimeException e) {
+            throw new IngestException("Bot API deleteMessage failed: %s%s".formatted(HttpCalls.describe(e), description(e)));
+        }
+    }
+
     private long send(String method, Function<RestClient.RequestBodySpec, RestClient.RequestHeadersSpec<?>> body) {
         BotResponse response;
         try {

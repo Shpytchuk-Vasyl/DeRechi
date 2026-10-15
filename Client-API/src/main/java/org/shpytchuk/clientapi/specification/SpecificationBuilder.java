@@ -56,18 +56,18 @@ public class SpecificationBuilder<T> {
         return and((root, query, cb) -> cb.lessThanOrEqualTo(path(root, field), value));
     }
 
-    public SpecificationBuilder<T> likeAny(String value, String... fields) {
+    public static <T> Specification<T> containsAny(String value, String... fields) {
         if (!StringUtils.hasText(value))
-            return this;
+            return null;
 
         String pattern = containsPattern(value);
-        return and(Specification.anyOf(Arrays.stream(fields)
-                .map(field -> likeSpec(field, pattern))
-                .toList()));
+        return Specification.anyOf(Arrays.stream(fields)
+                .map(field -> SpecificationBuilder.<T>likeSpec(field, pattern))
+                .toList());
     }
 
     public SpecificationBuilder<T> like(String field, String value) {
-        return likeAny(value, field);
+        return and(containsAny(value, field));
     }
 
     public SpecificationBuilder<T> within(String field, Point center, double meters) {
@@ -82,7 +82,7 @@ public class SpecificationBuilder<T> {
         return specification;
     }
 
-    private Specification<T> likeSpec(String field, String pattern) {
+    private static <T> Specification<T> likeSpec(String field, String pattern) {
         return (root, query, cb) ->
                 cb.like(cb.lower(path(root, field)), pattern, LIKE_ESCAPE);
     }

@@ -17,7 +17,7 @@ service's queue binds every key it wants from any of them:
 
 | Exchange | Routing keys | Producer | Bound queues |
 |---|---|---|---|
-| `notice.status.exchange` (topic) | `notice.<kind>.created`, `notice.<kind>.returned`, `notice.<kind>.archived` | `Client-API` (`created`, `returned`); nobody publishes `archived` yet | `worker.queue` (`created`, `returned`), `ingest.queue` (all three) |
+| `notice.status.exchange` (topic) | `notice.<kind>.created`, `notice.<kind>.returned`, `notice.<kind>.archived`, `notice.<kind>.deleted` | `Client-API` (`created`, `returned`), `Admin-API` (`created`, `deleted`), `Worker` (`archived`) | `worker.queue` (`created`, `returned`), `ingest.queue` (`created`, `archived`, `deleted`) |
 | `claims.exchange` (topic) | `claim.<kind>.claimed`, `claim.<kind>.paid` | `Client-API` | `worker.queue` |
 | `notice.action.exchange` (topic) | `notice.<kind>.archive` | `Admin-API` | `worker.queue` |
 | `notification.exchange` (topic) | `notification.match.found`, `notification.claim.*` | `Admin-API`, `Worker` | `notification.queue` (`notification.#`) |
@@ -33,8 +33,9 @@ its own name, and each DLQ is bound by that name, so a rejection lands in exactl
 however many queues share the original routing key.
 
 A second consumer of an event is a binding of its service's queue to that key; the producer
-does not change. `ingest.queue` is bound already, but `Ingest` does not read RabbitMQ yet, so
-the queue keeps every status event until a consumer appears.
+does not change. `ingest.queue` takes `created`, `archived` and `deleted` but not `returned`:
+`Worker` archives every returned notice right away, and the `archived` that follows names the
+notice, while `returned` carries a claim id.
 
 All six queues are quorum queues (`x-queue-type: quorum`), durable, on the default vhost.
 The user is `derechi` / `derechi` with full permissions; the management UI is on 15672 and
@@ -44,15 +45,22 @@ Prometheus metrics on 15692.
 
 | Event | Type id | Producer | Exchange and routing key | Consumer |
 |---|---|---|---|---|
-| `ItemCreatedEvent` | `ITEM_CREATED` | `Client-API`, `ItemEventAspect` after `ItemService.create(...)` returns | `notice.status.exchange`, `notice.lost.created` or `notice.found.created` | `Worker`, `WorkerQueueListener.onItemCreated` |
+| `ItemCreatedEvent` | `ITEM_CREATED` | `Client-API`, `ItemEventAspect` after `ItemService.create(...)` returns; `Admin-API`, `ArchivableAdminItemService.create(form)` after the commit | `notice.status.exchange`, `notice.lost.created` or `notice.found.created` | `Worker`, `WorkerQueueListener.onItemCreated`; `Ingest`, `NoticeEventListener.onCreated` |
+| `NoticeEvent` | `NOTICE` | `Worker`, `ItemArchiver.archive(kind, id)` after the commit | `notice.status.exchange` (from `derechi.archive.exchange`), `notice.lost.archived`, `notice.found.archived` | `Ingest`, `NoticeEventListener.onNotice` |
+| `NoticeEvent` | `NOTICE` | `Admin-API`, `ArchivableAdminItemService.delete(id)` after the commit | `notice.status.exchange` (from `derechi.notice-status.exchange`), `notice.lost.deleted`, `notice.found.deleted` | `Ingest`, `NoticeEventListener.onNotice` |
 | `ClaimEvent` | `CLAIM` | `Client-API`, `ClaimEventAspect` after `ClaimService.claim(..)` / `confirm(..)` / `markPaid(..)` returns | `claims.exchange`, `claim.<kind>.claimed`, `claim.<kind>.paid`; `notice.status.exchange`, `notice.<kind>.returned` | `Worker`, `WorkerQueueListener.onClaim` |
 | `ArchiveRequestedEvent` | `ARCHIVE_REQUESTED` | `Admin-API`, `AdminItemService.archive(id, actor)` | `notice.action.exchange` (from `derechi.archive.exchange`), `notice.lost.archive`, `notice.found.archive` | `Worker`, `WorkerQueueListener.onArchiveRequested` |
 | `NotificationRequestedEvent` | `NOTIFICATION` | `Admin-API`, `MatchNotificationService.notifyOwner(...)` | `notification.exchange`, `notification.match.found` (from `derechi.notifications.routing-key`) | `Notification`, `NotificationRequestedListener` |
 | `NotificationRequestedEvent` | `NOTIFICATION` | `Worker`, `ClaimNotifier` | `notification.exchange`, `notification.claim.created`, `notification.claim.reminder`, `notification.claim.unlocked` | `Notification`, `NotificationRequestedListener` |
 
-`ItemCreatedEvent` carries only what matching needs: `id`, `date`, `category` (id), `lat`,
-`lon`, `title`. The routing key says whether it was a lost or a found notice; the payload
-does not.
+`ItemCreatedEvent` carries what matching needs (`id`, `date`, `category` (id), `lat`, `lon`,
+`title`) and what a channel post needs, so `Ingest` does not read the notice tables:
+`categoryKey`, `placeName`, `description`, `compensation`, `currency` and `image` (the storage
+key). `Worker` ignores the second half; Jackson 3 skips unknown properties. The routing key
+says whether it was a lost or a found notice; the payload does not.
+
+`NoticeEvent` carries only the `id` of the live notice: for `archived` the id it had before
+`Worker` moved it into history, not the id of the history copy.
 
 `NotificationRequestedEvent` carries `subject`, `message` (already localized by the
 producer), `phone`, `email`, `socialMedias` and a `deduplicationKey`. Contacts the chosen
@@ -67,8 +75,12 @@ commit, by `ClaimEventAspect` with the same `@Order(0)` trick as `ItemEventAspec
 skips a `repeated` result, so a second claim from the same person or a second click on a
 confirm link sends nothing. See [../features/claims.md](../features/claims.md).
 
-The producer side of `Admin-API` is a plain `RabbitTemplate.convertAndSend(exchange, key,
-event)`. In `Client-API` the publish is an AspectJ `@AfterReturning` advice on every
+In `Admin-API` the archive request and the match notification are a plain
+`RabbitTemplate.convertAndSend(exchange, key, event)`. `created` and `deleted` in `Admin-API`
+and `archived` in `Worker` go through `AfterCommitPublisher`: the service hands the message to
+the transaction, and a `@TransactionalEventListener` sends it after the commit, so `Ingest` never
+posts or deletes a notice whose transaction rolled back. A broker failure at that point is a
+`WARN` and the event is lost; the caller does not see it. In `Client-API` the publish is an AspectJ `@AfterReturning` advice on every
 `ItemService.create(..)`, which takes the routing key from the advised service's kind
 (`service.kind().noticeKey("created")`, bound with `target(service)`; `ItemKind` in `entity/`)
 and the exchange from `event/Exchanges`. The reason it is an aspect rather than a line in the
@@ -85,6 +97,11 @@ method whose parameter accepts it. Within one payload class `RoutingKeyDispatche
 handler by the received routing key: `ClaimEvent` arrives as `claimed`, `returned` and `paid`
 for both kinds. A payload class without a method lands in the `@RabbitHandler(isDefault = true)`
 method, which rejects it.
+
+`Ingest` does the same on `ingest.queue` with `NoticeEventListener`: `onCreated` for
+`ItemCreatedEvent`, `onNotice` for `NoticeEvent`. It reads the kind and the verb from the routing
+key (`notice.<kind>.<verb>`) and rejects any other key; the work is in
+[`ChannelMirror`](../features/telegram-ingest.md#notices-from-the-site).
 
 Never put a second `@RabbitListener` on the same queue: two listeners on one queue are
 competing consumers, and each message goes to one of them at random.
@@ -112,7 +129,7 @@ an event is a copy-and-adapt job described in
 
 ## Failure handling
 
-Both consumers configure the listener the same way:
+All three consumers configure the listener the same way:
 
 ```yaml
 spring:
@@ -133,15 +150,17 @@ are there to be inspected in the management UI. The `DeadLetters` alert fires wh
 
 Three things skip the retry on purpose by throwing `AmqpRejectAndDontRequeueException`:
 
-- `WorkerQueueListener` when no handler is registered for the received routing key;
-- `WorkerQueueListener` when no `@RabbitHandler` method takes the payload class;
+- `WorkerQueueListener` and `NoticeEventListener` when no handler is registered for the
+  received routing key;
+- `WorkerQueueListener` and `NoticeEventListener` when no `@RabbitHandler` method takes the
+  payload class;
 - `NotificationRequestedListener` when the sender throws, since a retry at the NotifyHub
   level has already happened (`notify.retry.max-attempts: 3`).
 
-`Worker` dispatches by the received routing key, and a replay changes it: "Move messages" and
-"Publish message" in the management UI publish through the default exchange, so the message
-comes back with the key `worker.queue` and is rejected again. Replay into `worker.queue` has to
-go through the original exchange with the original key; see
+`Worker` and `Ingest` dispatch by the received routing key, and a replay changes it: "Move
+messages" and "Publish message" in the management UI publish through the default exchange, so
+the message comes back with the key `worker.queue` (or `ingest.queue`) and is rejected again.
+Replay into those two queues has to go through the original exchange with the original key; see
 [../deployment/monitoring.md](../deployment/monitoring.md#dead-letter-queues).
 
 Idempotency on the notification side comes from `deduplicationKey`: `NotificationSender`
@@ -150,6 +169,9 @@ hands NotifyHub `<event key>:<CHANNEL>`, NotifyHub keeps a one-hour window
 window lives in NotifyHub's in-memory store: it is per `Notification` instance and is lost on
 restart, so a redelivery after a restart or to a second instance is sent again. On the search side the insert into `similar_item` is keyed by
 `(found_item_id, lost_item_id)`, so reprocessing the same event does not create duplicates.
+`Ingest` reserves a `channel_message` row per notice before it posts, so a redelivered
+`created` finds the reservation and posts nothing; a redelivered `archived` or `deleted` finds
+no row and does nothing.
 
 ## Local development
 

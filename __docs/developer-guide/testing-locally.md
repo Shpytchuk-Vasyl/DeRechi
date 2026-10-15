@@ -111,7 +111,7 @@ window. Check at least one non-English locale with `?lang=uk`.
 |---|---|---|
 | `worker.queue` | `Worker` | `notice.status.exchange` with `notice.*.created`, `notice.*.returned`; `claims.exchange` with `claim.*.claimed`, `claim.*.paid`; `notice.action.exchange` with `notice.*.archive` |
 | `notification.queue` | `Notification` | `notification.exchange` with `notification.#` |
-| `ingest.queue` | nobody yet | `notice.status.exchange` with `notice.*.created`, `notice.*.returned`, `notice.*.archived`; grows until `Ingest` reads it |
+| `ingest.queue` | `Ingest` | `notice.status.exchange` with `notice.*.created`, `notice.*.archived`, `notice.*.deleted`; acknowledged without effect unless `channel` is in `INGEST_PUBLISHERS` and the bot is set, and piles up while `Ingest` is not running |
 | `worker.dlq`, `notification.dlq`, `ingest.dlq` | nobody | Dead letters after 3 failed attempts, through `dead-letter.exchange` |
 
 A healthy run leaves the DLQs at zero; otherwise the `DeadLetters` alert lands in Mailpit a

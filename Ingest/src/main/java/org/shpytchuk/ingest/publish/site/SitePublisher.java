@@ -42,7 +42,7 @@ public class SitePublisher {
             ledger.published(rowId, itemId);
             metrics.outcome(Outcome.PUBLISHED);
             log.info("Post {} published as {} item {}", post.key(), notice.kind().path(), itemId);
-            return Optional.of(new SiteItem(notice.kind(), itemId, itemUrl(notice, itemId)));
+            return Optional.of(new SiteItem(notice.kind(), itemId, properties.itemUrl(notice.kind(), itemId)));
 
         } catch (RejectedItemException e) {
             ledger.move(rowId, PostStatus.FAILED);
@@ -71,9 +71,5 @@ public class SitePublisher {
     private static NewItem newItem(Notice notice, @Nullable String imageKey) {
         return new NewItem(notice.kind(), notice.title(), notice.description(), notice.date(), notice.compensation(),
                 imageKey, notice.categoryId(), notice.place(), notice.phone(), notice.socialMedias());
-    }
-
-    private String itemUrl(Notice notice, long itemId) {
-        return "%s/%s/%s/%d".formatted(properties.siteUrl(), properties.siteLocale(), notice.kind().path(), itemId);
     }
 }

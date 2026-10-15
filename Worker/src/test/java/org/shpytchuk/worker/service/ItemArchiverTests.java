@@ -2,6 +2,7 @@ package org.shpytchuk.worker.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.shpytchuk.worker.config.ArchiveProperties;
 import org.shpytchuk.worker.entity.detail.Place;
 import org.shpytchuk.worker.entity.found.FoundItem;
 import org.shpytchuk.worker.entity.found.FoundItemClaim;
@@ -10,9 +11,11 @@ import org.shpytchuk.worker.entity.lost.LostItemClaim;
 import org.shpytchuk.worker.entity.thing.ThingCategory;
 import org.shpytchuk.worker.repository.AbstractRepositoryTests;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.sql.Timestamp;
 import java.time.Clock;
@@ -36,6 +39,9 @@ class ItemArchiverTests extends AbstractRepositoryTests {
 
     @Autowired
     private ItemArchiver archiver;
+
+    @MockitoBean
+    private AfterCommitPublisher publisher;
 
     private ThingCategory wallets;
     private Place rynok;
@@ -105,6 +111,7 @@ class ItemArchiverTests extends AbstractRepositoryTests {
     }
 
     @TestConfiguration
+    @EnableConfigurationProperties(ArchiveProperties.class)
     static class FixedClock {
 
         @Bean

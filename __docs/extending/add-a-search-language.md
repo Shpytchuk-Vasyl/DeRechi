@@ -1,6 +1,6 @@
 # Add a search language
 
-A new language for the full-text ranking in `Worker`. This decides how a notice title is stemmed and matched; it has nothing to do with the UI languages (see [Add a language](add-a-language.md)).
+A new language for the full-text ranking in `Worker`. This decides how a notice title is stemmed and matched; it has nothing to do with the UI languages (see [Add a language](add-a-language.md)). The public search in `Client-API` is not driven by `SearchLanguage`: it always tries `ukrainian`, `polish`, `german`, `french` and `english` (`FullTextFunctionContributor.SEARCH_CONFIGS`), see [Search and filtering](../features/search-and-filtering.md#full-text-search).
 
 ## Before you start
 

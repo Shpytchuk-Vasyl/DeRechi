@@ -77,7 +77,7 @@ local tool and runs only with the `dev` profile.
 | `POSTGRES_PORT` | `5432` | `5432` | same | database port inside the network |
 | `POSTGRES_DB` | `derechi` | `derechi` | same, and the `postgres` container | application database |
 | `POSTGRES_USER` / `POSTGRES_PASSWORD` | `derechi` / `derechi` | same | same, and the `postgres` container | database credentials |
-| `RABBITMQ_HOST` | `localhost` | `rabbitmq` | Client-API, Admin-API, Worker, Notification, `rabbitmq-init` | broker host |
+| `RABBITMQ_HOST` | `localhost` | `rabbitmq` | Client-API, Admin-API, Worker, Notification, Ingest, `rabbitmq-init` | broker host |
 | `RABBITMQ_PORT` | `5672` | `5672` | the services | AMQP port |
 | `RABBITMQ_USER` / `RABBITMQ_PASSWORD` | `derechi` / `derechi` | same | the services, `rabbitmq-init`, and the `rabbitmq` container | broker credentials |
 | `RABBITMQ_VHOST` | `/` | `/` | the services | virtual host; on a hosted broker (CloudAMQP) it is the username, not `/` |
@@ -178,7 +178,8 @@ except where the table says otherwise. An empty `TELEGRAM_API_ID`/`TELEGRAM_API_
 
 | Variable | YAML default | Compose default | Purpose |
 |---|---|---|---|
-| `POSTGRES_*` | see above | see above | the `ingest_post` table; no RabbitMQ |
+| `POSTGRES_*`, `RABBITMQ_*` | see above | see above | the `ingest_post` and `channel_message` tables; `ingest.queue` (`derechi.events.queue` in the YAML) for the notices from the site |
+| `INGEST_IN_FLIGHT_WAIT` | `PT90S` | not set | how long a notice created on the site waits while the pipeline is publishing one of its own (an `ingest_post` row in `PUBLISHING`), before `Ingest` decides whether it already has it |
 | `INGEST_JAVA_OPTS` | n/a | `-Xms64m -Xmx384m -XX:MaxMetaspaceSize=192m -XX:-UseG1GC -XX:+UseSerialGC --enable-native-access=ALL-UNNAMED` | this service's `JAVA_OPTS` instead of the shared one. TDLib, ONNX Runtime and Tesseract are native and live outside the heap, so keep `-Xmx` well below the memory limit. `--enable-native-access` silences the JDK's warnings for JNI/JNA |
 | `INGEST_MEMORY` | n/a | `1g` | memory limit of the container, instead of `SERVICE_MEMORY` |
 | `INGEST_PUBLISHERS` | `review` | same | where notices go, comma-separated, any order: `site` (Client-API through Caddy, runs first), `channel` (our channel, links to the site so needs `site`), `review` (`TELEGRAM_REVIEW_CHAT`, also gets skips). `review` alone is a dry run; an unknown name fails the start |
@@ -259,7 +260,7 @@ The first start needs the Telegram session: stop the service and run
 | caddy | `MINIO_URI`, `MINIO_BUCKET`; `CLIENT_API_URI` only with `docker-compose.services.yml`, see [Caddy](#caddy-api-entry) |
 
 Every long-running container has a memory limit, overridable per environment:
-`POSTGRES_MEMORY` (1g), `PGADMIN_MEMORY` (512m), `RABBITMQ_MEMORY` (512m), `KEYCLOAK_MEMORY`
+`POSTGRES_MEMORY` (2g), `PGADMIN_MEMORY` (512m), `RABBITMQ_MEMORY` (512m), `KEYCLOAK_MEMORY`
 (768m), `PROMETHEUS_MEMORY` (512m), `ALERTMANAGER_MEMORY` (128m), `GRAFANA_MEMORY` (256m),
 `MINIO_MEMORY` (512m), `MAILPIT_MEMORY` (128m), `CADDY_MEMORY` (128m), and `SERVICE_MEMORY` (512m) for each Spring
 service except Ingest, which has `INGEST_MEMORY` (1g). See [docker-compose](docker-compose.md#healthchecks-restarts-and-memory).

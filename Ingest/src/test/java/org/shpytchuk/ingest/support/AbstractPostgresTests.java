@@ -43,7 +43,7 @@ public abstract class AbstractPostgresTests {
         try (Connection connection = connect();
              Statement statement = connection.createStatement()) {
             statement.execute("""
-                    TRUNCATE ingest_post RESTART IDENTITY CASCADE
+                    TRUNCATE ingest_post, channel_message RESTART IDENTITY CASCADE
                     """);
         } catch (Exception e) {
             throw new IllegalStateException("Cannot clear the test database", e);

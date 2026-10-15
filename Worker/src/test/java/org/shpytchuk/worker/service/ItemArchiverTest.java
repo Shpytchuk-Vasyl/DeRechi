@@ -7,6 +7,7 @@ import org.mockito.InOrder;
 import org.shpytchuk.worker.entity.lost.LostItemClaim;
 import org.shpytchuk.worker.entity.lost.LostItem;
 import org.shpytchuk.worker.entity.lost.LostItemHistory;
+import org.shpytchuk.worker.event.NoticeEvent;
 import org.shpytchuk.worker.repository.lost.LostItemClaimRepository;
 import org.shpytchuk.worker.repository.lost.LostItemHistoryRepository;
 import org.shpytchuk.worker.repository.lost.LostItemRepository;
@@ -38,6 +39,7 @@ class ItemArchiverTest {
     private LostItemHistoryRepository lostHistory;
     private LostItemClaimRepository lostClaims;
     private SimilarItemRepository similarItems;
+    private AfterCommitPublisher publisher;
     private ItemArchiver archiver;
 
     @BeforeEach
@@ -46,8 +48,9 @@ class ItemArchiverTest {
         lostHistory = mock(LostItemHistoryRepository.class);
         lostClaims = mock(LostItemClaimRepository.class);
         similarItems = mock(SimilarItemRepository.class);
+        publisher = mock(AfterCommitPublisher.class);
         archiver = new ItemArchiver(Kinds.lost(lostItems, lostHistory, lostClaims, similarItems),
-                Clock.fixed(NOW, ZoneOffset.UTC));
+                Clock.fixed(NOW, ZoneOffset.UTC), publisher, Fixtures.ARCHIVE);
     }
 
     @Test
@@ -79,6 +82,7 @@ class ItemArchiverTest {
         assertThat(claim.getItem()).as("the live link is cleared").isNull();
         assertThat(claim.getArchivedItem()).as("the claim follows the item into the archive").isSameAs(saved.getValue());
         assertThat(claim.getContactInfo()).as("the claimant's contacts stay").isNotNull();
+        verify(publisher).publish("notice.status.exchange", "notice.lost.archived", new NoticeEvent(1L));
     }
 
     @Test
@@ -90,5 +94,6 @@ class ItemArchiverTest {
         verify(lostHistory, never()).save(any());
         verify(similarItems, never()).deleteByLostItemId(anyLong());
         verify(lostClaims, never()).saveAll(any());
+        verify(publisher, never()).publish(any(), any(), any());
     }
 }

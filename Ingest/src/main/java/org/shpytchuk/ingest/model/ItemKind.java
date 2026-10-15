@@ -7,4 +7,8 @@ public enum ItemKind {
     public String path() {
         return name().toLowerCase();
     }
+
+    public String noticeKey(String verb) {
+        return "notice." + path() + "." + verb;
+    }
 }

@@ -8,7 +8,7 @@ has no HTTP API; the only endpoints are actuator's.
 |---|---|
 | Port | 8085 (serves nothing public); actuator on the management port 9085 |
 | Consumes | one queue, `worker.queue`, bound to `notice.status.exchange` with `notice.*.created` and `notice.*.returned`, to `claims.exchange` with `claim.*.claimed` and `claim.*.paid`, and to `notice.action.exchange` with `notice.*.archive` |
-| Produces | `NotificationRequestedEvent` on `notification.exchange` (`notification.claim.*`) |
+| Produces | `NotificationRequestedEvent` on `notification.exchange` (`notification.claim.*`); `NoticeEvent` on `notice.status.exchange` (`notice.<kind>.archived`, after the commit of every archiving) |
 | Needs | PostgreSQL, RabbitMQ |
 | Stack | Spring AMQP, Spring Data JPA, Hibernate Spatial + JTS, optimaize `language-detector`, libphonenumber, ShedLock, Lombok |
 
@@ -17,7 +17,8 @@ has no HTTP API; the only endpoints are actuator's.
 1. `WorkerQueueListener` reads everything from `worker.queue`: `@RabbitListener` on the class
    and a `@RabbitHandler` method per event class, picked by the `__TypeId__` header. Its
    `onItemCreated` receives an `ItemCreatedEvent` (`id`, `date`, `category`, `lat`,
-   `lon`, `title`) and hands the message to a `RoutingKeyDispatcher<ItemCreatedHandler>`,
+   `lon`, `title`; the fields only `Ingest` needs are ignored) from `Client-API` or from the
+   admin panel and hands the message to a `RoutingKeyDispatcher<ItemCreatedHandler>`,
    a map `routing key → handler` built from all handler beans. Every handler method dispatches
    through that class; a key nobody handles throws `AmqpRejectAndDontRequeueException` (straight
    to the DLQ, no retry), and two handlers for one key fail startup. An event class without a
@@ -26,8 +27,9 @@ has no HTTP API; the only endpoints are actuator's.
    `lostItemCreatedHandler` (`notice.lost.created`) searches **found** items,
    `foundItemCreatedHandler` (`notice.found.created`) searches **lost** items. Each bean holds
    the `KindOps` of the kind that arrived and the `ItemService` of the opposite kind.
-3. `ItemService<T>.findAllMostSuitable(event)` (two beans from `ItemSearchConfig`, one per
-   entity type) runs the query and ranks the result.
+3. `ItemService<T>.findMostSuitable(event)` (two beans from `ItemSearchConfig`, one per
+   entity type) runs one query that returns the ids and ranks of the candidates
+   (`MatchCandidate`), not the entities.
 4. The handler calls `KindOps.insertMatches(itemId, candidateIds, matchOrders)`, which puts
    the new notice in its own column of `(found_item_id, lost_item_id, match_order)` through
    `SimilarItemRepository.insertForLost` or `insertForFound`, both wrappers around `insertAll`,
@@ -59,10 +61,11 @@ alone ("Загублено Леокарту Столяр Максим": "…на
 0.2). Where the words stand does not matter. The `&` query is not used because it gives 0 as soon as
 one title word is missing, which "Загублено" always is in a found notice.
 
-The page size is 5 (`PAGE_SIZE`), so at most five candidates are stored per new notice.
-After the page is loaded, `ThingRepository.rankAll` recomputes the rank for exactly those
-ids with the same configuration and the value is written into the transient `orderMatch`
-field, which becomes `match_order`.
+At most five candidates are stored per new notice (`MAX_CANDIDATES`). The query is a criteria
+`SELECT new MatchCandidate(id, rank) ... ORDER BY rank DESC, id LIMIT 5` built from
+`ThingSpecifications.byFilter` and `ThingSpecifications.matchRank`: the rank it sorts by is the
+value that becomes `match_order`, so there is no page count, no second ranking query and no
+loading of the candidates' place and category. `ItemServiceTests` pins it to one statement.
 
 Candidates are found only for the notice that triggered the event. An older notice that
 would match a new one is reached from the new one's side, so the pairing is symmetric in
@@ -90,7 +93,7 @@ not mistaken for a neighbour, and then falls through to `simple`. Adding a langu
 `FullTextFunctionContributor` registers three HQL functions per `SearchLanguage`: `ts_rank_<config>`
 (plain `ts_rank` of the `&` query), `match_rank_<config>` (the matching order above) and
 `shares_words_<config>` (the shared-words filter); then the generic `ts_rank_cfg(regconfig, doc, query)`
-and `match_rank_cfg(regconfig, doc, title)`, the latter used by `rankAll`, and the same `dwithin` that
+and `match_rank_cfg(regconfig, doc, title)`, and the same `dwithin` that
 `Client-API` has. It is wired through
 `META-INF/services/org.hibernate.boot.model.FunctionContributor`.
 
@@ -106,7 +109,10 @@ archives a notice: the admin "Archive" button arrives here as `ARCHIVE_REQUESTED
 `notice.<kind>.archive` (`WorkerQueueListener.onArchiveRequested`), and the confirmed return, the quiet-notice and the stale-notice rules
 call it directly. Archiving re-points the notice's
 claims at the history copy instead of deleting them, which is why this module writes to the
-item, history and claim tables. Texts live in this module's own five `messages*.properties`.
+item, history and claim tables. Every archiving ends with `notice.<kind>.archived` (`NoticeEvent`
+with the live notice's id) on `notice.status.exchange` (`derechi.archive.exchange`), sent by
+`AfterCommitPublisher` after the commit; `Ingest` deletes the notice's channel post on it. A
+broker failure at that moment is a `WARN`, and the event is lost. Texts live in this module's own five `messages*.properties`.
 
 What tells a lost notice from a found one lives in `service/KindOps<T, H, C>`: the item,
 history and claim repositories of the kind, how to build its stamped history copy, and which
@@ -140,8 +146,7 @@ side by side.
 ## Entities
 
 The `entity` package is a copy of the shared schema, laid out like `DB-Postgres`
-(`thing`, `lost`, `found`, `detail`, `matching`), with one addition: `Thing` has a
-`@Transient Double orderMatch` that carries the rank from the query to the insert.
+(`thing`, `lost`, `found`, `detail`, `matching`).
 
 Packages by role: `listener` takes messages off `worker.queue` and dispatches by routing key
 (`RoutingKeyDispatcher`), `handler` holds one handler bean per routing key (`ItemKind` + verb;
@@ -165,6 +170,7 @@ derechi:
     retention: P365D
   archive:
     max-age: P30D
+    exchange: notice.status.exchange
 spring:
   rabbitmq:
     listener:
@@ -185,7 +191,7 @@ Database-backed, on the Testcontainers harness copied from `Client-API`
 (`support/AbstractPostgresTests`, `repository/AbstractRepositoryTests`; places are inserted with
 SQL because this module's `Place` maps only the id and the coordinate):
 
-- `service/ItemServiceTests`: the candidate query and `rankAll` (same category, ±3 days, 20 km,
+- `service/ItemServiceTests`: the candidate query in one statement (same category, ±3 days, 20 km,
   at least two shared words or one for a one-word title, a typo or a repeated word not counted
   twice, most relevant first, the full name above the first name alone, the rank of each candidate
   equal to PostgreSQL's own `ts_rank_cd` of the `|` query, five at most, a blank title matches nothing, a Ukrainian title goes through

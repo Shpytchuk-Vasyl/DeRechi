@@ -31,7 +31,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: ${POSTGRES_MEMORY:-1g}
+          memory: ${POSTGRES_MEMORY:-2g}
 
   pgadmin:
     <<: *infra

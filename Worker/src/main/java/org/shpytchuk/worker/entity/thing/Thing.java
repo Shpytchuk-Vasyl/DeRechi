@@ -48,7 +48,4 @@ public abstract class Thing {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private ContactInfo info;
-
-    @Transient
-    private Double orderMatch;
 }

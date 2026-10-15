@@ -1,5 +1,6 @@
 package org.shpytchuk.ingest.config;
 
+import org.shpytchuk.ingest.model.ItemKind;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
@@ -47,5 +48,9 @@ public record IngestProperties(
         if (minConfidence < 0 || minConfidence > 1) {
             throw new IllegalArgumentException("derechi.ingest.min-confidence must be within 0..1");
         }
+    }
+
+    public String itemUrl(ItemKind kind, long itemId) {
+        return "%s/%s/%s/%d".formatted(siteUrl, siteLocale, kind.path(), itemId);
     }
 }

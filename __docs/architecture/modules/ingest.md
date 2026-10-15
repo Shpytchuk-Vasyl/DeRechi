@@ -1,13 +1,13 @@
 # Ingest
 
-Imports lost-and-found notices from outside sources and publishes them. The sources are Telegram (a userbot session reads the chats of one Telegram folder) and Facebook groups (read through a logged-in account once an hour); a model through OpenRouter extracts the notice, and the result goes to the publishers in `INGEST_PUBLISHERS`: the site (Client-API's public GraphQL), our Telegram channel, the review chat. What it does step by step is in [the feature page](../../features/telegram-ingest.md).
+Imports lost-and-found notices from outside sources and publishes them. The sources are Telegram (a userbot session reads the chats of one Telegram folder) and Facebook groups (read through a logged-in account once an hour); a model through OpenRouter extracts the notice, and the result goes to the publishers in `INGEST_PUBLISHERS`: the site (Client-API's public GraphQL), our Telegram channel, the review chat. It also listens to `ingest.queue` and mirrors the notices created on the site and in the admin panel into the channel, deleting a post when its notice is archived or deleted. What it does step by step is in [the feature page](../../features/telegram-ingest.md).
 
 | | |
 |---|---|
 | Port | 8086 (serves nothing public); actuator on the management port 9086 |
-| Consumes | Telegram updates (TDLib through TDLight); Facebook group pages and the group feed query of `www.facebook.com`, polled; no queue |
-| Produces | notices through the API entry, Caddy for now (`createLostItem` / `createFoundItem`), photos in MinIO, posts in our Telegram channel and the review chat (Bot API) |
-| Needs | PostgreSQL (`ingest_post`), the API entry (Caddy) with Client-API behind it, MinIO; OpenRouter, Google Places, Telegram, Facebook |
+| Consumes | Telegram updates (TDLib through TDLight); Facebook group pages and the group feed query of `www.facebook.com`, polled; `ingest.queue` (`notice.*.created`, `notice.*.archived`, `notice.*.deleted` from `notice.status.exchange`) |
+| Produces | notices through the API entry, Caddy for now (`createLostItem` / `createFoundItem`), photos in MinIO, posts in our Telegram channel and the review chat (Bot API), deletions of channel posts; no events |
+| Needs | PostgreSQL (`ingest_post`, `channel_message`), RabbitMQ, the API entry (Caddy) with Client-API behind it, MinIO; OpenRouter, Google Places, Telegram, Facebook |
 | Stack | TDLight Java (TDLib 1.8.66), libphonenumber, Tess4J + system Tesseract, ONNX Runtime + YuNet, Spring for GraphQL client, Spring Cloud AWS S3, Lombok |
 | Instances | exactly one: the TDLib session cannot be shared |
 
@@ -32,7 +32,8 @@ One package per stage. The root of a stage package is what the pipeline sees: th
 | `pipeline/` | `IngestQueue`, `IngestPipeline`, `PostLedger`, `IngestMetrics`, `Notice`, `Notices` |
 | `publish/` | `Publisher`, `Publishers` (runs the list of `INGEST_PUBLISHERS`), `Publication`, `SiteItem`, `SkippedPost` |
 | `publish/site/` | `SitePublisher` (`site`), `ImageUploader` / `S3ImageUploader` (MinIO) |
-| `publish/telegram/` | `ChannelPoster` (`channel`), `ReviewChat` (`review`), `BotApiClient`, `CaptionBuilder`, `ChannelPost` |
+| `publish/telegram/` | `ChannelPoster` (`channel`; `postOnce` and `delete` for one notice), `ChannelMirror` (notices from the site), `ChannelMessages` (`channel_message`), `StoredPhotos` (a photo from the bucket by key), `ReviewChat` (`review`), `BotApiClient`, `CaptionBuilder`, `ChannelPost` |
+| `event/` | `NoticeEventListener` (`ingest.queue`), `ItemCreatedEvent`, `NoticeEvent`, `EventType`, `EventTypeScanner`: copied per module like in the other consumers |
 | `client/` | `DeRechiApi` / `GraphQlDeRechiApi` and `NewItem`: Client-API, used by the pipeline (categories, countries) and by `site`; `HttpCalls` for every HTTP client |
 | `model/` | `ItemKind`, `Money`, `SocialMedia`, `Outcome`: the values shared by the model's answer, the notice, the ledger, the publishers and the metrics |
 
@@ -62,6 +63,8 @@ A new source (a website, say) is one `@Component` implementing `PostSource` with
 - A publisher whose `needsSiteItem()` is true (`channel`) links to the notice page instead of carrying contacts; the start fails if it is listed without `site`.
 - Publishers are independent: a failing one is logged (`WARN`) and counted in `derechi.ingest.published{publisher,outcome}`, the others still run, and the ledger status stays what `site` set. Skipped posts go to `Publisher.skipped`, which only `review` uses.
 
+`channel` reserves the notice in `channel_message` before it posts and keeps the message id there (`ChannelPoster.postOnce`), the same way as `ChannelMirror` does for notices from the site, so a notice is posted once whichever comes first, and its post can be deleted when the notice is archived or deleted.
+
 Each publisher turns the `Notice` into its own format (`SitePublisher` into Client-API's `NewItem`, `ChannelPost.of` into a channel post), so the pipeline knows none of them.
 
 A new publisher (a Viber group, say) is one `@Component` implementing `Publisher` with its own name, in its own subpackage of `publish/`; adding the name to `INGEST_PUBLISHERS` turns it on. An unknown name fails the start.
@@ -76,8 +79,8 @@ A new publisher (a Viber group, say) is one `@Component` implementing `Publisher
 
 ## Configuration
 
-`derechi.telegram.*`, `derechi.bot.*`, `derechi.ingest.*`, `derechi.openrouter.*`, `derechi.places.*`, `derechi.api.*`, `derechi.storage.*`, `derechi.redaction.*`, one record each: `IngestProperties` in `config/`, the others in `config/telegram/`, `config/bot/`, `config/openrouter/`, `config/places/`, `config/client/`, `config/storage/`, `config/redaction/`, each with the `@Configuration` that builds its client where there is one. Every key has an environment variable; the list is in [environment variables](../../deployment/environment-variables.md). Missing keys do not fail the start: the stage reports itself unavailable, the queue retries the post 3 times 10 minutes apart, then it waits for the next catch-up. An unknown name in `INGEST_PUBLISHERS`, or `channel` without `site`, does fail it.
+`derechi.telegram.*`, `derechi.bot.*`, `derechi.ingest.*`, `derechi.openrouter.*`, `derechi.places.*`, `derechi.api.*`, `derechi.storage.*`, `derechi.redaction.*`, `derechi.events.*`, one record each: `IngestProperties` in `config/`, the others in `config/telegram/`, `config/bot/`, `config/openrouter/`, `config/places/`, `config/client/`, `config/storage/`, `config/redaction/`, `config/events/` (with `RabbitConfig`), each with the `@Configuration` that builds its client where there is one. Every key has an environment variable; the list is in [environment variables](../../deployment/environment-variables.md). Missing keys do not fail the start: the stage reports itself unavailable, the queue retries the post 3 times 10 minutes apart, then it waits for the next catch-up. An unknown name in `INGEST_PUBLISHERS`, or `channel` without `site`, does fail it.
 
 ## Tests
 
-Unit tests per stage (`*Test`), HTTP clients against `MockRestServiceServer`, `PostLedgerTests` and `IngestApplicationTests` on the Testcontainers database with `ddl-auto=validate`. Nothing talks to Telegram, OpenRouter or Google; `TesseractOcrEngineIT` runs only when `TESSDATA_PREFIX` is set. `support/Posts` and `support/Outputs` build the shared test posts and notices, `support/Images` the noise images and the variance check of the redaction tests.
+Unit tests per stage (`*Test`), HTTP clients against `MockRestServiceServer`, `PostLedgerTests`, `ChannelMessagesTests` and `IngestApplicationTests` on the Testcontainers database with `ddl-auto=validate`. Nothing talks to Telegram, OpenRouter or Google; `TesseractOcrEngineIT` runs only when `TESSDATA_PREFIX` is set. `support/Posts` and `support/Outputs` build the shared test posts and notices, `support/Images` the noise images and the variance check of the redaction tests.

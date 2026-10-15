@@ -14,9 +14,8 @@ import org.shpytchuk.worker.repository.lost.LostItemHistoryRepository;
 import org.shpytchuk.worker.repository.lost.LostItemRepository;
 import org.shpytchuk.worker.service.ItemService;
 import org.shpytchuk.worker.service.KindOps;
+import org.shpytchuk.worker.service.MatchCandidate;
 import org.shpytchuk.worker.support.Fixtures;
-import org.springframework.data.domain.ScrollPosition;
-import org.springframework.data.domain.Window;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -46,7 +45,7 @@ class ItemMatchHandlerTest {
     @Test
     void aNewLostItemTakesTheLostColumnAndItsFoundCandidatesTheOther() {
         ItemService<FoundItem> foundItemSearch = search(FoundItem.class,
-                candidate(new FoundItem(), 10L, 0.9), candidate(new FoundItem(), 11L, 0.5));
+                new MatchCandidate(10L, 0.9), new MatchCandidate(11L, 0.5));
         doReturn(2).when(similarItems).insertAll(any(), any(), any());
 
         new ItemMatchHandler<>(lost(), foundItemSearch).onItemCreated(event(7L));
@@ -56,7 +55,7 @@ class ItemMatchHandlerTest {
 
     @Test
     void aNewFoundItemTakesTheFoundColumnAndItsLostCandidatesTheOther() {
-        ItemService<LostItem> lostItemSearch = search(LostItem.class, candidate(new LostItem(), 20L, 0.0));
+        ItemService<LostItem> lostItemSearch = search(LostItem.class, new MatchCandidate(20L, 0.0));
         doReturn(1).when(similarItems).insertAll(any(), any(), any());
 
         new ItemMatchHandler<>(found(), lostItemSearch).onItemCreated(event(8L));
@@ -81,18 +80,11 @@ class ItemMatchHandlerTest {
                 mock(FoundItemClaimRepository.class), similarItems);
     }
 
-    @SafeVarargs
     @SuppressWarnings("unchecked")
-    private static <T extends Thing> ItemService<T> search(Class<T> type, T... candidates) {
+    private static <T extends Thing> ItemService<T> search(Class<T> type, MatchCandidate... candidates) {
         ItemService<T> search = mock(ItemService.class);
-        when(search.findAllMostSuitable(any())).thenReturn(Window.from(List.of(candidates), ScrollPosition::offset));
+        when(search.findMostSuitable(any())).thenReturn(List.of(candidates));
         return search;
-    }
-
-    private static <T extends Thing> T candidate(T item, long id, double rank) {
-        item.setId(id);
-        item.setOrderMatch(rank);
-        return item;
     }
 
     private static ItemCreatedEvent event(long id) {

@@ -29,7 +29,7 @@ public final class Fixtures {
             "notification.exchange", "http://localhost:3000/",
             Duration.ofMinutes(10), Duration.ofDays(1), Duration.ofDays(1), Duration.ofDays(7), Duration.ofDays(365));
 
-    public static final ArchiveProperties ARCHIVE = new ArchiveProperties(Period.ofDays(30));
+    public static final ArchiveProperties ARCHIVE = new ArchiveProperties(Period.ofDays(30), "notice.status.exchange");
 
 
     private Fixtures() {

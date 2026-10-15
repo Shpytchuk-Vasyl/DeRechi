@@ -50,6 +50,7 @@ derechi:
     retention: P365D
   archive:
     max-age: P30D
+    exchange: notice.status.exchange
 
 server:
   port: 8085

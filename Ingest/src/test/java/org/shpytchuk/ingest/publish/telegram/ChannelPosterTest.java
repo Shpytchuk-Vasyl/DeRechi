@@ -8,13 +8,16 @@ import org.shpytchuk.ingest.model.ItemKind;
 import org.shpytchuk.ingest.model.Money;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.startsWith;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -27,6 +30,7 @@ class ChannelPosterTest {
 
     private final BotApiClient bot = mock(BotApiClient.class);
     private final CaptionBuilder captions = CaptionBuilderTest.builder("uk");
+    private final ChannelMessages messages = mock(ChannelMessages.class);
 
     @Test
     void postsPhotoWithCaption() {
@@ -65,8 +69,74 @@ class ChannelPosterTest {
                 .isInstanceOf(IngestException.class);
     }
 
+    @Test
+    void postsAnItemOnceAndKeepsItsMessage() {
+        when(messages.reserve(ItemKind.FOUND, 7L)).thenReturn(true);
+        when(bot.sendMessage(anyString(), anyString())).thenReturn(12L);
+
+        boolean posted = poster(properties("@derechi", "")).postOnce(ItemKind.FOUND, 7L,
+                () -> post(null, "https://derechi.site/uk/found/7"));
+
+        assertThat(posted).isTrue();
+        verify(messages).posted(ItemKind.FOUND, 7L, 12L);
+    }
+
+    @Test
+    void anItemAlreadyReservedIsNotPostedAgain() {
+        when(messages.reserve(ItemKind.FOUND, 7L)).thenReturn(false);
+
+        boolean posted = poster(properties("@derechi", "")).postOnce(ItemKind.FOUND, 7L,
+                () -> post(null, "https://derechi.site/uk/found/7"));
+
+        assertThat(posted).isFalse();
+        verifyNoInteractions(bot);
+    }
+
+    @Test
+    void aFailedPostReleasesTheReservation() {
+        when(messages.reserve(ItemKind.FOUND, 7L)).thenReturn(true);
+        when(bot.sendMessage(anyString(), anyString())).thenThrow(new IngestException("Bot API sendMessage failed"));
+
+        assertThatThrownBy(() -> poster(properties("@derechi", "")).postOnce(ItemKind.FOUND, 7L,
+                () -> post(null, "https://x"))).isInstanceOf(IngestException.class);
+
+        verify(messages).release(ItemKind.FOUND, 7L);
+        verify(messages, never()).posted(any(), anyLong(), anyLong());
+    }
+
+    @Test
+    void deletesTheMessageOfAnItemAndForgetsIt() {
+        when(messages.messageId(ItemKind.LOST, 7L)).thenReturn(Optional.of(12L));
+
+        assertThat(poster(properties("@derechi", "")).delete(ItemKind.LOST, 7L)).isTrue();
+
+        verify(bot).deleteMessage("@derechi", 12L);
+        verify(messages).forget(ItemKind.LOST, 7L);
+    }
+
+    @Test
+    void anItemWithoutAMessageHasNothingToDelete() {
+        when(messages.messageId(ItemKind.LOST, 7L)).thenReturn(Optional.empty());
+
+        assertThat(poster(properties("@derechi", "")).delete(ItemKind.LOST, 7L)).isFalse();
+
+        verifyNoInteractions(bot);
+    }
+
+    @Test
+    void aMessageTheBotCannotDeleteStaysOnRecord() {
+        when(messages.messageId(ItemKind.LOST, 7L)).thenReturn(Optional.of(12L));
+        doThrow(new IngestException("Bot API deleteMessage failed: 400 message can't be deleted"))
+                .when(bot).deleteMessage("@derechi", 12L);
+
+        assertThatThrownBy(() -> poster(properties("@derechi", "")).delete(ItemKind.LOST, 7L))
+                .isInstanceOf(IngestException.class);
+
+        verify(messages, never()).forget(any(), anyLong());
+    }
+
     private ChannelPoster poster(BotProperties properties) {
-        return new ChannelPoster(bot, captions, properties);
+        return new ChannelPoster(bot, captions, properties, messages);
     }
 
     private static BotProperties properties(String publishChat, String reviewChat) {

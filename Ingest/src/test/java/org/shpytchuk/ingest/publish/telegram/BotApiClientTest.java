@@ -139,6 +139,31 @@ class BotApiClientTest {
     }
 
     @Test
+    void deleteMessagePostsTheChatAndTheMessageId() {
+        server.expect(requestTo(BASE + "/deleteMessage"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(jsonPath("$.chat_id").value("@derechi"))
+                .andExpect(jsonPath("$.message_id").value(77))
+                .andRespond(withSuccess("{\"ok\":true,\"result\":true}", MediaType.APPLICATION_JSON));
+
+        bot.deleteMessage("@derechi", 77);
+
+        server.verify();
+    }
+
+    @Test
+    void deleteMessageFailsWithTelegramsDescription() {
+        server.expect(requestTo(BASE + "/deleteMessage"))
+                .andRespond(withStatus(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON)
+                        .body("{\"ok\":false,\"error_code\":400,\"description\":\"Bad Request: message can't be deleted\"}"));
+
+        assertThatThrownBy(() -> bot.deleteMessage("@derechi", 77))
+                .isInstanceOf(IngestException.class)
+                .hasMessage("Bot API deleteMessage failed: HTTP 400 Bad Request: message can't be deleted");
+        server.verify();
+    }
+
+    @Test
     void successWithoutMessageIdIsNotRetried() {
         server.expect(ExpectedCount.once(), requestTo(BASE + "/sendMessage")).andRespond(json("{\"ok\":true}"));
 

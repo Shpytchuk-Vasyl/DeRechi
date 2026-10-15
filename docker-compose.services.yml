@@ -186,7 +186,7 @@ services:
     volumes:
       - tdlib-data:/app/tdlib
     environment:
-      <<: *postgres
+      <<: [*postgres, *rabbitmq]
       # Tesseract, ONNX Runtime and TDLib live outside the heap: keep -Xmx well below the memory limit
       JAVA_OPTS: ${INGEST_JAVA_OPTS:--Xms64m -Xmx384m -XX:MaxMetaspaceSize=192m -XX:-UseG1GC -XX:+UseSerialGC --enable-native-access=ALL-UNNAMED}
       TDLIB_DATA_DIR: /app/tdlib
@@ -263,6 +263,8 @@ services:
       db-postgres:
         condition: service_completed_successfully
       minio-init:
+        condition: service_completed_successfully
+      rabbitmq-init:
         condition: service_completed_successfully
 
 volumes:

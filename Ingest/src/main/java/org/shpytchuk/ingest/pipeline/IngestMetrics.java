@@ -46,6 +46,10 @@ public class IngestMetrics {
         registry.counter("derechi.ingest.published", "publisher", publisher, "outcome", outcome).increment();
     }
 
+    public void channel(String action, String outcome) {
+        registry.counter("derechi.ingest.channel", "action", action, "outcome", outcome).increment();
+    }
+
     public void phoneSource(String source) {
         registry.counter("derechi.ingest.phone.source", "source", source).increment();
     }

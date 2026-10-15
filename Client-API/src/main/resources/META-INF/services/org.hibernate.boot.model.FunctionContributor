@@ -1,1 +1,2 @@
 org.shpytchuk.clientapi.config.SpatialFunctionContributor
+org.shpytchuk.clientapi.config.FullTextFunctionContributor

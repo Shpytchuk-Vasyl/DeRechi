@@ -112,6 +112,8 @@ derechi:
     routing-key: notification.match.found
   archive:
     exchange: notice.action.exchange
+  notice-status:
+    exchange: notice.status.exchange
 
 server:
   port: 8083

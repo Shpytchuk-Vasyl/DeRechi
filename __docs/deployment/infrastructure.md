@@ -22,7 +22,7 @@ One container, two databases:
 - `derechi` is the application database shared by every service. Its schema is owned by `DB-Postgres` and applied with Liquibase; see [database](../architecture/database.md).
 - `keycloak` is created by `docker/postgres/initdb/01-keycloak.sh` (as `POSTGRES_USER`) on the first start of an empty volume and is managed entirely by Keycloak.
 
-The image is a custom build of `postgis/postgis:17-3.5` with the Ukrainian and Polish hunspell dictionaries and stop-word lists, needed by the `ukrainian` and `polish` full-text search configurations that `Worker` uses for ranking; see [docker-image](docker-image.md).
+The image is a custom build of `postgis/postgis:17-3.5` with the Ukrainian and Polish hunspell dictionaries and stop-word lists, needed by the `ukrainian` and `polish` full-text search configurations that `Worker` uses for ranking and `Client-API` for the public search; see [docker-image](docker-image.md).
 
 ```bash
 docker exec -it derechi-postgres psql -U derechi -d derechi
@@ -38,9 +38,9 @@ One queue per consuming service; every queue dead-letters into `dead-letter.exch
 |---|---|---|
 | `worker.queue` | `notice.status.exchange`: `notice.*.created`, `notice.*.returned`; `claims.exchange`: `claim.*.claimed`, `claim.*.paid`; `notice.action.exchange`: `notice.*.archive` | `dead-letter.exchange` -> `worker.dlq` |
 | `notification.queue` | `notification.exchange`: `notification.#` | `dead-letter.exchange` -> `notification.dlq` |
-| `ingest.queue` | `notice.status.exchange`: `notice.*.created`, `notice.*.returned`, `notice.*.archived` | `dead-letter.exchange` -> `ingest.dlq` |
+| `ingest.queue` | `notice.status.exchange`: `notice.*.created`, `notice.*.archived`, `notice.*.deleted` | `dead-letter.exchange` -> `ingest.dlq` |
 
-`ingest.queue` has no consumer yet (`Ingest` does not read RabbitMQ), so it keeps every status event until one appears.
+`ingest.queue` is read by `Ingest`, which mirrors notices from the site into the Telegram channel. An earlier version of the file bound it with `notice.*.returned`; on a broker where that binding was imported, delete it in the UI, or `Ingest` rejects every returned notice into `ingest.dlq`.
 
 A new queue or binding is a change to `definitions.json` and takes effect on the next `docker compose up`. The import only adds and updates: a removed or narrowed binding stays until it is deleted in the UI, the exchanges and queues of the previous topology (`derechi.items`, `derechi.notifications`, `worker.items`, `worker.claims`, `worker.archive`, `notification.events` and their `.dlx`/`.dlq`) stay on an old volume and on a hosted broker until they are deleted by hand, and a queue whose arguments changed makes the import fail (`docker compose logs rabbitmq-init`).
 

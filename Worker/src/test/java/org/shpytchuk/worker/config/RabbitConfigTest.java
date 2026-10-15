@@ -38,6 +38,17 @@ class RabbitConfigTest {
     }
 
     @Test
+    void readsAnItemCreatedEventWithFieldsOnlyIngestNeeds() {
+        Object event = converter.fromMessage(message("ITEM_CREATED",
+                "{\"id\":7,\"date\":\"2026-09-10\",\"category\":2,\"categoryKey\":\"WALLET\",\"lat\":49.84,"
+                        + "\"lon\":24.03,\"placeName\":\"Rynok Square\",\"title\":\"Wallet\",\"description\":\"Brown\","
+                        + "\"compensation\":500,\"currency\":\"UAH\",\"image\":\"items/2026/09/a.jpg\"}"));
+
+        assertThat(event).isInstanceOfSatisfying(ItemCreatedEvent.class,
+                created -> assertThat(created.getId()).isEqualTo(7L));
+    }
+
+    @Test
     void readsAClaimEventFromClientApi() {
         assertThat(converter.fromMessage(message("CLAIM", "{\"id\":42}")))
                 .isInstanceOfSatisfying(ClaimEvent.class, claim -> assertThat(claim.getId()).isEqualTo(42L));

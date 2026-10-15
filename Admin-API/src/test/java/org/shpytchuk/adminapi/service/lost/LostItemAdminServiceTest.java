@@ -6,6 +6,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.shpytchuk.adminapi.config.property.ArchiveProperties;
 import org.shpytchuk.adminapi.config.property.CountriesProperties;
+import org.shpytchuk.adminapi.config.property.NoticeStatusProperties;
 import org.shpytchuk.adminapi.entity.detail.ContactInfo;
 import org.shpytchuk.adminapi.entity.detail.ContactInfo.SocialMediaEnum;
 import org.shpytchuk.adminapi.entity.lost.LostItem;
@@ -13,6 +14,8 @@ import org.shpytchuk.adminapi.entity.lost.LostItemClaim;
 import org.shpytchuk.adminapi.entity.lost.LostItemHistory;
 import org.shpytchuk.adminapi.entity.thing.ThingCategory;
 import org.shpytchuk.adminapi.event.ArchiveRequestedEvent;
+import org.shpytchuk.adminapi.event.ItemCreatedEvent;
+import org.shpytchuk.adminapi.event.NoticeEvent;
 import org.shpytchuk.adminapi.exception.NotFoundException;
 import org.shpytchuk.adminapi.form.ItemForm;
 import org.shpytchuk.adminapi.mapper.ItemFormApplier;
@@ -23,6 +26,7 @@ import org.shpytchuk.adminapi.repository.lost.LostItemClaimRepository;
 import org.shpytchuk.adminapi.repository.lost.LostItemHistoryRepository;
 import org.shpytchuk.adminapi.repository.lost.LostItemRepository;
 import org.shpytchuk.adminapi.repository.matching.SimilarItemRepository;
+import org.shpytchuk.adminapi.service.AfterCommitPublisher;
 import org.shpytchuk.adminapi.view.matching.ClaimStatus;
 import org.shpytchuk.adminapi.view.matching.ClaimView;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -57,6 +61,7 @@ class LostItemAdminServiceTest {
     private SimilarItemRepository similarItemRepository;
     private LostItemClaimRepository claimRepository;
     private RabbitTemplate rabbitTemplate;
+    private AfterCommitPublisher publisher;
     private LostItemAdminService service;
 
     @BeforeEach
@@ -68,10 +73,12 @@ class LostItemAdminServiceTest {
         similarItemRepository = mock(SimilarItemRepository.class);
         claimRepository = mock(LostItemClaimRepository.class);
         rabbitTemplate = mock(RabbitTemplate.class);
+        publisher = mock(AfterCommitPublisher.class);
         ItemFormApplier applier = new ItemFormApplier(categoryRepository, placeRepository,
                 new CountriesProperties(List.of("UA", "PL"), "UA"));
         service = new LostItemAdminService(repository, claimRepository, contactInfoRepository, applier,
-                similarItemRepository, rabbitTemplate, new ArchiveProperties("notice.action.exchange"));
+                similarItemRepository, rabbitTemplate, new ArchiveProperties("notice.action.exchange"),
+                new NoticeStatusProperties("notice.status.exchange"), publisher);
     }
 
     @Test
@@ -84,6 +91,39 @@ class LostItemAdminServiceTest {
 
         assertThat(item.getInfo().getEmail()).isNull();
         assertThat(item.getInfo().getPhone()).isEqualTo("+48501234567");
+    }
+
+    @Test
+    void createAnnouncesTheNewNoticeWithWhatTheChannelPostNeeds() {
+        ThingCategory category = new ThingCategory();
+        category.setId(1L);
+        category.setKey("KEYS");
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
+        when(placeRepository.save(any())).thenAnswer(call -> call.getArgument(0));
+        when(repository.save(any())).thenAnswer(call -> {
+            LostItem saved = call.getArgument(0);
+            saved.setId(7L);
+            return saved;
+        });
+
+        service.create(form("owner@example.com"));
+
+        ArgumentCaptor<ItemCreatedEvent> event = ArgumentCaptor.forClass(ItemCreatedEvent.class);
+        verify(publisher).publish(eq("notice.status.exchange"), eq("notice.lost.created"), event.capture());
+        assertThat(event.getValue()).extracting(ItemCreatedEvent::id, ItemCreatedEvent::category,
+                        ItemCreatedEvent::categoryKey, ItemCreatedEvent::lat, ItemCreatedEvent::lon,
+                        ItemCreatedEvent::placeName, ItemCreatedEvent::title)
+                .containsExactly(7L, 1L, "KEYS", 52.2, 21.0, "Park", "Рюкзак");
+    }
+
+    @Test
+    void deleteAnnouncesTheDeletedNotice() {
+        when(repository.findWithDetailsById(7L)).thenReturn(Optional.of(item(7L)));
+        when(claimRepository.findByItemId(7L)).thenReturn(List.of());
+
+        service.delete(7L);
+
+        verify(publisher).publish("notice.status.exchange", "notice.lost.deleted", new NoticeEvent(7L));
     }
 
     @Test

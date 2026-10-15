@@ -182,7 +182,7 @@
       "vhost": "/",
       "destination": "ingest.queue",
       "destination_type": "queue",
-      "routing_key": "notice.*.returned",
+      "routing_key": "notice.*.archived",
       "arguments": {}
     },
     {
@@ -190,7 +190,7 @@
       "vhost": "/",
       "destination": "ingest.queue",
       "destination_type": "queue",
-      "routing_key": "notice.*.archived",
+      "routing_key": "notice.*.deleted",
       "arguments": {}
     },
     {

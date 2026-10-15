@@ -24,6 +24,21 @@ spring:
   liquibase:
     enabled: false
 
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:derechi}
+    password: ${RABBITMQ_PASSWORD:derechi}
+    virtual-host: ${RABBITMQ_VHOST:/}
+    ssl:
+      enabled: ${RABBITMQ_SSL:false}
+    listener:
+      simple:
+        default-requeue-rejected: false
+        retry:
+          enabled: true
+          max-retries: 2
+
   cache:
     type: caffeine
     cache-names: categories,countries
@@ -51,6 +66,11 @@ derechi:
     site-url: ${DERECHI_SITE_URL:http://localhost:3000}
     site-locale: ${INGEST_SITE_LOCALE:uk}
     min-confidence: ${INGEST_MIN_CONFIDENCE:0.6}
+
+  events:
+    queue: ingest.queue
+    in-flight-wait: ${INGEST_IN_FLIGHT_WAIT:PT90S}
+    in-flight-poll: PT1S
 
   telegram:
     api-id: ${TELEGRAM_API_ID:0}

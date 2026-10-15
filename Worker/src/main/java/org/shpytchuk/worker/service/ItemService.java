@@ -1,51 +1,39 @@
 package org.shpytchuk.worker.service;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Root;
 import lombok.AllArgsConstructor;
 import org.shpytchuk.worker.entity.thing.Thing;
 import org.shpytchuk.worker.event.ItemCreatedEvent;
 import org.shpytchuk.worker.language.LanguageResolver;
 import org.shpytchuk.worker.language.SearchLanguage;
-import org.shpytchuk.worker.repository.ThingRepository;
 import org.shpytchuk.worker.specification.ThingSpecifications;
-import org.springframework.data.domain.OffsetScrollPosition;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Window;
 
 import java.util.List;
-import java.util.stream.IntStream;
 
 @AllArgsConstructor
 public class ItemService<T extends Thing> {
 
-    private static final int PAGE_SIZE = 5;
-    private static final int PAGE_NUMBER = 0;
-    private final ThingRepository<T> repository;
+    private static final int MAX_CANDIDATES = 5;
+
+    private final EntityManager entityManager;
+    private final Class<T> type;
     private final LanguageResolver languageResolver;
 
-
-    public Window<T> findAllMostSuitable(ItemCreatedEvent event) {
+    public List<MatchCandidate> findMostSuitable(ItemCreatedEvent event) {
         SearchLanguage language = languageResolver.resolve(event.getTitle());
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<MatchCandidate> query = cb.createQuery(MatchCandidate.class);
+        Root<T> root = query.from(type);
+        Expression<Double> rank = ThingSpecifications.matchRank(root, cb, event.getTitle(), language);
 
-        PageRequest pageRequest = PageRequest.of(PAGE_NUMBER, PAGE_SIZE);
-        Page<T> result = repository.findAll(ThingSpecifications.byFilter(event, language), pageRequest);
-        List<T> content = result.getContent();
+        query.select(cb.construct(MatchCandidate.class, root.get("id"), rank))
+                .where(ThingSpecifications.<T>byFilter(event, language).toPredicate(root, query, cb))
+                .orderBy(cb.desc(rank), cb.asc(root.get("id")));
 
-        seedContentWithRank(content, event.getTitle(), language);
-
-
-        return Window.from(content, OffsetScrollPosition.positionFunction(pageRequest.getOffset()), result.hasNext());
-    }
-
-
-    private void seedContentWithRank(List<T> content, String title, SearchLanguage language) {
-        if (content.isEmpty()) {
-            return;
-        }
-        List<Double> ranks = repository.rankAll(
-                content.stream().map(Thing::getId).toList(), language.regconfig(), title);
-
-        IntStream.range(0, content.size())
-                .forEach(i -> content.get(i).setOrderMatch(ranks.get(i)));
+        return entityManager.createQuery(query).setMaxResults(MAX_CANDIDATES).getResultList();
     }
 }

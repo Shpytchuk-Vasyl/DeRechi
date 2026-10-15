@@ -7,10 +7,10 @@ import java.util.Locale;
 
 public enum ItemKind {
 
-    LOST_ITEM(Scope.LOST_ITEM, Path.LOST_ITEMS),
-    FOUND_ITEM(Scope.FOUND_ITEM, Path.FOUND_ITEMS),
-    LOST_ITEM_HISTORY(Scope.LOST_ITEM_HISTORY, Path.LOST_ITEMS_HISTORY),
-    FOUND_ITEM_HISTORY(Scope.FOUND_ITEM_HISTORY, Path.FOUND_ITEMS_HISTORY);
+    LOST_ITEM(Scope.LOST_ITEM, Path.LOST_ITEMS, "lost"),
+    FOUND_ITEM(Scope.FOUND_ITEM, Path.FOUND_ITEMS, "found"),
+    LOST_ITEM_HISTORY(Scope.LOST_ITEM_HISTORY, Path.LOST_ITEMS_HISTORY, "lost"),
+    FOUND_ITEM_HISTORY(Scope.FOUND_ITEM_HISTORY, Path.FOUND_ITEMS_HISTORY, "found");
 
     public static final class Path {
 
@@ -27,11 +27,17 @@ public enum ItemKind {
     private final String basePath;
     /** {@code lost_item}: the scope name as the bundles spell it. */
     private final String key;
+    private final String segment;
 
-    ItemKind(Scope scope, String basePath) {
+    ItemKind(Scope scope, String basePath, String segment) {
         this.scope = scope;
         this.basePath = basePath;
         this.key = scope.name().toLowerCase(Locale.ROOT);
+        this.segment = segment;
+    }
+
+    public String noticeKey(String verb) {
+        return "notice." + segment + "." + verb;
     }
 
     public Scope scope() {

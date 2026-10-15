@@ -146,7 +146,8 @@ The worker's one queue, `worker.queue`, is bound with `claim.*.claimed` and `cla
   `worker.queue`, `WorkerQueueListener.onArchiveRequested`) and this class runs it, as it does for a confirmed return and for the job.
   It copies the item into `*_item_history` with `archived_at`, deletes its `similar_item` rows,
   re-points its claims at the history copy (`item_id` → `null`, `archived_item_id` →
-  the new id) and deletes the item. The claimants' contacts stay for the retention period. What
+  the new id) and deletes the item. After the commit it publishes `notice.<kind>.archived` with the
+  live notice's id, on which `Ingest` deletes the notice's channel post. The claimants' contacts stay for the retention period. What
   differs per kind (the three repositories, the history class, the `similar_item` column) sits in
   `KindOps`, one instance per `ItemKind` held by `ItemKinds`, so the archiver itself has no
   `switch`. To do this the module carries `LostItemHistory`/`FoundItemHistory` and `Thing` has

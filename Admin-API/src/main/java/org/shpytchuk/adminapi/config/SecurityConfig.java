@@ -2,6 +2,7 @@ package org.shpytchuk.adminapi.config;
 
 import org.shpytchuk.adminapi.config.property.AdminProperties;
 import org.shpytchuk.adminapi.config.property.ArchiveProperties;
+import org.shpytchuk.adminapi.config.property.NoticeStatusProperties;
 import org.shpytchuk.adminapi.config.property.NotificationProperties;
 import org.shpytchuk.adminapi.security.KeycloakAuthoritiesMapper;
 import org.shpytchuk.adminapi.security.LoginAudit;
@@ -24,7 +25,8 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 
 @Configuration
 @EnableMethodSecurity
-@EnableConfigurationProperties({AdminProperties.class, NotificationProperties.class, ArchiveProperties.class})
+@EnableConfigurationProperties({AdminProperties.class, NotificationProperties.class, ArchiveProperties.class,
+        NoticeStatusProperties.class})
 public class SecurityConfig {
 
     static final String[] PUBLIC_ACTUATOR = {"/actuator/health", "/actuator/health/**", "/actuator/info",

@@ -116,6 +116,46 @@ class ThingRepositoryTests extends AbstractRepositoryTests {
     }
 
     @Test
+    void searchFilterMatchesWholeWordsInAnyOrder() {
+        persistLost("Ключі від авто", SEPTEMBER_1, keys, rynok);
+        persistLost("Гаманець", SEPTEMBER_1, wallet, rynok);
+        entityManager.flush();
+
+        assertThat(titlesMatching(searching("авто ключі")))
+                .containsExactly("Ключі від авто");
+    }
+
+    @Test
+    void searchFilterMatchesWordsSplitBetweenTitleAndDescription() {
+        persistLost("Гаманець", SEPTEMBER_1, wallet, rynok).setDescription("Шкіряний, коричневий");
+        persistLost("Рюкзак", SEPTEMBER_1, wallet, rynok).setDescription("Шкіряний");
+        entityManager.flush();
+
+        assertThat(titlesMatching(searching("шкіряний гаманець")))
+                .containsExactly("Гаманець");
+    }
+
+    @Test
+    void searchFilterMatchesWordsWrittenWithAnotherApostrophe() {
+        persistLost("Мʼяч футбольний", SEPTEMBER_1, keys, rynok);
+        persistLost("М’яка іграшка", SEPTEMBER_1, keys, rynok);
+        persistLost("Гаманець", SEPTEMBER_1, wallet, rynok);
+        entityManager.flush();
+
+        assertThat(titlesMatching(searching("м'яч"))).containsExactly("Мʼяч футбольний");
+        assertThat(titlesMatching(searching("іграшка м'яка"))).containsExactly("М’яка іграшка");
+    }
+
+    @Test
+    void searchFilterStemsWordsOfOtherSupportedLanguages() {
+        persistLost("Black wallet", SEPTEMBER_1, wallet, rynok);
+        persistLost("Car keys", SEPTEMBER_1, keys, rynok);
+        entityManager.flush();
+
+        assertThat(titlesMatching(searching("wallets"))).containsExactly("Black wallet");
+    }
+
+    @Test
     void searchFilterTreatsLikeWildcardsAsPlainCharacters() {
         persistLost("Знижка 50% на ключі", SEPTEMBER_1, keys, rynok);
         persistLost("Гаманець", SEPTEMBER_1, wallet, rynok);

@@ -4,10 +4,10 @@ Every new notice is compared in the background against notices of the opposite k
 
 ## Flow
 
-1. `Client-API` publishes `ItemCreatedEvent` (`id`, `date`, `category`, `lat`, `lon`, `title`) to the `notice.status.exchange` exchange with key `notice.lost.created` or `notice.found.created`.
+1. `Client-API` publishes `ItemCreatedEvent` (`id`, `date`, `category`, `lat`, `lon`, `title`, plus the fields `Ingest` needs for a channel post, which `Worker` ignores) to the `notice.status.exchange` exchange with key `notice.lost.created` or `notice.found.created`. `Admin-API` publishes the same event after the commit when a notice is created in the admin panel, so those notices are matched too.
 2. Worker's one queue, `worker.queue`, is bound with `notice.*.created` among others. `WorkerQueueListener.onItemCreated` dispatches by the routing key of the message (`RoutingKeyDispatcher`, used by every handler method of the listener) to the `ItemCreatedHandler` registered for it. An unknown key is rejected without requeue.
 3. `ItemMatchHandler<T>` is one class with two beans wired in `ItemSearchConfig`: `lostItemCreatedHandler` searches `found_item`, `foundItemCreatedHandler` searches `lost_item`. Each delegates to the `ItemService<T>` bean of the opposite kind and holds the `KindOps` of the kind that arrived.
-4. `ItemService.findAllMostSuitable` builds the candidate query, takes the first page and asks the repository to rank the candidates.
+4. `ItemService.findMostSuitable` runs one query that returns the ids and ranks of the five best candidates (`MatchCandidate`).
 5. The handler writes the pairs with `KindOps.insertMatches`, which calls `SimilarItemRepository.insertForLost` or `insertForFound` so the new notice lands in its own column; both wrap `insertAll` (one statement with arrays). The pair `(found_item_id, lost_item_id)` is the primary key.
 
 ## Candidate rules
@@ -20,9 +20,9 @@ All of them live in `ThingSpecifications.byFilter`:
 | Date window | `event.date ± 3 days` | `PERIOD = Period.ofDays(3)` |
 | Distance | within 20 000 m of the event's coordinate | `RADIUS_METERS`, `JTSSpatialPredicates.distanceWithin` |
 | Ordering | `ts_rank` of `title || ' ' || coalesce(description, '')` against the event title, descending, then `id` | `orderByRelevance` |
-| Page | first 5 | `ItemService.PAGE_SIZE` |
+| Candidates | first 5 | `ItemService.MAX_CANDIDATES` |
 
-The rank that goes into `similar_item.match_order` is recomputed for the chosen ids with `ThingRepository.rankAll` using the same text search configuration. An empty or blank title gives everybody a score of `0.0`.
+The rank that goes into `similar_item.match_order` is the one the query sorts by (`ThingSpecifications.matchRank`), read in the same statement. A blank title matches nothing.
 
 ## Language detection
 
