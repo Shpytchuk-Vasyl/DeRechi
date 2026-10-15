@@ -24,5 +24,12 @@ class ItemCreatedEventTest {
         assertThat(event.category).isEqualTo(2L);
         assertThat(event.lat).isEqualTo(49.8419);
         assertThat(event.lon).isEqualTo(24.0315);
+        assertThat(event.categoryKey).isEqualTo("keys");
+        assertThat(event.placeName).isEqualTo("Площа Ринок");
+        assertThat(event.description).isEqualTo("опис");
+        assertThat(event.compensation).isEqualTo(500);
+        assertThat(event.currency).isEqualTo("UAH");
+        assertThat(event.image).isEqualTo("keys.png");
+        assertThat(event.origin).isEqualTo("site");
     }
 }

@@ -23,10 +23,10 @@ class RabbitConfigTest {
         Object event = converter.fromMessage(message("ITEM_CREATED",
                 "{\"id\":7,\"date\":\"2026-09-10\",\"category\":2,\"categoryKey\":\"WALLET\",\"lat\":49.84,"
                         + "\"lon\":24.03,\"placeName\":\"Rynok Square\",\"title\":\"Wallet\",\"description\":\"Brown\","
-                        + "\"compensation\":500,\"currency\":\"UAH\",\"image\":\"items/2026/09/a.jpg\"}"));
+                        + "\"compensation\":500,\"currency\":\"UAH\",\"image\":\"items/2026/09/a.jpg\",\"origin\":\"admin\"}"));
 
         assertThat(event).isEqualTo(new ItemCreatedEvent(7L, LocalDate.of(2026, 9, 10), "WALLET", "Rynok Square",
-                "Wallet", "Brown", 500, "UAH", "items/2026/09/a.jpg"));
+                "Wallet", "Brown", 500, "UAH", "items/2026/09/a.jpg", "admin"));
     }
 
     @Test

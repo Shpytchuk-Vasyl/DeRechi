@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 public interface IngestPostRepository extends JpaRepository<IngestPost, Long> {
@@ -21,6 +22,10 @@ public interface IngestPostRepository extends JpaRepository<IngestPost, Long> {
     boolean existsByStatus(PostStatus status);
 
     boolean existsByItemKindAndItemId(ItemKind kind, long itemId);
+
+    Optional<IngestPost> findFirstByItemKindAndItemIdOrderByIdAsc(ItemKind kind, long itemId);
+
+    List<IngestPost> findByItemKindAndItemIdAndMessageIdNotNull(ItemKind kind, long itemId);
 
     @Modifying
     @Query("update IngestPost p set p.status = :to, p.updatedAt = :now where p.status = :from")

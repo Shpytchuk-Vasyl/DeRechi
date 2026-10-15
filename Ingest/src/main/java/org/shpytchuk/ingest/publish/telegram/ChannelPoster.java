@@ -6,6 +6,7 @@ import org.shpytchuk.ingest.config.bot.BotProperties;
 import org.shpytchuk.ingest.exception.IngestException;
 import org.shpytchuk.ingest.exception.StageUnavailableException;
 import org.shpytchuk.ingest.model.ItemKind;
+import org.shpytchuk.ingest.pipeline.PostLedger;
 import org.shpytchuk.ingest.publish.Publication;
 import org.shpytchuk.ingest.publish.Publisher;
 import org.shpytchuk.ingest.publish.SiteItem;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import static org.shpytchuk.ingest.publish.telegram.CaptionBuilder.PHOTO_LIMIT;
 import static org.shpytchuk.ingest.publish.telegram.CaptionBuilder.TEXT_LIMIT;
@@ -28,7 +28,7 @@ public class ChannelPoster implements Publisher {
     private final BotApiClient bot;
     private final CaptionBuilder captions;
     private final BotProperties properties;
-    private final ChannelMessages messages;
+    private final PostLedger ledger;
 
     @Override
     public String name() {
@@ -43,35 +43,24 @@ public class ChannelPoster implements Publisher {
     @Override
     public void publish(Publication publication) {
         SiteItem item = Objects.requireNonNull(publication.siteItem());
-        if (!postOnce(item.kind(), item.id(), () -> ChannelPost.of(publication))) {
-            log.info("Post {} is already in the channel as {} item {}", publication.post().key(), item.kind().path(),
-                    item.id());
-        }
+        long messageId = post(ChannelPost.of(publication));
+        ledger.posted(item.kind(), item.id(), messageId);
+        log.info("Post {} posted to the channel as message {}", publication.post().key(), messageId);
     }
 
-    public boolean postOnce(ItemKind kind, long itemId, Supplier<ChannelPost> post) {
-        if (!messages.reserve(kind, itemId)) {
-            return false;
-        }
-        long messageId;
-        try {
-            messageId = post(post.get());
-        } catch (RuntimeException e) {
-            messages.release(kind, itemId);
-            throw e;
-        }
-        messages.posted(kind, itemId, messageId);
-        log.info("{} item {} posted to the channel as message {}", kind.path(), itemId, messageId);
-        return true;
+    public void postFromSite(String origin, ItemKind kind, long itemId, ChannelPost post) {
+        long messageId = post(post);
+        ledger.postedFromSite(origin, kind, itemId, messageId);
+        log.info("{} {} item {} posted to the channel as message {}", origin, kind.path(), itemId, messageId);
     }
 
     public boolean delete(ItemKind kind, long itemId) {
-        Optional<Long> messageId = messages.messageId(kind, itemId);
+        Optional<Long> messageId = ledger.messageId(kind, itemId);
         if (messageId.isEmpty()) {
             return false;
         }
         bot.deleteMessage(properties.publishChat(), messageId.get());
-        messages.forget(kind, itemId);
+        ledger.removedFromChannel(kind, itemId);
         return true;
     }
 

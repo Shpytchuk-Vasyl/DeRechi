@@ -27,7 +27,7 @@ DB-Postgres/
 │       ├── 008-claim-unlock-limit.postgresql.sql
 │       ├── 009-shedlock.postgresql.sql     # Worker's ShedLock table, no entity
 │       ├── ...
-│       └── 015-channel-message.postgresql.sql  # Ingest's posts in the Telegram channel
+│       └── 014-ingest-post-message-id.postgresql.sql  # ingest_post.message_id: the post in our channel
 ├── liquibase.properties                # for the Maven plugin; not under src/ on purpose
 ├── pom.xml
 └── src/main/
@@ -38,7 +38,7 @@ DB-Postgres/
     │   ├── found/       FoundItem, FoundItemHistory, FoundItemClaim
     │   ├── detail/      ContactInfo, Place
     │   ├── matching/    SimilarItem, Claim
-    │   └── ingest/      IngestPost, ChannelMessage
+    │   └── ingest/      IngestPost
     └── resources/application.yaml      # ddl-auto: validate, liquibase enabled
 ```
 

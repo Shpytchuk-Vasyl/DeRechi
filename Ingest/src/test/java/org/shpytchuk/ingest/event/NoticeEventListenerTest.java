@@ -17,7 +17,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 class NoticeEventListenerTest {
 
     private static final ItemCreatedEvent CREATED = new ItemCreatedEvent(7L, LocalDate.of(2026, 10, 9), "KEYS",
-            "Площа Ринок", "Ключі", null, null, "UAH", null);
+            "Площа Ринок", "Ключі", null, null, "UAH", null, "site");
 
     private final ChannelMirror mirror = mock(ChannelMirror.class);
     private final NoticeEventListener listener = new NoticeEventListener(mirror);

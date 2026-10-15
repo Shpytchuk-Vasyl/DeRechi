@@ -15,11 +15,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 @Slf4j
 public class PostLedger {
+
+    public static final String INTERNAL = "internal";
 
     private final IngestPostRepository repository;
     private final Clock clock;
@@ -49,6 +52,43 @@ public class PostLedger {
     @Transactional(readOnly = true)
     public boolean owns(ItemKind kind, long itemId) {
         return repository.existsByItemKindAndItemId(kind, itemId);
+    }
+
+    @Transactional
+    public void posted(ItemKind kind, long itemId, long messageId) {
+        IngestPost row = repository.findFirstByItemKindAndItemIdOrderByIdAsc(kind, itemId).orElseThrow();
+        row.setMessageId(messageId);
+        row.setUpdatedAt(clock.instant());
+    }
+
+    @Transactional
+    public void postedFromSite(String origin, ItemKind kind, long itemId, long messageId) {
+        IngestPost row = new IngestPost(new PostKey(origin, INTERNAL, internalId(kind, itemId)), PostStatus.PUBLISHED,
+                clock.instant());
+        row.setItemKind(kind);
+        row.setItemId(itemId);
+        row.setMessageId(messageId);
+        repository.save(row);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Long> messageId(ItemKind kind, long itemId) {
+        return repository.findByItemKindAndItemIdAndMessageIdNotNull(kind, itemId).stream()
+                .map(IngestPost::getMessageId)
+                .findFirst();
+    }
+
+    @Transactional
+    public void removedFromChannel(ItemKind kind, long itemId) {
+        Instant now = clock.instant();
+        repository.findByItemKindAndItemIdAndMessageIdNotNull(kind, itemId).forEach(row -> {
+            row.setMessageId(null);
+            row.setUpdatedAt(now);
+        });
+    }
+
+    static String internalId(ItemKind kind, long itemId) {
+        return kind.path() + "/" + itemId;
     }
 
     @Transactional

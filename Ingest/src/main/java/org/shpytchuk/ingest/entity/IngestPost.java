@@ -41,7 +41,11 @@ public class IngestPost {
     @Column(length = 5)
     private ItemKind itemKind;
 
+    @Column
     private Long itemId;
+
+    @Column
+    private Long messageId;
 
     @Column(nullable = false)
     private Instant createdAt;

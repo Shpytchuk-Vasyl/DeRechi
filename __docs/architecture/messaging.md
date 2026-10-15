@@ -170,9 +170,9 @@ hands NotifyHub `<event key>:<CHANNEL>`, NotifyHub keeps a one-hour window
 window lives in NotifyHub's in-memory store: it is per `Notification` instance and is lost on
 restart, so a redelivery after a restart or to a second instance is sent again. On the search side the insert into `similar_item` is keyed by
 `(found_item_id, lost_item_id)`, so reprocessing the same event does not create duplicates.
-`Ingest` reserves a `channel_message` row per notice before it posts, so a redelivered
-`created` finds the reservation and posts nothing; a redelivered `archived` or `deleted` finds
-no row and does nothing.
+`Ingest` writes an `internal` row in `ingest_post` once it has posted a notice, so a redelivered
+`created` finds the row and posts nothing (a crash between the post and the row posts it twice); a
+redelivered `archived` or `deleted` finds no `message_id` left and does nothing.
 
 ## Local development
 

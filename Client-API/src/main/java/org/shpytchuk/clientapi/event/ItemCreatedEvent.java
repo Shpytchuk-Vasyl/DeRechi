@@ -7,6 +7,8 @@ import java.time.LocalDate;
 
 @EventType("ITEM_CREATED")
 public class ItemCreatedEvent {
+    private static final String ORIGIN = "site";
+
     public Long id;
     public LocalDate date;
     public Long category;
@@ -19,6 +21,7 @@ public class ItemCreatedEvent {
     public Integer compensation;
     public String currency;
     public String image;
+    public String origin;
 
     public ItemCreatedEvent(ItemDto dto) {
         this.id = dto.id();
@@ -34,6 +37,7 @@ public class ItemCreatedEvent {
         this.compensation = money == null ? null : money.amount();
         this.currency = money == null ? null : money.currency();
         this.image = dto.image();
+        this.origin = ORIGIN;
     }
 
     @Override

@@ -90,6 +90,42 @@ class PostLedgerTests extends AbstractPostgresTests {
         assertThat(repository.findById(done).orElseThrow().getStatus()).isEqualTo(PostStatus.PUBLISHED);
     }
 
+    @Test
+    void anItemFromTheSiteIsRecordedWithItsMessageUnderItsOriginAndKind() {
+        ledger.postedFromSite("admin", ItemKind.FOUND, 8, 120);
+        ledger.postedFromSite("site", ItemKind.LOST, 8, 121);
+
+        IngestPost row = repository.findBySourceAndChannelAndExternalId("admin", "internal", "found/8").orElseThrow();
+        assertThat(row.getItemKind()).isEqualTo(ItemKind.FOUND);
+        assertThat(row.getItemId()).isEqualTo(8);
+        assertThat(row.getStatus()).isEqualTo(PostStatus.PUBLISHED);
+        assertThat(row.getPhoneHash()).isNull();
+        assertThat(ledger.owns(ItemKind.FOUND, 8)).isTrue();
+        assertThat(ledger.messageId(ItemKind.FOUND, 8)).contains(120L);
+        assertThat(ledger.messageId(ItemKind.LOST, 8)).as("lost 8 is another item").contains(121L);
+    }
+
+    @Test
+    void anItemLeavesTheChannelButStaysInTheLedger() {
+        ledger.postedFromSite("site", ItemKind.LOST, 7, 42);
+
+        ledger.removedFromChannel(ItemKind.LOST, 7);
+
+        assertThat(ledger.messageId(ItemKind.LOST, 7)).isEmpty();
+        assertThat(ledger.owns(ItemKind.LOST, 7)).isTrue();
+    }
+
+    @Test
+    void aPostFromASourceChatKeepsItsChannelMessageOnItsOwnRow() {
+        long rowId = ledger.record(post(6), PostStatus.PUBLISHING, "h", ItemKind.LOST);
+        ledger.published(rowId, 9);
+
+        ledger.posted(ItemKind.LOST, 9, 130);
+
+        assertThat(repository.findById(rowId).orElseThrow().getMessageId()).isEqualTo(130);
+        assertThat(ledger.messageId(ItemKind.LOST, 9)).contains(130L);
+    }
+
     static IncomingPost post(long messageId) {
         return Posts.telegram(messageId, "text", List.of(), NOW);
     }

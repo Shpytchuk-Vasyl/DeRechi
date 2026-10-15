@@ -16,7 +16,6 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -34,7 +33,7 @@ class ChannelMirrorTest {
 
     private static final byte[] PHOTO = {(byte) 0xFF, (byte) 0xD8};
     private static final ItemCreatedEvent EVENT = new ItemCreatedEvent(7L, LocalDate.of(2026, 10, 9), "KEYS",
-            "Площа Ринок", "Ключі", "Зв'язка з брелоком", 200, "UAH", "items/2026/10/keys.jpg");
+            "Площа Ринок", "Ключі", "Зв'язка з брелоком", 200, "UAH", "items/2026/10/keys.jpg", "admin");
 
     private final ChannelPoster poster = mock(ChannelPoster.class);
     private final PostLedger ledger = mock(PostLedger.class);
@@ -55,7 +54,7 @@ class ChannelMirrorTest {
 
         mirror(List.of("site", "channel")).created(ItemKind.FOUND, EVENT);
 
-        verify(poster, never()).postOnce(any(), anyLong(), any());
+        verify(poster, never()).postFromSite(any(), any(), anyLong(), any());
     }
 
     @Test
@@ -66,20 +65,18 @@ class ChannelMirrorTest {
         mirror(List.of("site", "channel")).created(ItemKind.FOUND, EVENT);
 
         verify(ledger, times(3)).publishing();
-        verify(poster, never()).postOnce(any(), anyLong(), any());
+        verify(poster, never()).postFromSite(any(), any(), anyLong(), any());
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void postsAnItemFromTheSiteWithWhatTheEventCarries() {
         when(photos.load("items/2026/10/keys.jpg")).thenReturn(PHOTO);
-        when(poster.postOnce(eq(ItemKind.FOUND), eq(7L), any())).thenReturn(true);
 
         mirror(List.of("site", "channel")).created(ItemKind.FOUND, EVENT);
 
-        ArgumentCaptor<Supplier<ChannelPost>> post = ArgumentCaptor.forClass(Supplier.class);
-        verify(poster).postOnce(eq(ItemKind.FOUND), eq(7L), post.capture());
-        ChannelPost built = post.getValue().get();
+        ArgumentCaptor<ChannelPost> post = ArgumentCaptor.forClass(ChannelPost.class);
+        verify(poster).postFromSite(eq("admin"), eq(ItemKind.FOUND), eq(7L), post.capture());
+        ChannelPost built = post.getValue();
         assertThat(built.title()).isEqualTo("Ключі");
         assertThat(built.placeName()).isEqualTo("Площа Ринок");
         assertThat(built.compensation()).isEqualTo(new Money(200, "UAH"));

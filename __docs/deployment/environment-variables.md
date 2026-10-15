@@ -178,7 +178,7 @@ except where the table says otherwise. An empty `TELEGRAM_API_ID`/`TELEGRAM_API_
 
 | Variable | YAML default | Compose default | Purpose |
 |---|---|---|---|
-| `POSTGRES_*`, `RABBITMQ_*` | see above | see above | the `ingest_post` and `channel_message` tables; `ingest.queue` (`derechi.events.queue` in the YAML) for the notices from the site |
+| `POSTGRES_*`, `RABBITMQ_*` | see above | see above | the `ingest_post` table; `ingest.queue` (`derechi.events.queue` in the YAML) for the notices from the site |
 | `INGEST_IN_FLIGHT_WAIT` | `PT90S` | not set | how long a notice created on the site waits while the pipeline is publishing one of its own (an `ingest_post` row in `PUBLISHING`), before `Ingest` decides whether it already has it |
 | `INGEST_JAVA_OPTS` | n/a | `-Xms64m -Xmx384m -XX:MaxMetaspaceSize=192m -XX:-UseG1GC -XX:+UseSerialGC --enable-native-access=ALL-UNNAMED` | this service's `JAVA_OPTS` instead of the shared one. TDLib, ONNX Runtime and Tesseract are native and live outside the heap, so keep `-Xmx` well below the memory limit. `--enable-native-access` silences the JDK's warnings for JNI/JNA |
 | `INGEST_MEMORY` | n/a | `1g` | memory limit of the container, instead of `SERVICE_MEMORY` |

@@ -112,8 +112,8 @@ class LostItemAdminServiceTest {
         verify(publisher).publish(eq("notice.status.exchange"), eq("notice.lost.created"), event.capture());
         assertThat(event.getValue()).extracting(ItemCreatedEvent::id, ItemCreatedEvent::category,
                         ItemCreatedEvent::categoryKey, ItemCreatedEvent::lat, ItemCreatedEvent::lon,
-                        ItemCreatedEvent::placeName, ItemCreatedEvent::title)
-                .containsExactly(7L, 1L, "KEYS", 52.2, 21.0, "Park", "Рюкзак");
+                        ItemCreatedEvent::placeName, ItemCreatedEvent::title, ItemCreatedEvent::origin)
+                .containsExactly(7L, 1L, "KEYS", 52.2, 21.0, "Park", "Рюкзак", "admin");
     }
 
     @Test

@@ -7,7 +7,7 @@ Imports lost-and-found notices from outside sources and publishes them. The sour
 | Port | 8086 (serves nothing public); actuator on the management port 9086 |
 | Consumes | Telegram updates (TDLib through TDLight); Facebook group pages and the group feed query of `www.facebook.com`, polled; `ingest.queue` (`notice.*.created`, `notice.*.archived`, `notice.*.deleted` from `notice.status.exchange`) |
 | Produces | notices through the API entry, Caddy for now (`createLostItem` / `createFoundItem`), photos in MinIO, posts in our Telegram channel and the review chat (Bot API), deletions of channel posts; no events |
-| Needs | PostgreSQL (`ingest_post`, `channel_message`), RabbitMQ, the API entry (Caddy) with Client-API behind it, MinIO; OpenRouter, Google Places, Telegram, Facebook |
+| Needs | PostgreSQL (`ingest_post`), RabbitMQ, the API entry (Caddy) with Client-API behind it, MinIO; OpenRouter, Google Places, Telegram, Facebook |
 | Stack | TDLight Java (TDLib 1.8.66), libphonenumber, Tess4J + system Tesseract, ONNX Runtime + YuNet, Spring for GraphQL client, Spring Cloud AWS S3, Lombok |
 | Instances | exactly one: the TDLib session cannot be shared |
 
@@ -32,7 +32,7 @@ One package per stage. The root of a stage package is what the pipeline sees: th
 | `pipeline/` | `IngestQueue`, `IngestPipeline`, `PostLedger`, `IngestMetrics`, `Notice`, `Notices` |
 | `publish/` | `Publisher`, `Publishers` (runs the list of `INGEST_PUBLISHERS`), `Publication`, `SiteItem`, `SkippedPost` |
 | `publish/site/` | `SitePublisher` (`site`), `ImageUploader` / `S3ImageUploader` (MinIO) |
-| `publish/telegram/` | `ChannelPoster` (`channel`; `postOnce` and `delete` for one notice), `ChannelMirror` (notices from the site), `ChannelMessages` (`channel_message`), `StoredPhotos` (a photo from the bucket by key), `ReviewChat` (`review`), `BotApiClient`, `CaptionBuilder`, `ChannelPost` |
+| `publish/telegram/` | `ChannelPoster` (`channel`; `postFromSite` and `delete` for one notice), `ChannelMirror` (notices from the site), `StoredPhotos` (a photo from the bucket by key), `ReviewChat` (`review`), `BotApiClient`, `CaptionBuilder`, `ChannelPost` |
 | `event/` | `NoticeEventListener` (`ingest.queue`), `ItemCreatedEvent`, `ItemArchivedEvent`, `ItemDeletedEvent`, `EventType`, `EventTypeScanner`: copied per module like in the other consumers |
 | `client/` | `DeRechiApi` / `GraphQlDeRechiApi` and `NewItem`: Client-API, used by the pipeline (categories, countries) and by `site`; `HttpCalls` for every HTTP client |
 | `model/` | `ItemKind`, `Money`, `SocialMedia`, `Outcome`: the values shared by the model's answer, the notice, the ledger, the publishers and the metrics |
@@ -63,7 +63,7 @@ A new source (a website, say) is one `@Component` implementing `PostSource` with
 - A publisher whose `needsSiteItem()` is true (`channel`) links to the notice page instead of carrying contacts; the start fails if it is listed without `site`.
 - Publishers are independent: a failing one is logged (`WARN`) and counted in `derechi.ingest.published{publisher,outcome}`, the others still run, and the ledger status stays what `site` set. Skipped posts go to `Publisher.skipped`, which only `review` uses.
 
-`channel` reserves the notice in `channel_message` before it posts and keeps the message id there (`ChannelPoster.postOnce`), the same way as `ChannelMirror` does for notices from the site, so a notice is posted once whichever comes first, and its post can be deleted when the notice is archived or deleted.
+`channel` keeps the id of its post in `ingest_post.message_id` of the post's own row (`PostLedger.posted`). A notice from the site gets a row of its own once `ChannelMirror` has posted it (`PostLedger.postedFromSite`: `source` `site` or `admin`, `channel` `internal`, `external_id` `lost/7`, status `PUBLISHED`, the message id), and a notice that already has a row in `ingest_post` is not posted again. Either post can be deleted when the notice is archived or deleted.
 
 Each publisher turns the `Notice` into its own format (`SitePublisher` into Client-API's `NewItem`, `ChannelPost.of` into a channel post), so the pipeline knows none of them.
 
@@ -83,4 +83,4 @@ A new publisher (a Viber group, say) is one `@Component` implementing `Publisher
 
 ## Tests
 
-Unit tests per stage (`*Test`), HTTP clients against `MockRestServiceServer`, `PostLedgerTests`, `ChannelMessagesTests` and `IngestApplicationTests` on the Testcontainers database with `ddl-auto=validate`. Nothing talks to Telegram, OpenRouter or Google; `TesseractOcrEngineIT` runs only when `TESSDATA_PREFIX` is set. `support/Posts` and `support/Outputs` build the shared test posts and notices, `support/Images` the noise images and the variance check of the redaction tests.
+Unit tests per stage (`*Test`), HTTP clients against `MockRestServiceServer`, `PostLedgerTests` and `IngestApplicationTests` on the Testcontainers database with `ddl-auto=validate`. Nothing talks to Telegram, OpenRouter or Google; `TesseractOcrEngineIT` runs only when `TESSDATA_PREFIX` is set. `support/Posts` and `support/Outputs` build the shared test posts and notices, `support/Images` the noise images and the variance check of the redaction tests.

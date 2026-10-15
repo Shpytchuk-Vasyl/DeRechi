@@ -22,6 +22,8 @@ public class ChannelMirror {
 
     private static final String POSTED = "posted";
     private static final String DELETED = "deleted";
+    private static final String SITE = "site";
+    private static final String ADMIN = "admin";
 
     private final ChannelPoster poster;
     private final PostLedger ledger;
@@ -39,16 +41,13 @@ public class ChannelMirror {
         }
         awaitPipelinePublish();
         if (ledger.owns(kind, event.id())) {
-            log.debug("{} item {} came from a source chat, the pipeline posts it", kind.path(), event.id());
+            log.debug("{} item {} is already in the ledger, nothing to post", kind.path(), event.id());
             return;
         }
         try {
-            boolean posted = poster.postOnce(kind, event.id(),
-                    () -> ChannelPost.of(kind, event, photos.load(event.image()), ingest.itemUrl(kind, event.id())));
-            metrics.channel(POSTED, posted ? "ok" : "skipped");
-            if (!posted) {
-                log.info("{} item {} is already in the channel", kind.path(), event.id());
-            }
+            poster.postFromSite(origin(event), kind, event.id(),
+                    ChannelPost.of(kind, event, photos.load(event.image()), ingest.itemUrl(kind, event.id())));
+            metrics.channel(POSTED, "ok");
         } catch (RuntimeException e) {
             metrics.channel(POSTED, "failed");
             throw e;
@@ -72,6 +71,10 @@ public class ChannelMirror {
             log.warn("{} item {} is {}, but its channel message stays: {}", kind.path(), itemId, reason,
                     e.getMessage());
         }
+    }
+
+    private static String origin(ItemCreatedEvent event) {
+        return ADMIN.equals(event.origin()) ? ADMIN : SITE;
     }
 
     private boolean enabled() {

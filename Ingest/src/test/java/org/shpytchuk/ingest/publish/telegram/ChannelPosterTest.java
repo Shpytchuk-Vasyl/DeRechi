@@ -6,6 +6,7 @@ import org.shpytchuk.ingest.exception.IngestException;
 import org.shpytchuk.ingest.exception.StageUnavailableException;
 import org.shpytchuk.ingest.model.ItemKind;
 import org.shpytchuk.ingest.model.Money;
+import org.shpytchuk.ingest.pipeline.PostLedger;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -30,7 +31,7 @@ class ChannelPosterTest {
 
     private final BotApiClient bot = mock(BotApiClient.class);
     private final CaptionBuilder captions = CaptionBuilderTest.builder("uk");
-    private final ChannelMessages messages = mock(ChannelMessages.class);
+    private final PostLedger ledger = mock(PostLedger.class);
 
     @Test
     void postsPhotoWithCaption() {
@@ -70,53 +71,38 @@ class ChannelPosterTest {
     }
 
     @Test
-    void postsAnItemOnceAndKeepsItsMessage() {
-        when(messages.reserve(ItemKind.FOUND, 7L)).thenReturn(true);
+    void postsAnItemFromTheSiteAndKeepsItsMessage() {
         when(bot.sendMessage(anyString(), anyString())).thenReturn(12L);
 
-        boolean posted = poster(properties("@derechi", "")).postOnce(ItemKind.FOUND, 7L,
-                () -> post(null, "https://derechi.site/uk/found/7"));
+        poster(properties("@derechi", "")).postFromSite("site", ItemKind.FOUND, 7L,
+                post(null, "https://derechi.site/uk/found/7"));
 
-        assertThat(posted).isTrue();
-        verify(messages).posted(ItemKind.FOUND, 7L, 12L);
+        verify(ledger).postedFromSite("site", ItemKind.FOUND, 7L, 12L);
     }
 
     @Test
-    void anItemAlreadyReservedIsNotPostedAgain() {
-        when(messages.reserve(ItemKind.FOUND, 7L)).thenReturn(false);
-
-        boolean posted = poster(properties("@derechi", "")).postOnce(ItemKind.FOUND, 7L,
-                () -> post(null, "https://derechi.site/uk/found/7"));
-
-        assertThat(posted).isFalse();
-        verifyNoInteractions(bot);
-    }
-
-    @Test
-    void aFailedPostReleasesTheReservation() {
-        when(messages.reserve(ItemKind.FOUND, 7L)).thenReturn(true);
+    void aFailedPostRecordsNothing() {
         when(bot.sendMessage(anyString(), anyString())).thenThrow(new IngestException("Bot API sendMessage failed"));
 
-        assertThatThrownBy(() -> poster(properties("@derechi", "")).postOnce(ItemKind.FOUND, 7L,
-                () -> post(null, "https://x"))).isInstanceOf(IngestException.class);
+        assertThatThrownBy(() -> poster(properties("@derechi", "")).postFromSite("site", ItemKind.FOUND, 7L,
+                post(null, "https://x"))).isInstanceOf(IngestException.class);
 
-        verify(messages).release(ItemKind.FOUND, 7L);
-        verify(messages, never()).posted(any(), anyLong(), anyLong());
+        verify(ledger, never()).postedFromSite(any(), any(), anyLong(), anyLong());
     }
 
     @Test
     void deletesTheMessageOfAnItemAndForgetsIt() {
-        when(messages.messageId(ItemKind.LOST, 7L)).thenReturn(Optional.of(12L));
+        when(ledger.messageId(ItemKind.LOST, 7L)).thenReturn(Optional.of(12L));
 
         assertThat(poster(properties("@derechi", "")).delete(ItemKind.LOST, 7L)).isTrue();
 
         verify(bot).deleteMessage("@derechi", 12L);
-        verify(messages).forget(ItemKind.LOST, 7L);
+        verify(ledger).removedFromChannel(ItemKind.LOST, 7L);
     }
 
     @Test
     void anItemWithoutAMessageHasNothingToDelete() {
-        when(messages.messageId(ItemKind.LOST, 7L)).thenReturn(Optional.empty());
+        when(ledger.messageId(ItemKind.LOST, 7L)).thenReturn(Optional.empty());
 
         assertThat(poster(properties("@derechi", "")).delete(ItemKind.LOST, 7L)).isFalse();
 
@@ -125,18 +111,18 @@ class ChannelPosterTest {
 
     @Test
     void aMessageTheBotCannotDeleteStaysOnRecord() {
-        when(messages.messageId(ItemKind.LOST, 7L)).thenReturn(Optional.of(12L));
+        when(ledger.messageId(ItemKind.LOST, 7L)).thenReturn(Optional.of(12L));
         doThrow(new IngestException("Bot API deleteMessage failed: 400 message can't be deleted"))
                 .when(bot).deleteMessage("@derechi", 12L);
 
         assertThatThrownBy(() -> poster(properties("@derechi", "")).delete(ItemKind.LOST, 7L))
                 .isInstanceOf(IngestException.class);
 
-        verify(messages, never()).forget(any(), anyLong());
+        verify(ledger, never()).removedFromChannel(any(), anyLong());
     }
 
     private ChannelPoster poster(BotProperties properties) {
-        return new ChannelPoster(bot, captions, properties, messages);
+        return new ChannelPoster(bot, captions, properties, ledger);
     }
 
     private static BotProperties properties(String publishChat, String reviewChat) {

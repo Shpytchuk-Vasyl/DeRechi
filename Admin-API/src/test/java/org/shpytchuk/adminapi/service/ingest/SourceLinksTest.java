@@ -52,6 +52,17 @@ class SourceLinksTest {
     }
 
     @Test
+    void notesOfTheSiteAndTheAdminPanelInTheChannelGiveNoLink() {
+        when(repository.findByItemKindAndItemIdInOrderByIdAsc(eq("LOST"), any())).thenReturn(List.of(
+                post("telegram", "-1001234567890", Long.toString(42L << 20), 1L),
+                post("site", "internal", "lost/1", 1L),
+                post("admin", "internal", "lost/2", 2L)));
+
+        assertThat(links.of(Scope.LOST_ITEM, List.of(1L, 2L)))
+                .containsExactly(Map.entry(1L, "https://t.me/c/1234567890/42"));
+    }
+
+    @Test
     void historyScopesAndEmptyPagesDoNotQuery() {
         assertThat(links.of(Scope.LOST_ITEM_HISTORY, List.of(1L))).isEmpty();
         assertThat(links.of(Scope.LOST_ITEM, List.of())).isEmpty();
