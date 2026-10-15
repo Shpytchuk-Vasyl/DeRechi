@@ -5,7 +5,7 @@ import org.shpytchuk.adminapi.config.property.NoticeStatusProperties;
 import org.shpytchuk.adminapi.entity.thing.Thing;
 import org.shpytchuk.adminapi.event.ArchiveRequestedEvent;
 import org.shpytchuk.adminapi.event.ItemCreatedEvent;
-import org.shpytchuk.adminapi.event.NoticeEvent;
+import org.shpytchuk.adminapi.event.ItemDeletedEvent;
 import org.shpytchuk.adminapi.form.ItemForm;
 import org.shpytchuk.adminapi.mapper.ItemFormApplier;
 import org.shpytchuk.adminapi.repository.detail.ContactInfoRepository;
@@ -59,7 +59,7 @@ public abstract class ArchivableAdminItemService<T extends Thing> extends AdminI
     @Transactional
     public DeletedItem delete(Long id) {
         DeletedItem deleted = super.delete(id);
-        publisher.publish(noticeStatus.exchange(), kind().noticeKey(DELETED), new NoticeEvent(id));
+        publisher.publish(noticeStatus.exchange(), kind().noticeKey(DELETED), new ItemDeletedEvent(id));
         return deleted;
     }
 

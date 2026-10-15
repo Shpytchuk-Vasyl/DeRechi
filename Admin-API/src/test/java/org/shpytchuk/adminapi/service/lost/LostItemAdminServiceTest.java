@@ -15,7 +15,7 @@ import org.shpytchuk.adminapi.entity.lost.LostItemHistory;
 import org.shpytchuk.adminapi.entity.thing.ThingCategory;
 import org.shpytchuk.adminapi.event.ArchiveRequestedEvent;
 import org.shpytchuk.adminapi.event.ItemCreatedEvent;
-import org.shpytchuk.adminapi.event.NoticeEvent;
+import org.shpytchuk.adminapi.event.ItemDeletedEvent;
 import org.shpytchuk.adminapi.exception.NotFoundException;
 import org.shpytchuk.adminapi.form.ItemForm;
 import org.shpytchuk.adminapi.mapper.ItemFormApplier;
@@ -123,7 +123,7 @@ class LostItemAdminServiceTest {
 
         service.delete(7L);
 
-        verify(publisher).publish("notice.status.exchange", "notice.lost.deleted", new NoticeEvent(7L));
+        verify(publisher).publish("notice.status.exchange", "notice.lost.deleted", new ItemDeletedEvent(7L));
     }
 
     @Test

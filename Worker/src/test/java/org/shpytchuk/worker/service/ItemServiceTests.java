@@ -160,6 +160,37 @@ class ItemServiceTests extends AbstractRepositoryTests {
     }
 
     @Test
+    void findsACandidateByTheWordsOfTheDescription() {
+        LostItem wallet = lost("Black leather wallet", null);
+
+        assertThat(service.findMostSuitable(event("Purse", null))).isEmpty();
+        assertThat(service.findMostSuitable(event("Purse", "black leather, two zips")))
+                .extracting(MatchCandidate::id).containsExactly(wallet.getId());
+    }
+
+    @Test
+    void ranksByTheTitleAndTheDescriptionTogether() {
+        LostItem titleOnly = lost("Purse with zips", null);
+        LostItem titleAndDescription = lost("Purse", "black leather, two zips");
+
+        List<MatchCandidate> found = service.findMostSuitable(event("Purse", "black leather, two zips"));
+
+        assertThat(found).extracting(MatchCandidate::id)
+                .containsExactly(titleAndDescription.getId(), titleOnly.getId());
+        assertThat(found.get(0).rank())
+                .isCloseTo(rank("english", titleAndDescription.getId(), "purse | black | leather | two | zips"),
+                        within(1e-6));
+    }
+
+    @Test
+    void searchesByTheDescriptionWhenTheTitleIsBlank() {
+        LostItem wallet = lost("Black leather wallet", null);
+
+        assertThat(service.findMostSuitable(event("  ", "black leather")))
+                .extracting(MatchCandidate::id).containsExactly(wallet.getId());
+    }
+
+    @Test
     void readsTheCandidatesAndTheirRanksInOneQuery() {
         for (int i = 0; i < 7; i++) {
             lost("Wallet " + i, null);
@@ -176,7 +207,7 @@ class ItemServiceTests extends AbstractRepositoryTests {
     }
 
     @Test
-    void findsNothingWhenTheTitleIsBlank() {
+    void findsNothingWhenTheTitleAndTheDescriptionAreBlank() {
         lost("Wallet", null);
 
         assertThat(service.findMostSuitable(event("  "))).isEmpty();
@@ -191,6 +222,12 @@ class ItemServiceTests extends AbstractRepositoryTests {
 
     private ItemCreatedEvent event(String title) {
         return Fixtures.created(1000L, title, DATE, wallets.getId(), LAT, LON);
+    }
+
+    private ItemCreatedEvent event(String title, String description) {
+        ItemCreatedEvent event = event(title);
+        event.setDescription(description);
+        return event;
     }
 
     private LostItem lost(String title, String description) {

@@ -1,6 +1,6 @@
 # Add an event
 
-A new asynchronous message between services over RabbitMQ. The pattern is already in place several times (`ITEM_CREATED` from `Client-API` and `Admin-API` to `Worker` and `Ingest`, `NOTICE` from `Worker` and `Admin-API` to `Ingest`, `NOTIFICATION` from `Admin-API` and `Worker` to `Notification`); copy it rather than inventing another way.
+A new asynchronous message between services over RabbitMQ. The pattern is already in place several times (`ITEM_CREATED` from `Client-API` and `Admin-API` to `Worker` and `Ingest`, `ITEM_ARCHIVED` from `Worker` and `ITEM_DELETED` from `Admin-API` to `Ingest`, `NOTIFICATION` from `Admin-API` and `Worker` to `Notification`); copy it rather than inventing another way.
 
 ## Before you start
 

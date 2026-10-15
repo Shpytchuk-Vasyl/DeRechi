@@ -7,7 +7,7 @@ import org.mockito.InOrder;
 import org.shpytchuk.worker.entity.lost.LostItemClaim;
 import org.shpytchuk.worker.entity.lost.LostItem;
 import org.shpytchuk.worker.entity.lost.LostItemHistory;
-import org.shpytchuk.worker.event.NoticeEvent;
+import org.shpytchuk.worker.event.ItemArchivedEvent;
 import org.shpytchuk.worker.repository.lost.LostItemClaimRepository;
 import org.shpytchuk.worker.repository.lost.LostItemHistoryRepository;
 import org.shpytchuk.worker.repository.lost.LostItemRepository;
@@ -82,7 +82,7 @@ class ItemArchiverTest {
         assertThat(claim.getItem()).as("the live link is cleared").isNull();
         assertThat(claim.getArchivedItem()).as("the claim follows the item into the archive").isSameAs(saved.getValue());
         assertThat(claim.getContactInfo()).as("the claimant's contacts stay").isNotNull();
-        verify(publisher).publish("notice.status.exchange", "notice.lost.archived", new NoticeEvent(1L));
+        verify(publisher).publish("notice.status.exchange", "notice.lost.archived", new ItemArchivedEvent(1L));
     }
 
     @Test

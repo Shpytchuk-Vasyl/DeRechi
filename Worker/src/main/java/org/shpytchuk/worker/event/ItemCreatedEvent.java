@@ -17,4 +17,5 @@ public class ItemCreatedEvent {
     private Double lat;
     private Double lon;
     private String title;
+    private String description;
 }

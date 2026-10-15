@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.shpytchuk.worker.config.ArchiveProperties;
 import org.shpytchuk.worker.entity.matching.Claim;
 import org.shpytchuk.worker.entity.thing.Thing;
-import org.shpytchuk.worker.event.NoticeEvent;
+import org.shpytchuk.worker.event.ItemArchivedEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +44,7 @@ public class ItemArchiver {
         claims.forEach(claim -> claim.moveToArchive(history));
         ops.claims().saveAll(claims);
         ops.items().delete(item);
-        publisher.publish(properties.exchange(), ops.kind().noticeKey(ARCHIVED), new NoticeEvent(itemId));
+        publisher.publish(properties.exchange(), ops.kind().noticeKey(ARCHIVED), new ItemArchivedEvent(itemId));
 
         log.info("Archived {} item {} as history {}: {} matches deleted, {} claims moved",
                 ops.kind(), itemId, history.getId(), matches, claims.size());

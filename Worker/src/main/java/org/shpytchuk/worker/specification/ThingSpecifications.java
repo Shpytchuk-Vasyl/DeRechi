@@ -28,13 +28,14 @@ public final class ThingSpecifications {
     private ThingSpecifications() {
     }
 
-    public static <T extends Thing> Specification<T> byFilter(ItemCreatedEvent event, SearchLanguage language) {
+    public static <T extends Thing> Specification<T> byFilter(ItemCreatedEvent event, String text,
+                                                              SearchLanguage language) {
         LocalDate date = event.getDate();
 
         return ThingSpecifications.<T>categoryIs(event.getCategory())
                 .and(dateBetween(date.minus(PERIOD), date.plus(PERIOD)))
                 .and(nearTo(event.getLat(), event.getLon()))
-                .and(relevantTo(event.getTitle(), language));
+                .and(relevantTo(text, language));
     }
 
     private static <T extends Thing> Specification<T> categoryIs(Long categoryId) {
@@ -45,15 +46,15 @@ public final class ThingSpecifications {
         return (root, query, cb) -> cb.between(root.get("date"), from, to);
     }
 
-    public static Expression<Double> matchRank(Root<? extends Thing> root, CriteriaBuilder cb, String title,
+    public static Expression<Double> matchRank(Root<? extends Thing> root, CriteriaBuilder cb, String text,
                                                SearchLanguage language) {
-        return cb.function(language.matchRankFunction(), Double.class, document(root, cb), cb.literal(title));
+        return cb.function(language.matchRankFunction(), Double.class, document(root, cb), cb.literal(text));
     }
 
-    private static <T extends Thing> Specification<T> relevantTo(String title, SearchLanguage language) {
-        return (root, query, cb) -> StringUtils.hasText(title)
+    private static <T extends Thing> Specification<T> relevantTo(String text, SearchLanguage language) {
+        return (root, query, cb) -> StringUtils.hasText(text)
                 ? cb.isTrue(cb.function(language.sharesWordsFunction(), Boolean.class, document(root, cb),
-                        cb.literal(title)))
+                        cb.literal(text)))
                 : cb.disjunction();
     }
 

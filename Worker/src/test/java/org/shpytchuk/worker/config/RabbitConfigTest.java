@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.shpytchuk.worker.entity.detail.ContactInfo.SocialMediaEnum;
 import org.shpytchuk.worker.event.ArchiveRequestedEvent;
 import org.shpytchuk.worker.event.ClaimEvent;
+import org.shpytchuk.worker.event.ItemArchivedEvent;
 import org.shpytchuk.worker.event.ItemCreatedEvent;
 import org.shpytchuk.worker.event.NotificationRequestedEvent;
 import org.springframework.amqp.core.Message;
@@ -38,14 +39,16 @@ class RabbitConfigTest {
     }
 
     @Test
-    void readsAnItemCreatedEventWithFieldsOnlyIngestNeeds() {
+    void readsTheDescriptionOfAnItemCreatedEventAndIgnoresWhatOnlyIngestNeeds() {
         Object event = converter.fromMessage(message("ITEM_CREATED",
                 "{\"id\":7,\"date\":\"2026-09-10\",\"category\":2,\"categoryKey\":\"WALLET\",\"lat\":49.84,"
                         + "\"lon\":24.03,\"placeName\":\"Rynok Square\",\"title\":\"Wallet\",\"description\":\"Brown\","
                         + "\"compensation\":500,\"currency\":\"UAH\",\"image\":\"items/2026/09/a.jpg\"}"));
 
-        assertThat(event).isInstanceOfSatisfying(ItemCreatedEvent.class,
-                created -> assertThat(created.getId()).isEqualTo(7L));
+        assertThat(event).isInstanceOfSatisfying(ItemCreatedEvent.class, created -> {
+            assertThat(created.getId()).isEqualTo(7L);
+            assertThat(created.getDescription()).isEqualTo("Brown");
+        });
     }
 
     @Test
@@ -74,6 +77,14 @@ class RabbitConfigTest {
         assertThat(new String(message.getBody(), StandardCharsets.UTF_8))
                 .contains("\"deduplicationKey\":\"claim:lost:42\"")
                 .contains("\"socialMedias\":[\"VIBER\"]");
+    }
+
+    @Test
+    void labelsAnArchivedItemWithItsTypeId() {
+        Message message = converter.toMessage(new ItemArchivedEvent(7L), new MessageProperties());
+
+        assertThat(message.getMessageProperties().getHeaders()).containsEntry("__TypeId__", "ITEM_ARCHIVED");
+        assertThat(new String(message.getBody(), StandardCharsets.UTF_8)).isEqualTo("{\"id\":7}");
     }
 
     private static Message message(String typeId, String json) {

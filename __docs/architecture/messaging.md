@@ -46,21 +46,21 @@ Prometheus metrics on 15692.
 | Event | Type id | Producer | Exchange and routing key | Consumer |
 |---|---|---|---|---|
 | `ItemCreatedEvent` | `ITEM_CREATED` | `Client-API`, `ItemEventAspect` after `ItemService.create(...)` returns; `Admin-API`, `ArchivableAdminItemService.create(form)` after the commit | `notice.status.exchange`, `notice.lost.created` or `notice.found.created` | `Worker`, `WorkerQueueListener.onItemCreated`; `Ingest`, `NoticeEventListener.onCreated` |
-| `NoticeEvent` | `NOTICE` | `Worker`, `ItemArchiver.archive(kind, id)` after the commit | `notice.status.exchange` (from `derechi.archive.exchange`), `notice.lost.archived`, `notice.found.archived` | `Ingest`, `NoticeEventListener.onNotice` |
-| `NoticeEvent` | `NOTICE` | `Admin-API`, `ArchivableAdminItemService.delete(id)` after the commit | `notice.status.exchange` (from `derechi.notice-status.exchange`), `notice.lost.deleted`, `notice.found.deleted` | `Ingest`, `NoticeEventListener.onNotice` |
+| `ItemArchivedEvent` | `ITEM_ARCHIVED` | `Worker`, `ItemArchiver.archive(kind, id)` after the commit | `notice.status.exchange` (from `derechi.archive.exchange`), `notice.lost.archived`, `notice.found.archived` | `Ingest`, `NoticeEventListener.onArchived` |
+| `ItemDeletedEvent` | `ITEM_DELETED` | `Admin-API`, `ArchivableAdminItemService.delete(id)` after the commit | `notice.status.exchange` (from `derechi.notice-status.exchange`), `notice.lost.deleted`, `notice.found.deleted` | `Ingest`, `NoticeEventListener.onDeleted` |
 | `ClaimEvent` | `CLAIM` | `Client-API`, `ClaimEventAspect` after `ClaimService.claim(..)` / `confirm(..)` / `markPaid(..)` returns | `claims.exchange`, `claim.<kind>.claimed`, `claim.<kind>.paid`; `notice.status.exchange`, `notice.<kind>.returned` | `Worker`, `WorkerQueueListener.onClaim` |
 | `ArchiveRequestedEvent` | `ARCHIVE_REQUESTED` | `Admin-API`, `AdminItemService.archive(id, actor)` | `notice.action.exchange` (from `derechi.archive.exchange`), `notice.lost.archive`, `notice.found.archive` | `Worker`, `WorkerQueueListener.onArchiveRequested` |
 | `NotificationRequestedEvent` | `NOTIFICATION` | `Admin-API`, `MatchNotificationService.notifyOwner(...)` | `notification.exchange`, `notification.match.found` (from `derechi.notifications.routing-key`) | `Notification`, `NotificationRequestedListener` |
 | `NotificationRequestedEvent` | `NOTIFICATION` | `Worker`, `ClaimNotifier` | `notification.exchange`, `notification.claim.created`, `notification.claim.reminder`, `notification.claim.unlocked` | `Notification`, `NotificationRequestedListener` |
 
 `ItemCreatedEvent` carries what matching needs (`id`, `date`, `category` (id), `lat`, `lon`,
-`title`) and what a channel post needs, so `Ingest` does not read the notice tables:
-`categoryKey`, `placeName`, `description`, `compensation`, `currency` and `image` (the storage
-key). `Worker` ignores the second half; Jackson 3 skips unknown properties. The routing key
+`title`, `description`) and what a channel post needs, so `Ingest` does not read the notice tables:
+`categoryKey`, `placeName`, `compensation`, `currency` and `image` (the storage key). `Worker`
+ignores the fields only `Ingest` uses; Jackson 3 skips unknown properties. The routing key
 says whether it was a lost or a found notice; the payload does not.
 
-`NoticeEvent` carries only the `id` of the live notice: for `archived` the id it had before
-`Worker` moved it into history, not the id of the history copy.
+`ItemArchivedEvent` and `ItemDeletedEvent` carry only the `id` of the live notice: for an archived
+one the id it had before `Worker` moved it into history, not the id of the history copy.
 
 `NotificationRequestedEvent` carries `subject`, `message` (already localized by the
 producer), `phone`, `email`, `socialMedias` and a `deduplicationKey`. Contacts the chosen
@@ -99,8 +99,9 @@ for both kinds. A payload class without a method lands in the `@RabbitHandler(is
 method, which rejects it.
 
 `Ingest` does the same on `ingest.queue` with `NoticeEventListener`: `onCreated` for
-`ItemCreatedEvent`, `onNotice` for `NoticeEvent`. It reads the kind and the verb from the routing
-key (`notice.<kind>.<verb>`) and rejects any other key; the work is in
+`ItemCreatedEvent`, `onArchived` for `ItemArchivedEvent`, `onDeleted` for `ItemDeletedEvent`. It reads
+the kind from the routing key (`notice.<kind>.<verb>`) and rejects a key whose verb does not match the
+event; the work is in
 [`ChannelMirror`](../features/telegram-ingest.md#notices-from-the-site).
 
 Never put a second `@RabbitListener` on the same queue: two listeners on one queue are

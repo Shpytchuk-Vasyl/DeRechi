@@ -8,7 +8,7 @@ has no HTTP API; the only endpoints are actuator's.
 |---|---|
 | Port | 8085 (serves nothing public); actuator on the management port 9085 |
 | Consumes | one queue, `worker.queue`, bound to `notice.status.exchange` with `notice.*.created` and `notice.*.returned`, to `claims.exchange` with `claim.*.claimed` and `claim.*.paid`, and to `notice.action.exchange` with `notice.*.archive` |
-| Produces | `NotificationRequestedEvent` on `notification.exchange` (`notification.claim.*`); `NoticeEvent` on `notice.status.exchange` (`notice.<kind>.archived`, after the commit of every archiving) |
+| Produces | `NotificationRequestedEvent` on `notification.exchange` (`notification.claim.*`); `ItemArchivedEvent` on `notice.status.exchange` (`notice.<kind>.archived`, after the commit of every archiving) |
 | Needs | PostgreSQL, RabbitMQ |
 | Stack | Spring AMQP, Spring Data JPA, Hibernate Spatial + JTS, optimaize `language-detector`, libphonenumber, ShedLock, Lombok |
 
@@ -37,14 +37,17 @@ has no HTTP API; the only endpoints are actuator's.
 
 ## The query
 
-`ThingSpecifications.byFilter(event, language)` combines four predicates and the order:
+The search text is the new notice's title and description joined by a space (`ItemService.searchText`);
+the language is detected on it, and it is what the candidates must share words with and are ranked
+against. `ThingSpecifications.byFilter(event, text, language)` combines four predicates; the order
+comes from `ThingSpecifications.matchRank`:
 
 | Predicate | Rule | Source |
 |---|---|---|
 | category | same `category.id` | `event.category` |
 | date | within ±3 days of the event's date | `PERIOD = Period.ofDays(3)` |
 | distance | `place.coordinate` within 20 000 m of the event's point | `RADIUS_METERS`, `JTSSpatialPredicates.distanceWithin` |
-| shared words | `shares_words_<config>(title || ' ' || coalesce(description, ''), :title)`: at least 2 words of the new title are in the candidate's title or description, or 1 when the title has a single word | `MIN_SHARED_WORDS` in `FullTextFunctionContributor`; a blank title matches nothing |
+| shared words | `shares_words_<config>(title || ' ' || coalesce(description, ''), :text)`: at least 2 words of the new title and description are in the candidate's title or description, or 1 when the text has a single word | `MIN_SHARED_WORDS` in `FullTextFunctionContributor`; a blank text matches nothing |
 | order | `match_rank_<config>(...)` descending, then `id` | see below |
 
 Words are counted after the configuration has stemmed them and dropped stop words (`на`, `біля`,
@@ -55,7 +58,7 @@ Lost and found titles often differ in their verb ("Загублено телеф
 Samsung" share one word of two), so such pairs are not matched either; that is the price of
 the two-word rule.
 
-The rank is `ts_rank_cd` (cover density) of the title's words joined by `|`: about 0.1 for every
+The rank is `ts_rank_cd` (cover density) of the search text's words joined by `|`: about 0.1 for every
 occurrence of a shared word, so a candidate with the full name ranks above one with the first name
 alone ("Загублено Леокарту Столяр Максим": "…на ім'я Столяр Максим" 0.3, "…на ім'я Максим Петренко"
 0.2). Where the words stand does not matter. The `&` query is not used because it gives 0 as soon as
@@ -83,7 +86,7 @@ words, and the title can be in any of the languages the site supports.
 | `ENGLISH`, `GERMAN`, `FRENCH`, `SPANISH`, `ITALIAN`, `RUSSIAN` | the PostgreSQL built-ins |
 | `UKRAINIAN` | `ukrainian`, created by migration 001 from the hunspell dictionary baked into our PostgreSQL image |
 | `POLISH` | `polish`, created by migration 010 the same way, from the `pl_PL` hunspell dictionary (sjp.pl) |
-| `SIMPLE` | `simple`, the fallback for a blank title, an undetected language, or a detected language with no configuration |
+| `SIMPLE` | `simple`, the fallback for a blank text, an undetected language, or a detected language with no configuration |
 
 The detector is loaded with profiles for every `SearchLanguage` plus `DETECT_ONLY_CODES`
 (empty today): a language can be detected without a configuration, so that its titles are
@@ -109,8 +112,8 @@ archives a notice: the admin "Archive" button arrives here as `ARCHIVE_REQUESTED
 `notice.<kind>.archive` (`WorkerQueueListener.onArchiveRequested`), and the confirmed return, the quiet-notice and the stale-notice rules
 call it directly. Archiving re-points the notice's
 claims at the history copy instead of deleting them, which is why this module writes to the
-item, history and claim tables. Every archiving ends with `notice.<kind>.archived` (`NoticeEvent`
-with the live notice's id) on `notice.status.exchange` (`derechi.archive.exchange`), sent by
+item, history and claim tables. Every archiving ends with `notice.<kind>.archived` (`ItemArchivedEvent`,
+`ITEM_ARCHIVED`, with the live notice's id) on `notice.status.exchange` (`derechi.archive.exchange`), sent by
 `AfterCommitPublisher` after the commit; `Ingest` deletes the notice's channel post on it. A
 broker failure at that moment is a `WARN`, and the event is lost. Texts live in this module's own five `messages*.properties`.
 
@@ -194,7 +197,7 @@ SQL because this module's `Place` maps only the id and the coordinate):
 - `service/ItemServiceTests`: the candidate query in one statement (same category, ±3 days, 20 km,
   at least two shared words or one for a one-word title, a typo or a repeated word not counted
   twice, most relevant first, the full name above the first name alone, the rank of each candidate
-  equal to PostgreSQL's own `ts_rank_cd` of the `|` query, five at most, a blank title matches nothing, a Ukrainian title goes through
+  equal to PostgreSQL's own `ts_rank_cd` of the `|` query, five at most, the description's words found and ranked with the title's, blank title and description match nothing, a Ukrainian title goes through
   `ts_rank_ukrainian`);
 - `handler/ItemCreatedHandlerTests`: both handler beans end to end into `similar_item`, a
   redelivered event does not duplicate rows;

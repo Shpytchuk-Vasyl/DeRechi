@@ -4,7 +4,7 @@ Every new notice is compared in the background against notices of the opposite k
 
 ## Flow
 
-1. `Client-API` publishes `ItemCreatedEvent` (`id`, `date`, `category`, `lat`, `lon`, `title`, plus the fields `Ingest` needs for a channel post, which `Worker` ignores) to the `notice.status.exchange` exchange with key `notice.lost.created` or `notice.found.created`. `Admin-API` publishes the same event after the commit when a notice is created in the admin panel, so those notices are matched too.
+1. `Client-API` publishes `ItemCreatedEvent` (`id`, `date`, `category`, `lat`, `lon`, `title`, `description`, plus the fields `Ingest` needs for a channel post, which `Worker` ignores) to the `notice.status.exchange` exchange with key `notice.lost.created` or `notice.found.created`. `Admin-API` publishes the same event after the commit when a notice is created in the admin panel, so those notices are matched too.
 2. Worker's one queue, `worker.queue`, is bound with `notice.*.created` among others. `WorkerQueueListener.onItemCreated` dispatches by the routing key of the message (`RoutingKeyDispatcher`, used by every handler method of the listener) to the `ItemCreatedHandler` registered for it. An unknown key is rejected without requeue.
 3. `ItemMatchHandler<T>` is one class with two beans wired in `ItemSearchConfig`: `lostItemCreatedHandler` searches `found_item`, `foundItemCreatedHandler` searches `lost_item`. Each delegates to the `ItemService<T>` bean of the opposite kind and holds the `KindOps` of the kind that arrived.
 4. `ItemService.findMostSuitable` runs one query that returns the ids and ranks of the five best candidates (`MatchCandidate`).
@@ -19,14 +19,15 @@ All of them live in `ThingSpecifications.byFilter`:
 | Same category | `category.id = event.category` | `categoryIs` |
 | Date window | `event.date ± 3 days` | `PERIOD = Period.ofDays(3)` |
 | Distance | within 20 000 m of the event's coordinate | `RADIUS_METERS`, `JTSSpatialPredicates.distanceWithin` |
-| Ordering | `ts_rank` of `title || ' ' || coalesce(description, '')` against the event title, descending, then `id` | `orderByRelevance` |
+| Shared words | at least 2 words of the event's title and description in the candidate's title or description, 1 for a one-word text | `relevantTo` |
+| Ordering | `ts_rank_cd` of `title || ' ' || coalesce(description, '')` against the event's title and description, descending, then `id` | `matchRank` |
 | Candidates | first 5 | `ItemService.MAX_CANDIDATES` |
 
-The rank that goes into `similar_item.match_order` is the one the query sorts by (`ThingSpecifications.matchRank`), read in the same statement. A blank title matches nothing.
+The rank that goes into `similar_item.match_order` is the one the query sorts by (`ThingSpecifications.matchRank`), read in the same statement. The search text is the event's title and description together; when both are blank nothing matches. A description makes more pairs reachable (a found "Purse" with "black leather" in its description meets a lost "Black leather wallet"), and the date, distance and category rules keep the extra words from pulling in unrelated notices.
 
 ## Language detection
 
-PostgreSQL full-text search needs a configuration (`regconfig`) to stem words. `LanguageResolver` detects the language of the event title with the optimaize `language-detector` library and maps it to a `SearchLanguage`:
+PostgreSQL full-text search needs a configuration (`regconfig`) to stem words. `LanguageResolver` detects the language of the event's title and description with the optimaize `language-detector` library and maps it to a `SearchLanguage`:
 
 | `SearchLanguage` | ISO | regconfig |
 |---|---|---|

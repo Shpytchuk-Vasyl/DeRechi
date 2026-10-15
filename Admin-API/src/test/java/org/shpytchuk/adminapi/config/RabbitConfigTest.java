@@ -3,6 +3,7 @@ package org.shpytchuk.adminapi.config;
 import org.junit.jupiter.api.Test;
 import org.shpytchuk.adminapi.entity.detail.ContactInfo.SocialMediaEnum;
 import org.shpytchuk.adminapi.event.ArchiveRequestedEvent;
+import org.shpytchuk.adminapi.event.ItemDeletedEvent;
 import org.shpytchuk.adminapi.event.NotificationRequestedEvent;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
@@ -39,6 +40,14 @@ class RabbitConfigTest {
 
         assertThat(message.getMessageProperties().getHeaders()).containsEntry("__TypeId__", "ARCHIVE_REQUESTED");
         assertThat(body(message)).contains("\"id\":5").contains("\"actor\":\"admin@derechi.local\"");
+    }
+
+    @Test
+    void labelsADeletedItemWithItsTypeId() {
+        Message message = converter.toMessage(new ItemDeletedEvent(7L), new MessageProperties());
+
+        assertThat(message.getMessageProperties().getHeaders()).containsEntry("__TypeId__", "ITEM_DELETED");
+        assertThat(body(message)).isEqualTo("{\"id\":7}");
     }
 
     private static String body(Message message) {

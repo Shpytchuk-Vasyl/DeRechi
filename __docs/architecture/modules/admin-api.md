@@ -147,7 +147,7 @@ publishes `ArchiveRequestedEvent` (`derechi.archive.exchange` = `notice.action.e
 Creating and deleting a live notice is announced too, so `Worker` matches a notice made in the
 admin panel and `Ingest` mirrors it into the Telegram channel and deletes its post:
 `ArchivableAdminItemService.create` publishes an `ItemCreatedEvent` with `notice.<kind>.created`
-(`ItemCreatedEvent.of(item)`, the same JSON as `Client-API`'s) and `delete` a `NoticeEvent` with
+(`ItemCreatedEvent.of(item)`, the same JSON as `Client-API`'s) and `delete` an `ItemDeletedEvent` (`ITEM_DELETED`) with
 `notice.<kind>.deleted`, both on `derechi.notice-status.exchange` = `notice.status.exchange`, keys
 from `ItemKind.noticeKey(verb)`. They go through `AfterCommitPublisher`: a
 `@TransactionalEventListener` sends them after the commit, and a broker failure at that point is

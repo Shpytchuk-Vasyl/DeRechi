@@ -33,7 +33,7 @@ One package per stage. The root of a stage package is what the pipeline sees: th
 | `publish/` | `Publisher`, `Publishers` (runs the list of `INGEST_PUBLISHERS`), `Publication`, `SiteItem`, `SkippedPost` |
 | `publish/site/` | `SitePublisher` (`site`), `ImageUploader` / `S3ImageUploader` (MinIO) |
 | `publish/telegram/` | `ChannelPoster` (`channel`; `postOnce` and `delete` for one notice), `ChannelMirror` (notices from the site), `ChannelMessages` (`channel_message`), `StoredPhotos` (a photo from the bucket by key), `ReviewChat` (`review`), `BotApiClient`, `CaptionBuilder`, `ChannelPost` |
-| `event/` | `NoticeEventListener` (`ingest.queue`), `ItemCreatedEvent`, `NoticeEvent`, `EventType`, `EventTypeScanner`: copied per module like in the other consumers |
+| `event/` | `NoticeEventListener` (`ingest.queue`), `ItemCreatedEvent`, `ItemArchivedEvent`, `ItemDeletedEvent`, `EventType`, `EventTypeScanner`: copied per module like in the other consumers |
 | `client/` | `DeRechiApi` / `GraphQlDeRechiApi` and `NewItem`: Client-API, used by the pipeline (categories, countries) and by `site`; `HttpCalls` for every HTTP client |
 | `model/` | `ItemKind`, `Money`, `SocialMedia`, `Outcome`: the values shared by the model's answer, the notice, the ledger, the publishers and the metrics |
 
