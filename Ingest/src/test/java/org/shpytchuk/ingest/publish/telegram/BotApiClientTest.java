@@ -48,7 +48,7 @@ class BotApiClientTest {
     void setUp() {
         RestClient.Builder builder = RestClient.builder();
         server = MockRestServiceServer.bindTo(builder).build();
-        bot = new BotApiClient(builder, new BotProperties("https://api.telegram.org", TOKEN, "@derechi", "", "uk",
+        bot = new BotApiClient(builder, new BotProperties("https://api.telegram.org", TOKEN, "@derechi", "uk",
                 Duration.ofSeconds(5), 3, Duration.ofMillis(1)));
     }
 

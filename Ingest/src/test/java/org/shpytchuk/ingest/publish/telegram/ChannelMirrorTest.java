@@ -42,8 +42,8 @@ class ChannelMirrorTest {
 
     @Test
     void doesNothingWhileTheChannelIsNotAPublisher() {
-        mirror(List.of("review")).created(ItemKind.FOUND, EVENT);
-        mirror(List.of("review")).removed(ItemKind.FOUND, 7L, "archived");
+        mirror(List.of("site")).created(ItemKind.FOUND, EVENT);
+        mirror(List.of("site")).removed(ItemKind.FOUND, 7L, "archived");
 
         verifyNoInteractions(poster, ledger);
     }
@@ -110,7 +110,7 @@ class ChannelMirrorTest {
     private ChannelMirror mirror(List<String> publishers) {
         IngestProperties ingest = new IngestProperties(publishers, "key", null, 0, null, "https://derechi.site", "uk",
                 0.6);
-        BotProperties bot = new BotProperties(null, "123:token", "@derechi", "", "uk", null, 0, null);
+        BotProperties bot = new BotProperties(null, "123:token", "@derechi", "uk", null, 0, null);
         EventsProperties events = new EventsProperties("ingest.queue", Duration.ofSeconds(5), Duration.ofMillis(1));
         return new ChannelMirror(poster, ledger, photos, ingest, bot, events, metrics, Clock.systemUTC());
     }

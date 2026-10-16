@@ -209,27 +209,24 @@ class IngestPipelineTest {
         pipeline().process(post("Знайшов гаманець 067 123 45 67", List.of(new PhotoRef("1", 800, 600))));
 
         ArgumentCaptor<Notice> notice = ArgumentCaptor.forClass(Notice.class);
-        ArgumentCaptor<List<byte[]>> photos = ArgumentCaptor.captor();
-        verify(output).publish(any(), notice.capture(), any(), photos.capture());
+        verify(output).publish(any(), notice.capture(), any());
         assertThat(notice.getValue().kind()).isEqualTo(ItemKind.FOUND);
         assertThat(notice.getValue().categoryId()).isEqualTo(2L);
         assertThat(notice.getValue().place()).isEqualTo(PLACE);
         assertThat(notice.getValue().photo()).isEqualTo(REDACTED);
         assertThat(notice.getValue().phoneHash()).hasSize(64);
-        assertThat(photos.getValue()).containsExactly(REDACTED);
         verify(ledger, never()).record(any(), any(), any(), any());
     }
 
     @Test
-    void skipAfterTheModelIsRecordedAndReported() {
+    void skipAfterTheModelIsRecorded() {
         extracts(extraction(ItemKind.LOST, "WALLET"));
         when(policy.evaluate(any(), any(), any(), any(), any())).thenReturn(ExtractionDecision.skip(Outcome.NOT_NOTICE));
 
         pipeline().process(post("Продам велосипед 067 123 45 67", List.of()));
 
         verify(ledger).record(any(), eq(PostStatus.SKIPPED), any(), isNull());
-        verify(output).skipped(any(), eq(Outcome.NOT_NOTICE), any(), any());
-        verify(output, never()).publish(any(), any(), any(), any());
+        verify(output, never()).publish(any(), any(), any());
         assertThat(count("not_notice")).isEqualTo(1);
     }
 
@@ -274,8 +271,8 @@ class IngestPipelineTest {
 
         pipeline().process(post("Знайшов гаманець 067 123 45 67", List.of()));
 
-        verify(output).skipped(any(), eq(Outcome.NO_PHOTO), any(), any());
-        verify(output, never()).publish(any(), any(), any(), any());
+        assertThat(count("no_photo")).isEqualTo(1);
+        verify(output, never()).publish(any(), any(), any());
     }
 
     @Test
@@ -313,7 +310,6 @@ class IngestPipelineTest {
 
         pipeline().process(post("Загубив гаманець 067 123 45 67", List.of()));
 
-        verify(output).skipped(any(), eq(Outcome.UNSUPPORTED_COUNTRY), any(), any());
         assertThat(count("unsupported_country")).isEqualTo(1);
     }
 
@@ -325,7 +321,6 @@ class IngestPipelineTest {
         pipeline().process(post("Загубив гаманець 067 123 45 67", List.of()));
 
         verify(ledger).record(any(), eq(PostStatus.SKIPPED), any(), isNull());
-        verify(output).skipped(any(), eq(Outcome.NO_PLACE), any(), any());
         assertThat(count("no_place")).isEqualTo(1);
         assertThat(count("failed")).isZero();
     }
@@ -342,12 +337,12 @@ class IngestPipelineTest {
 
     private Notice accepted() {
         ArgumentCaptor<Notice> notice = ArgumentCaptor.forClass(Notice.class);
-        verify(output).publish(any(), notice.capture(), any(), any());
+        verify(output).publish(any(), notice.capture(), any());
         return notice.getValue();
     }
 
     private void extracts(Extraction extraction) {
-        when(extractor.extract(any())).thenReturn(new ExtractionResult(extraction, "{}", "test/model",
+        when(extractor.extract(any())).thenReturn(new ExtractionResult(extraction, "test/model",
                 new BigDecimal("0.001"), Duration.ofMillis(800)));
     }
 
@@ -377,7 +372,7 @@ class IngestPipelineTest {
     }
 
     private static IngestProperties properties() {
-        return new IngestProperties(List.of("review"), "key", Duration.ofDays(14), 3, Period.ofDays(30),
+        return new IngestProperties(List.of(), "key", Duration.ofDays(14), 3, Period.ofDays(30),
                 "https://derechi.example", "uk", 0.6);
     }
 

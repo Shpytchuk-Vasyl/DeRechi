@@ -50,7 +50,7 @@ public class Publishers {
         return names;
     }
 
-    public void publish(IncomingPost post, Notice notice, ExtractionResult result, List<byte[]> photos) {
+    public void publish(IncomingPost post, Notice notice, ExtractionResult result) {
         SiteItem siteItem = null;
         if (site != null) {
             Optional<SiteItem> created = site.publish(post, notice);
@@ -63,13 +63,8 @@ public class Publishers {
             metrics.outcome(Outcome.PREVIEWED);
             log.info("Post {} previewed as a {} notice", post.key(), notice.kind().path());
         }
-        Publication publication = new Publication(post, notice, result, photos, siteItem);
+        Publication publication = new Publication(post, notice, result, siteItem);
         publishers.forEach(publisher -> publish(publisher, publication));
-    }
-
-    public void skipped(IncomingPost post, Outcome outcome, ExtractionResult result, List<byte[]> photos) {
-        SkippedPost skipped = new SkippedPost(post, outcome, result, photos);
-        publishers.forEach(publisher -> reportSkip(publisher, skipped));
     }
 
     private void publish(Publisher publisher, Publication publication) {
@@ -79,15 +74,6 @@ public class Publishers {
         } catch (RuntimeException e) {
             metrics.published(publisher.name(), "failed");
             log.warn("Post {} was not published to {}: {}", publication.post().key(), publisher.name(),
-                    getMostSpecificCause(e).toString());
-        }
-    }
-
-    private void reportSkip(Publisher publisher, SkippedPost skipped) {
-        try {
-            publisher.skipped(skipped);
-        } catch (RuntimeException e) {
-            log.warn("Skip of post {} was not reported to {}: {}", skipped.post().key(), publisher.name(),
                     getMostSpecificCause(e).toString());
         }
     }

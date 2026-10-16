@@ -46,6 +46,6 @@ public final class Outputs {
     public static ExtractionResult result() {
         Extraction extraction = new Extraction(true, ItemKind.FOUND, "Гаманець", null, "WALLET", null, null, null,
                 null, "PHONE_1", null, 0.9, null);
-        return new ExtractionResult(extraction, "{\"isNotice\":true}", "test/model", BigDecimal.ZERO, Duration.ZERO);
+        return new ExtractionResult(extraction, "test/model", BigDecimal.ZERO, Duration.ZERO);
     }
 }

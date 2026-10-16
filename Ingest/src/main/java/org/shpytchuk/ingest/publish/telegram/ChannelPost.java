@@ -9,6 +9,7 @@ import org.shpytchuk.ingest.publish.Publication;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public record ChannelPost(
         ItemKind kind,
@@ -18,20 +19,20 @@ public record ChannelPost(
         LocalDate date,
         @Nullable Money compensation,
         byte @Nullable [] photo,
-        @Nullable String itemUrl,
+        String itemUrl,
         @Nullable String city,
         @Nullable String category) {
 
     public ChannelPost(ItemKind kind, String title, @Nullable String description, String placeName, LocalDate date,
-                       @Nullable Money compensation, byte @Nullable [] photo, @Nullable String itemUrl) {
+                       @Nullable Money compensation, byte @Nullable [] photo, String itemUrl) {
         this(kind, title, description, placeName, date, compensation, photo, itemUrl, null, null);
     }
 
     static ChannelPost of(Publication publication) {
         Notice notice = publication.notice();
         return new ChannelPost(notice.kind(), notice.title(), notice.description(), notice.place().name(),
-                notice.date(), notice.compensation(), notice.photo(), publication.siteItemUrl(), city(publication),
-                publication.result().extraction().category());
+                notice.date(), notice.compensation(), notice.photo(), Objects.requireNonNull(publication.siteItemUrl()),
+                city(publication), publication.result().extraction().category());
     }
 
     static ChannelPost of(ItemKind kind, ItemCreatedEvent event, byte @Nullable [] photo, String itemUrl) {

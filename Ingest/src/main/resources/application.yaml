@@ -58,7 +58,7 @@ spring:
 
 derechi:
   ingest:
-    publishers: ${INGEST_PUBLISHERS:review}
+    publishers: ${INGEST_PUBLISHERS:}
     hash-key: ${INGEST_HASH_KEY:dev-hash-key-change-me}
     duplicate-window: ${INGEST_DUPLICATE_WINDOW:P14D}
     max-photos: ${INGEST_MAX_PHOTOS:3}
@@ -103,7 +103,6 @@ derechi:
     api-url: ${TELEGRAM_BOT_API_URL:https://api.telegram.org}
     token: ${TELEGRAM_BOT_TOKEN:}
     publish-chat: ${TELEGRAM_PUBLISH_CHAT:}
-    review-chat: ${TELEGRAM_REVIEW_CHAT:}
     locale: ${TELEGRAM_PUBLISH_LOCALE:uk}
     timeout: ${TELEGRAM_BOT_TIMEOUT:PT30S}
     max-attempts: ${TELEGRAM_BOT_MAX_ATTEMPTS:3}

@@ -136,7 +136,7 @@ public class IngestPipeline {
         // =========== step: check the extraction ===========
         ExtractionDecision decision = policy.evaluate(extraction, masked, authorPhone, authorProfile, post.settings());
         if (decision.skipped()) {
-            skip(post, decision.skipOutcome(), hashes.getFirst(), result, photos);
+            finish(post, decision.skipOutcome(), hashes.getFirst());
             return;
         }
         String phoneHash = hasher.hash(authorProfile != null ? authorProfile.contactKey() : decision.contactPhone());
@@ -144,16 +144,16 @@ public class IngestPipeline {
         // =========== step: check category, date and photo ===========
         Long categoryId = categories.getOrDefault(extraction.category(), categories.get(OTHER_CATEGORY));
         if (categoryId == null) {
-            skip(post, Outcome.INCOMPLETE, phoneHash, result, photos);
+            finish(post, Outcome.INCOMPLETE, phoneHash);
             return;
         }
         LocalDate date = Notices.date(extraction.date(), postDate, today, properties.maxAge());
         if (date == null) {
-            skip(post, Outcome.TOO_OLD, phoneHash, result, photos);
+            finish(post, Outcome.TOO_OLD, phoneHash);
             return;
         }
         if (extraction.kind() == ItemKind.FOUND && photos.isEmpty()) {
-            skip(post, Outcome.NO_PHOTO, phoneHash, result, photos);
+            finish(post, Outcome.NO_PHOTO, phoneHash);
             return;
         }
         log.debug("Post {} passed the checks: category {}, date {}", post.key(), categoryId, date);
@@ -164,11 +164,11 @@ public class IngestPipeline {
         log.debug("Post {} place search took {} ms: {}", post.key(), millis(placeStarted),
                 place == null ? "nothing found" : place.name() + " (" + place.countryCode() + ")");
         if (place == null) {
-            skip(post, Outcome.NO_PLACE, phoneHash, result, photos);
+            finish(post, Outcome.NO_PLACE, phoneHash);
             return;
         }
         if (!countries.contains(place.countryCode())) {
-            skip(post, Outcome.UNSUPPORTED_COUNTRY, phoneHash, result, photos);
+            finish(post, Outcome.UNSUPPORTED_COUNTRY, phoneHash);
             return;
         }
 
@@ -183,7 +183,7 @@ public class IngestPipeline {
                 authorProfile, socialMedias(extraction, authorPhone, authorProfile), publicPhoto(photos, document),
                 phoneHash);
 
-        publishers.publish(post, notice, result, redacted(photos));
+        publishers.publish(post, notice, result);
     }
 
     private static List<String> contacts(List<FoundPhone> phones, @Nullable String authorPhone,
@@ -271,11 +271,6 @@ public class IngestPipeline {
 
     private static ClientApiUnavailableException clientApiUnreachable(IngestException e) {
         return new ClientApiUnavailableException("Client-API is unreachable: " + e.getMessage());
-    }
-
-    private void skip(IncomingPost post, Outcome outcome, String phoneHash, ExtractionResult result, List<Photo> photos) {
-        finish(post, outcome, phoneHash);
-        publishers.skipped(post, outcome, result, redacted(photos));
     }
 
     private void finish(IncomingPost post, Outcome outcome, @Nullable String phoneHash) {

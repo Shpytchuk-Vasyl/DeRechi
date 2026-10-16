@@ -136,7 +136,7 @@ public class OpenRouterExtractor implements Extractor {
         }
         String model = StringUtils.hasText(completion.model()) ? completion.model() : properties.model();
         BigDecimal cost = completion.usage() == null ? null : completion.usage().cost();
-        return new ExtractionResult(extraction, json, model, cost, Duration.ofNanos(System.nanoTime() - started));
+        return new ExtractionResult(extraction, model, cost, Duration.ofNanos(System.nanoTime() - started));
     }
 
     private static String withoutCodeFence(String content) {

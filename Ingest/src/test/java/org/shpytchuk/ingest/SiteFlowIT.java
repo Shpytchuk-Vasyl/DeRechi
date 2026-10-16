@@ -137,7 +137,7 @@ class SiteFlowIT {
 
     private void extracts(Extraction extraction) {
         when(extractor.extract(any())).thenReturn(
-                new ExtractionResult(extraction, "{}", "test/model", null, Duration.ZERO));
+                new ExtractionResult(extraction, "test/model", null, Duration.ZERO));
     }
 
     private static Extraction lost(String title, Money compensation) {

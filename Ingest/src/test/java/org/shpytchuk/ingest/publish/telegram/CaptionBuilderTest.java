@@ -23,7 +23,7 @@ class CaptionBuilderTest {
         messages.setBasename("messages");
         messages.setDefaultEncoding("UTF-8");
         messages.setFallbackToSystemLocale(false);
-        return new CaptionBuilder(messages, new BotProperties(null, "t", "@c", "", locale, null, 0, null));
+        return new CaptionBuilder(messages, new BotProperties(null, "t", "@c", locale, null, 0, null));
     }
 
     @Test
@@ -98,13 +98,6 @@ class CaptionBuilderTest {
     }
 
     @Test
-    void withoutLinkSaysThereIsNoneYet() {
-        String caption = uk.caption(post("Сумка", null, null, null), PHOTO_LIMIT);
-
-        assertThat(caption).contains("Посилання ще немає").doesNotContain("Знайшли?");
-    }
-
-    @Test
     void escapesEveryValue() {
         ChannelPost post = new ChannelPost(ItemKind.LOST, "<b>Сумка</b> & ключі", "a <script> & b",
                 "Cafe <Tom & Jerry>", DATE, new Money(1, "<X>"), null, "https://x/uk/lost/1?a=1&b=2");
@@ -123,9 +116,8 @@ class CaptionBuilderTest {
     @Test
     void hasNoLongDashes() {
         String caption = uk.caption(post("Сумка", "Опис", new Money(5, "UAH"), "https://x/uk/lost/1"), PHOTO_LIMIT);
-        String preview = uk.caption(post("Сумка", "Опис", null, null), PHOTO_LIMIT);
 
-        assertThat(caption + preview).doesNotContain("—").doesNotContain("–");
+        assertThat(caption).doesNotContain("—").doesNotContain("–");
     }
 
     @Test

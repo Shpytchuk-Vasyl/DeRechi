@@ -7,7 +7,4 @@ public interface Publisher {
     boolean needsSiteItem();
 
     void publish(Publication publication);
-
-    default void skipped(SkippedPost post) {
-    }
 }

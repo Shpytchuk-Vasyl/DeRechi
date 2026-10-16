@@ -36,7 +36,6 @@ public record IngestProperties(
                 .filter(name -> !name.isEmpty())
                 .distinct()
                 .toList();
-        publishers = publishers.isEmpty() ? List.of("review") : publishers;
         if (!StringUtils.hasText(hashKey)) {
             throw new IllegalArgumentException("derechi.ingest.hash-key must not be empty");
         }

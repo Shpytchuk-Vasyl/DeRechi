@@ -190,7 +190,6 @@ class OpenRouterExtractorTest {
 
         assertThat(result.model()).isEqualTo(FALLBACK);
         assertThat(result.cost()).isEqualByComparingTo(new BigDecimal("0.0012"));
-        assertThat(result.json()).isEqualTo(ANSWER.strip());
         assertThat(result.duration().isNegative()).isFalse();
         assertThat(result.extraction()).isEqualTo(new Extraction(true, ItemKind.FOUND, "Знайдено Леокарту",
                 "Знайдено Леокарту на перехресті.", "DOCUMENTS", LocalDate.parse("2026-10-08"),

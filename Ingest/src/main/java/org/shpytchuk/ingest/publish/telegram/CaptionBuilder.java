@@ -74,12 +74,8 @@ public class CaptionBuilder {
     }
 
     private String footer(ChannelPost post, boolean lost) {
-        StringBuilder html = new StringBuilder("\n\n");
-        if (post.itemUrl() != null) {
-            html.append(text(lost ? "channel.lost.cta" : "channel.found.cta")).append(' ').append(escape(post.itemUrl()));
-        } else {
-            html.append(text("channel.preview.noLink"));
-        }
+        StringBuilder html = new StringBuilder("\n\n")
+                .append(text(lost ? "channel.lost.cta" : "channel.found.cta")).append(' ').append(escape(post.itemUrl()));
         String hashtags = hashtags(post);
         if (!hashtags.isEmpty()) {
             html.append("\n\n").append(hashtags);

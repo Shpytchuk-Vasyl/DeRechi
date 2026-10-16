@@ -7,7 +7,6 @@ import org.shpytchuk.ingest.config.IngestProperties;
 import org.shpytchuk.ingest.entity.PostStatus;
 import org.shpytchuk.ingest.exception.IngestException;
 import org.shpytchuk.ingest.model.ItemKind;
-import org.shpytchuk.ingest.model.Outcome;
 import org.shpytchuk.ingest.pipeline.IngestMetrics;
 import org.shpytchuk.ingest.pipeline.PostLedger;
 import org.shpytchuk.ingest.publish.site.SitePublisher;
@@ -38,19 +37,17 @@ class PublishersTest {
 
     SitePublisher site = mock(SitePublisher.class);
     Publisher channel = publisher("channel", true);
-    Publisher review = publisher("review", false);
+    Publisher other = publisher("other", true);
     PostLedger ledger = mock(PostLedger.class);
     SimpleMeterRegistry registry = new SimpleMeterRegistry();
 
     @Test
     void withoutTheSiteANoticeIsPreviewed() {
-        publishers("review").publish(Outputs.post(), Outputs.notice(PHOTO), Outputs.result(), List.of(PHOTO));
+        publishers().publish(Outputs.post(), Outputs.notice(PHOTO), Outputs.result());
 
         verifyNoInteractions(site);
         verify(ledger).record(any(), eq(PostStatus.PREVIEWED), eq(Outputs.PHONE_HASH), eq(ItemKind.FOUND));
-        Publication publication = published(review);
-        assertThat(publication.siteItem()).isNull();
-        assertThat(publication.photos()).containsExactly(PHOTO);
+        verify(channel, never()).publish(any());
         assertThat(count("derechi.ingest.posts", "outcome", "previewed")).isEqualTo(1);
     }
 
@@ -58,12 +55,11 @@ class PublishersTest {
     void theSiteGoesFirstAndEveryoneElseLinksToItsItem() {
         when(site.publish(any(), any())).thenReturn(Optional.of(ITEM));
 
-        publishers("channel", "site", "review").publish(Outputs.post(), Outputs.notice(PHOTO), Outputs.result(),
-                List.of(PHOTO));
+        publishers("channel", "site", "other").publish(Outputs.post(), Outputs.notice(PHOTO), Outputs.result());
 
         verify(ledger, never()).record(any(), eq(PostStatus.PREVIEWED), any(), any());
         assertThat(published(channel).siteItemUrl()).isEqualTo(ITEM.url());
-        assertThat(published(review).siteItem()).isEqualTo(ITEM);
+        assertThat(published(other).siteItem()).isEqualTo(ITEM);
         assertThat(count("derechi.ingest.published", "publisher", "channel")).isEqualTo(1);
     }
 
@@ -71,11 +67,10 @@ class PublishersTest {
     void nothingIsAnnouncedWhenTheSiteFails() {
         when(site.publish(any(), any())).thenReturn(Optional.empty());
 
-        publishers("site", "channel", "review").publish(Outputs.post(), Outputs.notice(PHOTO), Outputs.result(),
-                List.of());
+        publishers("site", "channel", "other").publish(Outputs.post(), Outputs.notice(PHOTO), Outputs.result());
 
         verify(channel, never()).publish(any());
-        verify(review, never()).publish(any());
+        verify(other, never()).publish(any());
     }
 
     @Test
@@ -83,22 +78,11 @@ class PublishersTest {
         when(site.publish(any(), any())).thenReturn(Optional.of(ITEM));
         doThrow(new IngestException("Bot API sendPhoto failed: HTTP 400")).when(channel).publish(any());
 
-        publishers("site", "channel", "review").publish(Outputs.post(), Outputs.notice(PHOTO), Outputs.result(),
-                List.of());
+        publishers("site", "channel", "other").publish(Outputs.post(), Outputs.notice(PHOTO), Outputs.result());
 
-        verify(review).publish(any());
+        verify(other).publish(any());
         assertThat(registry.counter("derechi.ingest.published", "publisher", "channel", "outcome", "failed").count())
                 .isEqualTo(1);
-    }
-
-    @Test
-    void skipsGoToEveryPublisher() {
-        publishers("review").skipped(Outputs.post(), Outcome.NO_PLACE, Outputs.result(), List.of());
-
-        ArgumentCaptor<SkippedPost> skipped = ArgumentCaptor.forClass(SkippedPost.class);
-        verify(review).skipped(skipped.capture());
-        assertThat(skipped.getValue().outcome()).isEqualTo(Outcome.NO_PLACE);
-        verifyNoInteractions(ledger);
     }
 
     @Test
@@ -118,7 +102,7 @@ class PublishersTest {
     private Publishers publishers(String... names) {
         IngestProperties properties = new IngestProperties(List.of(names), "key", Duration.ofDays(14), 3,
                 Period.ofDays(30), "https://derechi.example", "uk", 0.6);
-        return new Publishers(properties, site, List.of(channel, review), ledger,
+        return new Publishers(properties, site, List.of(channel, other), ledger,
                 new IngestMetrics(registry, Clock.systemUTC(), mock(TelegramSource.class)));
     }
 

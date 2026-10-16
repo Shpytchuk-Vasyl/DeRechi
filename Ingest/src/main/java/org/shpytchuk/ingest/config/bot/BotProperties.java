@@ -6,14 +6,13 @@ import org.springframework.util.StringUtils;
 import java.time.Duration;
 
 @ConfigurationProperties(prefix = "derechi.bot")
-public record BotProperties(String apiUrl, String token, String publishChat, String reviewChat,
+public record BotProperties(String apiUrl, String token, String publishChat,
                             String locale, Duration timeout, int maxAttempts, Duration retryDelay) {
 
     public BotProperties {
         apiUrl = StringUtils.hasText(apiUrl) ? StringUtils.trimTrailingCharacter(apiUrl.trim(), '/') : "https://api.telegram.org";
         token = token == null ? "" : token.trim();
         publishChat = publishChat == null ? "" : publishChat.trim();
-        reviewChat = reviewChat == null ? "" : reviewChat.trim();
         locale = StringUtils.hasText(locale) ? locale.trim() : "uk";
         timeout = timeout == null ? Duration.ofSeconds(30) : timeout;
         maxAttempts = maxAttempts <= 0 ? 3 : maxAttempts;
@@ -22,9 +21,5 @@ public record BotProperties(String apiUrl, String token, String publishChat, Str
 
     public boolean canPublish() {
         return !token.isEmpty() && !publishChat.isEmpty();
-    }
-
-    public boolean canPreview() {
-        return !token.isEmpty() && !reviewChat.isEmpty();
     }
 }

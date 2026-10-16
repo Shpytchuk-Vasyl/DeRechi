@@ -31,8 +31,8 @@ class IngestApplicationTests {
         List<PostSource> sources;
 
         @Test
-        void previewsInTheReviewChatAndReadsTelegramAndFacebook() {
-            assertThat(publishers.names()).containsExactly("review");
+        void publishesNowhereAndReadsTelegramAndFacebook() {
+            assertThat(publishers.names()).isEmpty();
             assertThat(sources).extracting(PostSource::name)
                     .containsExactlyInAnyOrder(TelegramPostSource.NAME, FacebookPostSource.NAME);
         }
@@ -42,16 +42,16 @@ class IngestApplicationTests {
     @SpringBootTest(properties = {
             "spring.jpa.hibernate.ddl-auto=validate",
             "derechi.telegram.api-id=0",
-            "derechi.ingest.publishers=site, channel, review"
+            "derechi.ingest.publishers=site, channel"
     })
-    class SiteChannelAndReview extends AbstractPostgresTests {
+    class SiteAndChannel extends AbstractPostgresTests {
 
         @Autowired
         Publishers publishers;
 
         @Test
         void publishesEverywhere() {
-            assertThat(publishers.names()).containsExactly("site", "channel", "review");
+            assertThat(publishers.names()).containsExactly("site", "channel");
         }
     }
 }
