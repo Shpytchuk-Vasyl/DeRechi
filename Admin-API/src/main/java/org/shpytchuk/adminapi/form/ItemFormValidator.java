@@ -2,11 +2,13 @@ package org.shpytchuk.adminapi.form;
 
 import lombok.AllArgsConstructor;
 import org.shpytchuk.adminapi.config.property.CountriesProperties;
+import org.shpytchuk.adminapi.entity.detail.ContactInfo.SocialMediaEnum;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import java.util.List;
 import java.util.Locale;
 
 @Component
@@ -16,6 +18,7 @@ public class ItemFormValidator implements Validator {
     static final String COUNTRY_CODE = "validation.country";
     static final String CURRENCY_CODE = "validation.currency";
     static final String COMPENSATION_CODE = "validation.compensation";
+    static final String PHONE_OR_NICK_NAME_CODE = "validation.phoneOrNickName";
 
     private final CountriesProperties countries;
 
@@ -41,5 +44,14 @@ public class ItemFormValidator implements Validator {
         if (currency != null && !countries.currencies().contains(currency.trim().toUpperCase(Locale.ROOT))) {
             errors.rejectValue("currency", CURRENCY_CODE);
         }
+
+        if (!StringUtils.hasText(form.getPhone()) && !reachableByNickName(form)) {
+            errors.rejectValue("phone", PHONE_OR_NICK_NAME_CODE);
+        }
+    }
+
+    private static boolean reachableByNickName(ItemForm form) {
+        List<SocialMediaEnum> socialMedias = form.getSocialMedias();
+        return StringUtils.hasText(form.getNickName()) && socialMedias != null && socialMedias.size() == 1;
     }
 }

@@ -41,7 +41,9 @@ public final class ItemMapper {
                 coordinate == null ? null : coordinate.getX(),
                 info.getPhone(),
                 info.getEmail(),
-                socialMedias(info)
+                socialMedias(info),
+                info.getNickName(),
+                info.getProfileUrl()
         );
     }
 
@@ -59,6 +61,8 @@ public final class ItemMapper {
                 info.getPhone(),
                 info.getEmail(),
                 socialMedias(info),
+                info.getNickName(),
+                info.getProfileUrl(),
                 claim.getCreatedAt(),
                 ClaimStatus.of(claim.getConfirmedAt(), claim.getPaidAt(), claim.getAuthorRemindedAt(), claim.getClaimantRemindedAt()));
     }
@@ -98,6 +102,8 @@ public final class ItemMapper {
         form.setPhone(info.getPhone());
         form.setEmail(info.getEmail());
         form.setSocialMedias(socialMedias(info));
+        form.setNickName(info.getNickName());
+        form.setProfileUrl(info.getProfileUrl());
         return form;
     }
 

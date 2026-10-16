@@ -10,7 +10,8 @@ public enum NotifyChannel {
     PHONE(true, false, null),
     TELEGRAM(true, false, SocialMediaEnum.TELEGRAM),
     VIBER(true, false, SocialMediaEnum.VIBER),
-    WHATSAPP(true, false, SocialMediaEnum.WHATSAPP);
+    WHATSAPP(true, false, SocialMediaEnum.WHATSAPP),
+    FACEBOOK(true, false, SocialMediaEnum.FACEBOOK);
 
     private final boolean needPhone;
     private final boolean needEmail;

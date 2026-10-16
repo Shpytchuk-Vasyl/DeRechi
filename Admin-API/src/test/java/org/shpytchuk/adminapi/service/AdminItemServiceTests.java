@@ -163,6 +163,58 @@ class AdminItemServiceTests extends AbstractRepositoryTests {
     }
 
     @Test
+    void keepsANickNameContactWithoutAPhoneThroughTheForm() {
+        ItemForm created = Fixtures.form("Гаманець", wallets.getId(), "ChIJrynok", "UA");
+        created.setPhone(null);
+        created.setEmail(null);
+        created.setNickName("@lostcat");
+        created.setProfileUrl("https://t.me/lostcat");
+        Long id = lostItems.create(created).getId();
+        entityManager.flush();
+        entityManager.clear();
+
+        ItemForm form = lostItems.form(id);
+        assertThat(form.getPhone()).isNull();
+        assertThat(form.getNickName()).isEqualTo("@lostcat");
+        assertThat(form.getProfileUrl()).isEqualTo("https://t.me/lostcat");
+        assertThat(form.getSocialMedias()).containsExactly(SocialMediaEnum.TELEGRAM);
+
+        form.setTitle("Чорний гаманець");
+        lostItems.update(id, form);
+        entityManager.flush();
+        entityManager.clear();
+
+        ContactInfo info = entityManager.find(LostItem.class, id).getInfo();
+        assertThat(info.getPhone()).isNull();
+        assertThat(info.getNickName()).isEqualTo("@lostcat");
+        assertThat(info.getProfileUrl()).isEqualTo("https://t.me/lostcat");
+        assertThat(info.getSocialMedias()).containsExactly(SocialMediaEnum.TELEGRAM);
+    }
+
+    @Test
+    void editsAnImportedNickNameNoticeWithoutInventingAPhone() {
+        Place rynok = entityManager.persist(Fixtures.place("ChIJrynok", "Площа Ринок", 49.8419, 24.0315));
+        ContactInfo author = entityManager.persist(Fixtures.nickNameContact("Olena Koval",
+                "https://www.facebook.com/olena.koval", SocialMediaEnum.FACEBOOK));
+        FoundItem imported = entityManager.persist(Fixtures.item(new FoundItem(), "Ключі", keys, rynok, author));
+        entityManager.flush();
+        entityManager.clear();
+
+        ItemForm form = foundItems.form(imported.getId());
+        form.setTitle("Ключі від авто");
+        foundItems.update(imported.getId(), form);
+        entityManager.flush();
+        entityManager.clear();
+
+        FoundItem updated = entityManager.find(FoundItem.class, imported.getId());
+        assertThat(updated.getTitle()).isEqualTo("Ключі від авто");
+        assertThat(updated.getInfo().getPhone()).isNull();
+        assertThat(updated.getInfo().getNickName()).isEqualTo("Olena Koval");
+        assertThat(updated.getInfo().getProfileUrl()).isEqualTo("https://www.facebook.com/olena.koval");
+        assertThat(updated.getInfo().getSocialMedias()).containsExactly(SocialMediaEnum.FACEBOOK);
+    }
+
+    @Test
     void listsWhatTheFilterMatchesInTheRequestedOrder() {
         Place rynok = entityManager.persist(Fixtures.place("ChIJrynok", "Площа Ринок", 49.8419, 24.0315));
         Place opera = entityManager.persist(Fixtures.place("ChIJopera", "Оперний театр", 49.8440, 24.0262));

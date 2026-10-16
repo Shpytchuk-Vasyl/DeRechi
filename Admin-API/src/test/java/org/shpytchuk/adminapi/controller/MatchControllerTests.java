@@ -23,6 +23,9 @@ import org.shpytchuk.adminapi.view.detail.ItemView;
 import org.shpytchuk.adminapi.view.matching.MatchRow;
 import org.shpytchuk.adminapi.view.matching.NotifiedMatch;
 import org.shpytchuk.adminapi.form.NotifyChannel;
+import org.shpytchuk.adminapi.entity.detail.ContactInfo.SocialMediaEnum;
+import org.shpytchuk.adminapi.exception.OwnerWithoutPhoneException;
+import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -186,10 +189,67 @@ class MatchControllerTests {
         verify(notificationService, never()).notifyOwner(any(), any(), any(), any());
     }
 
+    @Test
+    void keepsTheNotifyButtonActiveForAnOwnerWithAPhone() throws Exception {
+        when(matchService.page(any(), any())).thenReturn(new PageImpl<>(List.of(
+                new MatchRow(item(3L, "Lost"), List.of(
+                        new CandidateView(item(7L, "Found"), 0.94, null, null)), 1))));
+
+        mockMvc.perform(get("/admin/matches")
+                        .with(oidcLogin().authorities(authority(Scope.MATCH, Action.VIEW), authority(Scope.MATCH, Action.NOTIFY))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(allOf(
+                        containsString("hx-post=\"/admin/matches/notify\""),
+                        containsString("popovertarget=\"notify-3-7\""),
+                        containsString("id=\"notify-3-7\""),
+                        not(containsString("disabled=\"disabled\"")),
+                        not(containsString("Власник залишив лише нікнейм")))));
+    }
+
+    @Test
+    void disablesTheNotifyButtonInRedWhenTheOwnerLeftOnlyANickName() throws Exception {
+        when(matchService.page(any(), any())).thenReturn(new PageImpl<>(List.of(
+                new MatchRow(ownerWithoutPhone(3L), List.of(
+                        new CandidateView(item(7L, "Found"), 0.94, null, null)), 1))));
+
+        mockMvc.perform(get("/admin/matches")
+                        .with(oidcLogin().authorities(authority(Scope.MATCH, Action.VIEW), authority(Scope.MATCH, Action.NOTIFY))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(allOf(
+                        containsString("class=\"button is-small is-danger\""),
+                        containsString("class=\"button is-small notify-trigger is-danger\""),
+                        containsString("disabled=\"disabled\""),
+                        containsString("title=\"Власник залишив лише нікнейм: немає телефону для сповіщення\""),
+                        not(containsString("hx-post=")),
+                        not(containsString("popovertarget=\"notify-3-7\"")),
+                        not(containsString("id=\"notify-3-7\"")))));
+    }
+
+    @Test
+    void answersConflictWhenTheOwnerHasNoPhoneToNotify() throws Exception {
+        when(notificationService.notifyOwner(3L, 7L, "admin@derechi.local", NotifyChannel.ALL))
+                .thenThrow(new OwnerWithoutPhoneException(3L));
+
+        mockMvc.perform(post("/admin/matches/notify")
+                        .param("lostItemId", "3").param("foundItemId", "7")
+                        .cookie(new Cookie("DERECHI_LOCALE", "en"))
+                        .with(oidcLogin().idToken(token -> token.subject("admin@derechi.local"))
+                                .authorities(authority(Scope.MATCH, Action.NOTIFY)))
+                        .with(csrf()))
+                .andExpect(status().isConflict())
+                .andExpect(content().string("The owner left only a nickname: there is no phone to notify"));
+    }
+
     private static ItemView item(Long id, String title) {
         return new ItemView(id, title, "Opys", LocalDate.of(2026, 1, 2), 500, "UAH",
                 "https://example.test/photo.jpg", "BAG", "Park", "UA", 49.8, 24.0,
-                "+380671234567", "a@b.test", List.of());
+                "+380671234567", "a@b.test", List.of(), null, null);
+    }
+
+    private static ItemView ownerWithoutPhone(Long id) {
+        return new ItemView(id, "Lost", "Opys", LocalDate.of(2026, 1, 2), null, "UAH",
+                null, "BAG", "Park", "UA", 49.8, 24.0,
+                null, null, List.of(SocialMediaEnum.TELEGRAM), "@lostcat", "https://t.me/lostcat");
     }
 
     private static GrantedAuthority authority(Scope scope, Action action) {

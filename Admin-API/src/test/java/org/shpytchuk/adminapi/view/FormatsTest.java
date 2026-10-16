@@ -75,6 +75,17 @@ class FormatsTest {
         assertThat(formats.dateTime(null)).isEmpty();
     }
 
+    @Test
+    void formatsAPhoneInTheInternationalFormat() {
+        assertThat(formats.phone("+48501234567")).isEqualTo("+48 501 234 567");
+    }
+
+    @Test
+    void showsAHyphenForAMissingPhone() {
+        assertThat(formats.phone(null)).isEqualTo("-");
+        assertThat(formats.phone("  ")).isEqualTo("-");
+    }
+
     private static String digits(String text) {
         return text.chars()
                 .filter(Character::isDigit)

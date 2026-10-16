@@ -69,7 +69,6 @@ public class ItemForm {
     @NotNull
     private Double lon;
 
-    @NotBlank
     @Pattern(regexp = "^\\+[1-9]\\d{7,14}$", message = "{validation.phone}")
     private String phone;
 
@@ -77,9 +76,32 @@ public class ItemForm {
     @Size(max = 50)
     private String email;
 
+    @Size(max = 50)
+    private String nickName;
+
+    @Size(max = 255)
+    @Pattern(regexp = "^https://\\S+$", message = "{validation.profileUrl}")
+    private String profileUrl;
+
     private List<SocialMediaEnum> socialMedias = new ArrayList<>();
 
     public void setCurrency(String currency) {
         this.currency = StringUtils.hasText(currency) ? currency : null;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = trimmedOrNull(phone);
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = trimmedOrNull(nickName);
+    }
+
+    public void setProfileUrl(String profileUrl) {
+        this.profileUrl = trimmedOrNull(profileUrl);
+    }
+
+    private static String trimmedOrNull(String value) {
+        return StringUtils.hasText(value) ? value.trim() : null;
     }
 }

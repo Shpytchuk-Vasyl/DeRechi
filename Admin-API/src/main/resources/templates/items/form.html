@@ -281,9 +281,10 @@
                             </label>
                             <div class="control">
                                 <input class="input numeric" type="tel" id="phone" th:field="*{phone}"
-                                       th:errorclass="is-danger" required autocomplete="tel" inputmode="tel"
-                                       placeholder="+380671234567">
+                                       th:errorclass="is-danger" autocomplete="tel" inputmode="tel"
+                                       placeholder="+380671234567" aria-describedby="phone-hint">
                             </div>
+                            <p class="help" id="phone-hint" th:text="#{form.phone.hint}">Optional with a nickname</p>
                             <p class="help is-danger" th:if="${#fields.hasErrors('phone')}"
                                th:errors="*{phone}">error</p>
                         </div>
@@ -303,6 +304,43 @@
                             </div>
                             <p class="help is-danger" th:if="${#fields.hasErrors('email')}"
                                th:errors="*{email}">error</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="columns">
+                    <div class="column">
+                        <div class="field">
+                            <label class="label" for="nickName">
+                                <span class="icon has-text-grey mr-1" aria-hidden="true"><i
+                                        class="fa-solid fa-at"></i></span>
+                                <span th:text="#{field.nickName}">Nickname</span>
+                                <span class="has-text-grey has-text-weight-normal" th:text="#{field.optional}">optional</span>
+                            </label>
+                            <div class="control">
+                                <input class="input" type="text" id="nickName" th:field="*{nickName}"
+                                       th:errorclass="is-danger" maxlength="50" autocomplete="off"
+                                       th:placeholder="#{placeholder.nickName}">
+                            </div>
+                            <p class="help is-danger" th:if="${#fields.hasErrors('nickName')}"
+                               th:errors="*{nickName}">error</p>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="field">
+                            <label class="label" for="profileUrl">
+                                <span class="icon has-text-grey mr-1" aria-hidden="true"><i
+                                        class="fa-solid fa-link"></i></span>
+                                <span th:text="#{field.profileUrl}">Profile link</span>
+                                <span class="has-text-grey has-text-weight-normal" th:text="#{field.optional}">optional</span>
+                            </label>
+                            <div class="control">
+                                <input class="input" type="url" id="profileUrl" th:field="*{profileUrl}"
+                                       th:errorclass="is-danger" maxlength="255" autocomplete="off"
+                                       inputmode="url" th:placeholder="#{placeholder.profileUrl}">
+                            </div>
+                            <p class="help is-danger" th:if="${#fields.hasErrors('profileUrl')}"
+                               th:errors="*{profileUrl}">error</p>
                         </div>
                     </div>
                 </div>

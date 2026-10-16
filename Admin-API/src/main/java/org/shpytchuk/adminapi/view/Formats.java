@@ -19,6 +19,8 @@ import java.util.Locale;
 @Component("fmt")
 public class Formats {
 
+    static final String MISSING_PHONE = "-";
+
     private final PhoneNumberUtil phoneNumbers = PhoneNumberUtil.getInstance();
 
     public String date(LocalDate date) {
@@ -61,7 +63,7 @@ public class Formats {
 
     public String phone(String phone) {
         if (!StringUtils.hasText(phone)) {
-            return "";
+            return MISSING_PHONE;
         }
         try {
             return phoneNumbers.format(phoneNumbers.parse(phone, null), PhoneNumberFormat.INTERNATIONAL);

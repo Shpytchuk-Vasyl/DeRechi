@@ -177,13 +177,48 @@ class LostItemControllerTests {
     private static ItemView itemView() {
         return new ItemView(7L, "Rukzak", "Opys", LocalDate.of(2026, 1, 2), 500, "PLN",
                 "https://example.test/photo.jpg", "BAG", "Park", "PL", 49.8, 24.0,
-                "+380671234567", "a@b.test", List.of());
+                "+380671234567", "a@b.test", List.of(), null, null);
     }
 
     private static ItemView itemViewWithoutImage() {
         return new ItemView(7L, "Rukzak", null, LocalDate.of(2026, 1, 2), null, "UAH",
                 null, "BAG", "Park", "UA", 49.8, 24.0,
-                "+380671234567", "a@b.test", List.of());
+                "+380671234567", "a@b.test", List.of(), null, null);
+    }
+
+    private static ItemView itemViewWithOnlyANickName() {
+        return new ItemView(7L, "Rukzak", null, LocalDate.of(2026, 1, 2), null, "UAH",
+                null, "BAG", "Park", "UA", 49.8, 24.0,
+                null, null, List.of(SocialMediaEnum.FACEBOOK), "Olena Koval", "https://www.facebook.com/olena.koval");
+    }
+
+    @Test
+    void showsAHyphenForTheMissingPhoneAndLinksTheNickNameToItsProfile() throws Exception {
+        when(service.page(any(), any())).thenReturn(new PageImpl<>(List.of(itemViewWithOnlyANickName())));
+
+        mockMvc.perform(get("/admin/lost-items").with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.VIEW))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(allOf(
+                        containsString("<p class=\"numeric\">-</p>"),
+                        containsString("Нікнейм"),
+                        containsString("href=\"https://www.facebook.com/olena.koval\""),
+                        containsString(">Olena Koval</a>"),
+                        containsString("messenger-facebook"),
+                        containsString("fa-brands fa-facebook"))));
+    }
+
+    @Test
+    void showsTheNickNameWithoutALinkWhenTheProfileIsNotHttps() throws Exception {
+        ItemView unsafe = new ItemView(7L, "Rukzak", null, LocalDate.of(2026, 1, 2), null, "UAH",
+                null, "BAG", "Park", "UA", 49.8, 24.0,
+                null, null, List.of(SocialMediaEnum.TELEGRAM), "@lostcat", "javascript:alert(1)");
+        when(service.page(any(), any())).thenReturn(new PageImpl<>(List.of(unsafe)));
+
+        mockMvc.perform(get("/admin/lost-items").with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.VIEW))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(allOf(
+                        containsString("<span>@lostcat</span>"),
+                        not(containsString("javascript:alert")))));
     }
 
     @Test
@@ -203,9 +238,9 @@ class LostItemControllerTests {
     void showsTheClaimCountNextToTheTitleAndListsTheClaimsInTheDialog() throws Exception {
         when(service.page(any(), any())).thenReturn(new PageImpl<>(List.of(itemView())));
         when(service.claims(List.of(7L))).thenReturn(Map.of(7L, List.of(
-                new ClaimView("+48501234567", "claimant@example.test", List.of(SocialMediaEnum.TELEGRAM),
+                new ClaimView("+48501234567", "claimant@example.test", List.of(SocialMediaEnum.TELEGRAM), null, null,
                         Instant.parse("2026-09-01T10:00:00Z"), ClaimStatus.CONFIRMED),
-                new ClaimView("+380509876543", "second@example.test", List.of(),
+                new ClaimView("+380509876543", "second@example.test", List.of(), null, null,
                         Instant.parse("2026-09-02T10:00:00Z"), ClaimStatus.NEW))));
 
         mockMvc.perform(get("/admin/lost-items").with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.VIEW))))
@@ -376,6 +411,10 @@ class LostItemControllerTests {
     }
 
     private static org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder validCreateWithoutEmail() {
+        return createWithoutContacts().param("phone", "+48501234567");
+    }
+
+    private static org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder createWithoutContacts() {
         return post("/admin/lost-items")
                 .with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.CREATE)))
                 .with(csrf())
@@ -385,8 +424,65 @@ class LostItemControllerTests {
                 .param("placeId", "ChIJtest")
                 .param("placeName", "Park")
                 .param("lat", "52.2")
-                .param("lon", "21.0")
-                .param("phone", "+48501234567");
+                .param("lon", "21.0");
+    }
+
+    @Test
+    void rejectsAMissingPhoneWithoutANickNameOnThePhoneField() throws Exception {
+        mockMvc.perform(createWithoutContacts()
+                        .param("countryCode", "PL")
+                        .param("phone", "")
+                        .param("socialMedias", "TELEGRAM"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("items/form"))
+                .andExpect(content().string(containsString("Вкажіть телефон або нікнейм з рівно однією соцмережею")));
+
+        verify(service, never()).create(any());
+    }
+
+    @Test
+    void createsANickNameNoticeWithoutAPhone() throws Exception {
+        when(service.create(any())).thenReturn(lostItem());
+
+        mockMvc.perform(createWithoutContacts()
+                        .param("countryCode", "PL")
+                        .param("phone", "")
+                        .param("nickName", " @lostcat ")
+                        .param("profileUrl", "https://t.me/lostcat")
+                        .param("socialMedias", "TELEGRAM"))
+                .andExpect(status().is3xxRedirection());
+
+        ArgumentCaptor<ItemForm> form = ArgumentCaptor.forClass(ItemForm.class);
+        verify(service).create(form.capture());
+        assertThat(form.getValue().getPhone()).isNull();
+        assertThat(form.getValue().getNickName()).isEqualTo("@lostcat");
+        assertThat(form.getValue().getProfileUrl()).isEqualTo("https://t.me/lostcat");
+        assertThat(form.getValue().getSocialMedias()).containsExactly(SocialMediaEnum.TELEGRAM);
+    }
+
+    @Test
+    void rejectsAProfileLinkThatIsNotHttps() throws Exception {
+        mockMvc.perform(validCreateWithoutEmail()
+                        .param("countryCode", "PL")
+                        .param("profileUrl", "http://t.me/lostcat"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("items/form"))
+                .andExpect(content().string(containsString("Посилання, що починається з https://")));
+
+        verify(service, never()).create(any());
+    }
+
+    @Test
+    void offersTheNickNameFieldsAndFacebookInTheForm() throws Exception {
+        mockMvc.perform(get("/admin/lost-items/new")
+                        .with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.CREATE))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(allOf(
+                        containsString("id=\"nickName\""),
+                        containsString("id=\"profileUrl\""),
+                        containsString("value=\"FACEBOOK\""),
+                        containsString("fa-brands fa-facebook"),
+                        containsString("Можна не вказувати, якщо є нікнейм і рівно одна соцмережа"))));
     }
 
     @Test

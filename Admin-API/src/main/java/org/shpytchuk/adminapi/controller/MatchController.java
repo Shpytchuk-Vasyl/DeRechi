@@ -3,6 +3,7 @@ package org.shpytchuk.adminapi.controller;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.shpytchuk.adminapi.config.cache.CachedPage;
+import org.shpytchuk.adminapi.exception.OwnerWithoutPhoneException;
 import org.shpytchuk.adminapi.form.ItemFilter;
 import org.shpytchuk.adminapi.form.NotifyChannel;
 import org.shpytchuk.adminapi.model.ItemModel;
@@ -16,8 +17,11 @@ import org.shpytchuk.adminapi.view.matching.CandidateView;
 import org.shpytchuk.adminapi.view.matching.MatchRow;
 import org.shpytchuk.adminapi.view.matching.NotifiedMatch;
 import org.shpytchuk.adminapi.view.Pager;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,10 +40,12 @@ public class MatchController {
 
     private static final String CELL = "fragments/candidates :: cell(row=${row}, page=${page}, filter=${filter})";
     private static final String ROW = "fragments/candidates :: row(lost=${lost}, candidate=${candidate})";
+    private static final String NO_PHONE_KEY = "matches.notifyNoPhone";
 
     private final MatchService matchService;
     private final MatchNotificationService notificationService;
     private final ItemModel itemModel;
+    private final MessageSource messages;
 
     @GetMapping
     @RequirePermission(scope = Scope.MATCH, action = Action.VIEW)
@@ -85,6 +91,15 @@ public class MatchController {
         itemModel.forSources(model, Scope.LOST_ITEM, List.of(notified.lost().id()));
         itemModel.forSources(model, Scope.FOUND_ITEM, List.of(notified.candidate().found().id()));
         return ROW;
+    }
+
+    @ExceptionHandler(OwnerWithoutPhoneException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseBody
+    public String ownerWithoutPhone(OwnerWithoutPhoneException exception, Authentication authentication) {
+        log.info("{} could not notify the owner of lost item {}: no phone", authentication.getName(),
+                exception.getLostItemId());
+        return messages.getMessage(NO_PHONE_KEY, null, LocaleContextHolder.getLocale());
     }
 
     private void sources(Model model, List<MatchRow> rows) {

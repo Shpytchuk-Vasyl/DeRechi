@@ -69,32 +69,37 @@
               th:hx-target="'#candidate-' + ${lost.id} + '-' + ${candidate.found.id}" hx-swap="outerHTML"
               th:with="notifyId = 'notify-' + ${lost.id} + '-' + ${candidate.found.id},
                        notifyUrl = @{/admin/matches/notify},
-                       tone = ${candidate.notified} ? 'is-light' : 'is-link',
-                       label = ${candidate.notified} ? #{matches.notifyAgain} : #{matches.notify}">
+                       withoutPhone = ${#strings.isEmpty(lost.phone)},
+                       tone = ${withoutPhone} ? 'is-danger' : (${candidate.notified} ? 'is-light' : 'is-link'),
+                       label = ${withoutPhone} ? #{matches.notifyNoPhone} : (${candidate.notified} ? #{matches.notifyAgain} : #{matches.notify}),
+                       channelLabel = ${withoutPhone} ? #{matches.notifyNoPhone} : #{matches.notifyChannel}">
             <input type="hidden" name="lostItemId" th:value="${lost.id}">
             <input type="hidden" name="foundItemId" th:value="${candidate.found.id}">
 
-            <div class="field has-addons mb-0">
+            <div class="field has-addons mb-0" th:title="${withoutPhone} ? ${label}">
                 <p class="control">
                     <button type="submit" name="channel" value="ALL" class="button is-small"
-                            th:hx-post="${notifyUrl}" th:data-error="#{matches.notifyFailed}"
+                            th:hx-post="${withoutPhone} ? null : ${notifyUrl}" th:data-error="#{matches.notifyFailed}"
+                            th:disabled="${withoutPhone}"
                             th:classappend="${tone}" th:title="${label}" th:aria-label="${label}">
                         <span class="icon" aria-hidden="true">
                             <i class="fa-solid"
-                               th:classappend="${candidate.notified} ? 'fa-rotate-right' : 'fa-bullhorn'"></i>
+                               th:classappend="${withoutPhone} ? 'fa-phone-slash' : (${candidate.notified} ? 'fa-rotate-right' : 'fa-bullhorn')"></i>
                         </span>
                     </button>
                 </p>
                 <p class="control">
                     <button type="button" class="button is-small notify-trigger"
-                            th:classappend="${tone}" th:popovertarget="${notifyId}"
-                            th:title="#{matches.notifyChannel}" th:aria-label="#{matches.notifyChannel}">
+                            th:disabled="${withoutPhone}"
+                            th:classappend="${tone}" th:popovertarget="${withoutPhone} ? null : ${notifyId}"
+                            th:title="${channelLabel}" th:aria-label="${channelLabel}">
                         <span class="icon is-small" aria-hidden="true"><i class="fa-solid fa-chevron-down"></i></span>
                     </button>
                 </p>
             </div>
 
-            <div class="dropdown-content anchored-menu notify-options" popover th:id="${notifyId}">
+            <div class="dropdown-content anchored-menu notify-options" popover th:id="${notifyId}"
+                 th:unless="${withoutPhone}">
                 <button type="submit" class="dropdown-item" name="channel" value="EMAIL"
                         th:if="${lost.email}" th:hx-post="${notifyUrl}" th:data-error="#{matches.notifyFailed}"
                         th:title="#{matches.notifyVia(#{field.email})}">

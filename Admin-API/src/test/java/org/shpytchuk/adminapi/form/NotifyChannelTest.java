@@ -33,6 +33,7 @@ class NotifyChannelTest {
                         tuple("PHONE", true, false),
                         tuple("TELEGRAM", true, false),
                         tuple("VIBER", true, false),
-                        tuple("WHATSAPP", true, false));
+                        tuple("WHATSAPP", true, false),
+                        tuple("FACEBOOK", true, false));
     }
 }

@@ -41,6 +41,8 @@ public class ItemFormApplier {
         info.setPhone(form.getPhone());
         info.setEmail(StringUtils.hasText(form.getEmail()) ? form.getEmail() : null);
         info.setSocialMedias(toArray(form.getSocialMedias()));
+        info.setNickName(form.getNickName());
+        info.setProfileUrl(form.getProfileUrl());
 
         item.setTitle(form.getTitle());
         item.setDescription(StringUtils.hasText(form.getDescription()) ? form.getDescription() : null);

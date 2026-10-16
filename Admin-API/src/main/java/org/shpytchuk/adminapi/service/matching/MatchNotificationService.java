@@ -10,6 +10,7 @@ import org.shpytchuk.adminapi.entity.lost.LostItem;
 import org.shpytchuk.adminapi.entity.matching.SimilarItem;
 import org.shpytchuk.adminapi.event.NotificationRequestedEvent;
 import org.shpytchuk.adminapi.exception.NotFoundException;
+import org.shpytchuk.adminapi.exception.OwnerWithoutPhoneException;
 import org.shpytchuk.adminapi.form.NotifyChannel;
 import org.shpytchuk.adminapi.mapper.ItemMapper;
 import org.shpytchuk.adminapi.repository.matching.SimilarItemRepository;
@@ -20,6 +21,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.Instant;
 
@@ -43,6 +45,9 @@ public class MatchNotificationService {
         SimilarItem match = similarItemRepository
                 .findById(new SimilarItem.SimilarItemId(foundItemId, lostItemId))
                 .orElseThrow(() -> new NotFoundException("entity.match", lostItemId + "/" + foundItemId));
+        if (!StringUtils.hasText(match.getLostItem().getInfo().getPhone())) {
+            throw new OwnerWithoutPhoneException(lostItemId);
+        }
 
         NotificationRequestedEvent event = getEvent(match, channel);
 
@@ -66,12 +71,21 @@ public class MatchNotificationService {
                 text(finder.getEmail() == null ? BODY_PHONE_ONLY_KEY : BODY_KEY,
                         lost.getTitle(), formats.date(lost.getDate()),
                         found.getTitle(), found.getPlace().getName(), formats.date(found.getDate()),
-                        formats.phone(finder.getPhone()), finder.getEmail()),
+                        finderContact(finder), finder.getEmail()),
                 notifyChannel.isNeedPhone() ? owner.getPhone() : null,
                 notifyChannel.isNeedEmail() ? owner.getEmail() : null,
                 socialMedias(notifyChannel),
                 deduplicationKey(lost.getId(), found.getId()));
         return event;
+    }
+
+    private String finderContact(ContactInfo finder) {
+        if (StringUtils.hasText(finder.getPhone()) || !StringUtils.hasText(finder.getNickName())) {
+            return formats.phone(finder.getPhone());
+        }
+        return finder.getProfileUrl() == null
+                ? finder.getNickName()
+                : "%s (%s)".formatted(finder.getNickName(), finder.getProfileUrl());
     }
 
     private static SocialMediaEnum[] socialMedias(NotifyChannel channel) {

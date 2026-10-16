@@ -261,6 +261,16 @@ button.card-footer-item {
     color: #25d366;
 }
 
+.messenger-facebook {
+    color: #0866ff;
+}
+
+.nick-name {
+    display: inline-flex;
+    gap: 0.25rem;
+    align-items: center;
+}
+
 .checkbox .messenger {
     vertical-align: text-bottom;
 }

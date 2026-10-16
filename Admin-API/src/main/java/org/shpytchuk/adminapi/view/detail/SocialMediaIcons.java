@@ -13,9 +13,10 @@ public class SocialMediaIcons {
     private static final Map<SocialMediaEnum, String> ICONS = Map.of(
             SocialMediaEnum.TELEGRAM, "fa-brands fa-telegram",
             SocialMediaEnum.VIBER, "fa-brands fa-viber",
-            SocialMediaEnum.WHATSAPP, "fa-brands fa-whatsapp");
+            SocialMediaEnum.WHATSAPP, "fa-brands fa-whatsapp",
+            SocialMediaEnum.FACEBOOK, "fa-brands fa-facebook");
 
     public String icon(SocialMediaEnum social) {
-        return ICONS.getOrDefault(social, FALLBACK);
+        return social == null ? FALLBACK : ICONS.getOrDefault(social, FALLBACK);
     }
 }

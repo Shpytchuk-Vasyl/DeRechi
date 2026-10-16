@@ -9,6 +9,8 @@ public record ClaimView(
         String phone,
         String email,
         List<SocialMediaEnum> socialMedias,
+        String nickName,
+        String profileUrl,
         Instant createdAt,
         ClaimStatus status
 ) {

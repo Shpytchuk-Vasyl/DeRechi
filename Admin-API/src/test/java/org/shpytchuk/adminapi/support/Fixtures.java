@@ -47,6 +47,13 @@ public final class Fixtures {
         return contact;
     }
 
+    public static ContactInfo nickNameContact(String nickName, String profileUrl, SocialMediaEnum socialMedia) {
+        ContactInfo contact = contact(null, null, socialMedia);
+        contact.setNickName(nickName);
+        contact.setProfileUrl(profileUrl);
+        return contact;
+    }
+
     public static <T extends Thing> T item(T item, String title, ThingCategory category, Place place, ContactInfo info) {
         item.setTitle(title);
         item.setDate(LocalDate.of(2026, 9, 10));

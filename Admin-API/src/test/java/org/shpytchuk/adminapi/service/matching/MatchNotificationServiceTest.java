@@ -12,6 +12,7 @@ import org.shpytchuk.adminapi.entity.thing.ThingCategory;
 import org.shpytchuk.adminapi.entity.matching.SimilarItem;
 import org.shpytchuk.adminapi.event.NotificationRequestedEvent;
 import org.shpytchuk.adminapi.exception.NotFoundException;
+import org.shpytchuk.adminapi.exception.OwnerWithoutPhoneException;
 import org.shpytchuk.adminapi.form.NotifyChannel;
 import org.shpytchuk.adminapi.repository.matching.SimilarItemRepository;
 import org.shpytchuk.adminapi.view.Formats;
@@ -107,6 +108,43 @@ class MatchNotificationServiceTest {
         assertThat(event.getValue().message())
                 .contains("Знайдений рюкзак")
                 .doesNotContain("null", " та ", "{6}");
+    }
+
+    @Test
+    void refusesAnOwnerWhoLeftOnlyANickNameAndSendsNothing() {
+        SimilarItem match = match();
+        ContactInfo owner = match.getLostItem().getInfo();
+        owner.setPhone(null);
+        owner.setNickName("@lostcat");
+        owner.setProfileUrl("https://t.me/lostcat");
+        when(repository.findById(new SimilarItem.SimilarItemId(2L, 1L))).thenReturn(Optional.of(match));
+
+        assertThatThrownBy(() -> service.notifyOwner(1L, 2L, "admin@derechi.local", NotifyChannel.EMAIL))
+                .isInstanceOf(OwnerWithoutPhoneException.class)
+                .extracting("lostItemId").isEqualTo(1L);
+
+        verify(rabbitTemplate, never()).convertAndSend(any(String.class), any(String.class), any(Object.class));
+        verify(repository, never()).save(any());
+        assertThat(match.getNotifiedAt()).isNull();
+    }
+
+    @Test
+    void givesTheOwnerTheFinderNickNameWhenTheFinderLeftNoPhone() {
+        SimilarItem match = match();
+        ContactInfo finder = match.getFoundItem().getInfo();
+        finder.setPhone(null);
+        finder.setEmail(null);
+        finder.setNickName("@finder");
+        finder.setProfileUrl("https://t.me/finder");
+        when(repository.findById(new SimilarItem.SimilarItemId(2L, 1L))).thenReturn(Optional.of(match));
+
+        service.notifyOwner(1L, 2L, "admin@derechi.local", NotifyChannel.ALL);
+
+        var event = forClass(NotificationRequestedEvent.class);
+        verify(rabbitTemplate).convertAndSend(eq("notification.exchange"), eq("notification.match.found"), event.capture());
+        assertThat(event.getValue().message())
+                .contains("@finder (https://t.me/finder)")
+                .doesNotContain("null", " - ");
     }
 
     @Test

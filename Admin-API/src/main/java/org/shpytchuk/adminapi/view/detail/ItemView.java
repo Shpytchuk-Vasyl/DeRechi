@@ -20,6 +20,8 @@ public record ItemView(
         Double lon,
         String phone,
         String email,
-        List<SocialMediaEnum> socialMedias
+        List<SocialMediaEnum> socialMedias,
+        String nickName,
+        String profileUrl
 ) {
 }
