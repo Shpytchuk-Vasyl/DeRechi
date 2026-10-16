@@ -1,0 +1,242 @@
+#   docker compose --env-file env.prod -f __deploy/docker-compose.prod-api.yml pull && docker compose --env-file env.prod -f __deploy/docker-compose.prod-api.yml up -d
+#
+name: derechi
+
+x-infra: &infra
+  restart: unless-stopped
+
+
+x-postgres: &postgres
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: 5432
+  POSTGRES_DB: ${POSTGRES_DB:-derechi}
+  POSTGRES_USER: ${POSTGRES_USER:?set it in env.prod}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set it in env.prod}
+
+x-rabbitmq: &rabbitmq
+  RABBITMQ_HOST: ${RABBITMQ_HOST:?set it in env.prod}
+  RABBITMQ_PORT: ${RABBITMQ_PORT:-5671}
+  RABBITMQ_USER: ${RABBITMQ_USER:?set it in env.prod}
+  RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:?set it in env.prod}
+  RABBITMQ_VHOST: ${RABBITMQ_VHOST:?set it in env.prod}
+  RABBITMQ_SSL: ${RABBITMQ_SSL:-true}
+
+services:
+
+  postgres:
+    <<: *infra
+    image: ghcr.io/shpytchuk-vasyl/derechi-postgis:${IMAGE_TAG:-latest}
+    container_name: derechi-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?set it in env.prod}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set it in env.prod}
+      POSTGRES_DB: ${POSTGRES_DB:-derechi}
+    ports:
+      - "${POSTGRES_PRIVATE_IP:?set it in env.prod}:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: ${POSTGRES_MEMORY:-2g}
+
+  db-postgres:
+    image: ghcr.io/shpytchuk-vasyl/derechi-db-postgres:${IMAGE_TAG:-latest}
+    container_name: derechi-db-postgres
+    restart: "no"
+    environment:
+      <<: *postgres
+      JAVA_OPTS: >-
+        ${DB_POSTGRES_JAVA_OPTS:--Xmx192m
+        -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=32m -XX:MaxDirectMemorySize=16m}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: ${DB_POSTGRES_MEMORY:-512m}
+
+  postgres-backup:
+    <<: *infra
+    image: nfrastack/db-backup:5.0.5
+    container_name: derechi-postgres-backup
+    environment:
+      CHECK_NEW_VERSION: "FALSE"
+      DB01_TYPE: postgres
+      DB01_HOST: postgres
+      DB01_PORT: 5432
+      DB01_NAME: ${POSTGRES_DB:-derechi}
+      DB01_USER: ${POSTGRES_USER:?set it in env.prod}
+      DB01_PASS: ${POSTGRES_PASSWORD:?set it in env.prod}
+      DB01_BACKUP_BEGIN: "+5"
+      DB01_BACKUP_INTERVAL: ${BACKUP_INTERVAL:-1440}
+      DB01_COMPRESSION: ZSTD
+      DB01_ENCRYPT: "TRUE"
+      DB01_ENCRYPT_PASSPHRASE: ${BACKUP_ENCRYPT_PASSPHRASE:?set it in env.prod}
+      DB01_BACKUP_LOCATION: s3
+      DB01_S3_PROTOCOL: https
+      DB01_S3_HOST: ${BACKUP_S3_HOST:?set it in env.prod}
+      DB01_S3_REGION: ${BACKUP_S3_REGION:?set it in env.prod}
+      DB01_S3_BUCKET: ${BACKUP_S3_BUCKET:?set it in env.prod}
+      DB01_S3_PATH: postgres
+      DB01_S3_KEY_ID: ${BACKUP_S3_KEY_ID:?set it in env.prod}
+      DB01_S3_KEY_SECRET: ${BACKUP_S3_KEY_SECRET:?set it in env.prod}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: ${POSTGRES_BACKUP_MEMORY:-256m}
+
+  caddy:
+    <<: *infra
+    image: caddy:2.11.7
+    container_name: derechi-caddy
+    environment:
+      API_DOMAIN: ${API_DOMAIN:?set it in env.prod}
+      ADMIN_DOMAIN: ${ADMIN_DOMAIN:?set it in env.prod}
+      AUTH_DOMAIN: ${AUTH_DOMAIN:?set it in env.prod}
+      CLIENT_API_URI: http://client-api:8082
+      MINIO_URI: ${MINIO_URI:?set it in env.prod}
+      MINIO_BUCKET: ${MINIO_BUCKET:?set it in env.prod}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ../docker/caddy:/etc/caddy:ro
+      - caddydata:/data
+      - caddyconfig:/config
+    depends_on:
+      - client-api
+      - admin-api
+      - keycloak
+    deploy:
+      resources:
+        limits:
+          memory: ${CADDY_MEMORY:-128m}
+
+  client-api:
+    <<: *infra
+    image: ghcr.io/shpytchuk-vasyl/derechi-client-api:${IMAGE_TAG:-latest}
+    container_name: derechi-client-api
+    environment:
+      <<: [*postgres, *rabbitmq]
+      JAVA_OPTS: >-
+        ${CLIENT_API_JAVA_OPTS:--Xmx256m
+        -XX:MaxMetaspaceSize=160m -XX:ReservedCodeCacheSize=48m -XX:MaxDirectMemorySize=32m}
+      FOURTHWALL_SHOP_URL: ${FOURTHWALL_SHOP_URL:?set it in env.prod}
+      FOURTHWALL_API_USERNAME: ${FOURTHWALL_API_USERNAME:?set it in env.prod}
+      FOURTHWALL_API_PASSWORD: ${FOURTHWALL_API_PASSWORD:?set it in env.prod}
+      FOURTHWALL_WEBHOOK_SECRET: ${FOURTHWALL_WEBHOOK_SECRET:?set it in env.prod}
+      FOURTHWALL_PRODUCT_IMAGE_URL: ${FOURTHWALL_PRODUCT_IMAGE_URL:-https://cdn.fourthwall.com/customizations/sh_b033e02b-f108-4a5b-8703-df9ac3ebf4c9/652a19a8-9532-4902-9e55-0574a68ec98a.png}
+      DERECHI_SITE_URL: ${DERECHI_SITE_URL:?set it in env.prod}
+    depends_on:
+      db-postgres:
+        condition: service_completed_successfully
+    deploy:
+      resources:
+        limits:
+          memory: ${CLIENT_API_MEMORY:-768m}
+
+  admin-api:
+    <<: *infra
+    image: ghcr.io/shpytchuk-vasyl/derechi-admin-api:${IMAGE_TAG:-latest}
+    container_name: derechi-admin-api
+    environment:
+      <<: [*postgres, *rabbitmq]
+      JAVA_OPTS: >-
+        ${ADMIN_API_JAVA_OPTS:--Xmx192m
+        -XX:MaxMetaspaceSize=160m -XX:ReservedCodeCacheSize=48m -XX:MaxDirectMemorySize=32m}
+      SERVER_FORWARD_HEADERS_STRATEGY: native
+      KEYCLOAK_URI: http://keycloak:8080
+      KEYCLOAK_PUBLIC_URI: https://${AUTH_DOMAIN:?set it in env.prod}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:?set it in env.prod}
+      MINIO_REGION: ${MINIO_REGION:?set it in env.prod}
+      MINIO_BUCKET: ${MINIO_BUCKET:?set it in env.prod}
+      MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL:?set it in env.prod}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:?set it in env.prod}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:?set it in env.prod}
+    depends_on:
+      db-postgres:
+        condition: service_completed_successfully
+    deploy:
+      resources:
+        limits:
+          memory: ${ADMIN_API_MEMORY:-512m}
+
+  keycloak:
+    <<: *infra
+    image: quay.io/keycloak/keycloak:26.4
+    container_name: derechi-keycloak
+    command: ["start", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN:?set it in env.prod}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?set it in env.prod}
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: ${POSTGRES_USER:?set it in env.prod}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD:?set it in env.prod}
+      KC_HOSTNAME: https://${AUTH_DOMAIN:?set it in env.prod}
+      KC_HOSTNAME_ADMIN: http://localhost:8180
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY_HEADERS: xforwarded
+      KC_HEALTH_ENABLED: "true"
+      MALLOC_ARENA_MAX: "2"
+      JAVA_OPTS_APPEND: >-
+        ${KEYCLOAK_JAVA_OPTS:--Xmx192m
+        -XX:MaxMetaspaceSize=160m -XX:ReservedCodeCacheSize=48m -XX:MaxDirectMemorySize=32m
+        -XX:-UseG1GC -XX:+UseSerialGC}
+      DERECHI_SITE_URL: ${DERECHI_SITE_URL:?set it in env.prod}
+      DERECHI_ADMIN_URL: https://${ADMIN_DOMAIN:?set it in env.prod}
+      KEYCLOAK_SERVICES_SECRET: ${KEYCLOAK_SERVICES_SECRET:?set it in env.prod}
+    ports:
+      - "127.0.0.1:8180:8080"
+    volumes:
+      - ../docker/keycloak/realms/derechi-realm.json:/opt/keycloak/data/import/derechi-realm.json:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: ${KEYCLOAK_MEMORY:-512m}
+
+  prometheus-agent:
+    <<: *infra
+    image: prom/prometheus:v3.14.0
+    container_name: derechi-prometheus-agent
+    environment:
+      GRAFANA_CLOUD_PROM_URL: ${GRAFANA_CLOUD_PROM_URL:?set it in env.prod}
+      GRAFANA_CLOUD_PROM_USER: ${GRAFANA_CLOUD_PROM_USER:?set it in env.prod}
+      GRAFANA_CLOUD_TOKEN: ${GRAFANA_CLOUD_TOKEN:?set it in env.prod}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        awk '{
+          while (match($$0, /\$$\{[A-Z_]+\}/)) {
+            name = substr($$0, RSTART + 2, RLENGTH - 3)
+            $$0 = substr($$0, 1, RSTART - 1) ENVIRON[name] substr($$0, RSTART + RLENGTH)
+          }
+          print
+        }' /etc/prometheus/prometheus-agent.yml.tmpl > /tmp/prometheus-agent.yml &&
+        exec /bin/prometheus --agent --config.file=/tmp/prometheus-agent.yml
+    volumes:
+      - ../docker/prometheus/prometheus-agent-api.yml.tmpl:/etc/prometheus/prometheus-agent.yml.tmpl:ro
+    deploy:
+      resources:
+        limits:
+          memory: ${PROMETHEUS_AGENT_MEMORY:-128m}
+
+volumes:
+  pgdata:
+  caddydata:
+  caddyconfig:

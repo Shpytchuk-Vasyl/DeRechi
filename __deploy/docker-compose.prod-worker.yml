@@ -1,0 +1,175 @@
+#   docker compose --env-file env.prod -f __deploy/docker-compose.prod-worker.yml pull && docker compose --env-file env.prod -f __deploy/docker-compose.prod-worker.yml up -d
+#
+name: derechi
+
+x-infra: &infra
+  restart: unless-stopped
+
+x-rabbitmq: &rabbitmq
+  RABBITMQ_HOST: ${RABBITMQ_HOST:?set it in env.prod}
+  RABBITMQ_PORT: ${RABBITMQ_PORT:-5671}
+  RABBITMQ_USER: ${RABBITMQ_USER:?set it in env.prod}
+  RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:?set it in env.prod}
+  RABBITMQ_VHOST: ${RABBITMQ_VHOST:?set it in env.prod}
+  RABBITMQ_SSL: ${RABBITMQ_SSL:-true}
+
+services:
+
+  worker:
+    <<: *infra
+    image: ghcr.io/shpytchuk-vasyl/derechi-worker:${IMAGE_TAG:-latest}
+    container_name: derechi-worker
+    environment:
+      <<: *rabbitmq
+      JAVA_OPTS: >-
+        ${WORKER_JAVA_OPTS:--Xmx192m
+        -XX:MaxMetaspaceSize=160m -XX:ReservedCodeCacheSize=48m -XX:MaxDirectMemorySize=32m}
+      POSTGRES_HOST: ${POSTGRES_PRIVATE_IP:?set it in env.prod}
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-derechi}
+      POSTGRES_USER: ${POSTGRES_USER:?set it in env.prod}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set it in env.prod}
+      DERECHI_SITE_URL: ${DERECHI_SITE_URL:?set it in env.prod}
+    deploy:
+      resources:
+        limits:
+          memory: ${WORKER_MEMORY:-640m}
+
+  notification:
+    <<: *infra
+    image: ghcr.io/shpytchuk-vasyl/derechi-notification:${IMAGE_TAG:-latest}
+    container_name: derechi-notification
+    environment:
+      <<: *rabbitmq
+      JAVA_OPTS: >-
+        ${NOTIFICATION_JAVA_OPTS:--Xmx128m
+        -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=48m -XX:MaxDirectMemorySize=32m}
+      NOTIFY_EMAIL_HOST: ${NOTIFY_EMAIL_HOST:?set it in env.prod}
+      NOTIFY_EMAIL_PORT: ${NOTIFY_EMAIL_PORT:-587}
+      NOTIFY_EMAIL_USERNAME: ${NOTIFY_EMAIL_USERNAME:?set it in env.prod}
+      NOTIFY_EMAIL_PASSWORD: ${NOTIFY_EMAIL_PASSWORD:?set it in env.prod}
+      NOTIFY_EMAIL_FROM: ${NOTIFY_EMAIL_FROM:?set it in env.prod}
+      SMS_FLY_API_KEY: ${SMS_FLY_API_KEY:-}
+      SMS_FLY_API_URL: ${SMS_FLY_API_URL:-https://sms-fly.ua/api/v2/api.php}
+      SMS_FLY_SOURCE: ${SMS_FLY_SOURCE:-DeRechi}
+    deploy:
+      resources:
+        limits:
+          memory: ${NOTIFICATION_MEMORY:-512m}
+
+  #   docker compose stop ingest && docker compose run --rm -it ingest --login && docker compose start ingest
+  ingest:
+    <<: *infra
+    image: ghcr.io/shpytchuk-vasyl/derechi-ingest:${IMAGE_TAG:-latest}
+    container_name: derechi-ingest
+    volumes:
+      - tdlib-data:/app/tdlib
+    environment:
+      <<: *rabbitmq
+      JAVA_OPTS: >-
+        ${INGEST_JAVA_OPTS:--Xmx384m
+        -XX:MaxMetaspaceSize=192m -XX:-UseG1GC -XX:+UseSerialGC --enable-native-access=ALL-UNNAMED}
+      POSTGRES_HOST: ${POSTGRES_PRIVATE_IP:?set it in env.prod}
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-derechi}
+      POSTGRES_USER: ${POSTGRES_USER:?set it in env.prod}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set it in env.prod}
+      TDLIB_DATA_DIR: /app/tdlib
+      DERECHI_SITE_URL: ${DERECHI_SITE_URL:?set it in env.prod}
+      DERECHI_API_URI: https://${API_DOMAIN:?set it in env.prod}
+      DERECHI_API_TIMEOUT: ${DERECHI_API_TIMEOUT:-PT15S}
+      DERECHI_API_MAX_ATTEMPTS: ${DERECHI_API_MAX_ATTEMPTS:-3}
+      DERECHI_API_RETRY_DELAY: ${DERECHI_API_RETRY_DELAY:-PT1S}
+      DERECHI_API_REFERENCE_TTL: ${DERECHI_API_REFERENCE_TTL:-1h}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:?set it in env.prod}
+      MINIO_REGION: ${MINIO_REGION:?set it in env.prod}
+      MINIO_BUCKET: ${MINIO_BUCKET:?set it in env.prod}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:?set it in env.prod}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:?set it in env.prod}
+      MINIO_MAX_UPLOAD: ${MINIO_MAX_UPLOAD:-5MB}
+      INGEST_PUBLISHERS: ${INGEST_PUBLISHERS:-}
+      INGEST_HASH_KEY: ${INGEST_HASH_KEY:?set it in env.prod}
+      INGEST_DUPLICATE_WINDOW: ${INGEST_DUPLICATE_WINDOW:-P14D}
+      INGEST_MAX_PHOTOS: ${INGEST_MAX_PHOTOS:-3}
+      INGEST_MAX_AGE: ${INGEST_MAX_AGE:-P30D}
+      INGEST_SITE_LOCALE: ${INGEST_SITE_LOCALE:-uk}
+      INGEST_MIN_CONFIDENCE: ${INGEST_MIN_CONFIDENCE:-0.6}
+      TELEGRAM_API_ID: ${TELEGRAM_API_ID:-0}
+      TELEGRAM_API_HASH: ${TELEGRAM_API_HASH:-}
+      TELEGRAM_PHONE: ${TELEGRAM_PHONE:-}
+      TELEGRAM_FOLDER: ${TELEGRAM_FOLDER:-DeRechi}
+      TELEGRAM_CHATS: ${TELEGRAM_CHATS:-}
+      TELEGRAM_DEFAULT_REGION: ${TELEGRAM_DEFAULT_REGION:-UA}
+      TELEGRAM_DEFAULT_LOCALE: ${TELEGRAM_DEFAULT_LOCALE:-uk}
+      TELEGRAM_ALBUM_WAIT: ${TELEGRAM_ALBUM_WAIT:-PT3S}
+      TELEGRAM_FOLDER_REFRESH: ${TELEGRAM_FOLDER_REFRESH:-PT10M}
+      TELEGRAM_CATCH_UP_MAX_AGE: ${TELEGRAM_CATCH_UP_MAX_AGE:-PT48H}
+      TELEGRAM_CATCH_UP_MAX_MESSAGES: ${TELEGRAM_CATCH_UP_MAX_MESSAGES:-200}
+      FACEBOOK_COOKIES: ${FACEBOOK_COOKIES:-}
+      FACEBOOK_GROUPS: ${FACEBOOK_GROUPS:-}
+      FACEBOOK_USER_AGENT: ${FACEBOOK_USER_AGENT:-}
+      FACEBOOK_POLL_EVERY: ${FACEBOOK_POLL_EVERY:-PT1H}
+      FACEBOOK_POLL_JITTER: ${FACEBOOK_POLL_JITTER:-PT20M}
+      FACEBOOK_REQUEST_PAUSE: ${FACEBOOK_REQUEST_PAUSE:-PT10S}
+      FACEBOOK_MAX_PAGES: ${FACEBOOK_MAX_PAGES:-10}
+      FACEBOOK_CATCH_UP_MAX_AGE: ${FACEBOOK_CATCH_UP_MAX_AGE:-PT18H}
+      FACEBOOK_TIMEOUT: ${FACEBOOK_TIMEOUT:-PT30S}
+      TELEGRAM_BOT_API_URL: ${TELEGRAM_BOT_API_URL:-https://api.telegram.org}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_PUBLISH_CHAT: ${TELEGRAM_PUBLISH_CHAT:-}
+      TELEGRAM_PUBLISH_LOCALE: ${TELEGRAM_PUBLISH_LOCALE:-uk}
+      TELEGRAM_BOT_TIMEOUT: ${TELEGRAM_BOT_TIMEOUT:-PT30S}
+      TELEGRAM_BOT_MAX_ATTEMPTS: ${TELEGRAM_BOT_MAX_ATTEMPTS:-3}
+      TELEGRAM_BOT_RETRY_DELAY: ${TELEGRAM_BOT_RETRY_DELAY:-PT3S}
+      OPENROUTER_URL: ${OPENROUTER_URL:-https://openrouter.ai/api/v1}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      OPENROUTER_MODEL: ${OPENROUTER_MODEL:-google/gemini-3.1-flash-lite}
+      OPENROUTER_FALLBACK_MODEL: ${OPENROUTER_FALLBACK_MODEL:-qwen/qwen3.5-flash-02-23}
+      OPENROUTER_ROUTING: ${OPENROUTER_ROUTING:-true}
+      OPENROUTER_TIMEOUT: ${OPENROUTER_TIMEOUT:-PT60S}
+      OPENROUTER_MAX_ATTEMPTS: ${OPENROUTER_MAX_ATTEMPTS:-3}
+      OPENROUTER_RETRY_DELAY: ${OPENROUTER_RETRY_DELAY:-PT1S}
+      OPENROUTER_DAILY_LIMIT: ${OPENROUTER_DAILY_LIMIT:-300}
+      GOOGLE_PLACES_API: ${GOOGLE_PLACES_API:-LEGACY}
+      GOOGLE_PLACES_URL: ${GOOGLE_PLACES_URL:-}
+      GOOGLE_PLACES_API_KEY: ${GOOGLE_PLACES_API_KEY:-}
+      GOOGLE_PLACES_TIMEOUT: ${GOOGLE_PLACES_TIMEOUT:-PT10S}
+      GOOGLE_PLACES_MAX_ATTEMPTS: ${GOOGLE_PLACES_MAX_ATTEMPTS:-3}
+      GOOGLE_PLACES_RETRY_DELAY: ${GOOGLE_PLACES_RETRY_DELAY:-PT1S}
+      REDACTION_OCR_LANGUAGES: ${REDACTION_OCR_LANGUAGES:-ukr+eng}
+      REDACTION_DOCUMENT_KEYWORDS:
+      REDACTION_FACE_SCORE: ${REDACTION_FACE_SCORE:-0.6}
+      REDACTION_DOCUMENT_MODE: ${REDACTION_DOCUMENT_MODE:-PARTIAL}
+    deploy:
+      resources:
+        limits:
+          memory: ${INGEST_MEMORY:-1g}
+
+  prometheus-agent:
+    <<: *infra
+    image: prom/prometheus:v3.14.0
+    container_name: derechi-prometheus-agent
+    environment:
+      GRAFANA_CLOUD_PROM_URL: ${GRAFANA_CLOUD_PROM_URL:?set it in env.prod}
+      GRAFANA_CLOUD_PROM_USER: ${GRAFANA_CLOUD_PROM_USER:?set it in env.prod}
+      GRAFANA_CLOUD_TOKEN: ${GRAFANA_CLOUD_TOKEN:?set it in env.prod}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        awk '{
+          while (match($$0, /\$$\{[A-Z_]+\}/)) {
+            name = substr($$0, RSTART + 2, RLENGTH - 3)
+            $$0 = substr($$0, 1, RSTART - 1) ENVIRON[name] substr($$0, RSTART + RLENGTH)
+          }
+          print
+        }' /etc/prometheus/prometheus-agent.yml.tmpl > /tmp/prometheus-agent.yml &&
+        exec /bin/prometheus --agent --config.file=/tmp/prometheus-agent.yml
+    volumes:
+      - ../docker/prometheus/prometheus-agent-worker.yml.tmpl:/etc/prometheus/prometheus-agent.yml.tmpl:ro
+    deploy:
+      resources:
+        limits:
+          memory: ${PROMETHEUS_AGENT_MEMORY:-128m}
+
+volumes:
+  tdlib-data:    # TDLib session of Ingest; losing it means another --login
