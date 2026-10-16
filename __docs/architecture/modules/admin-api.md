@@ -83,7 +83,7 @@ Adding a scope or action is covered in
 
 | Attribute | Bean | Use in templates |
 |---|---|---|
-| `fmt` | `Formats` | `date`, `money(amount, currency)`, `country(code)`, `phone` (libphonenumber), all locale-aware |
+| `fmt` | `Formats` | `date`, `money(amount, currency)`, `country(code)`, `phone` (libphonenumber; `-` when there is none), all locale-aware |
 | `plural` | `Plurals` | `records(count)` and `format(key, count)` with `one/few/many/other` keys, because Slavic plural rules do not fit `MessageFormat` |
 | `social` | `SocialMediaIcons` | Font Awesome class per `SocialMediaEnum` |
 | `uploads` | `ImageStorage` | `urlOf(key)` for thumbnails, `maxBytes` for the drop zone |

@@ -13,7 +13,7 @@ Read [Notices](../features/notices.md) (contact input) and [Match notifications]
 - **append** the new constant at the end of the enum;
 - **never reorder or remove** existing constants; doing so silently relabels every stored contact.
 
-Migration `002-init-schema` defines the column without a CHECK constraint, so the database accepts any ordinal and nothing stops a mistake except this rule.
+Migration `002-init-schema` defines the column without a CHECK constraint on the values, so the database accepts any ordinal and nothing stops a mistake except this rule. (`contact_info_reachable_ck` from migration 015 counts the entries only: a contact without a phone needs a nickname and exactly one network.)
 
 ## Steps
 
@@ -29,6 +29,7 @@ Migration `002-init-schema` defines the column without a CHECK constraint, so th
        TELEGRAM,
        VIBER,
        WHATSAPP,
+       FACEBOOK,
        LINE
    }
    ```
@@ -44,6 +45,10 @@ Migration `002-init-schema` defines the column without a CHECK constraint, so th
 6. **Notification module.** `Notification/src/main/java/org/shpytchuk/notification/event/NotificationRequestedEvent.java` has its own `SocialMediaEnum` with a NotifyHub `Channel` per constant. The JSON carries the enum **name**, so add `LINE` there too or deserialisation of an event that mentions it fails and the message dead-letters. NotifyHub has no LINE channel; map it to the closest thing (`Channel.SMS`, like Viber) until the fan-out is implemented.
 
 7. **Admin form.** Nothing else: `ItemModel` puts `SocialMediaEnum.values()` on the model, `ItemForm.socialMedias` binds the list, `ItemMapper` copies it to the entity.
+
+8. **Worker letters.** `Worker/src/main/java/org/shpytchuk/worker/service/ClaimNotifier.java` names each network in the claim letters with an exhaustive `switch`, so the build fails until `LINE` has its label there.
+
+9. **Ingest.** `Ingest/src/main/java/org/shpytchuk/ingest/model/SocialMedia.java` is the module's own copy, sent to `Client-API` by name. Add `LINE` if the model or a source can produce it; a network the model must not return (like `FACEBOOK`, which only a source's `AuthorProfile` sets) stays out of the extraction schema, see `ExtractionSchemaTest`.
 
 ## Tests to add or update
 
@@ -66,5 +71,6 @@ The web team runs `pnpm codegen` to pick up the enum and adds the label and icon
 - [ ] `schema.graphqls` enum matches the entity
 - [ ] `NotifyChannel`, `SocialMediaIcons`, `social.*` keys in five bundles
 - [ ] `Notification`'s `SocialMediaEnum` extended with a channel mapping
+- [ ] `ClaimNotifier` label, `Ingest`'s `SocialMedia` if it applies
 - [ ] `NotifyChannelTest`, `MessagesTest`, a GraphQL round-trip test green
 - [ ] Web-Client team informed

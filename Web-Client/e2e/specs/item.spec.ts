@@ -210,6 +210,18 @@ test.describe("author's privacy", () => {
       await expect(detail.contact("email")).toContainText("*")
     })
   }
+
+  test("an author who left only a nickname has - for the phone and the email", async ({
+    page,
+    go,
+    t,
+    shared,
+  }) => {
+    await go(shared.items.claimNick.path)
+    const detail = new ItemPage(page, t, "lost")
+    await expect(detail.contact("phone")).toHaveText("-")
+    await expect(detail.contact("email")).toHaveText("-")
+  })
 })
 
 test.describe("JSON-LD", () => {

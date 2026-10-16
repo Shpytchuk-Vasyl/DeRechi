@@ -9,7 +9,7 @@ const mocks = vi.hoisted(() => {
   class GraphQLRequestError extends Error {
     constructor(
       message: string,
-      readonly errors: { extensions?: { classification?: string } }[],
+      readonly errors: { extensions?: Record<string, unknown> }[],
     ) {
       super(message)
     }
@@ -186,6 +186,33 @@ describe("claimNotice", () => {
       reason: "disposableEmail",
     })
     expect(mocks.setCookie).not.toHaveBeenCalled()
+  })
+
+  it("hands over the nickname of an author who left no phone and no email", async () => {
+    mocks.graphqlRequest.mockRejectedValue(
+      new mocks.GraphQLRequestError("The author can be reached only by the nickname", [
+        {
+          extensions: {
+            classification: "AUTHOR_UNREACHABLE",
+            socialMedia: "TELEGRAM",
+            nickName: "@olena_lviv",
+            profileUrl: "https://t.me/olena_lviv",
+          },
+        },
+      ]),
+    )
+
+    expect(await claimNotice("lost", "7", contact)).toEqual({
+      ok: false,
+      reason: "authorUnreachable",
+      author: {
+        socialMedia: "TELEGRAM",
+        nickName: "@olena_lviv",
+        profileUrl: "https://t.me/olena_lviv",
+      },
+    })
+    expect(mocks.setCookie).not.toHaveBeenCalled()
+    expect(console.error).not.toHaveBeenCalled()
   })
 
   it("reports any other failure without setting the cookie", async () => {

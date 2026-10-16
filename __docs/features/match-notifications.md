@@ -11,15 +11,17 @@ Each candidate row is its own fragment, `fragments/candidates :: row(lost, candi
 - the main button submits `channel=ALL`;
 - the dropdown offers `EMAIL`, `PHONE` and one entry per social network the owner listed (`lost.socialMedias`), each submitting its own `channel` value.
 
+When the owner of the lost item has no phone (a notice imported with only a nickname, see [Claims](claims.md#an-author-with-only-a-nickname)), the button is red, disabled and without the dropdown or `hx-post`; its title (`matches.notifyNoPhone`) says why. The nickname, linked to the profile, is in the item dialog: staff write to the owner there by hand.
+
 All of them are `hx-post` submits of one form to `POST /admin/matches/notify` (permission `MATCH:NOTIFY`), so htmx sends the form's hidden fields (`lostItemId`, `foundItemId`, `_csrf`) plus the clicked button's `name`/`value`. The response is the same `row` fragment re-rendered: the button turns light, and the row shows "Notified <time> (<admin>)".
 
 ## Building the event
 
 `MatchNotificationService.notifyOwner(lostItemId, foundItemId, actor, channel)`:
 
-1. Loads the `SimilarItem` pair or throws `NotFoundException("entity.match")`.
+1. Loads the `SimilarItem` pair or throws `NotFoundException("entity.match")`; an owner without a phone throws `OwnerWithoutPhoneException`, which `MatchController` answers with `409` and the `matches.notifyNoPhone` text (logged at `INFO` with the admin and the lost item id).
 2. Builds a `NotificationRequestedEvent` with
-   - `subject` and `message` from the message keys `notification.match.subject` and `notification.match.body`, in the admin's current locale, with the lost title and date, the found title, place and date, and the finder's phone and email (`notification.match.bodyPhoneOnly` when the finder left no email);
+   - `subject` and `message` from the message keys `notification.match.subject` and `notification.match.body`, in the admin's current locale, with the lost title and date, the found title, place and date, and the finder's phone and email (`notification.match.bodyPhoneOnly` when the finder left no email; a finder with only a nickname is written as `nickname (profile link)` in place of the phone);
    - `phone` and `email` of the **owner of the lost item**, each set only if the chosen `NotifyChannel` needs it (`isNeedPhone`, `isNeedEmail`), otherwise `null`;
    - `socialMedias`: the single social network when a messenger channel was chosen, otherwise empty;
    - `deduplicationKey = match:<lostId>:<foundId>`.
@@ -28,7 +30,7 @@ All of them are `hx-post` submits of one form to `POST /admin/matches/notify` (p
 
 If RabbitMQ is unreachable the `AmqpConnectException` propagates, the row is not stamped, and htmx shows the `data-error` text on the button.
 
-`NotifyChannel` values: `ALL`, `EMAIL`, `PHONE`, `TELEGRAM`, `VIBER`, `WHATSAPP`. The phone is included for messenger channels too, because messengers are addressed by number.
+`NotifyChannel` values: `ALL`, `EMAIL`, `PHONE`, `TELEGRAM`, `VIBER`, `WHATSAPP`, `FACEBOOK`. The phone is included for messenger channels too, because messengers are addressed by number.
 
 ## Delivering it (`Notification`)
 

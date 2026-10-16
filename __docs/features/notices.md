@@ -28,7 +28,7 @@ The Web-Client consumes exactly this API; it has no private endpoints of its own
 | `image` | storage key, up to 200 characters, required for found items (checked in `ItemService.apply`) |
 | `categoryId` | required, must exist (`NOT_FOUND` otherwise) |
 | `place` | `PlaceInput`: Google place id, name, lat/lon, `countryCode` (two letters, must be supported) |
-| `contact` | `ItemContactInfoInput`: phone in E.164 (`^\+[1-9]\d{7,14}$`), optional email up to 50 characters (blank is stored as `null` by `ContactInfoMapper`, which builds the `contact_info` row for notices and claims alike), optional list of `SocialMedia`. An author without an email gets responses and match notifications by SMS only |
+| `contact` | `ItemContactInfoInput`: phone in E.164 (`^\+[1-9]\d{7,14}$`), optional email up to 50 characters (blank is stored as `null` by `ContactInfoMapper`, which builds the `contact_info` row for notices and claims alike), optional list of `SocialMedia`. An author without an email gets responses and match notifications by SMS only. The phone may be left out only with a `nickName` (up to 50) and exactly one `socialMedias` entry (`@PhoneOrNickName`), plus an optional `profileUrl` (`https://`, up to 255): the site form always sends a phone, only `Ingest` uses this for an author it knows by a Telegram `@username` or a Facebook profile name, see [Claims](claims.md#an-author-with-only-a-nickname) |
 
 What the client gets back is `ItemDto` built by `ItemMapper`. Contact details are masked by `ContactMasker` so that scraping the API does not yield usable contacts:
 
@@ -37,7 +37,7 @@ What the client gets back is `ItemDto` built by `ItemMapper`. Contact details ar
 finder@example.com -> f*****r@example.com
 ```
 
-Full contacts are only visible in the admin panel and in the notifications sent to the author.
+A notice without a phone returns `phone: null`; the nickname is not part of `ContactInfo`. Full contacts are only visible in the admin panel and in the notifications sent to the author.
 A viewer who recognises the item does not get them either: they send their own contacts through
 `claimLostItem` / `claimFoundItem`, see [Claims](claims.md).
 

@@ -202,6 +202,13 @@
     "doneOwner": "Przekazaliśmy Twoje dane właścicielowi. Ta osoba się z Tobą skontaktuje.",
     "repeated": "To ogłoszenie ma już Twoją odpowiedź: autor ma Twoje dane.",
     "orPost": "Albo dodaj własne ogłoszenie:",
+    "authorUnreachable": {
+      "text": "Niestety autor zostawił tylko nick w serwisie {network}, więc nie możemy go powiadomić. Napisz do niego bezpośrednio: {nickName}",
+      "openProfile": "Otwórz profil",
+      "copy": "Skopiuj nick",
+      "copied": "Nick skopiowany",
+      "copyFailed": "Nie udało się skopiować nicku"
+    },
     "confirm": {
       "title": "Czy rzecz wróciła do właściciela?",
       "text": "Potwierdzenie zamyka ogłoszenie dla wszystkich: zniknie z tablicy i trafi do archiwum.",
@@ -383,7 +390,8 @@
     "social": {
       "TELEGRAM": "Telegram",
       "VIBER": "Viber",
-      "WHATSAPP": "WhatsApp"
+      "WHATSAPP": "WhatsApp",
+      "FACEBOOK": "Facebook"
     },
     "error": {
       "required": "To pole jest wymagane.",

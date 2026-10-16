@@ -13,8 +13,10 @@ export type ContactInfoInput = {
 
 export type ItemContactInfoInput = {
   email?: string | null | undefined;
-  /** E.164 format, for example +380671234567 */
-  phone: string;
+  nickName?: string | null | undefined;
+  /** E.164 format, for example +380671234567; may be left out only with a nickName and exactly one socialMedias entry */
+  phone?: string | null | undefined;
+  profileUrl?: string | null | undefined;
   socialMedias?: Array<SocialMedia> | null | undefined;
 };
 
@@ -73,6 +75,7 @@ export type PlaceInput = {
 };
 
 export type SocialMedia =
+  | 'FACEBOOK'
   | 'TELEGRAM'
   | 'VIBER'
   | 'WHATSAPP';
@@ -102,14 +105,14 @@ export type LostItemQueryVariables = Exact<{
 }>;
 
 
-export type LostItemQuery = { lostItem: { id: string, title: string, description: string | null, date: string, image: string | null, compensation: { amount: number, currency: string } | null, category: { id: string, key: string }, place: { id: string, name: string, lat: number | null, lon: number | null, countryCode: string }, contact: { id: string, phone: string, email: string | null } } | null };
+export type LostItemQuery = { lostItem: { id: string, title: string, description: string | null, date: string, image: string | null, compensation: { amount: number, currency: string } | null, category: { id: string, key: string }, place: { id: string, name: string, lat: number | null, lon: number | null, countryCode: string }, contact: { id: string, phone: string | null, email: string | null } } | null };
 
 export type FoundItemQueryVariables = Exact<{
   id: string | number;
 }>;
 
 
-export type FoundItemQuery = { foundItem: { id: string, title: string, description: string | null, date: string, image: string, compensation: { amount: number, currency: string } | null, category: { id: string, key: string }, place: { id: string, name: string, lat: number | null, lon: number | null, countryCode: string }, contact: { id: string, phone: string, email: string | null } } | null };
+export type FoundItemQuery = { foundItem: { id: string, title: string, description: string | null, date: string, image: string, compensation: { amount: number, currency: string } | null, category: { id: string, key: string }, place: { id: string, name: string, lat: number | null, lon: number | null, countryCode: string }, contact: { id: string, phone: string | null, email: string | null } } | null };
 
 export type CategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 

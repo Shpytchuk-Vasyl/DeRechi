@@ -1,7 +1,7 @@
 import { env } from "./env"
 
 export type ItemKind = "lost" | "found"
-export type SocialMedia = "TELEGRAM" | "VIBER" | "WHATSAPP"
+export type SocialMedia = "TELEGRAM" | "VIBER" | "WHATSAPP" | "FACEBOOK"
 export type ItemSort = "DATE_DESC" | "DATE_ASC" | "TITLE_DESC" | "TITLE_ASC"
 
 export type Category = { id: string; key: string }
@@ -15,9 +15,11 @@ export type PlaceInput = {
 }
 
 export type ItemContactInput = {
-  phone: string
+  phone?: string | null
   email?: string | null
   socialMedias?: SocialMedia[]
+  nickName?: string | null
+  profileUrl?: string | null
 }
 export type ContactInput = { phone: string; email: string; socialMedias?: SocialMedia[] }
 
@@ -41,7 +43,7 @@ export type Item = {
   image: string | null
   category: Category
   place: { id: string; name: string; lat: number | null; lon: number | null; countryCode: string }
-  contact: { id: string; phone: string; email: string | null }
+  contact: { id: string; phone: string | null; email: string | null }
 }
 
 export type Claim = {

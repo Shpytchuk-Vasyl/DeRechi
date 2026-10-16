@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs"
 import path from "node:path"
-import type { ItemInput, PlaceInput } from "./api"
+import type { ItemContactInput, ItemInput, PlaceInput, SocialMedia } from "./api"
 import * as api from "./api"
 import {
   type CategoryKey,
@@ -45,6 +45,7 @@ export type SharedItemKey =
   | "foundDocuments"
   | "claimLost"
   | "claimFound"
+  | "claimNick"
 
 export type SharedItem = CreatedItem & {
   group: SharedGroup
@@ -94,6 +95,7 @@ type Definition = {
   compensation: { amount: number; currency?: string } | null
   image: "upload" | "missing" | null
   city: City
+  author: "phone" | "nickname"
 }
 
 const DESCRIPTION = DESCRIPTIONS.uk
@@ -114,6 +116,7 @@ function def(
     compensation: null,
     image: kind === "found" ? "upload" : null,
     city: "lviv",
+    author: "phone",
     ...extra,
   }
 }
@@ -150,6 +153,7 @@ const DEFINITIONS: Definition[] = [
   def("near", "kyiv", "found", { city: "kyiv" }),
   def("claim", "claimLost", "lost"),
   def("claim", "claimFound", "found"),
+  def("claim", "claimNick", "lost", { author: "nickname" }),
 ]
 
 const NAMED: readonly SharedItemKey[] = [
@@ -163,6 +167,7 @@ const NAMED: readonly SharedItemKey[] = [
   "foundDocuments",
   "claimLost",
   "claimFound",
+  "claimNick",
 ]
 
 function places(marker: string): Record<City, PlaceInput> {
@@ -174,6 +179,24 @@ function places(marker: string): Record<City, PlaceInput> {
     countryCode: CITIES[city].countryCode,
   })
   return { lviv: place("lviv"), kyiv: place("kyiv"), warsaw: place("warsaw") }
+}
+
+export type NicknameContact = ItemContactInput & {
+  phone: null
+  email: null
+  socialMedias: [SocialMedia]
+  nickName: string
+  profileUrl: string
+}
+
+export function nicknameContact(marker: string): NicknameContact {
+  return {
+    phone: null,
+    email: null,
+    socialMedias: ["FACEBOOK"],
+    nickName: `${marker} Олена Коваль`,
+    profileUrl: `https://www.facebook.com/${marker}`,
+  }
 }
 
 function titleOf(marker: string, definition: Definition): string {
@@ -204,11 +227,14 @@ function inputOf(
           : null,
     categoryId,
     place: placeOf[definition.city],
-    contact: {
-      phone: `+38067990${String(serial).padStart(4, "0")}`,
-      email: emailFor("author", marker, serial),
-      socialMedias: [],
-    },
+    contact:
+      definition.author === "nickname"
+        ? nicknameContact(marker)
+        : {
+            phone: `+38067990${String(serial).padStart(4, "0")}`,
+            email: emailFor("author", marker, serial),
+            socialMedias: [],
+          },
   }
 }
 

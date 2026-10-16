@@ -202,6 +202,13 @@
     "doneOwner": "Nous avons transmis vos coordonnées à la personne qui l’a perdu. Elle vous contactera.",
     "repeated": "Vous avez déjà répondu à cette annonce : son auteur a vos coordonnées.",
     "orPost": "Ou publiez votre propre annonce :",
+    "authorUnreachable": {
+      "text": "Malheureusement, l’auteur n’a laissé qu’un pseudo sur {network}, nous ne pouvons donc pas le prévenir. Écrivez-lui directement : {nickName}",
+      "openProfile": "Ouvrir le profil",
+      "copy": "Copier le pseudo",
+      "copied": "Pseudo copié",
+      "copyFailed": "Impossible de copier le pseudo"
+    },
     "confirm": {
       "title": "L’objet est-il revenu à son propriétaire ?",
       "text": "Confirmer ferme l’annonce pour tout le monde : elle disparaît du tableau et passe aux archives.",
@@ -383,7 +390,8 @@
     "social": {
       "TELEGRAM": "Telegram",
       "VIBER": "Viber",
-      "WHATSAPP": "WhatsApp"
+      "WHATSAPP": "WhatsApp",
+      "FACEBOOK": "Facebook"
     },
     "error": {
       "required": "Ce champ est obligatoire.",

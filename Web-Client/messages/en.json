@@ -202,6 +202,13 @@
     "doneOwner": "We passed your contacts to the owner. They'll get in touch.",
     "repeated": "You already responded to this notice; the author has your contacts.",
     "orPost": "Or post your own notice:",
+    "authorUnreachable": {
+      "text": "Sorry, the author left only a nickname on {network}, so we can't notify them. Message them yourself: {nickName}",
+      "openProfile": "Open profile",
+      "copy": "Copy nickname",
+      "copied": "Nickname copied",
+      "copyFailed": "Couldn't copy the nickname"
+    },
     "confirm": {
       "title": "Is the item back with its owner?",
       "text": "Confirming closes the notice for everyone: it leaves the board and moves to the archive.",
@@ -383,7 +390,8 @@
     "social": {
       "TELEGRAM": "Telegram",
       "VIBER": "Viber",
-      "WHATSAPP": "WhatsApp"
+      "WHATSAPP": "WhatsApp",
+      "FACEBOOK": "Facebook"
     },
     "error": {
       "required": "This field is required.",

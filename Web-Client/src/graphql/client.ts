@@ -5,7 +5,7 @@ import type { TypedDocumentString } from "./generated/graphql"
 type GraphQLError = {
   message: string
   path?: (string | number)[]
-  extensions?: { classification?: string }
+  extensions?: { classification?: string } & Record<string, unknown>
 }
 
 export class GraphQLRequestError extends Error {

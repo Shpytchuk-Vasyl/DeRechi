@@ -127,6 +127,9 @@ sorting, pagination, SEO) read one shared set of notices instead of creating the
   definition), run with `E2E_SHARED_SUFFIX=b` (lowercase letters/digits, up to 6).
 - Never confirm a return on a shared notice (`confirmReturn` archives it) and never claim the `view`
   notices; claims go to `shared.items.claimLost` / `claimFound`.
+- `shared.items.claimNick` is a lost notice whose author left only a Facebook nickname and a profile
+  link (`nicknameContact(marker)`), with no phone and no email: the API refuses every claim on it with
+  `AUTHOR_UNREACHABLE` and stores nothing, so claiming it is safe.
 
 ### Own rows (`support/data.ts`, fixtures `data` and `token`)
 
@@ -164,6 +167,7 @@ visible behaviour gets a test in `specs/`; a changed behaviour updates the tests
 
 Where things live: `support/` holds the data (`api`, `data`, `shared`, `minio`), the environment
 (`env`), the bundles (`i18n`) and helpers by subject (`site` URLs and cookies, `seo`, `hosts`,
-`viewport`, `hydration`, `browser-intl`, `key-pages`, `legal`, `claims`); `fixtures/pages/` the page
-objects.
+`viewport`, `hydration`, `browser-intl`, `key-pages`, `legal`, `claims`, `clipboard`, which records
+`navigator.clipboard.writeText` instead of touching the real clipboard, so it works in WebKit too);
+`fixtures/pages/` the page objects.
 - Type-check and lint: `pnpm exec tsc -p e2e/tsconfig.json --noEmit`, `pnpm exec biome check e2e`.

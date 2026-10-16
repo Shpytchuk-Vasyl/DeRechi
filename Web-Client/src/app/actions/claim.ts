@@ -11,11 +11,13 @@ import {
 import { passesBotCheck } from "@/lib/bot-check"
 import { CACHE_TAG, invalidate, NO_STORE } from "@/lib/cache"
 import { CLAIM_COOKIE_MAX_AGE, claimCookieName } from "@/lib/claim-cookie"
+import { type UnreachableAuthor, unreachableAuthor } from "@/lib/unreachable-author"
 import { claimSchema, toContactInput } from "@/schema/claim-schema"
 
 export type ClaimResult =
   | { ok: true; repeated: boolean; claimId: string }
   | { ok: false; reason: "validation" | "captcha" | "notFound" | "disposableEmail" | "failed" }
+  | { ok: false; reason: "authorUnreachable"; author: UnreachableAuthor }
 
 export type ConfirmResult = { ok: true } | { ok: false; reason: "notFound" | "failed" }
 
@@ -60,6 +62,10 @@ export async function claimNotice(
     }
     if (error instanceof GraphQLRequestError && error.isDisposableEmail) {
       return { ok: false, reason: "disposableEmail" }
+    }
+    const author = error instanceof GraphQLRequestError ? unreachableAuthor(error.errors) : null
+    if (author) {
+      return { ok: false, reason: "authorUnreachable", author }
     }
     console.error("Claim failed", error)
     return { ok: false, reason: "failed" }

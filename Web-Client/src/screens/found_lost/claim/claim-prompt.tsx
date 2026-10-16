@@ -9,6 +9,7 @@ import { useSmsOutageNotice } from "@/hooks/use-sms-outage-notice"
 import { type ClaimFormValues, claimFormSchema } from "@/schema/claim-schema"
 import ClaimForm from "./claim-form"
 import { useClaimItem } from "./claim-item"
+import { useAuthorUnreachableNotice } from "./use-author-unreachable-notice"
 import type { ClaimSuccess } from "./use-claim"
 
 type Props = {
@@ -22,6 +23,7 @@ export default function ClaimPrompt({ onSent }: Props) {
   const [open, setOpen] = useState(false)
   const [failure, setFailure] = useState<string | null>(null)
   const warnSmsOutage = useSmsOutageNotice()
+  const notifyAuthorUnreachable = useAuthorUnreachableNotice()
 
   const form = useForm<ClaimFormValues>({
     resolver: zodResolver(claimFormSchema),
@@ -37,6 +39,10 @@ export default function ClaimPrompt({ onSent }: Props) {
     }
     if (result.reason === "disposableEmail") {
       form.setError("email", { message: "disposableEmail" }, { shouldFocus: true })
+      return
+    }
+    if (result.reason === "authorUnreachable") {
+      notifyAuthorUnreachable(result.author)
       return
     }
     setFailure(tc(`error.${result.reason}`))

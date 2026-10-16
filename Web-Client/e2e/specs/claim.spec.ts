@@ -2,7 +2,9 @@ import { randomUUID } from "node:crypto"
 import { expect, test } from "../fixtures/base"
 import { ClaimCard, exactText, Toasts } from "../fixtures/pages"
 import { CLAIM_COOKIE_MAX_AGE, claimCookie, withPlusTag } from "../support/claims"
+import { recordClipboardWrites } from "../support/clipboard"
 import type { ItemKind } from "../support/data"
+import { nicknameContact } from "../support/shared"
 import { setCountry } from "../support/site"
 
 const DAY = 24 * 60 * 60
@@ -131,6 +133,56 @@ test.describe("disposable email", () => {
     await expect(card.email()).toHaveAttribute("aria-invalid", "true")
     await expect(card.email()).toBeFocused()
     await expect(card.done()).toHaveCount(0)
+    expect(await claimCookie(context, "lost", item.id)).toBeUndefined()
+  })
+})
+
+test.describe("author reachable only by a nickname", () => {
+  test("the claim is not sent; a lasting notice names the network, links the profile and copies the nickname", async ({
+    page,
+    context,
+    go,
+    t,
+    shared,
+    data,
+    flags,
+  }) => {
+    const item = shared.items.claimNick
+    const {
+      nickName,
+      profileUrl,
+      socialMedias: [network],
+    } = nicknameContact(shared.marker)
+    const clipboardWrites = await recordClipboardWrites(page)
+
+    await go(item.path)
+    const card = new ClaimCard(page, t, "lost")
+    await card.open()
+    const toasts = new Toasts(page, t, flags)
+    await toasts.dismissSmsOutage()
+    await card.fill(data.contact())
+    await card.submit()
+
+    const notice = toasts.byText(
+      t("claim.authorUnreachable.text", { network: t(`form.social.${network}`), nickName }),
+    )
+    await expect(notice).toBeVisible()
+    const profile = notice.getByRole("link", {
+      name: t("claim.authorUnreachable.openProfile"),
+      exact: true,
+    })
+    await expect(profile).toHaveAttribute("href", profileUrl)
+    await expect(profile).toHaveAttribute("target", "_blank")
+
+    await notice
+      .getByRole("button", { name: t("claim.authorUnreachable.copy"), exact: true })
+      .click()
+    await expect(toasts.byText(t("claim.authorUnreachable.copied"))).toBeVisible()
+    await expect.poll(clipboardWrites).toEqual([nickName])
+
+    await expect(notice).toBeVisible()
+    await expect(card.done()).toHaveCount(0)
+    await expect(card.submitButton()).toBeVisible()
     expect(await claimCookie(context, "lost", item.id)).toBeUndefined()
   })
 })
