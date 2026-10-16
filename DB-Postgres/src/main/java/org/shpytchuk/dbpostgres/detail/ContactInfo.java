@@ -13,7 +13,8 @@ public class ContactInfo {
     public enum SocialMediaEnum {
         TELEGRAM,
         VIBER,
-        WHATSAPP
+        WHATSAPP,
+        FACEBOOK
     }
 
     @Id
@@ -23,13 +24,21 @@ public class ContactInfo {
     @Pattern(
             regexp = "^\\+[1-9]\\d{7,14}$"
     )
-    @Column(nullable = false, length = 16)
+    @Column(length = 16)
     private String phone;
 
     @Email
     @Size(max = 50)
     @Column(length = 50)
     private String email;
+
+    @Size(max = 50)
+    @Column(length = 50)
+    private String nickName;
+
+    @Size(max = 255)
+    @Column(length = 255)
+    private String profileUrl;
 
 
     @Enumerated(EnumType.ORDINAL)
