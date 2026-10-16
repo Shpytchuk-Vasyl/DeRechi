@@ -11,7 +11,7 @@ library and the web client.
 | [Admin-API](admin-api.md) | 8083 | administration UI under `/admin/**` | Spring MVC, Thymeleaf, htmx, Spring Security OAuth2 client | PostgreSQL, RabbitMQ (publishes), MinIO, Keycloak |
 | [Worker](worker.md) | 8085 | background worker: finds candidate matches for every new notice | Spring AMQP, JPA, PostGIS, full-text search | PostgreSQL, RabbitMQ (consumes) |
 | [Notification](notification.md) | 8084 | background worker: delivers notifications through NotifyHub | Spring AMQP, NotifyHub | RabbitMQ (consumes), SMTP (Mailpit) |
-| [Ingest](ingest.md) | 8086 | imports notices from outside sources (Telegram today) and publishes them to the site, our channel and the review chat | TDLight, Tesseract, ONNX Runtime, OpenRouter, Spring for GraphQL client | Telegram, OpenRouter, Google Places, Caddy (API entry), MinIO, PostgreSQL |
+| [Ingest](ingest.md) | 8086 | imports notices from outside sources (Telegram today) and publishes them to the site and our channel | TDLight, Tesseract, ONNX Runtime, OpenRouter, Spring for GraphQL client | Telegram, OpenRouter, Google Places, Caddy (API entry), MinIO, PostgreSQL |
 | [Web-Client](web-client.md) | 3000 | public website, not a Maven module | Next.js, pnpm | Caddy (API entry: GraphQL, files) |
 
 Ports are the `server.port` values in each `application.yaml` and are the same inside

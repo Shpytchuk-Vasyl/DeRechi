@@ -62,7 +62,7 @@ The containers have no Docker healthcheck on actuator: nothing waits for a servi
 | `TargetDown` | a scrape target (service, Keycloak, MinIO, RabbitMQ, Prometheus) has been unreachable for 2 minutes | critical |
 | `IngestUnauthorized` | Ingest's Telegram session has not been authorized for 5 minutes (`max(derechi_ingest_telegram_authorized) == 0`). Fix: `docker compose stop ingest`, `docker compose run --rm -it ingest --login`, `docker compose start ingest` (same `-f` files and `--env-file` as the stack) | critical |
 | `FacebookUnauthorized` | Ingest's Facebook cookies came back logged out on the last poll, for 5 minutes (`min(derechi_ingest_facebook_authorized) == 0`). Fix: log in to the account in a browser, copy the `Cookie` header into `FACEBOOK_COOKIES`, restart `ingest` | warning |
-| `IngestStalled` | no post from the source chats for 6 hours, for 10 minutes (`time() - max(derechi_ingest_last_received_seconds) > 6 * 3600`): the folder is empty or renamed, the session was revoked, or the chats are silent. The threshold is a first guess, to be tuned after the weeks with `INGEST_PUBLISHERS=review` | warning |
+| `IngestStalled` | no post from the source chats for 6 hours, for 10 minutes (`time() - max(derechi_ingest_last_received_seconds) > 6 * 3600`): the folder is empty or renamed, the session was revoked, or the chats are silent. The threshold is a first guess, to be tuned after the first weeks of a dry run | warning |
 
 Alertmanager (`prom/alertmanager`, port 9093) groups by `alertname`, `queue` and `application`, repeats an open alert every 4 hours and sends the resolution too. It has a single receiver, email, configured by environment variables:
 

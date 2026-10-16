@@ -68,13 +68,14 @@ class RabbitConfigTest {
 
     @Test
     void labelsTheNotificationItSendsWithTheTypeIdNotTheClassName() {
-        NotificationRequestedEvent event = new NotificationRequestedEvent("Subject", "Body", "+380671234567",
+        NotificationRequestedEvent event = new NotificationRequestedEvent("Subject", "Body", "SMS", "+380671234567",
                 "owner@example.com", new SocialMediaEnum[]{SocialMediaEnum.VIBER}, "claim:lost:42");
 
         Message message = converter.toMessage(event, new MessageProperties());
 
         assertThat(message.getMessageProperties().getHeaders()).containsEntry("__TypeId__", "NOTIFICATION");
         assertThat(new String(message.getBody(), StandardCharsets.UTF_8))
+                .contains("\"smsMessage\":\"SMS\"")
                 .contains("\"deduplicationKey\":\"claim:lost:42\"")
                 .contains("\"socialMedias\":[\"VIBER\"]");
     }

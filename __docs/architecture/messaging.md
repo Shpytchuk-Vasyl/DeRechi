@@ -62,8 +62,9 @@ says whether it was a lost or a found notice; the payload does not.
 `ItemArchivedEvent` and `ItemDeletedEvent` carry only the `id` of the live notice: for an archived
 one the id it had before `Worker` moved it into history, not the id of the history copy.
 
-`NotificationRequestedEvent` carries `subject`, `message` (already localized by the
-producer), `phone`, `email`, `socialMedias` and a `deduplicationKey`. Contacts the chosen
+`NotificationRequestedEvent` carries `subject`, `message` and `smsMessage` (both already
+localized by the producer; `smsMessage` is the short text for SMS, and `Notification` falls back to
+`message` when it is missing), `phone`, `email`, `socialMedias` and a `deduplicationKey`. Contacts the chosen
 channel does not need are sent as `null`; see
 [../features/match-notifications.md](../features/match-notifications.md).
 

@@ -8,14 +8,17 @@ import org.mockito.ArgumentCaptor;
 import org.shpytchuk.worker.entity.found.FoundItemClaim;
 import org.shpytchuk.worker.entity.lost.LostItemClaim;
 import org.shpytchuk.worker.entity.detail.ContactInfo.SocialMediaEnum;
+import org.shpytchuk.worker.entity.matching.Claim;
 import org.shpytchuk.worker.event.NotificationRequestedEvent;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.shpytchuk.worker.support.Fixtures.PROPERTIES;
@@ -50,6 +53,7 @@ class ClaimNotifierTest {
                         "Оголошення: http://localhost:3000/uk/lost/1")
                 .endsWith("\n\n– Команда DeRechi")
                 .doesNotContain("{0}", "{4}", "claim.lost.body");
+        assertThat(event.smsMessage()).isEqualTo("DeRechi: вашу річ «Чорний рюкзак» знайшли: +380 50 987 6543");
         assertThat(event.phone()).isEqualTo("+380671234567");
         assertThat(event.email()).isEqualTo("owner@example.com");
         assertThat(event.socialMedias()).isEmpty();
@@ -68,6 +72,7 @@ class ClaimNotifierTest {
                 .startsWith("Hello,\n\nSomeone says the item “Black backpack” you found is theirs")
                 .contains("  Messengers: none\n", "Notice: http://localhost:3000/en/found/2")
                 .endsWith("\n\n– The DeRechi team");
+        assertThat(event.smsMessage()).isEqualTo("DeRechi: owner of \"Black backpack\" responded: +1 212-555-0123");
         assertThat(event.phone()).isEqualTo("+16502530000");
         assertThat(event.deduplicationKey()).isEqualTo("claim:found:43");
     }
@@ -133,6 +138,30 @@ class ClaimNotifierTest {
                 .doesNotContain("рюкзак з ноутбуком", "розпитайте про деталі");
     }
 
+    @ParameterizedTest(name = "{0} notice, {1}")
+    @CsvSource({
+            "LOST, +380671234567", "LOST, +48512345678", "LOST, +4930123456", "LOST, +33123456789", "LOST, +16502530000",
+            "FOUND, +380671234567", "FOUND, +48512345678", "FOUND, +4930123456", "FOUND, +33123456789",
+            "FOUND, +16502530000"})
+    void fitsEverySmsIntoOnePaidPartAndRemindersIntoTwo(ItemKind kind, String phone) {
+        Claim claim = kind == ItemKind.LOST ? lostClaim(phone) : foundClaim(phone);
+        claim.notice().setTitle("Чорний шкіряний рюкзак з ноутбуком");
+        claim.getContactInfo().setPhone(phone);
+
+        notifier.notifyAuthor(kind, claim);
+        notifier.remindAuthor(kind, claim);
+        notifier.remindClaimant(kind, claim);
+        notifier.sendAuthorContacts(kind, claim);
+
+        ArgumentCaptor<NotificationRequestedEvent> events = ArgumentCaptor.forClass(NotificationRequestedEvent.class);
+        verify(rabbitTemplate, times(4)).convertAndSend(eq("notification.exchange"), any(String.class), events.capture());
+        assertThat(events.getAllValues()).allSatisfy(event -> assertThat(event.smsMessage())
+                .as(event.smsMessage())
+                .startsWith("DeRechi")
+                .doesNotContain("{", "@example.com")
+                .hasSizeLessThanOrEqualTo(event.deduplicationKey().endsWith("reminder") ? 134 : 70));
+    }
+
     @ParameterizedTest(name = "\"{0}\" -> \"{1}\"")
     @CsvSource(delimiter = '|', value = {
             "Чорний рюкзак            | Чорний рюкзак",
@@ -154,6 +183,8 @@ class ClaimNotifierTest {
         NotificationRequestedEvent event = published(ClaimNotifier.REMINDER_ROUTING_KEY);
         assertThat(event.subject()).isEqualTo("DeRechi: czy rzecz „Чорний рюкзак” wróciła do właściciela?");
         assertThat(event.message()).contains("http://localhost:3000/pl/claims/" + claim.getToken());
+        assertThat(event.smsMessage()).isEqualTo(
+                "DeRechi: zwrócono \"Чорний рюкзак\"? Zamknij ogłoszenie: http://localhost:3000/pl/claims/" + claim.getToken());
         assertThat(event.phone()).isEqualTo("+48512345678");
         assertThat(event.deduplicationKey()).isEqualTo("claim:lost:42:author-reminder");
     }
@@ -199,6 +230,7 @@ class ClaimNotifierTest {
                 .startsWith("Дякуємо, що підтримуєте DeRechi.")
                 .contains("«Чорний рюкзак»", "+48 512 345 678")
                 .doesNotContain("{0}", "{1}", "owner@example.com", "месенджери", "+380 50 987 6543", "finder@example.com");
+        assertThat(event.smsMessage()).isEqualTo("DeRechi: номер автора «Чорний рюкзак»: +48 512 345 678");
         assertThat(event.phone()).isEqualTo("+380509876543");
         assertThat(event.email()).isEqualTo("finder@example.com");
         assertThat(event.socialMedias()).isEmpty();

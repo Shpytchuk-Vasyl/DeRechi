@@ -78,11 +78,13 @@ public class ClaimNotifier {
         Locale locale = PhoneLocales.of(recipient.getPhone());
         String title = shortTitle(notice.getTitle());
         String key = message.textKey(kind);
+        Object[] arguments = body.of(notice, title, locale);
 
         // Every subject gets the title; the CREATED subjects have no placeholder and MessageFormat drops the spare argument.
         NotificationRequestedEvent event = new NotificationRequestedEvent(
                 text(key + ".subject", locale, title),
-                text(key + ".body", locale, body.of(notice, title, locale)),
+                text(key + ".body", locale, arguments),
+                text(key + ".sms", locale, arguments),
                 recipient.getPhone(), recipient.getEmail(), new SocialMediaEnum[0],
                 message.deduplicationKey(kind, claim));
         rabbitTemplate.convertAndSend(properties.exchange(), message.routingKey(), event);

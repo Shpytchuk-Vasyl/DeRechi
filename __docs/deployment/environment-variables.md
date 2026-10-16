@@ -38,7 +38,7 @@ default when `env.prod` lacks it. Before a release make sure `env.prod` sets at 
 `ALERT_SMTP_REQUIRE_TLS=true`, `NOTIFY_EMAIL_HOST` / `_PORT` / `_USERNAME` / `_PASSWORD` /
 `_FROM` (the defaults point at Mailpit, which production does not run), besides the database,
 RabbitMQ and Fourthwall secrets. On the machine that runs Ingest also `TELEGRAM_API_ID` /
-`TELEGRAM_API_HASH`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_PUBLISH_CHAT`, `TELEGRAM_REVIEW_CHAT`,
+`TELEGRAM_API_HASH`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_PUBLISH_CHAT`,
 `OPENROUTER_API_KEY`, `GOOGLE_PLACES_API_KEY`, a random `INGEST_HASH_KEY` and the public
 `DERECHI_API_URI`; see [Ingest](#ingest).
 
@@ -182,7 +182,7 @@ except where the table says otherwise. An empty `TELEGRAM_API_ID`/`TELEGRAM_API_
 | `INGEST_IN_FLIGHT_WAIT` | `PT90S` | not set | how long a notice created on the site waits while the pipeline is publishing one of its own (an `ingest_post` row in `PUBLISHING`), before `Ingest` decides whether it already has it |
 | `INGEST_JAVA_OPTS` | n/a | `-Xms64m -Xmx384m -XX:MaxMetaspaceSize=192m -XX:-UseG1GC -XX:+UseSerialGC --enable-native-access=ALL-UNNAMED` | this service's `JAVA_OPTS` instead of the shared one. TDLib, ONNX Runtime and Tesseract are native and live outside the heap, so keep `-Xmx` well below the memory limit. `--enable-native-access` silences the JDK's warnings for JNI/JNA |
 | `INGEST_MEMORY` | n/a | `1g` | memory limit of the container, instead of `SERVICE_MEMORY` |
-| `INGEST_PUBLISHERS` | `review` | same | where notices go, comma-separated, any order: `site` (Client-API through Caddy, runs first), `channel` (our channel, links to the site so needs `site`), `review` (`TELEGRAM_REVIEW_CHAT`, also gets skips). `review` alone is a dry run; an unknown name fails the start |
+| `INGEST_PUBLISHERS` | empty | same | where notices go, comma-separated, any order: `site` (Client-API through Caddy, runs first), `channel` (our channel, links to the site so needs `site`). Empty is a dry run; an unknown name fails the start |
 | `INGEST_HASH_KEY` | `dev-hash-key-change-me` | same | HMAC key of `ingest_post.phone_hash`, used to spot duplicates; a random secret in production. Changing it forgets every phone seen so far |
 | `INGEST_DUPLICATE_WINDOW` | `P14D` | same | how long a contact phone marks later posts as duplicates |
 | `INGEST_MAX_PHOTOS` | `3` | same | photos per post that are downloaded, redacted and published |
@@ -210,9 +210,8 @@ except where the table says otherwise. An empty `TELEGRAM_API_ID`/`TELEGRAM_API_
 | `FACEBOOK_TIMEOUT` | `PT30S` | same | per request to Facebook |
 | `FACEBOOK_ACTIVE_HOURS` | empty (all day) | `07:00-22:00` | Facebook is read only within these hours, in each group's local time (the time zone of its region); outside them no request is made and the next poll waits for the start plus up to `FACEBOOK_POLL_JITTER`. A range may cross midnight (`22:00-02:00`); a malformed value fails the start |
 | `TELEGRAM_BOT_API_URL` | `https://api.telegram.org` | same | Bot API base URL |
-| `TELEGRAM_BOT_TOKEN` | empty | same | the bot that posts to our channel and to the review chat |
-| `TELEGRAM_PUBLISH_CHAT` | empty | same | our public channel: id (`-100...`) or `@username` |
-| `TELEGRAM_REVIEW_CHAT` | empty | same | private chat or group for previews |
+| `TELEGRAM_BOT_TOKEN` | empty | same | the bot that posts to our channel |
+| `TELEGRAM_PUBLISH_CHAT` | empty | same | our public channel: id (`-100...`) or `@username`; a private chat to try the channel out |
 | `TELEGRAM_PUBLISH_LOCALE` | `uk` | same | language of the captions in the public channel |
 | `TELEGRAM_BOT_TIMEOUT` / `TELEGRAM_BOT_MAX_ATTEMPTS` / `TELEGRAM_BOT_RETRY_DELAY` | `PT30S` / `3` / `PT3S` | same | Bot API timeout, attempts and the first back-off (doubled each retry); retried only when the message certainly did not arrive |
 | `OPENROUTER_URL` | `https://openrouter.ai/api/v1` | same | OpenRouter API base URL |

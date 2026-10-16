@@ -47,7 +47,11 @@ NotifyHub's own SMS channel is Twilio-only, so SMS goes through `channel/SmsFlyC
 - `ACCEPTD` means accepted, not delivered. Delivery status (`GETMESSAGESTATUS`) is not polled; the
   message id and cost are only logged.
 - Cyrillic SMS are UCS-2, 70 characters per segment (67 when split), and every segment is billed.
-  The claim texts from `Worker` are 250 to 350 characters, so one SMS costs 4 to 6 segments.
+  So SMS does not get the email text: the route sends the event's `smsMessage`, and only falls back
+  to `message` when a producer sent none. `Worker` keeps the claim SMS in one segment (the item and
+  the phone, nothing else) and the reminders in two, because the confirm link alone is 67
+  characters; `Admin-API` keeps the match SMS in one. Latin texts use straight quotes, so a Latin
+  title stays in GSM-7 (160 per segment).
 
 A channel is enabled by the **presence** of its key under `notify.channels.*`: `email` by
 `host`, `telegram` by `bot-token`, and so on. An empty value still counts as present and
@@ -123,8 +127,9 @@ phone. See
 
 ## Event contract
 
-`NotificationRequestedEvent` is a record `(subject, message, phone, email, socialMedias,
-deduplicationKey)` with `@EventType("NOTIFICATION")`. The producers' copies in `Admin-API`
+`NotificationRequestedEvent` is a record `(subject, message, smsMessage, phone, email,
+socialMedias, deduplicationKey)` with `@EventType("NOTIFICATION")`. `smsMessage` is nullable here,
+so an event from before it existed (a DLQ replay) still goes out, with the full text by SMS. The producers' copies in `Admin-API`
 and `Worker` have the same shape; the type id is what ties them together, see
 [../messaging.md](../messaging.md). Subject and body arrive already localized, so this
 module has no message bundles.

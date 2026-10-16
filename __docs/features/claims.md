@@ -142,7 +142,10 @@ The worker's one queue, `worker.queue`, is bound with `claim.*.claimed` and `cla
   dedup key: `notification.claim.created` with the claimant's contacts (`claim:<kind>:<id>`),
   `notification.claim.reminder` for both reminders (`...:author-reminder`,
   `...:claimant-reminder`) and `notification.claim.unlocked` (`...:unlocked`). One method renders
-  and publishes; the public methods only supply the placeholders of the body.
+  and publishes; the public methods only supply the placeholders of the body. Each message also
+  has a `.sms` key, rendered with the same arguments into `smsMessage`: only the title and the
+  phone (or the confirm link), without email, messengers, the safety advice or the signature.
+  `ClaimNotifierTest` checks that every one of them fits one paid segment, reminders two.
 - **Language comes from the recipient's phone number**, not from any UI locale: `PhoneLocales`
   maps the libphonenumber region to a language (UA → uk, PL → pl, DE/AT/CH → de, FR/BE/LU/MC → fr,
   anything else → en). A Ukrainian with a German number gets German, which is the decision: the
@@ -391,7 +394,7 @@ check details before meeting.
 - `Worker/src/main/java/org/shpytchuk/worker/listener/WorkerQueueListener.java`, `listener/RoutingKeyDispatcher.java`, `config/ClaimsConfig.java` (the handler registrar), `handler/ClaimedHandler.java`, `handler/ReturnedHandler.java`, `handler/PaidHandler.java`, `service/ClaimNotifier.java`, `service/ClaimMessage.java`, `cron/ClaimFollowUpJob.java` (+ `ClaimFollowUps`, one transaction per claim), `service/ItemArchiver.java`, `service/KindOps.java`, `service/ItemKinds.java`, `language/PhoneLocales.java`, `src/main/resources/messages*.properties`
 - `Notification/src/main/java/org/shpytchuk/notification/service/NotificationSender.java`
 - `Admin-API/src/main/java/org/shpytchuk/adminapi/service/AdminItemService.java`, `templates/fragments/dialogs.html`
-- `Web-Client/src/screens/found_lost/claim-card.tsx`, `src/screens/claims/confirm-return.tsx`, `src/app/actions/claim.ts`, `src/lib/unreachable-author.ts`, `src/screens/found_lost/claim/claim-unreachable.tsx`
+- `Web-Client/src/screens/found_lost/claim/claim-card.tsx`, `src/screens/claims/confirm-return.tsx`, `src/app/actions/claim.ts`, `src/lib/unreachable-author.ts`, `src/screens/found_lost/claim/claim-unreachable.tsx`
 - `DB-Postgres/changelog/changes/006-item-claims.postgresql.sql`, `007-claim-payment.postgresql.sql`, `008-claim-unlock-limit.postgresql.sql`, `009-shedlock.postgresql.sql`, `015-contact-nick-name.postgresql.sql`
 - `docker/rabbitmq/definitions.json`
 - Tests: `ClaimControllerTests`, `FourthwallWebhookControllerTests`, `FourthwallClientTest`, `FourthwallOrderPlacedTest`, `FourthwallPropertiesTest`, `ClaimEventAspectTest`, `ClaimServicesTest`, `ReturnServiceTest`, `ContactInfoMapperTest`, `ItemKindTest`, `ClaimNotifierTest`, `ClaimMessageTest`, `ClaimFollowUpJobTest`, `ClaimFollowUpsTests`, `ClaimRepositoryTests` (Worker), `ClaimHandlersTest`, `PaidHandlerTest`, `ClaimsConfigTests`, `ItemArchiverTest`, `ItemArchiverTests`, `KindOpsTest`, `ItemKindsTest`, `WorkerQueueListenerTest`, `RoutingKeyDispatcherTest`, `PhoneLocalesTest`, `NotificationSenderTest`, `LostItemAdminServiceTest`, `AdminItemServiceTests`, `ItemClaimsTests`, and in `Web-Client` `claim.test.ts`, `claim-schema.test.ts`, `claim-cookie.test.ts`, `unreachable-author.test.ts`, e2e `claim.spec.ts`

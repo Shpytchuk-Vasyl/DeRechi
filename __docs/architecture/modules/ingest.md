@@ -1,12 +1,12 @@
 # Ingest
 
-Imports lost-and-found notices from outside sources and publishes them. The sources are Telegram (a userbot session reads the chats of one Telegram folder) and Facebook groups (read through a logged-in account once an hour); a model through OpenRouter extracts the notice, and the result goes to the publishers in `INGEST_PUBLISHERS`: the site (Client-API's public GraphQL), our Telegram channel, the review chat. It also listens to `ingest.queue` and mirrors the notices created on the site and in the admin panel into the channel, deleting a post when its notice is archived or deleted. What it does step by step is in [the feature page](../../features/telegram-ingest.md).
+Imports lost-and-found notices from outside sources and publishes them. The sources are Telegram (a userbot session reads the chats of one Telegram folder) and Facebook groups (read through a logged-in account once an hour); a model through OpenRouter extracts the notice, and the result goes to the publishers in `INGEST_PUBLISHERS`: the site (Client-API's public GraphQL), our Telegram channel. It also listens to `ingest.queue` and mirrors the notices created on the site and in the admin panel into the channel, deleting a post when its notice is archived or deleted. What it does step by step is in [the feature page](../../features/telegram-ingest.md).
 
 | | |
 |---|---|
 | Port | 8086 (serves nothing public); actuator on the management port 9086 |
 | Consumes | Telegram updates (TDLib through TDLight); Facebook group pages and the group feed query of `www.facebook.com`, polled; `ingest.queue` (`notice.*.created`, `notice.*.archived`, `notice.*.deleted` from `notice.status.exchange`) |
-| Produces | notices through the API entry, Caddy for now (`createLostItem` / `createFoundItem`), photos in MinIO, posts in our Telegram channel and the review chat (Bot API), deletions of channel posts; no events |
+| Produces | notices through the API entry, Caddy for now (`createLostItem` / `createFoundItem`), photos in MinIO, posts in our Telegram channel (Bot API), deletions of channel posts; no events |
 | Needs | PostgreSQL (`ingest_post`), RabbitMQ, the API entry (Caddy) with Client-API behind it, MinIO; OpenRouter, Google Places, Telegram, Facebook |
 | Stack | TDLight Java (TDLib 1.8.66), libphonenumber, Tess4J + system Tesseract, ONNX Runtime + YuNet, Spring for GraphQL client, Spring Cloud AWS S3, Lombok |
 | Instances | exactly one: the TDLib session cannot be shared |
@@ -30,9 +30,9 @@ One package per stage. The root of a stage package is what the pipeline sees: th
 | `place/` | `PlaceResolver`, `ResolvedPlace` |
 | `place/google/` | `GoogleLegacyPlaceResolver` (`GOOGLE_PLACES_API=LEGACY`, default) or `GooglePlaceResolver` (`NEW`), both on `TextSearchPlaceResolver` |
 | `pipeline/` | `IngestQueue`, `IngestPipeline`, `PostLedger`, `IngestMetrics`, `Notice`, `Notices` |
-| `publish/` | `Publisher`, `Publishers` (runs the list of `INGEST_PUBLISHERS`), `Publication`, `SiteItem`, `SkippedPost` |
+| `publish/` | `Publisher`, `Publishers` (runs the list of `INGEST_PUBLISHERS`), `Publication`, `SiteItem` |
 | `publish/site/` | `SitePublisher` (`site`), `ImageUploader` / `S3ImageUploader` (MinIO) |
-| `publish/telegram/` | `ChannelPoster` (`channel`; `postFromSite` and `delete` for one notice), `ChannelMirror` (notices from the site), `StoredPhotos` (a photo from the bucket by key), `ReviewChat` (`review`), `BotApiClient`, `CaptionBuilder`, `ChannelPost` |
+| `publish/telegram/` | `ChannelPoster` (`channel`; `postFromSite` and `delete` for one notice), `ChannelMirror` (notices from the site), `StoredPhotos` (a photo from the bucket by key), `BotApiClient`, `CaptionBuilder`, `ChannelPost` |
 | `event/` | `NoticeEventListener` (`ingest.queue`), `ItemCreatedEvent`, `ItemArchivedEvent`, `ItemDeletedEvent`, `EventType`, `EventTypeScanner`: copied per module like in the other consumers |
 | `client/` | `DeRechiApi` / `GraphQlDeRechiApi` and `NewItem`: Client-API, used by the pipeline (categories, countries) and by `site`; `HttpCalls` for every HTTP client |
 | `model/` | `ItemKind`, `Money`, `SocialMedia`, `Outcome`: the values shared by the model's answer, the notice, the ledger, the publishers and the metrics |
@@ -56,12 +56,12 @@ A new source (a website, say) is one `@Component` implementing `PostSource` with
 
 ## Publishers
 
-`INGEST_PUBLISHERS` lists where a notice goes, in any order: `site`, `channel`, `review`.
+`INGEST_PUBLISHERS` lists where a notice goes, in any order: `site`, `channel`. Empty is a dry run. There is no review chat: to try the channel out, point `TELEGRAM_PUBLISH_CHAT` at a private chat.
 
-- `site` (`SitePublisher`) is special: it runs first, puts the photo into MinIO, creates the notice through the API entry and owns the ledger statuses `PUBLISHING`, `PUBLISHED`, `NEEDS_CHECK`, `FAILED`. Without `site` in the list a notice is recorded as `PREVIEWED`.
-- Every other publisher implements `Publisher` and gets a `Publication`: the post, the notice, the model answer, the redacted photos and the `SiteItem` (id and page URL) when `site` created one. If `site` is in the list and fails, nobody else is called.
+- `site` (`SitePublisher`) is special: it runs first, puts the photo into MinIO, creates the notice through the API entry and owns the ledger statuses `PUBLISHING`, `PUBLISHED`, `NEEDS_CHECK`, `FAILED`. Without `site` in the list a notice is recorded as `PREVIEWED` and goes nowhere else.
+- Every other publisher implements `Publisher` and gets a `Publication`: the post, the notice, the model answer and the `SiteItem` (id and page URL) when `site` created one. If `site` is in the list and fails, nobody else is called.
 - A publisher whose `needsSiteItem()` is true (`channel`) links to the notice page instead of carrying contacts; the start fails if it is listed without `site`.
-- Publishers are independent: a failing one is logged (`WARN`) and counted in `derechi.ingest.published{publisher,outcome}`, the others still run, and the ledger status stays what `site` set. Skipped posts go to `Publisher.skipped`, which only `review` uses.
+- Publishers are independent: a failing one is logged (`WARN`) and counted in `derechi.ingest.published{publisher,outcome}`, the others still run, and the ledger status stays what `site` set. Skipped posts go to no publisher.
 
 `channel` keeps the id of its post in `ingest_post.message_id` of the post's own row (`PostLedger.posted`). A notice from the site gets a row of its own once `ChannelMirror` has posted it (`PostLedger.postedFromSite`: `source` `site` or `admin`, `channel` `internal`, `external_id` `lost/7`, status `PUBLISHED`, the message id), and a notice that already has a row in `ingest_post` is not posted again. Either post can be deleted when the notice is archived or deleted.
 
