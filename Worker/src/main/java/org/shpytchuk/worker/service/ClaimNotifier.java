@@ -6,6 +6,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.Nullable;
 import org.shpytchuk.worker.config.ClaimsProperties;
 import org.shpytchuk.worker.entity.matching.Claim;
 import org.shpytchuk.worker.entity.detail.ContactInfo;
@@ -58,9 +59,16 @@ public class ClaimNotifier {
                 (notice, title, locale) -> new Object[]{title, confirmUrl(claim, locale)});
     }
 
-    public void sendAuthorContacts(ItemKind kind, Claim claim) {
+    public boolean sendAuthorContacts(ItemKind kind, Claim claim) {
+        String authorPhone = claim.notice().getInfo().getPhone();
+        if (!StringUtils.hasText(authorPhone)) {
+            log.warn("The author of {} item {} has no phone, nothing to send for claim {}",
+                    kind, claim.notice().getId(), claim.getId());
+            return false;
+        }
         send(ClaimMessage.UNLOCKED, kind, claim,
-                (notice, title, locale) -> new Object[]{title, formatPhone(notice.getInfo().getPhone())});
+                (notice, title, locale) -> new Object[]{title, formatPhone(authorPhone)});
+        return true;
     }
 
     /** Renders the message in the language of the recipient's phone number and publishes it. */
@@ -105,6 +113,7 @@ public class ClaimNotifier {
             case TELEGRAM -> "Telegram";
             case VIBER -> "Viber";
             case WHATSAPP -> "WhatsApp";
+            case FACEBOOK -> "Facebook";
         };
     }
 
@@ -115,7 +124,7 @@ public class ClaimNotifier {
         return title.substring(0, title.offsetByCodePoints(0, TITLE_MAX_LENGTH)).strip() + TITLE_ELLIPSIS;
     }
 
-    private static String formatPhone(String phone) {
+    private static String formatPhone(@Nullable String phone) {
         if (!StringUtils.hasText(phone)) {
             return "";
         }

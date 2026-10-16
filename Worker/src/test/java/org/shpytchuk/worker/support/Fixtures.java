@@ -75,6 +75,15 @@ public final class Fixtures {
         return claim;
     }
 
+    public static <C extends Claim> C authorWithoutPhone(C claim) {
+        ContactInfo author = claim.notice().getInfo();
+        author.setPhone(null);
+        author.setNickName("@owner");
+        author.setProfileUrl("https://t.me/owner");
+        author.setSocialMedias(new SocialMediaEnum[]{SocialMediaEnum.TELEGRAM});
+        return claim;
+    }
+
     public static <T extends Thing> T item(T item, String title, String description, LocalDate date,
                                            ThingCategory category, Place place, ContactInfo info) {
         item.setTitle(title);

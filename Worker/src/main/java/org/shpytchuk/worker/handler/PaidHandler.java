@@ -58,7 +58,9 @@ public class PaidHandler implements ClaimHandler {
             return;
         }
 
-        notifier.sendAuthorContacts(kind, claim);
+        if (!notifier.sendAuthorContacts(kind, claim)) {
+            return;
+        }
         claim.setContactsSentAt(clock.instant());
         claims.save(claim);
     }

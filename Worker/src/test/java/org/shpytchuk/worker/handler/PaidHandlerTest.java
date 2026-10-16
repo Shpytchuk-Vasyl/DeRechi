@@ -122,6 +122,18 @@ class PaidHandlerTest {
         verify(lostClaims, never()).save(any());
     }
 
+    @Test
+    void anAuthorWithoutAPhoneLeavesThePaidClaimUnsentAndUnstamped() {
+        LostItemClaim claim = paid(Fixtures.authorWithoutPhone(Fixtures.lostClaim("+380671234567")));
+        when(lostClaims.findWithDetailsById(42L)).thenReturn(Optional.of(claim));
+
+        lostHandler.handle(event(42L));
+
+        verify(rabbitTemplate, never()).convertAndSend(anyString(), anyString(), any(Object.class));
+        verify(lostClaims, never()).save(any());
+        assertThat(claim.getContactsSentAt()).isNull();
+    }
+
     private NotificationRequestedEvent published() {
         ArgumentCaptor<NotificationRequestedEvent> event = ArgumentCaptor.forClass(NotificationRequestedEvent.class);
         verify(rabbitTemplate).convertAndSend(eq("notification.exchange"), eq(ClaimNotifier.UNLOCKED_ROUTING_KEY),

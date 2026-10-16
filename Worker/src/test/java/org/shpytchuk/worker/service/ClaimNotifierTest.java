@@ -17,7 +17,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.shpytchuk.worker.support.Fixtures.PROPERTIES;
+import static org.shpytchuk.worker.support.Fixtures.authorWithoutPhone;
 import static org.shpytchuk.worker.support.Fixtures.foundClaim;
 import static org.shpytchuk.worker.support.Fixtures.lostClaim;
 import static org.shpytchuk.worker.support.Fixtures.messages;
@@ -68,6 +70,31 @@ class ClaimNotifierTest {
                 .endsWith("\n\n– The DeRechi team");
         assertThat(event.phone()).isEqualTo("+16502530000");
         assertThat(event.deduplicationKey()).isEqualTo("claim:found:43");
+    }
+
+    @Test
+    void writesInEnglishByEmailOnlyToAnAuthorWhoLeftNoPhone() {
+        LostItemClaim claim = authorWithoutPhone(lostClaim("+380671234567"));
+
+        notifier.notifyAuthor(ItemKind.LOST, claim);
+
+        NotificationRequestedEvent event = published(ClaimNotifier.CREATED_ROUTING_KEY);
+        assertThat(event.subject()).isEqualTo("DeRechi: someone found your item");
+        assertThat(event.message())
+                .contains("  Phone: +380 50 987 6543\n", "Notice: http://localhost:3000/en/lost/1")
+                .doesNotContain("@owner", "https://t.me/owner");
+        assertThat(event.phone()).isNull();
+        assertThat(event.email()).isEqualTo("owner@example.com");
+        assertThat(event.deduplicationKey()).isEqualTo("claim:lost:42");
+    }
+
+    @Test
+    void namesFacebookAmongTheClaimantMessengers() {
+        LostItemClaim claim = lostClaim("+16502530000", SocialMediaEnum.VIBER, SocialMediaEnum.FACEBOOK);
+
+        notifier.notifyAuthor(ItemKind.LOST, claim);
+
+        assertThat(published(ClaimNotifier.CREATED_ROUTING_KEY).message()).contains("  Messengers: Viber, Facebook\n");
     }
 
     @ParameterizedTest(name = "{0} notice, {2}")
@@ -132,6 +159,20 @@ class ClaimNotifierTest {
     }
 
     @Test
+    void remindsAnAuthorWhoLeftNoPhoneByEmail() {
+        FoundItemClaim claim = authorWithoutPhone(foundClaim("+380671234567"));
+
+        notifier.remindAuthor(ItemKind.FOUND, claim);
+
+        NotificationRequestedEvent event = published(ClaimNotifier.REMINDER_ROUTING_KEY);
+        assertThat(event.subject()).isEqualTo("DeRechi: is “Black backpack” back with its owner?");
+        assertThat(event.message()).contains("http://localhost:3000/en/claims/" + claim.getToken());
+        assertThat(event.phone()).isNull();
+        assertThat(event.email()).isEqualTo("finder@example.com");
+        assertThat(event.deduplicationKey()).isEqualTo("claim:found:43:author-reminder");
+    }
+
+    @Test
     void remindsTheClaimantInTheClaimantsLanguage() {
         LostItemClaim claim = lostClaim("+380671234567");
         claim.getContactInfo().setPhone("+33123456789");
@@ -150,7 +191,7 @@ class ClaimNotifierTest {
     void sendsTheAuthorPhoneNumberToTheClaimantInTheClaimantsLanguage() {
         LostItemClaim claim = lostClaim("+48512345678");
 
-        notifier.sendAuthorContacts(ItemKind.LOST, claim);
+        assertThat(notifier.sendAuthorContacts(ItemKind.LOST, claim)).isTrue();
 
         NotificationRequestedEvent event = published(ClaimNotifier.UNLOCKED_ROUTING_KEY);
         assertThat(event.subject()).isEqualTo("DeRechi: номер автора оголошення «Чорний рюкзак»");
@@ -180,6 +221,15 @@ class ClaimNotifierTest {
         assertThat(event.phone()).isEqualTo("+12125550123");
         assertThat(event.email()).isEqualTo("owner@example.com");
         assertThat(event.deduplicationKey()).isEqualTo("claim:found:43:unlocked");
+    }
+
+    @Test
+    void sendsTheClaimantNothingWhenTheAuthorLeftNoPhone() {
+        LostItemClaim claim = authorWithoutPhone(lostClaim("+380671234567"));
+
+        assertThat(notifier.sendAuthorContacts(ItemKind.LOST, claim)).isFalse();
+
+        verifyNoInteractions(rabbitTemplate);
     }
 
     private NotificationRequestedEvent published(String routingKey) {

@@ -17,17 +17,24 @@ public class ContactInfo {
         TELEGRAM,
         VIBER,
         WHATSAPP,
+        FACEBOOK,
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(length = 16)
     private String phone;
 
     @Column
     private String email;
+
+    @Column(length = 50)
+    private String nickName;
+
+    @Column(length = 255)
+    private String profileUrl;
 
     @Enumerated(EnumType.ORDINAL)
     @JdbcTypeCode(SqlTypes.ARRAY)
