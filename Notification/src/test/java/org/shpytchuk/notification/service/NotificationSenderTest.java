@@ -55,6 +55,19 @@ class NotificationSenderTest {
     }
 
     @Test
+    void writesOnlyByEmailToSomeoneKnownByEmailAndAFacebookProfile() {
+        NotificationRequestedEvent event = new NotificationRequestedEvent("Знахідка", "Схоже, ми знайшли вашу річ",
+                null, "user@derechi.local", new SocialMediaEnum[]{SocialMediaEnum.FACEBOOK}, "match:1:2");
+
+        NotificationSender.Delivery delivery = sender.send(event);
+
+        assertThat(hub.sent())
+                .extracting(SentNotification::channel, SentNotification::recipient)
+                .containsExactly(tuple("email", "user@derechi.local"));
+        assertThat(delivery).hasToString("sent via email");
+    }
+
+    @Test
     void skipsChannelsThatAreNotConfigured() {
         NotifyHub emailOnly = NotifyHub.builder().channel(hub.hub().getChannel("email").orElseThrow()).build();
         NotificationSender sender = new NotificationSender(emailOnly);

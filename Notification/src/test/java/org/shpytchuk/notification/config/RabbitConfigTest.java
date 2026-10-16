@@ -52,4 +52,18 @@ class RabbitConfigTest {
             assertThat(notification.email()).isEqualTo("user@derechi.local");
         });
     }
+
+    @Test
+    void readsAFacebookProfileAmongTheSocialMedias() {
+        MessageProperties properties = new MessageProperties();
+        properties.setContentType(MessageProperties.CONTENT_TYPE_JSON);
+        properties.setHeader("__TypeId__", "NOTIFICATION");
+        String json = "{\"subject\":\"s\",\"message\":\"m\",\"phone\":null,\"email\":\"user@derechi.local\","
+                + "\"socialMedias\":[\"FACEBOOK\"],\"deduplicationKey\":\"match:1:2\"}";
+
+        Object event = converter.fromMessage(new Message(json.getBytes(StandardCharsets.UTF_8), properties));
+
+        assertThat(event).isInstanceOfSatisfying(NotificationRequestedEvent.class, notification ->
+                assertThat(notification.socialMedias()).containsExactly(SocialMediaEnum.FACEBOOK));
+    }
 }

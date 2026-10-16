@@ -14,6 +14,7 @@ public record NotificationRequestedEvent(
     public enum SocialMediaEnum {
         TELEGRAM,
         VIBER,
-        WHATSAPP
+        WHATSAPP,
+        FACEBOOK
     }
 }
