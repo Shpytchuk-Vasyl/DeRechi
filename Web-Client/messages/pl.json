@@ -203,10 +203,11 @@
     "repeated": "To ogłoszenie ma już Twoją odpowiedź: autor ma Twoje dane.",
     "orPost": "Albo dodaj własne ogłoszenie:",
     "authorUnreachable": {
-      "text": "Niestety autor zostawił tylko nick w serwisie {network}, więc nie możemy go powiadomić. Napisz do niego bezpośrednio: {nickName}",
-      "openProfile": "Otwórz profil",
-      "copy": "Skopiuj nick",
-      "copied": "Nick skopiowany",
+      "title": "Napisz bezpośrednio do autora",
+      "text": "Ogłoszenie ma tylko profil w serwisie {network}, więc nie możemy przekazać Twoich danych kontaktowych.",
+      "write": "Napisz do autora",
+      "copy": "Kopiuj",
+      "copied": "Skopiowano",
       "copyFailed": "Nie udało się skopiować nicku"
     },
     "confirm": {

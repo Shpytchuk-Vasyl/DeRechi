@@ -1450,16 +1450,10 @@
   opacity: 0.82;
 }
 
-.pouf-toast__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s2);
-  margin-top: var(--s2);
-}
-
 /* White-translucent, so both read as recessed highlights on the pastel fill. */
 .pouf-toast__action {
   display: inline-flex;
+  margin-top: var(--s2);
   font-family: var(--font);
   font-weight: 900;
   font-size: 12px;
@@ -1470,7 +1464,6 @@
   border: none;
   border-radius: 10px;
   padding: var(--s1) var(--s3);
-  text-decoration: none;
   cursor: pointer;
   transition: background 140ms ease;
 }

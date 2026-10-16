@@ -79,6 +79,25 @@ export class ClaimCard {
     return this.root.getByText(this.t("claim.repeated"), { exact: true })
   }
 
+  unreachable(): Locator {
+    return this.root.getByRole("heading", {
+      name: this.t("claim.authorUnreachable.title"),
+      exact: true,
+    })
+  }
+
+  profileLink(): Locator {
+    return this.root.getByRole("link", {
+      name: this.t("claim.authorUnreachable.write"),
+      exact: true,
+    })
+  }
+
+  copyButton({ copied = false }: { copied?: boolean } = {}): Locator {
+    const key = copied ? "claim.authorUnreachable.copied" : "claim.authorUnreachable.copy"
+    return this.root.getByRole("button", { name: this.t(key), exact: true })
+  }
+
   errors(): Locator {
     return this.root.getByRole("alert")
   }

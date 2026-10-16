@@ -6,24 +6,24 @@ import { claimNotice } from "@/app/actions/claim"
 import { Button } from "@/components/pouf/Button"
 import { Heading, Text } from "@/components/pouf/text"
 import { useSmsOutageNotice } from "@/hooks/use-sms-outage-notice"
+import type { UnreachableAuthor } from "@/lib/unreachable-author"
 import { type ClaimFormValues, claimFormSchema } from "@/schema/claim-schema"
 import ClaimForm from "./claim-form"
 import { useClaimItem } from "./claim-item"
-import { useAuthorUnreachableNotice } from "./use-author-unreachable-notice"
 import type { ClaimSuccess } from "./use-claim"
 
 type Props = {
   onSent: (result: ClaimSuccess) => void
+  onUnreachable: (author: UnreachableAuthor) => void
 }
 
-export default function ClaimPrompt({ onSent }: Props) {
+export default function ClaimPrompt({ onSent, onUnreachable }: Props) {
   const { kind, itemId } = useClaimItem()
   const t = useTranslations("item")
   const tc = useTranslations("claim")
   const [open, setOpen] = useState(false)
   const [failure, setFailure] = useState<string | null>(null)
   const warnSmsOutage = useSmsOutageNotice()
-  const notifyAuthorUnreachable = useAuthorUnreachableNotice()
 
   const form = useForm<ClaimFormValues>({
     resolver: zodResolver(claimFormSchema),
@@ -42,7 +42,7 @@ export default function ClaimPrompt({ onSent }: Props) {
       return
     }
     if (result.reason === "authorUnreachable") {
-      notifyAuthorUnreachable(result.author)
+      onUnreachable(result.author)
       return
     }
     setFailure(tc(`error.${result.reason}`))

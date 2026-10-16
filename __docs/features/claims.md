@@ -95,11 +95,13 @@ email only. The checkout for the author's number (`requireAuthorPhone`, called b
 no phone, and `Worker` skips sending the number (`ClaimNotifier.sendAuthorContacts` returns
 `false`, `contacts_sent_at` stays empty) if it ever gets such a payment.
 
-The web client does not mark the claim as sent. `useAuthorUnreachableNotice` shows a warning
-toast that stays until closed: the author left only a nickname in that network, contact them
-there, with "Open profile" (only with a `profileUrl`) and "Copy nickname". The nickname reaches
-the public only through this error; `ContactInfo` of a notice has no nickname field, and its
-`phone` is `null` here, shown as "-".
+The web client does not mark the claim as sent. The claim card swaps the form for
+`ClaimUnreachable`, a third state next to `ClaimDone`: the notice has only a profile in that
+network, so the viewer writes to the author directly. It shows the nickname (selectable, with a
+"Copy" button that turns into "Copied" for two seconds) and a "Message the author" link to the
+`profileUrl` when there is one. Nothing is remembered: after a reload the form is back. The
+nickname reaches the public only through this error; `ContactInfo` of a notice has no nickname
+field, and its `phone` is `null` here, shown as "-".
 
 `ClaimService` (one subclass per kind, each answering `kind()` with its `ItemKind`) loads the item
 with a plain `findById` and looks for an existing claim on the item with the same phone **or**
@@ -389,7 +391,7 @@ check details before meeting.
 - `Worker/src/main/java/org/shpytchuk/worker/listener/WorkerQueueListener.java`, `listener/RoutingKeyDispatcher.java`, `config/ClaimsConfig.java` (the handler registrar), `handler/ClaimedHandler.java`, `handler/ReturnedHandler.java`, `handler/PaidHandler.java`, `service/ClaimNotifier.java`, `service/ClaimMessage.java`, `cron/ClaimFollowUpJob.java` (+ `ClaimFollowUps`, one transaction per claim), `service/ItemArchiver.java`, `service/KindOps.java`, `service/ItemKinds.java`, `language/PhoneLocales.java`, `src/main/resources/messages*.properties`
 - `Notification/src/main/java/org/shpytchuk/notification/service/NotificationSender.java`
 - `Admin-API/src/main/java/org/shpytchuk/adminapi/service/AdminItemService.java`, `templates/fragments/dialogs.html`
-- `Web-Client/src/screens/found_lost/claim-card.tsx`, `src/screens/claims/confirm-return.tsx`, `src/app/actions/claim.ts`, `src/lib/unreachable-author.ts`, `src/screens/found_lost/claim/use-author-unreachable-notice.ts`
+- `Web-Client/src/screens/found_lost/claim-card.tsx`, `src/screens/claims/confirm-return.tsx`, `src/app/actions/claim.ts`, `src/lib/unreachable-author.ts`, `src/screens/found_lost/claim/claim-unreachable.tsx`
 - `DB-Postgres/changelog/changes/006-item-claims.postgresql.sql`, `007-claim-payment.postgresql.sql`, `008-claim-unlock-limit.postgresql.sql`, `009-shedlock.postgresql.sql`, `015-contact-nick-name.postgresql.sql`
 - `docker/rabbitmq/definitions.json`
 - Tests: `ClaimControllerTests`, `FourthwallWebhookControllerTests`, `FourthwallClientTest`, `FourthwallOrderPlacedTest`, `FourthwallPropertiesTest`, `ClaimEventAspectTest`, `ClaimServicesTest`, `ReturnServiceTest`, `ContactInfoMapperTest`, `ItemKindTest`, `ClaimNotifierTest`, `ClaimMessageTest`, `ClaimFollowUpJobTest`, `ClaimFollowUpsTests`, `ClaimRepositoryTests` (Worker), `ClaimHandlersTest`, `PaidHandlerTest`, `ClaimsConfigTests`, `ItemArchiverTest`, `ItemArchiverTests`, `KindOpsTest`, `ItemKindsTest`, `WorkerQueueListenerTest`, `RoutingKeyDispatcherTest`, `PhoneLocalesTest`, `NotificationSenderTest`, `LostItemAdminServiceTest`, `AdminItemServiceTests`, `ItemClaimsTests`, and in `Web-Client` `claim.test.ts`, `claim-schema.test.ts`, `claim-cookie.test.ts`, `unreachable-author.test.ts`, e2e `claim.spec.ts`

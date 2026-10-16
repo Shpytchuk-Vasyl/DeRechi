@@ -203,10 +203,11 @@
     "repeated": "Vous avez déjà répondu à cette annonce : son auteur a vos coordonnées.",
     "orPost": "Ou publiez votre propre annonce :",
     "authorUnreachable": {
-      "text": "Malheureusement, l’auteur n’a laissé qu’un pseudo sur {network}, nous ne pouvons donc pas le prévenir. Écrivez-lui directement : {nickName}",
-      "openProfile": "Ouvrir le profil",
-      "copy": "Copier le pseudo",
-      "copied": "Pseudo copié",
+      "title": "Écrivez directement à l’auteur",
+      "text": "L’annonce n’a qu’un profil {network}, nous ne pouvons donc pas transmettre vos coordonnées.",
+      "write": "Écrire à l’auteur",
+      "copy": "Copier",
+      "copied": "Copié",
       "copyFailed": "Impossible de copier le pseudo"
     },
     "confirm": {

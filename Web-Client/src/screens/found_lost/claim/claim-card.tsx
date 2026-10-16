@@ -1,14 +1,16 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import type { ItemKind } from "@/api/items"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/pouf/card"
 import { Link } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
+import type { UnreachableAuthor } from "@/lib/unreachable-author"
 import ClaimDone from "./claim-done"
 import { ClaimItemProvider } from "./claim-item"
 import ClaimPrompt from "./claim-prompt"
+import ClaimUnreachable from "./claim-unreachable"
 import { useClaim } from "./use-claim"
 
 type Props = {
@@ -23,6 +25,7 @@ export default function ClaimCard({ kind, id, countryCode, contact }: Props) {
   const tc = useTranslations("claim")
   const tn = useTranslations("nav")
   const { sent, markSent } = useClaim(kind, id)
+  const [unreachable, setUnreachable] = useState<UnreachableAuthor | null>(null)
   const item = useMemo(() => ({ kind, itemId: id, countryCode }), [kind, id, countryCode])
   const otherKind: ItemKind = kind === "lost" ? "found" : "lost"
 
@@ -46,8 +49,10 @@ export default function ClaimCard({ kind, id, countryCode, contact }: Props) {
           <section aria-live="polite" className="mt-6 border-border border-t pt-5">
             {sent ? (
               <ClaimDone repeated={sent === "repeated"} />
+            ) : unreachable ? (
+              <ClaimUnreachable author={unreachable} />
             ) : (
-              <ClaimPrompt onSent={markSent} />
+              <ClaimPrompt onSent={markSent} onUnreachable={setUnreachable} />
             )}
           </section>
         </ClaimItemProvider>

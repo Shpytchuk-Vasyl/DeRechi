@@ -203,10 +203,11 @@
     "repeated": "You already responded to this notice; the author has your contacts.",
     "orPost": "Or post your own notice:",
     "authorUnreachable": {
-      "text": "Sorry, the author left only a nickname on {network}, so we can't notify them. Message them yourself: {nickName}",
-      "openProfile": "Open profile",
-      "copy": "Copy nickname",
-      "copied": "Nickname copied",
+      "title": "Message the author directly",
+      "text": "The notice has only a {network} profile, so we can't pass on your contacts.",
+      "write": "Message the author",
+      "copy": "Copy",
+      "copied": "Copied",
       "copyFailed": "Couldn't copy the nickname"
     },
     "confirm": {

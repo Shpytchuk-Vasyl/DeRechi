@@ -8,12 +8,15 @@ import type { IconName } from './Icon'
 
 export type ToastVariant = 'default' | 'success' | 'error' | 'warning' | 'info'
 
-export type ToastAction = { label: string; onClick: () => void } | { label: string; href: string }
+interface ToastAction {
+  label: string
+  onClick: () => void
+}
 
 interface ToastOptions {
   description?: string
   duration?: number
-  actions?: ToastAction[]
+  action?: ToastAction
 }
 
 interface ToastEntry {
@@ -22,7 +25,7 @@ interface ToastEntry {
   description?: string
   variant: ToastVariant
   duration: number
-  actions: ToastAction[]
+  action?: ToastAction
 }
 
 let count = 0
@@ -62,7 +65,7 @@ function createToast(variant: ToastVariant) {
       description: opts?.description,
       variant,
       duration: opts?.duration ?? DEFAULT_DURATION,
-      actions: opts?.actions ?? [],
+      action: opts?.action,
     }
     add(entry)
     return id
@@ -97,21 +100,6 @@ function toastMotion(reduce: boolean) {
   }
 }
 
-function ToastActionButton({ action }: { action: ToastAction }) {
-  if ('href' in action) {
-    return (
-      <a className="pouf-toast__action" href={action.href} target="_blank" rel="noopener noreferrer">
-        {action.label}
-      </a>
-    )
-  }
-  return (
-    <button type="button" className="pouf-toast__action" onClick={action.onClick}>
-      {action.label}
-    </button>
-  )
-}
-
 function ToastItem({ t, onDismiss }: { t: ToastEntry; onDismiss: (id: string) => void }) {
   const sticky = t.duration === Infinity
   const reduce = useReducedMotion() ?? false
@@ -137,10 +125,10 @@ function ToastItem({ t, onDismiss }: { t: ToastEntry; onDismiss: (id: string) =>
       <div className="pouf-toast__body">
         <div className="pouf-toast__title">{t.title}</div>
         {t.description && <div className="pouf-toast__desc">{t.description}</div>}
-        {t.actions.length > 0 && (
-          <div className="pouf-toast__actions">
-            {t.actions.map((action) => <ToastActionButton key={action.label} action={action} />)}
-          </div>
+        {t.action && (
+          <button type="button" className="pouf-toast__action" onClick={t.action.onClick}>
+            {t.action.label}
+          </button>
         )}
       </div>
       <button type="button" className="pouf-toast__close" onClick={() => onDismiss(t.id)} aria-label={tc('dismissNotification')}>

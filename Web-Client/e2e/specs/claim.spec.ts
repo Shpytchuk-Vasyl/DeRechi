@@ -138,7 +138,7 @@ test.describe("disposable email", () => {
 })
 
 test.describe("author reachable only by a nickname", () => {
-  test("the claim is not sent; a lasting notice names the network, links the profile and copies the nickname", async ({
+  test("the claim is not sent; the card swaps the form for the author's network, profile link and a copyable nickname", async ({
     page,
     context,
     go,
@@ -158,31 +158,27 @@ test.describe("author reachable only by a nickname", () => {
     await go(item.path)
     const card = new ClaimCard(page, t, "lost")
     await card.open()
-    const toasts = new Toasts(page, t, flags)
-    await toasts.dismissSmsOutage()
+    await new Toasts(page, t, flags).dismissSmsOutage()
     await card.fill(data.contact())
     await card.submit()
 
-    const notice = toasts.byText(
-      t("claim.authorUnreachable.text", { network: t(`form.social.${network}`), nickName }),
-    )
-    await expect(notice).toBeVisible()
-    const profile = notice.getByRole("link", {
-      name: t("claim.authorUnreachable.openProfile"),
-      exact: true,
-    })
-    await expect(profile).toHaveAttribute("href", profileUrl)
-    await expect(profile).toHaveAttribute("target", "_blank")
+    await expect(card.unreachable()).toBeVisible()
+    await expect(
+      card.root.getByText(
+        t("claim.authorUnreachable.text", { network: t(`form.social.${network}`) }),
+        { exact: true },
+      ),
+    ).toBeVisible()
+    await expect(card.root.getByText(nickName, { exact: true })).toBeVisible()
+    await expect(card.profileLink()).toHaveAttribute("href", profileUrl)
+    await expect(card.profileLink()).toHaveAttribute("target", "_blank")
 
-    await notice
-      .getByRole("button", { name: t("claim.authorUnreachable.copy"), exact: true })
-      .click()
-    await expect(toasts.byText(t("claim.authorUnreachable.copied"))).toBeVisible()
+    await card.copyButton().click()
+    await expect(card.copyButton({ copied: true })).toBeVisible()
     await expect.poll(clipboardWrites).toEqual([nickName])
 
-    await expect(notice).toBeVisible()
+    await expect(card.submitButton()).toHaveCount(0)
     await expect(card.done()).toHaveCount(0)
-    await expect(card.submitButton()).toBeVisible()
     expect(await claimCookie(context, "lost", item.id)).toBeUndefined()
   })
 })

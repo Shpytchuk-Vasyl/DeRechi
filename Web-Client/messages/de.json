@@ -203,10 +203,11 @@
     "repeated": "Du hast auf diese Meldung schon geantwortet; deine Kontaktdaten sind bereits angekommen.",
     "orPost": "Oder gib selbst eine Meldung auf:",
     "authorUnreachable": {
-      "text": "Leider hat der Verfasser nur einen Nicknamen bei {network} hinterlassen, deshalb können wir ihn nicht benachrichtigen. Schreib ihm direkt: {nickName}",
-      "openProfile": "Profil öffnen",
-      "copy": "Nicknamen kopieren",
-      "copied": "Nickname kopiert",
+      "title": "Schreib dem Verfasser direkt",
+      "text": "Die Anzeige hat nur ein Profil bei {network}, deshalb können wir deine Kontaktdaten nicht weitergeben.",
+      "write": "Verfasser anschreiben",
+      "copy": "Kopieren",
+      "copied": "Kopiert",
       "copyFailed": "Nickname konnte nicht kopiert werden"
     },
     "confirm": {
