@@ -6,10 +6,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.shpytchuk.ingest.config.facebook.FacebookProperties;
 import org.shpytchuk.ingest.exception.IngestException;
+import org.shpytchuk.ingest.model.SocialMedia;
+import org.shpytchuk.ingest.source.AuthorProfile;
 import org.shpytchuk.ingest.source.IncomingPost;
 import org.shpytchuk.ingest.source.PhotoRef;
 import org.shpytchuk.ingest.source.PostKey;
 import org.shpytchuk.ingest.source.SourceSettings;
+import org.shpytchuk.ingest.support.Posts;
 import org.springframework.scheduling.TaskScheduler;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -184,6 +187,35 @@ class FacebookPostSourceTest {
         source.poll();
 
         assertThat(received).extracting(post -> post.key().id()).containsExactly("9001", "9002", "9003");
+    }
+
+    @Test
+    void theAuthorOfAPostIsItsFacebookProfile() {
+        FacebookPostSource source = started(properties("c_user=1; xs=2", "zzter=Тернопіль"));
+
+        source.poll();
+
+        IncomingPost newest = received.getLast();
+        assertThat(source.authorProfile(newest)).contains(new AuthorProfile(SocialMedia.FACEBOOK, "Олена Коваль",
+                "https://www.facebook.com/olena.koval.101"));
+        assertThat(source.authorPhone(newest)).isEmpty();
+    }
+
+    @Test
+    void aLongDisplayNameIsCutToTheNicknameLimit() {
+        FacebookActor author = new FacebookActor("Олена " + "Коваль".repeat(10), "https://www.facebook.com/olena");
+
+        assertThat(source(properties("c_user=1", "zzter=")).authorProfile(Posts.facebook("1", "Загублено", author, NOW)))
+                .hasValueSatisfying(profile -> assertThat(profile.nickName()).hasSize(AuthorProfile.NICK_NAME_MAX)
+                        .startsWith("Олена Коваль"));
+    }
+
+    @Test
+    void aPostWithoutAnAuthorHasNoProfile() {
+        FacebookPostSource source = source(properties("c_user=1", "zzter="));
+
+        assertThat(source.authorProfile(Posts.facebook("1", "Загублено", null, NOW))).isEmpty();
+        assertThat(source.authorProfile(Posts.telegram(1L << 20, "Загублено", List.of(), NOW))).isEmpty();
     }
 
     @Test

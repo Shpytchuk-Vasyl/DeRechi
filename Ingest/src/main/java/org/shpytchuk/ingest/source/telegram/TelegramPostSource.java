@@ -1,6 +1,7 @@
 package org.shpytchuk.ingest.source.telegram;
 
 import lombok.AllArgsConstructor;
+import org.shpytchuk.ingest.source.AuthorProfile;
 import org.shpytchuk.ingest.source.IncomingPost;
 import org.shpytchuk.ingest.source.PhotoRef;
 import org.shpytchuk.ingest.source.PostSource;
@@ -17,6 +18,7 @@ public class TelegramPostSource implements PostSource {
 
     private final TelegramSource telegram;
     private final AuthorPhoneResolver authorPhones;
+    private final AuthorProfileResolver authorProfiles;
 
     @Override
     public String name() {
@@ -36,5 +38,10 @@ public class TelegramPostSource implements PostSource {
     @Override
     public Optional<String> authorPhone(IncomingPost post) {
         return authorPhones.resolve(post);
+    }
+
+    @Override
+    public Optional<AuthorProfile> authorProfile(IncomingPost post) {
+        return authorProfiles.resolve(post);
     }
 }

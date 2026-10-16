@@ -138,6 +138,43 @@ class FacebookParserTest {
     }
 
     @Test
+    void theAuthorOfAStoryIsTheActorOfItsHeaderWithTheProfileLink() {
+        FacebookStory story = parser.groupPage(FacebookFixtures.page()).feed().stories().getFirst();
+
+        assertThat(story.actor()).isEqualTo(new FacebookActor("Олена Коваль", "https://www.facebook.com/olena.koval.101"));
+    }
+
+    @Test
+    void theAuthorIsFoundInTheContentOrOnTheStoryItselfWithoutTrackingParameters() {
+        FeedPage feed = parser.feedPage(FacebookFixtures.feed());
+
+        assertThat(feed.stories()).extracting(FacebookStory::actor).containsExactly(
+                new FacebookActor("Ігор Мельник", "https://www.facebook.com/profile.php?id=100000000000102"),
+                new FacebookActor("Марія Бойко", "https://www.facebook.com/maria.boiko.103"));
+    }
+
+    @Test
+    void anAuthorWithoutAProfileLinkIsNoAuthor() {
+        FeedPage feed = parser.feedPage(FacebookFixtures.lastPage());
+
+        assertThat(feed.stories()).singleElement().extracting(FacebookStory::actor).isNull();
+    }
+
+    @Test
+    void onlyAnHttpsFacebookAddressIsAProfileLink() {
+        assertThat(FacebookParser.profileUrl("https://m.facebook.com/olena.koval.101/?__tn__=R"))
+                .isEqualTo("https://m.facebook.com/olena.koval.101/");
+        assertThat(FacebookParser.profileUrl("https://www.facebook.com/profile.php?__tn__=R&id=42#top"))
+                .isEqualTo("https://www.facebook.com/profile.php?id=42");
+        assertThat(FacebookParser.profileUrl("https://www.facebook.com/profile.php?__tn__=R")).isNull();
+        assertThat(FacebookParser.profileUrl("http://www.facebook.com/olena")).isNull();
+        assertThat(FacebookParser.profileUrl("https://notfacebook.com/olena")).isNull();
+        assertThat(FacebookParser.profileUrl("https://www.facebook.com.example/olena")).isNull();
+        assertThat(FacebookParser.profileUrl("https://www.facebook.com/")).isNull();
+        assertThat(FacebookParser.profileUrl("")).isNull();
+    }
+
+    @Test
     void findsTheDocIdOfAQueryInAScript() {
         assertThat(FacebookParser.docId(FacebookFixtures.feedQueryScript(), FacebookGroupReader.FEED_QUERY))
                 .contains(FacebookFixtures.DOC_ID);

@@ -100,7 +100,8 @@ class ExtractionSchemaTest {
         kinds.add(null);
         assertThat(strings(properties.path("kind").path("enum"))).containsExactlyElementsOf(kinds);
         assertThat(strings(properties.path("socialMedias").path("items").path("enum")))
-                .containsExactlyElementsOf(Arrays.stream(SocialMedia.values()).map(Enum::name).toList());
+                .containsExactly("TELEGRAM", "VIBER", "WHATSAPP")
+                .isSubsetOf(Arrays.stream(SocialMedia.values()).map(Enum::name).toList());
         assertThat(strings(properties.path("category").path("enum")))
                 .containsExactly("DOCUMENTS", "WALLET", "ELECTRONICS", "JEWELRY", "ANIMALS", "KEYS", "BAGS", "OTHER", null);
     }

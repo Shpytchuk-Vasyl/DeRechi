@@ -29,11 +29,14 @@ import org.shpytchuk.ingest.phone.PhoneHasher;
 import org.shpytchuk.ingest.place.PlaceResolver;
 import org.shpytchuk.ingest.place.ResolvedPlace;
 import org.shpytchuk.ingest.publish.Publishers;
+import org.shpytchuk.ingest.source.AuthorProfile;
 import org.shpytchuk.ingest.source.IncomingPost;
 import org.shpytchuk.ingest.source.PhotoRef;
 import org.shpytchuk.ingest.source.PostSource;
 import org.shpytchuk.ingest.source.PostSources;
 import org.shpytchuk.ingest.source.SourceSettings;
+import org.shpytchuk.ingest.source.facebook.FacebookActor;
+import org.shpytchuk.ingest.source.facebook.FacebookPostSource;
 import org.shpytchuk.ingest.source.telegram.TelegramPostSource;
 import org.shpytchuk.ingest.source.telegram.TelegramSource;
 import org.shpytchuk.ingest.support.Posts;
@@ -71,8 +74,11 @@ class IngestPipelineTest {
     static final byte[] ORIGINAL = {1};
     static final byte[] REDACTED = {2};
     static final byte[] BLURRED = {3};
+    static final AuthorProfile TELEGRAM_PROFILE =
+            new AuthorProfile(SocialMedia.TELEGRAM, "@finder", "https://t.me/finder");
 
     PostSource source = mock(PostSource.class);
+    PostSource facebook = mock(PostSource.class);
     ImageRedactor redactor = mock(ImageRedactor.class);
     Extractor extractor = mock(Extractor.class);
     ExtractionPolicy policy = mock(ExtractionPolicy.class);
@@ -81,6 +87,7 @@ class IngestPipelineTest {
     Publishers output = mock(Publishers.class);
     PostLedger ledger = mock(PostLedger.class);
     SimpleMeterRegistry registry = new SimpleMeterRegistry();
+    PhoneHasher hasher = new PhoneHasher(properties());
 
     @BeforeEach
     void defaults() {
@@ -88,18 +95,21 @@ class IngestPipelineTest {
         when(api.countries()).thenReturn(Set.of("UA", "PL"));
         when(places.resolve(any(), any(), any())).thenReturn(Optional.of(PLACE));
         when(source.name()).thenReturn(TelegramPostSource.NAME);
+        when(facebook.name()).thenReturn(FacebookPostSource.NAME);
         when(source.download(any())).thenReturn(ORIGINAL);
         when(redactor.redact(any(), anyBoolean())).thenReturn(new RedactedImage(REDACTED, RedactionMode.NONE));
         when(redactor.blurFully(any())).thenReturn(new RedactedImage(BLURRED, RedactionMode.FULL));
-        when(policy.evaluate(any(), any(), any(), any())).thenReturn(ExtractionDecision.proceed("+380671234567"));
+        when(policy.evaluate(any(), any(), any(), any(), any())).thenReturn(ExtractionDecision.proceed("+380671234567"));
     }
 
     @Test
-    void postWithoutAnyPhoneLeavesNoTrace() {
+    void postWithoutAPhoneOrAnAuthorProfileLeavesNoTrace() {
         when(source.authorPhone(any())).thenReturn(Optional.empty());
+        when(source.authorProfile(any())).thenReturn(Optional.empty());
 
         pipeline().process(post("Знайшов ключі, пишіть @someone", List.of()));
 
+        verify(source).authorProfile(any());
         verifyNoInteractions(extractor, output);
         verify(ledger, never()).record(any(), any(), any(), any());
         assertThat(count("no_phone")).isEqualTo(1);
@@ -114,7 +124,59 @@ class IngestPipelineTest {
 
         Notice notice = accepted();
         assertThat(notice.phone()).isEqualTo("+380671234567");
+        assertThat(notice.authorProfile()).isNull();
         assertThat(notice.socialMedias()).contains(SocialMedia.TELEGRAM);
+        verify(source, never()).authorProfile(any());
+    }
+
+    @Test
+    void postWithoutAPhoneGoesOnWithTheAuthorsTelegramProfile() {
+        when(source.authorProfile(any())).thenReturn(Optional.of(TELEGRAM_PROFILE));
+        when(policy.evaluate(any(), any(), isNull(), eq(TELEGRAM_PROFILE), any()))
+                .thenReturn(ExtractionDecision.proceed(null));
+        extracts(extraction(ItemKind.LOST, "WALLET"));
+
+        pipeline().process(post("Загубив гаманець біля ратуші, пишіть мені", List.of()));
+
+        Notice notice = accepted();
+        assertThat(notice.phone()).isNull();
+        assertThat(notice.authorProfile()).isEqualTo(TELEGRAM_PROFILE);
+        assertThat(notice.socialMedias()).containsExactly(SocialMedia.TELEGRAM);
+        assertThat(notice.phoneHash()).isEqualTo(hasher.hash("TELEGRAM:@finder"));
+        assertThat(phoneSource("profile")).isEqualTo(1);
+    }
+
+    @Test
+    void facebookPostWithoutAPhoneGoesOnWithOnlyItsAuthorsFacebookProfile() {
+        AuthorProfile profile = new AuthorProfile(SocialMedia.FACEBOOK, "Олена Коваль",
+                "https://www.facebook.com/olena.koval.101");
+        when(facebook.authorProfile(any())).thenReturn(Optional.of(profile));
+        when(policy.evaluate(any(), any(), isNull(), eq(profile), any())).thenReturn(ExtractionDecision.proceed(null));
+        extracts(extraction(ItemKind.LOST, "WALLET"));
+
+        pipeline().process(Posts.facebook("9002", "Загубили ключі на проспекті Злуки",
+                new FacebookActor("Олена Коваль", "https://www.facebook.com/olena.koval.101"), NOW));
+
+        Notice notice = accepted();
+        assertThat(notice.phone()).isNull();
+        assertThat(notice.authorProfile()).isEqualTo(profile);
+        assertThat(notice.socialMedias()).containsExactly(SocialMedia.FACEBOOK);
+        assertThat(notice.phoneHash()).isEqualTo(hasher.hash("FACEBOOK:олена коваль"));
+        verify(source, never()).authorProfile(any());
+    }
+
+    @Test
+    void aRepostByTheSameProfileIsADuplicateWhateverTheCaseOfTheNickname() {
+        when(source.authorProfile(any())).thenReturn(
+                Optional.of(new AuthorProfile(SocialMedia.TELEGRAM, "@Finder", "https://t.me/Finder")));
+        String hash = hasher.hash("TELEGRAM:@finder");
+        when(ledger.duplicate(eq(List.of(hash)), any())).thenReturn(true);
+
+        pipeline().process(post("Знайшов гаманець біля ратуші, пишіть", List.of()));
+
+        verifyNoInteractions(extractor, output);
+        verify(ledger).record(any(), eq(PostStatus.SKIPPED), eq(hash), isNull());
+        assertThat(count("duplicate")).isEqualTo(1);
     }
 
     @Test
@@ -161,7 +223,7 @@ class IngestPipelineTest {
     @Test
     void skipAfterTheModelIsRecordedAndReported() {
         extracts(extraction(ItemKind.LOST, "WALLET"));
-        when(policy.evaluate(any(), any(), any(), any())).thenReturn(ExtractionDecision.skip(Outcome.NOT_NOTICE));
+        when(policy.evaluate(any(), any(), any(), any(), any())).thenReturn(ExtractionDecision.skip(Outcome.NOT_NOTICE));
 
         pipeline().process(post("Продам велосипед 067 123 45 67", List.of()));
 
@@ -307,16 +369,25 @@ class IngestPipelineTest {
     }
 
     private IngestPipeline pipeline(Instant now) {
-        IngestProperties properties = new IngestProperties(List.of("review"), "key", Duration.ofDays(14), 3,
-                Period.ofDays(30), "https://derechi.example", "uk", 0.6);
+        IngestProperties properties = properties();
         Clock clock = Clock.fixed(now, ZoneOffset.UTC);
-        return new IngestPipeline(properties, new PostSources(List.of(source)), new PhoneExtractor(), new Masker(),
-                new PhoneHasher(properties), redactor, extractor, policy, places, api, output, ledger,
+        return new IngestPipeline(properties, new PostSources(List.of(source, facebook)), new PhoneExtractor(),
+                new Masker(), new PhoneHasher(properties), redactor, extractor, policy, places, api, output, ledger,
                 new IngestMetrics(registry, clock, mock(TelegramSource.class)), clock);
+    }
+
+    private static IngestProperties properties() {
+        return new IngestProperties(List.of("review"), "key", Duration.ofDays(14), 3, Period.ofDays(30),
+                "https://derechi.example", "uk", 0.6);
     }
 
     private double count(String outcome) {
         var counter = registry.find("derechi.ingest.posts").tag("outcome", outcome).counter();
+        return counter == null ? 0 : counter.count();
+    }
+
+    private double phoneSource(String source) {
+        var counter = registry.find("derechi.ingest.phone.source").tag("source", source).counter();
         return counter == null ? 0 : counter.count();
     }
 }

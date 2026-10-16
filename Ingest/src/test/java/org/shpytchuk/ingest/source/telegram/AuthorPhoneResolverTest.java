@@ -221,6 +221,11 @@ class AuthorPhoneResolverTest {
         }
 
         @Override
+        public Optional<String> username(long userId) {
+            return Optional.empty();
+        }
+
+        @Override
         public byte[] download(PhotoRef photo) {
             return new byte[0];
         }

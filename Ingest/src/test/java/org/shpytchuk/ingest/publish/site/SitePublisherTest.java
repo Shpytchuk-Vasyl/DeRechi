@@ -12,6 +12,7 @@ import org.shpytchuk.ingest.exception.IngestException;
 import org.shpytchuk.ingest.exception.RejectedItemException;
 import org.shpytchuk.ingest.model.ItemKind;
 import org.shpytchuk.ingest.model.Outcome;
+import org.shpytchuk.ingest.model.SocialMedia;
 import org.shpytchuk.ingest.pipeline.IngestMetrics;
 import org.shpytchuk.ingest.pipeline.PostLedger;
 import org.shpytchuk.ingest.publish.SiteItem;
@@ -64,6 +65,8 @@ class SitePublisherTest {
         verify(api).create(created.capture());
         assertThat(created.getValue().imageKey()).isEqualTo("items/2026/10/x.jpg");
         assertThat(created.getValue().phone()).isEqualTo(Outputs.PHONE);
+        assertThat(created.getValue().nickName()).isNull();
+        assertThat(created.getValue().profileUrl()).isNull();
         verify(ledger).published(7L, 42L);
         assertThat(item).contains(new SiteItem(ItemKind.FOUND, 42L, "https://derechi.example/uk/found/42"));
         assertThat(count(Outcome.PUBLISHED)).isEqualTo(1);
@@ -77,6 +80,19 @@ class SitePublisherTest {
         ArgumentCaptor<NewItem> created = ArgumentCaptor.forClass(NewItem.class);
         verify(api).create(created.capture());
         assertThat(created.getValue().imageKey()).isNull();
+    }
+
+    @Test
+    void aNoticeWithTheAuthorsProfileIsCreatedWithItsNicknameAndLinkInsteadOfAPhone() {
+        site.publish(Outputs.post(), Outputs.profileNotice());
+
+        ArgumentCaptor<NewItem> created = ArgumentCaptor.forClass(NewItem.class);
+        verify(api).create(created.capture());
+        assertThat(created.getValue().phone()).isNull();
+        assertThat(created.getValue().nickName()).isEqualTo("@finder");
+        assertThat(created.getValue().profileUrl()).isEqualTo("https://t.me/finder");
+        assertThat(created.getValue().socialMedias()).containsExactly(SocialMedia.TELEGRAM);
+        verify(ledger).record(any(), eq(PostStatus.PUBLISHING), eq(Outputs.PHONE_HASH), eq(ItemKind.FOUND));
     }
 
     @Test

@@ -81,6 +81,8 @@ class GraphQlDeRechiApiTest {
                 .andExpect(jsonPath("$.variables.input.contact.phone").value(PHONE))
                 .andExpect(jsonPath("$.variables.input.contact.email").doesNotExist())
                 .andExpect(jsonPath("$.variables.input.contact.socialMedias").value(contains("TELEGRAM", "VIBER")))
+                .andExpect(content().string(containsString("\"nickName\":null")))
+                .andExpect(content().string(containsString("\"profileUrl\":null")))
                 .andRespond(withSuccess("{\"data\":{\"createLostItem\":{\"id\":\"42\"}}}", MediaType.APPLICATION_JSON));
 
         long id = api.create(item(ItemKind.LOST, new Money(500, "UAH"), "items/2026/10/a.jpg"));
@@ -99,6 +101,23 @@ class GraphQlDeRechiApiTest {
                 .andRespond(withSuccess("{\"data\":{\"createFoundItem\":{\"id\":\"9\"}}}", MediaType.APPLICATION_JSON));
 
         assertThat(api.create(item(ItemKind.FOUND, null, null))).isEqualTo(9);
+        server.verify();
+    }
+
+    @Test
+    void createsAnItemWithTheAuthorsProfileInsteadOfAPhone() {
+        server.expect(requestTo(URL))
+                .andExpect(jsonPath("$.variables.input.contact.nickName").value("@finder"))
+                .andExpect(jsonPath("$.variables.input.contact.profileUrl").value("https://t.me/finder"))
+                .andExpect(jsonPath("$.variables.input.contact.socialMedias").value(contains("TELEGRAM")))
+                .andExpect(content().string(containsString("\"phone\":null")))
+                .andRespond(withSuccess("{\"data\":{\"createLostItem\":{\"id\":\"43\"}}}", MediaType.APPLICATION_JSON));
+
+        NewItem item = new NewItem(ItemKind.LOST, "Чорний гаманець", null, LocalDate.of(2026, 10, 9), null, null, 7,
+                new ResolvedPlace("ChIJ1", "Ocean Plaza", 50.41, 30.52, "UA"), null, "@finder", "https://t.me/finder",
+                List.of(SocialMedia.TELEGRAM));
+
+        assertThat(api.create(item)).isEqualTo(43);
         server.verify();
     }
 
@@ -226,7 +245,7 @@ class GraphQlDeRechiApiTest {
 
     private static NewItem item(ItemKind kind, Money compensation, String imageKey) {
         return new NewItem(kind, "Чорний гаманець", "Біля входу", LocalDate.of(2026, 10, 9), compensation, imageKey, 7,
-                new ResolvedPlace("ChIJ1", "Ocean Plaza", 50.41, 30.52, "UA"), PHONE,
+                new ResolvedPlace("ChIJ1", "Ocean Plaza", 50.41, 30.52, "UA"), PHONE, null, null,
                 List.of(SocialMedia.TELEGRAM, SocialMedia.VIBER));
     }
 }

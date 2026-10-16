@@ -12,4 +12,6 @@ public interface PostSource {
     byte[] download(PhotoRef photo);
 
     Optional<String> authorPhone(IncomingPost post);
+
+    Optional<AuthorProfile> authorProfile(IncomingPost post);
 }

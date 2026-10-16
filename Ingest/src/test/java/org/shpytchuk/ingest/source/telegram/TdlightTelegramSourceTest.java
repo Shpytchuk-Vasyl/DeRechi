@@ -34,6 +34,7 @@ class TdlightTelegramSourceTest {
         assertThatThrownBy(() -> source.recentPosts(Duration.ofHours(1), 10)).isInstanceOf(StageUnavailableException.class);
         assertThatThrownBy(() -> source.userPhone(1)).isInstanceOf(StageUnavailableException.class);
         assertThatThrownBy(() -> source.userIdByUsername("someone")).isInstanceOf(StageUnavailableException.class);
+        assertThatThrownBy(() -> source.username(1)).isInstanceOf(StageUnavailableException.class);
         assertThatThrownBy(() -> source.download(new PhotoRef("1", 1, 1))).isInstanceOf(StageUnavailableException.class);
         source.close();
         assertThat(received).isEmpty();

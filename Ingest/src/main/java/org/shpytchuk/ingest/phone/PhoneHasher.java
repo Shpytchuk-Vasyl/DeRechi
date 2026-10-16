@@ -10,8 +10,8 @@ import java.security.GeneralSecurityException;
 import java.util.HexFormat;
 
 /**
- * HMAC-SHA256 of an E.164 number, for {@code ingest_post.phone_hash}. Keyed, so the column
- * cannot be reversed by hashing every possible number.
+ * HMAC-SHA256 of a contact (an E.164 number or {@code AuthorProfile.contactKey()}), for
+ * {@code ingest_post.phone_hash}. Keyed, so the column cannot be reversed by hashing every possible number.
  */
 @Component
 public class PhoneHasher {
@@ -24,11 +24,11 @@ public class PhoneHasher {
         this.key = new SecretKeySpec(properties.hashKey().getBytes(StandardCharsets.UTF_8), ALGORITHM);
     }
 
-    public String hash(String e164) {
+    public String hash(String contact) {
         try {
             Mac mac = Mac.getInstance(ALGORITHM);
             mac.init(key);
-            return HexFormat.of().formatHex(mac.doFinal(e164.getBytes(StandardCharsets.UTF_8)));
+            return HexFormat.of().formatHex(mac.doFinal(contact.getBytes(StandardCharsets.UTF_8)));
         } catch (GeneralSecurityException e) {
             throw new IllegalStateException("HmacSHA256 is not available", e);
         }

@@ -100,10 +100,15 @@ public class GraphQlDeRechiApi implements DeRechiApi {
 
         static ItemInput of(NewItem item) {
             return new ItemInput(item.title(), item.description(), item.date(), item.compensation(), item.imageKey(),
-                    Long.toString(item.categoryId()), item.place(), new Contact(item.phone(), item.socialMedias()));
+                    Long.toString(item.categoryId()), item.place(), Contact.of(item));
         }
     }
 
-    private record Contact(String phone, List<SocialMedia> socialMedias) {
+    private record Contact(@Nullable String phone, List<SocialMedia> socialMedias, @Nullable String nickName,
+                           @Nullable String profileUrl) {
+
+        static Contact of(NewItem item) {
+            return new Contact(item.phone(), item.socialMedias(), item.nickName(), item.profileUrl());
+        }
     }
 }

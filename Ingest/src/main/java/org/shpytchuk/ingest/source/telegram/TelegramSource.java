@@ -18,6 +18,8 @@ public interface TelegramSource {
 
     Optional<Long> userIdByUsername(String username);
 
+    Optional<String> username(long userId);
+
     byte[] download(PhotoRef photo);
 
     boolean authorized();

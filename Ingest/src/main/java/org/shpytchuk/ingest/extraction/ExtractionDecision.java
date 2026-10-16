@@ -10,7 +10,7 @@ public record ExtractionDecision(@Nullable Outcome skipOutcome, @Nullable String
         return new ExtractionDecision(outcome, null);
     }
 
-    public static ExtractionDecision proceed(String contactPhone) {
+    public static ExtractionDecision proceed(@Nullable String contactPhone) {
         return new ExtractionDecision(null, contactPhone);
     }
 

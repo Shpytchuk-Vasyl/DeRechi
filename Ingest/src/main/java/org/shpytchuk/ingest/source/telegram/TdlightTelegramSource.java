@@ -153,6 +153,16 @@ public class TdlightTelegramSource implements TelegramSource {
     }
 
     @Override
+    public Optional<String> username(long userId) {
+        requireReady();
+        TdApi.User user = call(new TdApi.GetUser(userId));
+        if (user.type instanceof TdApi.UserTypeBot || user.usernames == null) {
+            return Optional.empty();
+        }
+        return Arrays.stream(user.usernames.activeUsernames).filter(name -> !name.isBlank()).findFirst();
+    }
+
+    @Override
     public byte[] download(PhotoRef photo) {
         SimpleTelegramClient ready = requireReady();
         int fileId = Integer.parseInt(photo.id());

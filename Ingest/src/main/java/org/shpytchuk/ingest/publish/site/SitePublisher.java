@@ -13,6 +13,7 @@ import org.shpytchuk.ingest.pipeline.IngestMetrics;
 import org.shpytchuk.ingest.pipeline.Notice;
 import org.shpytchuk.ingest.pipeline.PostLedger;
 import org.shpytchuk.ingest.publish.SiteItem;
+import org.shpytchuk.ingest.source.AuthorProfile;
 import org.shpytchuk.ingest.source.IncomingPost;
 import org.springframework.stereotype.Component;
 
@@ -69,7 +70,10 @@ public class SitePublisher {
     }
 
     private static NewItem newItem(Notice notice, @Nullable String imageKey) {
+        AuthorProfile profile = notice.authorProfile();
         return new NewItem(notice.kind(), notice.title(), notice.description(), notice.date(), notice.compensation(),
-                imageKey, notice.categoryId(), notice.place(), notice.phone(), notice.socialMedias());
+                imageKey, notice.categoryId(), notice.place(), notice.phone(),
+                profile == null ? null : profile.nickName(), profile == null ? null : profile.profileUrl(),
+                notice.socialMedias());
     }
 }

@@ -13,6 +13,7 @@ import org.shpytchuk.ingest.model.SocialMedia;
 import org.shpytchuk.ingest.place.PlaceResolver;
 import org.shpytchuk.ingest.place.ResolvedPlace;
 import org.shpytchuk.ingest.repository.IngestPostRepository;
+import org.shpytchuk.ingest.source.AuthorProfile;
 import org.shpytchuk.ingest.source.IncomingPost;
 import org.shpytchuk.ingest.source.PhotoRef;
 import org.shpytchuk.ingest.source.PostKey;
@@ -194,6 +195,11 @@ class SiteFlowIT {
 
         @Override
         public Optional<String> authorPhone(IncomingPost post) {
+            return Optional.empty();
+        }
+
+        @Override
+        public Optional<AuthorProfile> authorProfile(IncomingPost post) {
             return Optional.empty();
         }
 

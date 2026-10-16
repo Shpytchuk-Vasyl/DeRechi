@@ -5,6 +5,7 @@ import org.jspecify.annotations.Nullable;
 import org.shpytchuk.ingest.config.IngestProperties;
 import org.shpytchuk.ingest.model.Outcome;
 import org.shpytchuk.ingest.phone.MaskedText;
+import org.shpytchuk.ingest.source.AuthorProfile;
 import org.shpytchuk.ingest.source.SourceSettings;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -15,7 +16,8 @@ public class ExtractionPolicy {
 
     private final IngestProperties properties;
 
-    public ExtractionDecision evaluate(Extraction e, MaskedText masked, @Nullable String authorPhone, SourceSettings chat) {
+    public ExtractionDecision evaluate(Extraction e, MaskedText masked, @Nullable String authorPhone,
+                                       @Nullable AuthorProfile authorProfile, SourceSettings chat) {
         if (!Boolean.TRUE.equals(e.isNotice())) {
             return ExtractionDecision.skip(Outcome.NOT_NOTICE);
         }
@@ -31,7 +33,10 @@ public class ExtractionPolicy {
             return ExtractionDecision.skip(Outcome.INCOMPLETE);
         }
         String phone = contactPhone(e, masked, authorPhone);
-        return phone == null ? ExtractionDecision.skip(Outcome.INCOMPLETE) : ExtractionDecision.proceed(phone);
+        if (phone == null && authorProfile == null) {
+            return ExtractionDecision.skip(Outcome.INCOMPLETE);
+        }
+        return ExtractionDecision.proceed(phone);
     }
 
     private static @Nullable String contactPhone(Extraction e, MaskedText masked, @Nullable String authorPhone) {

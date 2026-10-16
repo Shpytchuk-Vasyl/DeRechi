@@ -7,6 +7,8 @@ import org.shpytchuk.ingest.config.facebook.ActiveHours;
 import org.shpytchuk.ingest.config.facebook.FacebookProperties;
 import org.shpytchuk.ingest.exception.IngestException;
 import org.shpytchuk.ingest.exception.StageUnavailableException;
+import org.shpytchuk.ingest.model.SocialMedia;
+import org.shpytchuk.ingest.source.AuthorProfile;
 import org.shpytchuk.ingest.source.IncomingPost;
 import org.shpytchuk.ingest.source.PhotoRef;
 import org.shpytchuk.ingest.source.PostKey;
@@ -92,6 +94,14 @@ public class FacebookPostSource implements PostSource {
         return Optional.empty();
     }
 
+    @Override
+    public Optional<AuthorProfile> authorProfile(IncomingPost post) {
+        if (post.details() instanceof FacebookDetails(FacebookActor author) && author != null) {
+            return Optional.of(new AuthorProfile(SocialMedia.FACEBOOK, author.name(), author.profileUrl()));
+        }
+        return Optional.empty();
+    }
+
     void poll() {
         Instant next = clock.instant().plus(properties.pollEvery()).plus(randomUpTo(properties.pollJitter()));
         try {
@@ -169,7 +179,7 @@ public class FacebookPostSource implements PostSource {
     private static IncomingPost post(String group, String name, SourceSettings settings, FacebookStory story) {
         String link = FacebookClient.ORIGIN + "/groups/" + group + "/permalink/" + story.postId() + "/";
         return new IncomingPost(new PostKey(NAME, group, story.postId()), name, link, story.createdAt(), story.text(),
-                story.photos(), settings, null);
+                story.photos(), settings, new FacebookDetails(story.actor()));
     }
 
     private void polled(String group, String outcome) {

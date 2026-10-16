@@ -5,7 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.shpytchuk.ingest.config.IngestProperties;
 import org.shpytchuk.ingest.model.ItemKind;
 import org.shpytchuk.ingest.model.Outcome;
+import org.shpytchuk.ingest.model.SocialMedia;
 import org.shpytchuk.ingest.phone.MaskedText;
+import org.shpytchuk.ingest.source.AuthorProfile;
 import org.shpytchuk.ingest.source.SourceSettings;
 
 import java.time.LocalDate;
@@ -21,6 +23,8 @@ class ExtractionPolicyTest {
     private static final String AUTHOR = "+380939998877";
     private static final SourceSettings LVIV = new SourceSettings("UA", "Львів", "uk");
     private static final SourceSettings NO_CITY = new SourceSettings("UA", null, "uk");
+    private static final AuthorProfile PROFILE =
+            new AuthorProfile(SocialMedia.TELEGRAM, "@finder", "https://t.me/finder");
 
     private final ExtractionPolicy policy = new ExtractionPolicy(
             new IngestProperties(null, "hash", null, 0, null, null, null, 0.6));
@@ -45,7 +49,7 @@ class ExtractionPolicyTest {
     }
 
     private ExtractionDecision evaluate(Extraction e, MaskedText masked, @Nullable String author, SourceSettings chat) {
-        return policy.evaluate(e, masked, author, chat);
+        return policy.evaluate(e, masked, author, null, chat);
     }
 
     @Test
@@ -183,5 +187,20 @@ class ExtractionPolicyTest {
     @Test
     void noPhoneAtAllIsIncomplete() {
         assertThat(evaluate(good(), masked(), null, LVIV).skipOutcome()).isEqualTo(Outcome.INCOMPLETE);
+    }
+
+    @Test
+    void anAuthorProfileWithoutAPhoneProceedsWithoutAPhone() {
+        ExtractionDecision decision = policy.evaluate(good(), masked(), null, PROFILE, LVIV);
+
+        assertThat(decision.skipped()).isFalse();
+        assertThat(decision.contactPhone()).isNull();
+    }
+
+    @Test
+    void notANoticeIsSkippedEvenWithAnAuthorProfile() {
+        Extraction e = extraction(false, null, null, null, null, null, null, 0.9, null);
+
+        assertThat(policy.evaluate(e, masked(), null, PROFILE, LVIV).skipOutcome()).isEqualTo(Outcome.NOT_NOTICE);
     }
 }

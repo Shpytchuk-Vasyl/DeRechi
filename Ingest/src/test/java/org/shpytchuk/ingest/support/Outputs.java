@@ -7,6 +7,7 @@ import org.shpytchuk.ingest.model.ItemKind;
 import org.shpytchuk.ingest.model.SocialMedia;
 import org.shpytchuk.ingest.pipeline.Notice;
 import org.shpytchuk.ingest.place.ResolvedPlace;
+import org.shpytchuk.ingest.source.AuthorProfile;
 import org.shpytchuk.ingest.source.IncomingPost;
 
 import java.math.BigDecimal;
@@ -19,6 +20,8 @@ public final class Outputs {
 
     public static final String PHONE = "+380671234567";
     public static final String PHONE_HASH = "a".repeat(64);
+    public static final AuthorProfile PROFILE =
+            new AuthorProfile(SocialMedia.TELEGRAM, "@finder", "https://t.me/finder");
 
     private Outputs() {
     }
@@ -30,8 +33,14 @@ public final class Outputs {
 
     public static Notice notice(byte @Nullable [] photo) {
         return new Notice(ItemKind.FOUND, "Гаманець", "Чорний шкіряний гаманець", LocalDate.of(2026, 10, 10), null,
-                2L, new ResolvedPlace("gp-1", "вул. Наукова", 49.8, 24.0, "UA"), PHONE,
+                2L, new ResolvedPlace("gp-1", "вул. Наукова", 49.8, 24.0, "UA"), PHONE, null,
                 List.of(SocialMedia.VIBER), photo, PHONE_HASH);
+    }
+
+    public static Notice profileNotice() {
+        return new Notice(ItemKind.FOUND, "Гаманець", "Чорний шкіряний гаманець", LocalDate.of(2026, 10, 10), null,
+                2L, new ResolvedPlace("gp-1", "вул. Наукова", 49.8, 24.0, "UA"), null, PROFILE,
+                List.of(SocialMedia.TELEGRAM), null, PHONE_HASH);
     }
 
     public static ExtractionResult result() {

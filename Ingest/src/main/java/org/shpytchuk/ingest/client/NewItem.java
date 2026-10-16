@@ -18,6 +18,8 @@ public record NewItem(
         @Nullable String imageKey,
         long categoryId,
         ResolvedPlace place,
-        String phone,
+        @Nullable String phone,
+        @Nullable String nickName,
+        @Nullable String profileUrl,
         List<SocialMedia> socialMedias) {
 }

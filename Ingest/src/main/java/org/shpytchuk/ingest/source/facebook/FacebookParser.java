@@ -3,6 +3,7 @@ package org.shpytchuk.ingest.source.facebook;
 import org.jspecify.annotations.Nullable;
 import org.shpytchuk.ingest.exception.IngestException;
 import org.shpytchuk.ingest.exception.StageUnavailableException;
+import org.shpytchuk.ingest.source.AuthorProfile;
 import org.shpytchuk.ingest.source.PhotoRef;
 import org.springframework.web.util.HtmlUtils;
 import tools.jackson.core.JacksonException;
@@ -15,9 +16,11 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 class FacebookParser {
 
@@ -31,6 +34,9 @@ class FacebookParser {
     private static final Pattern FB_DTSG = Pattern.compile("\"DTSGInitialData\",\\[],\\{\"token\":\"([^\"]+)\"");
     private static final Pattern LSD = Pattern.compile("\"LSD\",\\[],\\{\"token\":\"([^\"]+)\"");
     private static final Pattern CHECKPOINTED = Pattern.compile("\"is_checkpointed\":true");
+    private static final Pattern PROFILE_URL = Pattern.compile("https://(?:[\\w-]+\\.)*facebook\\.com/[^?#\\s]+");
+    private static final Pattern PROFILE_ID = Pattern.compile("[?&]id=(\\d+)");
+    private static final String PROFILE_PHP = "/profile.php";
     private static final String ANONYMOUS = "0";
     private static final String ERROR_PREFIX = "for (;;);";
     private static final String FEED_PAGE_INFO_LABEL = "group_feed$page_info";
@@ -124,6 +130,19 @@ class FacebookParser {
         return CHECKPOINTED.matcher(html).find() ? new FacebookActionRequiredException(FacebookActionRequiredException.CHECKPOINT) : new IngestException(problem);
     }
 
+    static @Nullable String profileUrl(String url) {
+        Matcher base = PROFILE_URL.matcher(url);
+        if (!base.lookingAt()) {
+            return null;
+        }
+        String profile = base.group();
+        if (profile.endsWith(PROFILE_PHP)) {
+            Matcher id = PROFILE_ID.matcher(url.substring(profile.length()).split("#", 2)[0]);
+            profile = id.find() ? profile + "?id=" + id.group(1) : null;
+        }
+        return profile != null && profile.length() <= AuthorProfile.PROFILE_URL_MAX ? profile : null;
+    }
+
     private static Optional<String> find(Pattern pattern, String text) {
         Matcher matcher = pattern.matcher(text);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
@@ -181,7 +200,30 @@ class FacebookParser {
             String text = node.path("comet_sections").path("content").path("story").path("message").path("text")
                     .asString("");
             return new FacebookStory(node.path("post_id").asString(),
-                    Instant.ofEpochSecond(node.path("creation_time").asLong()), text, photos(node.path("attachments")));
+                    Instant.ofEpochSecond(node.path("creation_time").asLong()), text, photos(node.path("attachments")),
+                    actor(node));
+        }
+
+        private static @Nullable FacebookActor actor(JsonNode story) {
+            JsonNode sections = story.path("comet_sections");
+            return Stream.of(
+                            sections.path("context_layout").path("story").path("comet_sections").path("actor_photo")
+                                    .path("story").path("actors").path(0),
+                            sections.path("content").path("story").path("actors").path(0),
+                            story.path("actors").path(0))
+                    .map(Feed::actorOf)
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .orElse(null);
+        }
+
+        private static @Nullable FacebookActor actorOf(JsonNode actor) {
+            String name = actor.path("name").asString("").strip();
+            String url = profileUrl(actor.path("profile_url").asString(""));
+            if (url == null) {
+                url = profileUrl(actor.path("url").asString(""));
+            }
+            return name.isEmpty() || url == null ? null : new FacebookActor(name, url);
         }
 
         private static List<PhotoRef> photos(JsonNode attachments) {

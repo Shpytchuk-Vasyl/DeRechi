@@ -14,12 +14,15 @@ import org.shpytchuk.ingest.image.RedactedImage;
 import org.shpytchuk.ingest.image.RedactionMode;
 import org.shpytchuk.ingest.model.ItemKind;
 import org.shpytchuk.ingest.model.Outcome;
+import org.shpytchuk.ingest.model.SocialMedia;
 import org.shpytchuk.ingest.phone.*;
 import org.shpytchuk.ingest.place.PlaceResolver;
 import org.shpytchuk.ingest.place.ResolvedPlace;
 import org.shpytchuk.ingest.publish.Publishers;
+import org.shpytchuk.ingest.source.AuthorProfile;
 import org.shpytchuk.ingest.source.IncomingPost;
 import org.shpytchuk.ingest.source.PhotoRef;
+import org.shpytchuk.ingest.source.PostSource;
 import org.shpytchuk.ingest.source.PostSources;
 import org.springframework.stereotype.Service;
 
@@ -77,23 +80,29 @@ public class IngestPipeline {
          String region = post.settings().region();
         List<FoundPhone> phones = phoneExtractor.find(post.text(), region);
         String authorPhone = null;
+        AuthorProfile authorProfile = null;
         if (phones.isEmpty()) {
-            authorPhone = sources.of(post).authorPhone(post).orElse(null);
-            if (authorPhone == null) {
+            PostSource source = sources.of(post);
+            authorPhone = source.authorPhone(post).orElse(null);
+            authorProfile = authorPhone == null ? source.authorProfile(post).orElse(null) : null;
+            if (authorPhone != null) {
+                metrics.phoneSource("author");
+                log.debug("Post {} phone: the author's", post.key());
+            } else if (authorProfile != null) {
+                metrics.phoneSource("profile");
+                log.debug("Post {} contact: the author's {} profile", post.key(), authorProfile.network());
+            } else {
                 metrics.outcome(Outcome.NO_PHONE);
-                log.debug("Post {} has no phone number", post.key());
+                log.debug("Post {} has no phone number and no author profile", post.key());
                 return;
             }
-            metrics.phoneSource("author");
-            log.debug("Post {} phone: the author's", post.key());
         } else {
             metrics.phoneSource("text");
             log.debug("Post {} phone: {} in the text", post.key(), phones.size());
         }
 
         // =========== step: skip duplicates ===========
-        List<String> candidates = authorPhone != null ? List.of(authorPhone) : phones.stream().map(FoundPhone::e164).distinct().toList();
-        List<String> hashes = candidates.stream().map(hasher::hash).toList();
+        List<String> hashes = contacts(phones, authorPhone, authorProfile).stream().map(hasher::hash).toList();
         if (ledger.duplicate(hashes, properties.duplicateWindow())) {
             finish(post, Outcome.DUPLICATE, hashes.getFirst());
             return;
@@ -125,12 +134,12 @@ public class IngestPipeline {
                 extraction.kind(), extraction.category(), extraction.confidence());
 
         // =========== step: check the extraction ===========
-        ExtractionDecision decision = policy.evaluate(extraction, masked, authorPhone, post.settings());
+        ExtractionDecision decision = policy.evaluate(extraction, masked, authorPhone, authorProfile, post.settings());
         if (decision.skipped()) {
             skip(post, decision.skipOutcome(), hashes.getFirst(), result, photos);
             return;
         }
-        String phoneHash = hasher.hash(decision.contactPhone());
+        String phoneHash = hasher.hash(authorProfile != null ? authorProfile.contactKey() : decision.contactPhone());
 
         // =========== step: check category, date and photo ===========
         Long categoryId = categories.getOrDefault(extraction.category(), categories.get(OTHER_CATEGORY));
@@ -171,10 +180,29 @@ public class IngestPipeline {
         Notice notice = new Notice(extraction.kind(), Notices.cut(extraction.title(), Notices.TITLE_MAX),
                 Notices.cut(extraction.description(), Notices.DESCRIPTION_MAX), date,
                 Notices.compensation(extraction.compensation()), categoryId, place, decision.contactPhone(),
-                Notices.socialMedias(extraction.socialMedias(), authorPhone != null),
-                publicPhoto(photos, document), phoneHash);
+                authorProfile, socialMedias(extraction, authorPhone, authorProfile), publicPhoto(photos, document),
+                phoneHash);
 
         publishers.publish(post, notice, result, redacted(photos));
+    }
+
+    private static List<String> contacts(List<FoundPhone> phones, @Nullable String authorPhone,
+                                         @Nullable AuthorProfile authorProfile) {
+        if (authorProfile != null) {
+            return List.of(authorProfile.contactKey());
+        }
+        if (authorPhone != null) {
+            return List.of(authorPhone);
+        }
+        return phones.stream().map(FoundPhone::e164).distinct().toList();
+    }
+
+    private static List<SocialMedia> socialMedias(Extraction extraction, @Nullable String authorPhone,
+                                                  @Nullable AuthorProfile authorProfile) {
+        if (authorProfile != null) {
+            return List.of(authorProfile.network());
+        }
+        return Notices.socialMedias(extraction.socialMedias(), authorPhone != null);
     }
 
     private @Nullable ResolvedPlace place(IncomingPost post, Extraction extraction) {
