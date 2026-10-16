@@ -54,6 +54,14 @@ public final class Fixtures {
         return info;
     }
 
+    public static ContactInfo nickName(SocialMediaEnum network, String nickName, String profileUrl) {
+        ContactInfo info = new ContactInfo();
+        info.setNickName(nickName);
+        info.setProfileUrl(profileUrl);
+        info.setSocialMedias(new SocialMediaEnum[]{network});
+        return info;
+    }
+
     public static <T extends Thing, C extends Claim<T>> C claim(C claim, T item, ContactInfo claimant, Instant createdAt) {
         claim.setItem(item);
         claim.setContactInfo(claimant);

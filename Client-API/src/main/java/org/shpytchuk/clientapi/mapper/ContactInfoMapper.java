@@ -19,10 +19,13 @@ public final class ContactInfoMapper {
     }
 
     public static ContactInfo toEntity(ItemContactInfoInput input) {
-        return toEntity(input.phone(), StringUtils.hasText(input.email()) ? input.email() : null, input.socialMedias());
+        ContactInfo info = toEntity(input.phone(), StringUtils.hasText(input.email()) ? input.email() : null, input.socialMedias());
+        info.setNickName(input.nickName());
+        info.setProfileUrl(input.profileUrl());
+        return info;
     }
 
-    private static ContactInfo toEntity(String phone, @Nullable String email, @Nullable List<SocialMediaEnum> socialMedias) {
+    private static ContactInfo toEntity(@Nullable String phone, @Nullable String email, @Nullable List<SocialMediaEnum> socialMedias) {
         ContactInfo info = new ContactInfo();
         info.setPhone(phone);
         info.setEmail(email);

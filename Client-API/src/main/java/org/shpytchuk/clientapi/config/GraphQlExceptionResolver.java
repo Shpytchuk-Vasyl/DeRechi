@@ -8,6 +8,7 @@ import jakarta.validation.ConstraintViolationException;
 import graphql.ErrorClassification;
 import lombok.extern.slf4j.Slf4j;
 import org.shpytchuk.clientapi.anotation.NotDisposableEmail;
+import org.shpytchuk.clientapi.exeption.AuthorUnreachableException;
 import org.shpytchuk.clientapi.exeption.ContactErrorType;
 import org.shpytchuk.clientapi.exeption.NotFoundException;
 import org.shpytchuk.clientapi.exeption.PaymentErrorType;
@@ -17,6 +18,7 @@ import org.springframework.graphql.execution.DataFetcherExceptionResolverAdapter
 import org.springframework.graphql.execution.ErrorType;
 import org.springframework.stereotype.Component;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -40,6 +42,11 @@ public class GraphQlExceptionResolver extends DataFetcherExceptionResolverAdapte
                     .message(e.getMessage())
                     .extensions(Map.of("retryAfter", e.getRetryAfter().toString()))
                     .build();
+            case AuthorUnreachableException e -> GraphqlErrorBuilder.newError(env)
+                    .errorType(ContactErrorType.AUTHOR_UNREACHABLE)
+                    .message(e.getMessage())
+                    .extensions(authorContacts(e))
+                    .build();
             case ConstraintViolationException e when isDisposableEmail(e) ->
                     error(ContactErrorType.DISPOSABLE_EMAIL, describe(e), env);
             case ConstraintViolationException e -> error(ErrorType.BAD_REQUEST, describe(e), env);
@@ -53,6 +60,14 @@ public class GraphQlExceptionResolver extends DataFetcherExceptionResolverAdapte
                 .errorType(type)
                 .message(message)
                 .build();
+    }
+
+    private static Map<String, Object> authorContacts(AuthorUnreachableException ex) {
+        Map<String, Object> extensions = new LinkedHashMap<>();
+        extensions.put("socialMedia", ex.getSocialMedia() == null ? null : ex.getSocialMedia().name());
+        extensions.put("nickName", ex.getNickName());
+        extensions.put("profileUrl", ex.getProfileUrl());
+        return extensions;
     }
 
     private static boolean isDisposableEmail(ConstraintViolationException ex) {

@@ -25,6 +25,7 @@ public class ClaimUnlockService {
         ClaimService<?, ?> service = claimServices.of(kind);
         ClaimDto claim = service.find(itemId, claimId)
                 .orElseThrow(() -> new NotFoundException(kind.claimEntityName(), claimId));
+        service.requireAuthorPhone(itemId);
         if (claim.paid() || claim.paymentVariantId() != null) {
             return claim;
         }

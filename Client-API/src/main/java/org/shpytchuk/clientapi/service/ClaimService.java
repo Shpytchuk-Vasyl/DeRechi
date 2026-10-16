@@ -7,8 +7,10 @@ import org.shpytchuk.clientapi.dto.ClaimDto;
 import org.shpytchuk.clientapi.entity.Claim;
 import org.shpytchuk.clientapi.entity.ItemKind;
 import org.shpytchuk.clientapi.entity.detail.ContactInfo;
+import org.shpytchuk.clientapi.entity.detail.ContactInfo.SocialMediaEnum;
 import org.shpytchuk.clientapi.entity.payment.FourthwallOrder;
 import org.shpytchuk.clientapi.entity.thing.Thing;
+import org.shpytchuk.clientapi.exeption.AuthorUnreachableException;
 import org.shpytchuk.clientapi.exeption.NotFoundException;
 import org.shpytchuk.clientapi.input.ContactInfoInput;
 import org.shpytchuk.clientapi.mapper.ClaimMapper;
@@ -44,7 +46,12 @@ public abstract class ClaimService<T extends Thing, C extends Claim<T>> {
 
     @Transactional
     public ClaimDto claim(Long itemId, ContactInfoInput contact) {
-        T item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(kind.entityName(), itemId));
+        T item = findItem(itemId);
+        ContactInfo author = item.getInfo();
+        if (author.getPhone() == null && author.getEmail() == null) {
+            log.info("Claim on {} item {} refused: the author left neither phone nor email", kind.label(), itemId);
+            throw unreachable(author);
+        }
 
         Optional<C> repeat = claimRepository.findFirstByItemIdAndContactInfoPhoneOrderByIdAsc(itemId, contact.phone())
                 .or(() -> claimRepository.findFirstByItemIdAndContactInfoEmailIgnoreCaseOrderByIdAsc(itemId, contact.email()));
@@ -97,6 +104,15 @@ public abstract class ClaimService<T extends Thing, C extends Claim<T>> {
 
     public abstract Optional<C> claimOf(FourthwallOrder order);
 
+    @Transactional(readOnly = true)
+    public void requireAuthorPhone(Long itemId) {
+        ContactInfo author = findItem(itemId).getInfo();
+        if (author.getPhone() == null) {
+            log.info("Checkout on {} item {} refused: the author left no phone", kind.label(), itemId);
+            throw unreachable(author);
+        }
+    }
+
     @Transactional
     public void reserveCheckout(Long claimId) {
         C claim = claimRepository.findWithContactInfoById(claimId)
@@ -133,6 +149,16 @@ public abstract class ClaimService<T extends Thing, C extends Claim<T>> {
             claimRepository.save(claim);
         }
         return ClaimMapper.toDto(claim, false);
+    }
+
+    private T findItem(Long itemId) {
+        return itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(kind.entityName(), itemId));
+    }
+
+    private static AuthorUnreachableException unreachable(ContactInfo author) {
+        SocialMediaEnum[] networks = author.getSocialMedias();
+        SocialMediaEnum network = networks == null || networks.length == 0 ? null : networks[0];
+        return new AuthorUnreachableException(network, author.getNickName(), author.getProfileUrl());
     }
 
     private ClaimDto stampOnce(C claim, Function<C, Instant> stamp, BiConsumer<C, Instant> setStamp) {

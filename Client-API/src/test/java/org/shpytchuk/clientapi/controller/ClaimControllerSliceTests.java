@@ -5,6 +5,8 @@ import org.shpytchuk.clientapi.config.FourthwallProperties;
 import org.shpytchuk.clientapi.config.GraphQlConfig;
 import org.shpytchuk.clientapi.config.GraphQlExceptionResolver;
 import org.shpytchuk.clientapi.dto.ClaimDto;
+import org.shpytchuk.clientapi.entity.detail.ContactInfo.SocialMediaEnum;
+import org.shpytchuk.clientapi.exeption.AuthorUnreachableException;
 import org.shpytchuk.clientapi.exeption.ContactErrorType;
 import org.shpytchuk.clientapi.service.ReturnService;
 import org.shpytchuk.clientapi.service.found.FoundClaimService;
@@ -78,6 +80,24 @@ class ClaimControllerSliceTests {
 
         claim("olena@example.com")
                 .path("claimLostItem.id").entity(Long.class).isEqualTo(7L);
+    }
+
+    @Test
+    void answersAnUnreachableAuthorWithTheNickNameInTheExtensions() {
+        when(lostClaimService.claim(anyLong(), any()))
+                .thenThrow(new AuthorUnreachableException(SocialMediaEnum.FACEBOOK, "Olena Petrenko", null));
+
+        claim("olena@example.com")
+                .errors()
+                .satisfy(errors -> {
+                    assertThat(errors).hasSize(1);
+                    assertThat(errors.getFirst().getErrorType()).isEqualTo(ContactErrorType.AUTHOR_UNREACHABLE);
+                    assertThat(errors.getFirst().getPath()).isEqualTo("claimLostItem");
+                    assertThat(errors.getFirst().getExtensions())
+                            .containsEntry("socialMedia", "FACEBOOK")
+                            .containsEntry("nickName", "Olena Petrenko")
+                            .containsEntry("profileUrl", null);
+                });
     }
 
     private GraphQlTester.Response claim(String email) {

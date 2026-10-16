@@ -14,6 +14,7 @@ import org.shpytchuk.clientapi.entity.lost.LostItemClaim;
 import org.shpytchuk.clientapi.entity.detail.Place;
 import org.shpytchuk.clientapi.entity.thing.Thing;
 import org.shpytchuk.clientapi.event.ClaimEvent;
+import org.shpytchuk.clientapi.exeption.ContactErrorType;
 import org.shpytchuk.clientapi.exeption.PaymentErrorType;
 import org.shpytchuk.clientapi.exeption.PaymentUnavailableException;
 import org.shpytchuk.clientapi.repository.detail.ContactInfoRepository;
@@ -52,6 +53,8 @@ class ClaimControllerTests extends AbstractGraphQlTests {
     private static final String NOTICE_STATUS = "notice.status.exchange";
     private static final String PHONE = "+48501234567";
     private static final String EMAIL = "claimant@example.com";
+    private static final String NICK_NAME = "@olena";
+    private static final String PROFILE = "https://t.me/olena";
 
     private static final String CLAIM_LOST = """
             mutation Claim($id: ID!, $contact: ContactInfoInput!) {
@@ -286,6 +289,61 @@ class ClaimControllerTests extends AbstractGraphQlTests {
     }
 
     @Test
+    void answersAClaimOnALostNoticeKnownOnlyByANickNameWithItAndStoresNothing() {
+        Long itemId = lostItem("ChIJrynok", Fixtures.nickName(SocialMediaEnum.TELEGRAM, NICK_NAME, PROFILE)).getId();
+
+        GraphQlTester.Response response = claimLost(itemId, claimant(PHONE, EMAIL));
+
+        expectAuthorUnreachable(response, "TELEGRAM", NICK_NAME, PROFILE);
+        response.path("claimLostItem").valueIsNull();
+        assertThat(lostClaimRepository.findAll()).isEmpty();
+        assertThat(contactInfoRepository.count()).isEqualTo(1);
+        verify(rabbitTemplate, never()).convertAndSend(any(String.class), any(String.class), any(Object.class));
+    }
+
+    @Test
+    void answersAClaimOnAFoundNoticeKnownOnlyByAFacebookNameWithoutALink() {
+        Long itemId = foundItem("ChIJrynok", Fixtures.nickName(SocialMediaEnum.FACEBOOK, "Olena Petrenko", null)).getId();
+
+        expectAuthorUnreachable(claimFound(itemId, claimant(PHONE, EMAIL)), "FACEBOOK", "Olena Petrenko", null);
+
+        assertThat(foundClaimRepository.findAll()).isEmpty();
+        assertThat(contactInfoRepository.count()).isEqualTo(1);
+        verify(rabbitTemplate, never()).convertAndSend(any(String.class), any(String.class), any(Object.class));
+    }
+
+    @Test
+    void answersARepeatWithTheNickNameOnceTheAuthorHasNoPhoneOrEmailLeft() {
+        LostItem item = lostItem("ChIJrynok");
+        Long first = claimLostId(item.getId(), claimant(PHONE, EMAIL));
+        ContactInfo author = item.getInfo();
+        author.setPhone(null);
+        author.setEmail(null);
+        author.setNickName(NICK_NAME);
+        author.setProfileUrl(PROFILE);
+        author.setSocialMedias(new SocialMediaEnum[]{SocialMediaEnum.TELEGRAM});
+        contactInfoRepository.save(author);
+
+        expectAuthorUnreachable(claimLost(item.getId(), claimant(PHONE, EMAIL)), "TELEGRAM", NICK_NAME, PROFILE);
+
+        assertThat(lostClaimRepository.findAll()).extracting(LostItemClaim::getId).containsExactly(first);
+        verify(rabbitTemplate, times(1))
+                .convertAndSend(eq(CLAIMS), eq("claim.lost.claimed"), any(ClaimEvent.class));
+    }
+
+    @Test
+    void claimsANoticeWithoutAPhoneThroughTheAuthorsEmail() {
+        Long itemId = lostItem("ChIJrynok", nickNameWithEmail()).getId();
+
+        Long claimId = claimLost(itemId, claimant(PHONE, EMAIL))
+                .path("claimLostItem.repeated").entity(Boolean.class).isEqualTo(false)
+                .path("claimLostItem.id").entity(Long.class).get();
+
+        assertThat(lostClaimRepository.findById(claimId)).isPresent();
+        assertThat(published(CLAIMS, "claim.lost.claimed").id()).isEqualTo(claimId);
+    }
+
+    @Test
     void confirmsTheReturnOfALostItem() {
         Long claimId = claimLostId(lostItem("ChIJrynok").getId(), claimant(PHONE, EMAIL));
         String token = lostClaimRepository.findById(claimId).orElseThrow().getToken();
@@ -489,6 +547,30 @@ class ClaimControllerTests extends AbstractGraphQlTests {
         LostItemClaim stored = lostClaimRepository.findById(claimId).orElseThrow();
         assertThat(stored.getPaymentVariantId()).isNull();
         assertThat(stored.getPaymentRequestedAt()).isNull();
+    }
+
+    @Test
+    void refusesToUnlockALostClaimWhenTheAuthorLeftNoPhoneAndCallsNoFourthwall() {
+        Long itemId = lostItem("ChIJrynok", nickNameWithEmail()).getId();
+        Long claimId = claimLostId(itemId, claimant(PHONE, EMAIL));
+
+        expectAuthorUnreachable(unlockLost(itemId, claimId), "TELEGRAM", NICK_NAME, PROFILE);
+
+        verify(fourthwall, never()).createDigitalProduct(any(), any(), any());
+        LostItemClaim stored = lostClaimRepository.findById(claimId).orElseThrow();
+        assertThat(stored.getPaymentRequestedAt()).isNull();
+        assertThat(stored.getPaymentVariantId()).isNull();
+    }
+
+    @Test
+    void refusesToUnlockAFoundClaimWhenTheAuthorLeftNoPhone() {
+        Long itemId = foundItem("ChIJrynok", nickNameWithEmail()).getId();
+        Long claimId = claimFoundId(itemId, claimant(PHONE, EMAIL));
+
+        expectAuthorUnreachable(unlockFound(itemId, claimId), "TELEGRAM", NICK_NAME, PROFILE);
+
+        verify(fourthwall, never()).createDigitalProduct(any(), any(), any());
+        assertThat(foundClaimRepository.findById(claimId).orElseThrow().getPaymentRequestedAt()).isNull();
     }
 
     @Test
@@ -706,17 +788,42 @@ class ClaimControllerTests extends AbstractGraphQlTests {
                 "socialMedias", List.of("VIBER", "WHATSAPP"));
     }
 
+    private static void expectAuthorUnreachable(GraphQlTester.Response response, String socialMedia,
+                                                String nickName, String profileUrl) {
+        response.errors().satisfy(errors -> {
+            assertThat(errors).hasSize(1);
+            assertThat(errors.getFirst().getErrorType()).isEqualTo(ContactErrorType.AUTHOR_UNREACHABLE);
+            Map<String, Object> extensions = errors.getFirst().getExtensions();
+            assertThat(extensions.get("socialMedia")).isEqualTo(socialMedia);
+            assertThat(extensions.get("nickName")).isEqualTo(nickName);
+            assertThat(extensions.get("profileUrl")).isEqualTo(profileUrl);
+        });
+    }
+
+    private static ContactInfo nickNameWithEmail() {
+        ContactInfo author = Fixtures.nickName(SocialMediaEnum.TELEGRAM, NICK_NAME, PROFILE);
+        author.setEmail("finder@example.com");
+        return author;
+    }
+
     private LostItem lostItem(String placeId) {
-        return lostItemRepository.save(item(new LostItem(), placeId));
+        return lostItem(placeId, Fixtures.contact());
+    }
+
+    private LostItem lostItem(String placeId, ContactInfo author) {
+        return lostItemRepository.save(item(new LostItem(), placeId, author));
     }
 
     private FoundItem foundItem(String placeId) {
-        return foundItemRepository.save(item(new FoundItem(), placeId));
+        return foundItem(placeId, Fixtures.contact());
     }
 
-    private <T extends Thing> T item(T item, String placeId) {
+    private FoundItem foundItem(String placeId, ContactInfo author) {
+        return foundItemRepository.save(item(new FoundItem(), placeId, author));
+    }
+
+    private <T extends Thing> T item(T item, String placeId, ContactInfo author) {
         Place place = placeRepository.save(Fixtures.place(placeId, "Площа Ринок", 49.8419, 24.0315));
-        ContactInfo author = contactInfoRepository.save(Fixtures.contact());
-        return Fixtures.item(item, "Ключі", LocalDate.now(), documents, place, author);
+        return Fixtures.item(item, "Ключі", LocalDate.now(), documents, place, contactInfoRepository.save(author));
     }
 }

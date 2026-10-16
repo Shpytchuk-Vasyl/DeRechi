@@ -6,12 +6,15 @@ import org.shpytchuk.clientapi.entity.detail.ContactInfo;
 import org.shpytchuk.clientapi.entity.detail.ContactInfo.SocialMediaEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.shpytchuk.clientapi.support.Fixtures.contact;
+import static org.shpytchuk.clientapi.support.Fixtures.nickName;
 
 class ContactInfoRepositoryTests extends AbstractRepositoryTests {
 
@@ -66,6 +69,41 @@ class ContactInfoRepositoryTests extends AbstractRepositoryTests {
         assertThat(contactInfoRepository.findById(saved.getId()).orElseThrow().getSocialMedias())
                 .containsExactly(
                         SocialMediaEnum.WHATSAPP, SocialMediaEnum.TELEGRAM, SocialMediaEnum.VIBER);
+    }
+
+    @Test
+    void storesAContactKnownOnlyByANickNameInFacebook() {
+        ContactInfo saved = contactInfoRepository.save(
+                nickName(SocialMediaEnum.FACEBOOK, "Olena Petrenko", "https://www.facebook.com/olena.petrenko"));
+        entityManager.flush();
+        entityManager.clear();
+
+        ContactInfo found = contactInfoRepository.findById(saved.getId()).orElseThrow();
+
+        assertThat(found.getPhone()).isNull();
+        assertThat(found.getEmail()).isNull();
+        assertThat(found.getNickName()).isEqualTo("Olena Petrenko");
+        assertThat(found.getProfileUrl()).isEqualTo("https://www.facebook.com/olena.petrenko");
+        assertThat(found.getSocialMedias()).containsExactly(SocialMediaEnum.FACEBOOK);
+        assertThat(SocialMediaEnum.FACEBOOK.ordinal()).as("appended after WHATSAPP, never reordered").isEqualTo(3);
+    }
+
+    @Test
+    void refusesAPhonelessContactWithANickNameInTwoNetworks() {
+        ContactInfo contact = nickName(SocialMediaEnum.TELEGRAM, "@olena", null);
+        contact.setSocialMedias(new SocialMediaEnum[]{SocialMediaEnum.TELEGRAM, SocialMediaEnum.FACEBOOK});
+
+        assertThatThrownBy(() -> contactInfoRepository.saveAndFlush(contact))
+                .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
+    void refusesAPhonelessContactWithoutANickName() {
+        ContactInfo contact = nickName(SocialMediaEnum.TELEGRAM, null, null);
+        contact.setEmail("finder@example.com");
+
+        assertThatThrownBy(() -> contactInfoRepository.saveAndFlush(contact))
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test

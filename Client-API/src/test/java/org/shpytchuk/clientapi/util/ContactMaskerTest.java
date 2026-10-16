@@ -3,7 +3,6 @@ package org.shpytchuk.clientapi.util;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 class ContactMaskerTest {
 
@@ -48,9 +47,7 @@ class ContactMaskerTest {
 
     @Test
     void passesNullThrough() {
-        assertThatExceptionOfType(NullPointerException.class)
-                .isThrownBy(() -> ContactMasker.maskPhone(null));
-        assertThatExceptionOfType(NullPointerException.class)
-                .isThrownBy(() -> ContactMasker.maskEmail(null));
+        assertThat(ContactMasker.maskPhone(null)).isNull();
+        assertThat(ContactMasker.maskEmail(null)).isNull();
     }
 }

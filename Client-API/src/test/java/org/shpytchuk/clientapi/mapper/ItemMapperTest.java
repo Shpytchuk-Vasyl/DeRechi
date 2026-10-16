@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.shpytchuk.clientapi.dto.ContactInfoDto;
 import org.shpytchuk.clientapi.dto.ItemDto;
 import org.shpytchuk.clientapi.entity.detail.ContactInfo;
 import org.shpytchuk.clientapi.entity.lost.LostItem;
@@ -50,6 +51,20 @@ class ItemMapperTest {
         item.getInfo().setEmail(null);
 
         assertThat(ItemMapper.toDto(item).contact().email()).isNull();
+    }
+
+    @Test
+    void leavesAMissingPhoneNullAndKeepsTheNickNameOut() {
+        LostItem item = item(point(49.8419, 24.0315));
+        item.getInfo().setPhone(null);
+        item.getInfo().setEmail(null);
+        item.getInfo().setNickName("@olena");
+        item.getInfo().setProfileUrl("https://t.me/olena");
+        item.getInfo().setSocialMedias(new ContactInfo.SocialMediaEnum[]{ContactInfo.SocialMediaEnum.TELEGRAM});
+
+        ContactInfoDto contact = ItemMapper.toDto(item).contact();
+
+        assertThat(contact).isEqualTo(new ContactInfoDto(4L, null, null));
     }
 
     @Test

@@ -1,6 +1,7 @@
 package org.shpytchuk.clientapi.controller;
 
 import org.junit.jupiter.api.Test;
+import org.shpytchuk.clientapi.entity.detail.ContactInfo;
 import org.shpytchuk.clientapi.entity.detail.ContactInfo.SocialMediaEnum;
 import org.shpytchuk.clientapi.entity.lost.LostItem;
 import org.shpytchuk.clientapi.event.ItemCreatedEvent;
@@ -271,6 +272,97 @@ class LostItemControllerTests extends AbstractGraphQlTests {
     }
 
     @Test
+    void createsAnItemWhoseAuthorIsKnownOnlyByANickName() {
+        Map<String, Object> input = input("Ключі", documents.getId());
+        input.put("contact", nickNameContact(List.of("TELEGRAM"), " @olena ", "https://t.me/olena"));
+
+        Long id = tester.document(CREATE)
+                .variable("input", input)
+                .execute()
+                .path("createLostItem.contact.phone").valueIsNull()
+                .path("createLostItem.contact.email").valueIsNull()
+                .path("createLostItem.id").entity(Long.class).get();
+
+        ContactInfo stored = lostItemRepository.findWithDetailsById(id).orElseThrow().getInfo();
+        assertThat(stored.getPhone()).isNull();
+        assertThat(stored.getEmail()).isNull();
+        assertThat(stored.getNickName()).isEqualTo("@olena");
+        assertThat(stored.getProfileUrl()).isEqualTo("https://t.me/olena");
+        assertThat(stored.getSocialMedias()).containsExactly(SocialMediaEnum.TELEGRAM);
+    }
+
+    @Test
+    void createsAnItemWithAFacebookNameAndNoProfileLink() {
+        Map<String, Object> input = input("Ключі", documents.getId());
+        input.put("contact", Map.of("socialMedias", List.of("FACEBOOK"), "nickName", "Olena Petrenko"));
+
+        Long id = tester.document(CREATE)
+                .variable("input", input)
+                .execute()
+                .path("createLostItem.id").entity(Long.class).get();
+
+        ContactInfo stored = lostItemRepository.findWithDetailsById(id).orElseThrow().getInfo();
+        assertThat(stored.getNickName()).isEqualTo("Olena Petrenko");
+        assertThat(stored.getProfileUrl()).isNull();
+        assertThat(stored.getSocialMedias()).containsExactly(SocialMediaEnum.FACEBOOK);
+    }
+
+    @Test
+    void keepsTheNickNameAndTheProfileLinkOutOfTheApi() {
+        Long id = createKeys();
+
+        tester.document("""
+                        query Read($id: ID!) {
+                          lostItem(id: $id) { contact { nickName profileUrl } }
+                        }
+                        """)
+                .variable("id", id)
+                .execute()
+                .errors()
+                .satisfy(errors -> assertThat(errors).extracting(error -> error.getMessage())
+                        .anySatisfy(message -> assertThat(message).contains("nickName"))
+                        .anySatisfy(message -> assertThat(message).contains("profileUrl")));
+    }
+
+    @Test
+    void rejectsANickNameInTwoNetworks() {
+        Map<String, Object> input = input("Ключі", documents.getId());
+        input.put("contact", nickNameContact(List.of("TELEGRAM", "FACEBOOK"), "@olena", "https://t.me/olena"));
+
+        expectBadRequest(input, "contact.socialMedias");
+        assertThat(lostItemRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    void rejectsAContactWithoutAPhoneOrANickName() {
+        Map<String, Object> input = input("Ключі", documents.getId());
+        input.put("contact", Map.of("email", "finder@example.com", "socialMedias", List.of("TELEGRAM")));
+
+        expectBadRequest(input, "contact.nickName");
+        assertThat(lostItemRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    void rejectsANickNameOverFiftyCharacters() {
+        Map<String, Object> input = input("Ключі", documents.getId());
+        input.put("contact", nickNameContact(List.of("FACEBOOK"), "a".repeat(51), "https://www.facebook.com/olena"));
+
+        expectBadRequest(input, "contact.nickName");
+        assertThat(lostItemRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    void rejectsAProfileLinkThatIsNotHttps() {
+        Map<String, Object> input = input("Ключі", documents.getId());
+        input.put("contact", nickNameContact(List.of("TELEGRAM"), "@olena", "http://t.me/olena"));
+
+        expectBadRequest(input, "contact.profileUrl");
+        assertThat(lostItemRepository.findAll()).isEmpty();
+        verify(rabbitTemplate, never())
+                .convertAndSend(any(String.class), any(String.class), any(Object.class));
+    }
+
+    @Test
     void rejectsInvalidEmail() {
         Map<String, Object> input = input("Ключі", documents.getId());
         input.put("contact", Map.of(
@@ -428,6 +520,10 @@ class LostItemControllerTests extends AbstractGraphQlTests {
                     assertThat(errors.getFirst().getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
                     assertThat(errors.getFirst().getMessage()).contains(expectedPath);
                 });
+    }
+
+    private static Map<String, Object> nickNameContact(List<String> socialMedias, String nickName, String profileUrl) {
+        return Map.of("socialMedias", socialMedias, "nickName", nickName, "profileUrl", profileUrl);
     }
 
     private Long createKeys() {

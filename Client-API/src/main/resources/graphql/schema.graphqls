@@ -4,6 +4,7 @@ enum SocialMedia {
     TELEGRAM
     VIBER
     WHATSAPP
+    FACEBOOK
 }
 
 enum ItemSort {
@@ -45,7 +46,8 @@ type Money {
 
 type ContactInfo {
     id: ID!
-    phone: String!
+    "masked; null when the author left only a nickname in one social network"
+    phone: String
     email: String
 }
 
@@ -123,10 +125,12 @@ input ContactInfoInput {
 }
 
 input ItemContactInfoInput {
-    "E.164 format, for example +380671234567"
-    phone: String!
+    "E.164 format, for example +380671234567; may be left out only with a nickName and exactly one socialMedias entry"
+    phone: String
     email: String
     socialMedias: [SocialMedia!]
+    nickName: String
+    profileUrl: String
 }
 
 input PlaceInput {
