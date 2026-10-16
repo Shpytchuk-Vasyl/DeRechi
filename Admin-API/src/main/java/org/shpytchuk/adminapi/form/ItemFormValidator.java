@@ -15,6 +15,7 @@ public class ItemFormValidator implements Validator {
 
     static final String COUNTRY_CODE = "validation.country";
     static final String CURRENCY_CODE = "validation.currency";
+    static final String COMPENSATION_CODE = "validation.compensation";
 
     private final CountriesProperties countries;
 
@@ -30,6 +31,10 @@ public class ItemFormValidator implements Validator {
         String country = form.getCountryCode();
         if (StringUtils.hasText(country) && !countries.supports(country)) {
             errors.rejectValue("countryCode", COUNTRY_CODE);
+        }
+
+        if (form.getRewardKind() == RewardKind.AMOUNT && (form.getCompensation() == null || form.getCompensation() < 1)) {
+            errors.rejectValue("compensation", COMPENSATION_CODE);
         }
 
         String currency = form.getCurrency();

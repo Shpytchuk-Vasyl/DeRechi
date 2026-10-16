@@ -62,7 +62,9 @@ public class CaptionBuilder {
                 .append("\n📍 ").append(escape(post.placeName()))
                 .append("\n📅 ").append(post.date().format(DATE));
         Money compensation = post.compensation();
-        if (compensation != null) {
+        if (compensation != null && compensation.amount() == 0) {
+            html.append("\n💰 ").append(text("channel.reward"));
+        } else if (compensation != null) {
             html.append("\n💰 ").append(text("channel.reward")).append(": ").append(compensation.amount());
             if (compensation.currency() != null) {
                 html.append(' ').append(escape(compensation.currency()));

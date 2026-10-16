@@ -51,8 +51,9 @@ class NoticesTest {
     }
 
     @Test
-    void compensationNeedsAPositiveAmountAndAnIsoCurrency() {
-        assertThat(Notices.compensation(new Money(0, "UAH"))).isNull();
+    void compensationKeepsZeroAsARewardByAgreementAndWantsAnIsoCurrency() {
+        assertThat(Notices.compensation(new Money(0, "UAH"))).isEqualTo(new Money(0, "UAH"));
+        assertThat(Notices.compensation(new Money(-1, "UAH"))).isNull();
         assertThat(Notices.compensation(new Money(500, "uah"))).isEqualTo(new Money(500, "UAH"));
         assertThat(Notices.compensation(new Money(500, "грн"))).isEqualTo(new Money(500, null));
         assertThat(Notices.compensation(null)).isNull();

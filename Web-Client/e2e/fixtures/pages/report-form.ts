@@ -130,8 +130,22 @@ export class ReportForm {
     })
   }
 
+  rewardKindSelect(): Locator {
+    return this.root().getByRole("combobox", { name: this.t("form.reward"), exact: true })
+  }
+
+  async rewardKind(kind: "none" | "negotiable" | "amount"): Promise<void> {
+    const label = {
+      none: this.t("form.rewardNone"),
+      negotiable: this.t("form.rewardNegotiable"),
+      amount: this.t("form.rewardAmount"),
+    }[kind]
+    await this.rewardKindSelect().click()
+    await this.page.getByRole("option", { name: label, exact: true }).click()
+  }
+
   reward(): Locator {
-    return this.root().getByLabel(this.t("form.reward"), { exact: true })
+    return this.root().getByLabel(this.t("form.rewardSum"), { exact: true })
   }
 
   currencySelect(): Locator {
@@ -162,7 +176,10 @@ export class ReportForm {
     reward?: number
     consent?: boolean
   }): Promise<void> {
-    if (values.reward !== undefined) await this.reward().fill(String(values.reward))
+    if (values.reward !== undefined) {
+      await this.rewardKind("amount")
+      await this.reward().fill(String(values.reward))
+    }
     await this.phone().fill(values.phone)
     if (values.email !== undefined) await this.email().fill(values.email)
     if (values.consent ?? true) await this.consent().check()

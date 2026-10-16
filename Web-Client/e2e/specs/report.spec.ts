@@ -169,6 +169,7 @@ test.describe("validation", () => {
     await form.fillStepDetails(noticeText(data, appLocale))
     await form.throughWhereWhen({ place: place.name })
 
+    await form.rewardKind("amount")
     await form.reward().fill("12a3")
     await expect(form.reward()).toHaveValue("123")
     await form.reward().fill("100000")
@@ -189,6 +190,29 @@ test.describe("validation", () => {
     await expect(form.error(t("form.error.consent"))).toHaveCount(0)
     await form.reward().fill("500")
     await expect(form.reward()).not.toHaveAccessibleDescription(t("form.error.rewardMax"))
+  })
+
+  test("step 2: an amount is asked for only when the reward is a sum", async ({
+    page,
+    go,
+    t,
+    shared,
+    data,
+    appLocale,
+  }) => {
+    const form = await openReportPage(page, go, t, "lost")
+    await form.fillStepDetails(noticeText(data, appLocale))
+    await form.throughWhereWhen({ place: shared.place.name })
+
+    await expect(form.rewardKindSelect()).toContainText(t("form.rewardNone"))
+    await expect(form.reward()).toHaveCount(0)
+    await form.rewardKind("negotiable")
+    await expect(form.reward()).toHaveCount(0)
+
+    await form.rewardKind("amount")
+    await form.publishButton().click()
+    await form.expectStep(2)
+    await expect(form.reward()).toHaveAccessibleDescription(t("form.error.required"))
   })
 })
 
@@ -413,6 +437,7 @@ test.describe("currency and phone follow the country", () => {
     await form.fillStepDetails(text)
     await form.throughWhereWhen({ place: place.name })
 
+    await form.rewardKind("amount")
     await expect(form.currencySelect()).toContainText("UAH")
     await form.phone().fill(nationalUaPhone(contact.phone))
     await form.phone().blur()
@@ -543,9 +568,12 @@ test.describe("live preview", () => {
 
     await form.next()
     await form.expectStep(2)
+    await form.rewardKind("amount")
     await form.reward().fill("500")
     const amount = await browserMoney(page, appLocale, 500, "UAH")
     await expect(preview.getByText(t("item.reward", { amount }), { exact: true })).toBeVisible()
+    await form.rewardKind("negotiable")
+    await expect(preview.getByText(t("item.rewardNegotiable"), { exact: true })).toBeVisible()
   })
 
   test("sits beside the form from 1024 px and under it below", {

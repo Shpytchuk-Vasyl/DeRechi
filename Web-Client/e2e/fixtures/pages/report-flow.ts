@@ -18,6 +18,7 @@ export type SavedDraft = {
     categoryId?: string
     place?: PlaceInput
     compensation?: number
+    rewardKind?: "none" | "negotiable" | "amount"
     currency?: string
     contact?: { phone?: string; email?: string; socialMedias?: string[] }
     consent?: boolean

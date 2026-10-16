@@ -9,7 +9,7 @@ import { NoticeCard } from "@/components/items/item-card"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/pouf/card"
 import { Heading } from "@/components/pouf/text"
 import { currencyOf } from "@/lib/intl/country"
-import type { ReportDraft } from "@/schema/report-schema"
+import { type ReportDraft, rewardKindOf } from "@/schema/report-schema"
 
 type Props = {
   kind: ItemKind
@@ -23,16 +23,18 @@ export default function PreviewAside({ kind, categories, photoUrl }: Props) {
   const viewer = useCountry()
   const { control } = useFormContext<ReportDraft>()
 
-  const [title, categoryId, place, date, compensation, currency] = useWatch({
+  const [title, categoryId, place, date, rewardKind, compensation, currency] = useWatch({
     control,
-    name: ["title", "categoryId", "place", "date", "compensation", "currency"],
+    name: ["title", "categoryId", "place", "date", "rewardKind", "compensation", "currency"],
   })
   const categoryKey = categories.find((category) => category.id === categoryId)?.key
+  const reward = rewardKindOf({ rewardKind, compensation })
+  const amount = reward === "negotiable" ? 0 : compensation
   const money =
-    compensation == null
+    reward === "none" || amount == null
       ? null
       : {
-          amount: compensation,
+          amount,
           currency: currency ?? currencyOf(viewer.countries, place?.countryCode) ?? viewer.currency,
         }
 

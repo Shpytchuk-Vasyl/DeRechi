@@ -65,3 +65,11 @@ const failed = (event) => {
 
 document.addEventListener('htmx:responseError', failed);
 document.addEventListener('htmx:sendError', failed);
+
+document.addEventListener('change', (event) => {
+    const kind = event.target.closest('[data-reward-kind]');
+    if (!kind) {
+        return;
+    }
+    kind.form.querySelector('[data-reward-amount]')?.classList.toggle('is-hidden', kind.value !== 'AMOUNT');
+});

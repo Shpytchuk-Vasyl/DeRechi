@@ -75,8 +75,26 @@ test.describe("full page", () => {
 })
 
 test.describe("reward", () => {
+  test("a reward of 0 reads as by agreement on the page and the card", async ({
+    page,
+    go,
+    t,
+    shared,
+  }) => {
+    const item = shared.items.lostNegotiableReward
+
+    await go(item.path)
+    const detail = new ItemPage(page, t, "lost")
+    await expect(detail.heading(item.title)).toBeVisible()
+    await expect(detail.rewardNegotiable()).toBeVisible()
+
+    await go(new ListPage(page, t, "lost").path({ search: shared.search.view }))
+    const card = new ItemCard(page, t).byTitle(item.title)
+    await expect(card).toBeVisible()
+    await expect(card.getByText(t("item.rewardNegotiable"), { exact: true })).toBeVisible()
+  })
+
   const without: { key: SharedItemKey; reward: string }[] = [
-    { key: "lostZeroReward", reward: "0" },
     { key: "lostNoReward", reward: "null" },
   ]
 

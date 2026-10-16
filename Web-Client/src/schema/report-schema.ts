@@ -31,6 +31,23 @@ export const ERROR_KEYS: ReadonlySet<string> = new Set([
 
 export const SOCIAL_MEDIA = ["TELEGRAM", "VIBER", "WHATSAPP"] as const
 
+export const REWARD_KINDS = ["none", "negotiable", "amount"] as const
+
+export type RewardKind = (typeof REWARD_KINDS)[number]
+
+export function rewardKindOf(values: {
+  rewardKind?: RewardKind
+  compensation?: number
+}): RewardKind {
+  return values.rewardKind ?? (values.compensation == null ? "none" : "amount")
+}
+
+function rewardAmountGiven(values: { rewardKind?: RewardKind; compensation?: number }): boolean {
+  return rewardKindOf(values) !== "amount" || (values.compensation ?? 0) >= 1
+}
+
+const REWARD_AMOUNT_REQUIRED = { error: "required", path: ["compensation"] }
+
 export const PHONE_PATTERN = /^\+[1-9]\d{7,14}$/
 
 export const consentSchema = z.boolean("consent").refine((value) => value, "consent")
@@ -43,7 +60,7 @@ const placeSchema = z.object({
   countryCode: z.string("placeRequired").length(2, "placeRequired"),
 })
 
-export function reportSchema(kind: ItemKind) {
+function reportObject(kind: ItemKind) {
   return z.object({
     title: z.string("required").trim().min(1, "required").max(MAX_TITLE, "tooLong"),
     description: z.string().trim().max(MAX_DESCRIPTION, "tooLong").optional(),
@@ -58,6 +75,7 @@ export function reportSchema(kind: ItemKind) {
       .min(0, "invalid")
       .max(MAX_COMPENSATION, "rewardMax")
       .optional(),
+    rewardKind: z.enum(REWARD_KINDS).optional(),
     currency: z.string().length(3, "invalid").optional(),
     image:
       kind === "found"
@@ -73,10 +91,17 @@ export function reportSchema(kind: ItemKind) {
   })
 }
 
+export function reportSchema(kind: ItemKind) {
+  return reportObject(kind).refine(rewardAmountGiven, REWARD_AMOUNT_REQUIRED)
+}
+
 export type ReportValues = z.infer<ReturnType<typeof reportSchema>>
 
 export function draftSchema(kind: ItemKind) {
-  return reportSchema(kind).omit({ image: true }).extend({ consent: consentSchema })
+  return reportObject(kind)
+    .omit({ image: true })
+    .extend({ consent: consentSchema })
+    .refine(rewardAmountGiven, REWARD_AMOUNT_REQUIRED)
 }
 
 export type ReportDraft = z.infer<ReturnType<typeof draftSchema>>
@@ -86,10 +111,7 @@ export function toItemInput(values: ReportValues) {
     title: values.title,
     description: values.description || null,
     date: values.date,
-    compensation:
-      values.compensation == null
-        ? null
-        : { amount: values.compensation, currency: values.currency ?? null },
+    compensation: compensationInput(values),
     image: values.image || null,
     categoryId: values.categoryId,
     place: values.place,
@@ -98,5 +120,16 @@ export function toItemInput(values: ReportValues) {
       email: values.contact.email || null,
       socialMedias: values.contact.socialMedias?.length ? values.contact.socialMedias : null,
     },
+  }
+}
+
+function compensationInput(values: ReportValues) {
+  const kind = rewardKindOf(values)
+  if (kind === "none") {
+    return null
+  }
+  return {
+    amount: kind === "negotiable" ? 0 : (values.compensation ?? 0),
+    currency: values.currency ?? null,
   }
 }

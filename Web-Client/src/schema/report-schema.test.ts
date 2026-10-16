@@ -142,6 +142,47 @@ describe("toItemInput", () => {
     const parsed = reportSchema("lost").parse(valid)
     expect(toItemInput(parsed).contact.socialMedias).toEqual(["TELEGRAM"])
   })
+
+  it("sends a reward by agreement as zero and no reward as null", () => {
+    const negotiable = reportSchema("lost").parse({
+      ...valid,
+      rewardKind: "negotiable",
+      compensation: undefined,
+    })
+    expect(toItemInput(negotiable).compensation).toEqual({ amount: 0, currency: null })
+
+    const none = reportSchema("lost").parse({ ...valid, rewardKind: "none" })
+    expect(toItemInput(none).compensation).toBeNull()
+  })
+})
+
+describe("reportSchema reward", () => {
+  it("asks for the amount when the reward is a sum", () => {
+    expect(errorFor("lost", { ...valid, rewardKind: "amount", compensation: undefined })).toBe(
+      "required",
+    )
+    expect(errorFor("lost", { ...valid, rewardKind: "amount", compensation: 0 })).toBe("required")
+    expect(errorFor("lost", { ...valid, rewardKind: "amount", compensation: 1 })).toBeUndefined()
+  })
+
+  it("needs no amount for no reward or a reward by agreement", () => {
+    expect(
+      errorFor("lost", { ...valid, rewardKind: "none", compensation: undefined }),
+    ).toBeUndefined()
+    expect(
+      errorFor("lost", { ...valid, rewardKind: "negotiable", compensation: undefined }),
+    ).toBeUndefined()
+  })
+
+  it("reads a draft saved before the choice existed by its amount", () => {
+    expect(
+      toItemInput(reportSchema("lost").parse({ ...valid, compensation: undefined })).compensation,
+    ).toBeNull()
+    expect(toItemInput(reportSchema("lost").parse(valid)).compensation).toEqual({
+      amount: 500,
+      currency: null,
+    })
+  })
 })
 
 describe("draftSchema", () => {

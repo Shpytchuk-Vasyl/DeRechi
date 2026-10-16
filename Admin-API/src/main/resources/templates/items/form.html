@@ -102,11 +102,22 @@
                     </div>
                     <div class="column">
                         <div class="field">
-                            <label class="label" for="compensation">
+                            <label class="label" for="rewardKind">
                                 <span class="icon has-text-grey mr-1" aria-hidden="true"><i
                                         class="fa-solid fa-coins"></i></span>
                                 <span th:text="#{field.compensation}">Reward</span>
                             </label>
+                            <div class="select is-fullwidth">
+                                <select id="rewardKind" th:field="*{rewardKind}" data-reward-kind>
+                                    <option value="NONE" th:text="#{form.reward.NONE}">None</option>
+                                    <option value="NEGOTIABLE" th:text="#{form.reward.NEGOTIABLE}">By agreement</option>
+                                    <option value="AMOUNT" th:text="#{form.reward.AMOUNT}">Amount</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="field" data-reward-amount
+                             th:classappend="*{rewardKind?.name() != 'AMOUNT'} ? 'is-hidden'">
+                            <label class="label" for="compensation" th:text="#{field.compensationAmount}">Amount</label>
                             <div class="field has-addons mb-0">
                                 <div class="control is-expanded">
                                     <input class="input" type="number" id="compensation" th:field="*{compensation}"

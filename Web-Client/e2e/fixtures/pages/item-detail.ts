@@ -27,6 +27,10 @@ export class ItemDetail {
     return this.root().getByText(this.t("item.reward", { amount }), { exact: true })
   }
 
+  rewardNegotiable(): Locator {
+    return this.root().getByText(this.t("item.rewardNegotiable"), { exact: true })
+  }
+
   protected definition(term: string): Locator {
     return this.root()
       .locator("dt", { hasText: exactText(term) })

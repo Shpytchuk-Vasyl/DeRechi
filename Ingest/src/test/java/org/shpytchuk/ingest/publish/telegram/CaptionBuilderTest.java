@@ -91,6 +91,13 @@ class CaptionBuilderTest {
     }
 
     @Test
+    void rewardOfZeroIsAnnouncedWithoutASum() {
+        ChannelPost post = post("Сумка", null, new Money(0, "UAH"), "https://x/uk/lost/1");
+
+        assertThat(uk.caption(post, PHOTO_LIMIT)).contains("💰 Винагорода\n").doesNotContain("Винагорода:");
+    }
+
+    @Test
     void withoutLinkSaysThereIsNoneYet() {
         String caption = uk.caption(post("Сумка", null, null, null), PHOTO_LIMIT);
 

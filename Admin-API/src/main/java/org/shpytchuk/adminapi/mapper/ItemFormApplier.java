@@ -46,7 +46,9 @@ public class ItemFormApplier {
         item.setDescription(StringUtils.hasText(form.getDescription()) ? form.getDescription() : null);
         item.setImage(StringUtils.hasText(form.getImage()) ? form.getImage() : null);
         item.setDate(form.getDate());
-        item.setCompensation(form.getCompensation());
+        item.setCompensation(form.getRewardKind() == null
+                ? form.getCompensation()
+                : form.getRewardKind().compensation(form.getCompensation()));
         item.setCurrency(currency(form, countryCode));
         item.setCategory(category);
         item.setPlace(place);

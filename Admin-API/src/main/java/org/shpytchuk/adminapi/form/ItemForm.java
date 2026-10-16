@@ -43,6 +43,8 @@ public class ItemForm {
     @PositiveOrZero
     private Integer compensation;
 
+    private RewardKind rewardKind;
+
     @Size(min = 3, max = 3)
     private String currency;
 

@@ -75,14 +75,14 @@ export function NoticeCard({ title, place, date, compensation, media }: NoticeCa
       <div className="relative aspect-4/3 overflow-hidden bg-bg">
         {media}
 
-        {compensation && compensation.amount > 0 ? (
+        {compensation ? (
           <Badge
             tone="yellow"
             className="absolute top-2 right-2 text-pretty text-end sm:top-3 sm:right-3"
           >
-            {t("item.reward", {
-              amount: formatMoney(format, compensation),
-            })}
+            {compensation.amount > 0
+              ? t("item.reward", { amount: formatMoney(format, compensation) })
+              : t("item.rewardNegotiable")}
           </Badge>
         ) : null}
       </div>

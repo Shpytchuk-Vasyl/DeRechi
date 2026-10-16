@@ -92,11 +92,11 @@ export default async function ItemDetailPage({ kind, id, compact = false }: Prop
 
           <div className="mt-3.5 flex flex-wrap gap-2.5">
             <Badge>{tc(item.category.key)}</Badge>
-            {item.compensation && item.compensation.amount > 0 ? (
+            {item.compensation ? (
               <Badge tone="yellow">
-                {t("reward", {
-                  amount: formatMoney(format, item.compensation),
-                })}
+                {item.compensation.amount > 0
+                  ? t("reward", { amount: formatMoney(format, item.compensation) })
+                  : t("rewardNegotiable")}
               </Badge>
             ) : null}
           </div>

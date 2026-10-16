@@ -39,8 +39,8 @@
                         <span class="tag is-light is-rounded" th:text="'#' + ${item.id}">#1</span>
                         <span class="tag is-info is-light is-rounded" th:text="#{category.__${item.categoryKey}__}">OTHER</span>
                         <span class="tag is-success is-light is-rounded"
-                              th:if="${item.compensation != null and item.compensation > 0}"
-                              th:text="#{form.compensationHint(${fmt.money(item.compensation, item.currency)})}">
+                              th:if="${item.compensation != null}"
+                              th:text="${item.compensation > 0} ? #{form.compensationHint(${fmt.money(item.compensation, item.currency)})} : #{form.compensationNegotiable}">
                             Reward</span>
                     </div>
                 </div>

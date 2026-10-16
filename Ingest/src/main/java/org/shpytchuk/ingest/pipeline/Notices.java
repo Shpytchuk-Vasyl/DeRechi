@@ -43,7 +43,7 @@ public final class Notices {
     }
 
     public static @Nullable Money compensation(@Nullable Money money) {
-        if (money == null || money.amount() <= 0) {
+        if (money == null || money.amount() < 0) {
             return null;
         }
         String currency = money.currency() == null || money.currency().isBlank() ? null : money.currency().trim().toUpperCase();

@@ -7,6 +7,7 @@ import org.shpytchuk.adminapi.entity.thing.Thing;
 import org.shpytchuk.adminapi.entity.matching.Claim;
 import org.shpytchuk.adminapi.entity.matching.SimilarItem;
 import org.shpytchuk.adminapi.form.ItemForm;
+import org.shpytchuk.adminapi.form.RewardKind;
 import org.shpytchuk.adminapi.view.matching.CandidateView;
 import org.shpytchuk.adminapi.view.matching.ClaimStatus;
 import org.shpytchuk.adminapi.view.matching.ClaimView;
@@ -85,7 +86,8 @@ public final class ItemMapper {
         form.setDescription(item.getDescription());
         form.setImage(item.getImage());
         form.setDate(item.getDate());
-        form.setCompensation(item.getCompensation());
+        form.setRewardKind(RewardKind.of(item.getCompensation()));
+        form.setCompensation(RewardKind.of(item.getCompensation()) == RewardKind.AMOUNT ? item.getCompensation() : null);
         form.setCurrency(item.getCurrency());
         form.setCategoryId(item.getCategory().getId());
         form.setPlaceId(place.getGooglePlaceId());

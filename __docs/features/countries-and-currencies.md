@@ -39,7 +39,7 @@ Two columns on every item table (`lost_item`, `found_item` and both history tabl
 
 | Column | Type | Meaning |
 |---|---|---|
-| `compensation` | `INTEGER`, nullable | whole units, no cents |
+| `compensation` | `INTEGER`, nullable | whole units, no cents; `null` is no reward, `0` a reward by agreement (no sum), more than `0` the sum |
 | `currency` | `VARCHAR(3) NOT NULL` | ISO 4217, present even when there is no amount |
 
 Resolution order, identical in `Client-API` (`ItemService.currencyFor`) and `Admin-API`:

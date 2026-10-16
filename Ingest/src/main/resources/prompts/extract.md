@@ -64,7 +64,9 @@ emails with `[EMAIL_1]`, ... Parts of the photos may be blurred on purpose.
 - `socialMedias`: only `TELEGRAM`, `VIBER`, `WHATSAPP`, and only when the post asks to write there
   (or gives a Telegram username as the contact). `null` otherwise.
 - `compensation`: only when a reward is offered: the amount in whole units and the ISO 4217
-  currency (`UAH` for "грн", `PLN` for "zł", `null` when not stated). `null` when no reward.
+  currency (`UAH` for "грн", `PLN` for "zł", `null` when not stated). A reward promised without a
+  sum ("винагорода гарантується", "за винагороду", "віддячу") is `{"amount": 0, "currency": null}`.
+  `null` when no reward.
 - `confidence`: 0 to 1, how sure you are that this is a real notice and the fields are right.
 - `rejectReason`: a short English reason when it is a notice but cannot be used as one (several
   unrelated items in one post, the item is already returned, the text is unreadable). `null`

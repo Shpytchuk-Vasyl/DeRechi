@@ -24,7 +24,7 @@ The Web-Client consumes exactly this API; it has no private endpoints of its own
 | `title` | required, up to 100 characters |
 | `description` | optional, up to 250 characters |
 | `date` | required, not in the future, within the last 30 days (`@WithinDays(30)`, custom constraint in `anotation/WithinDays.java`) |
-| `compensation` | optional `MoneyInput { amount, currency }`, amount is a whole number `>= 0`, currency is optional and defaults to the country's currency, see [Countries and currencies](countries-and-currencies.md) |
+| `compensation` | optional `MoneyInput { amount, currency }`, amount is a whole number `>= 0` (`0` is a reward by agreement, without a sum; no `compensation` at all is no reward), currency is optional and defaults to the country's currency, see [Countries and currencies](countries-and-currencies.md) |
 | `image` | storage key, up to 200 characters, required for found items (checked in `ItemService.apply`) |
 | `categoryId` | required, must exist (`NOT_FOUND` otherwise) |
 | `place` | `PlaceInput`: Google place id, name, lat/lon, `countryCode` (two letters, must be supported) |

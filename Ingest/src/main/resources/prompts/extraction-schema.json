@@ -39,7 +39,7 @@
       "properties": {
         "amount": {
           "type": "integer",
-          "description": "whole units"
+          "description": "whole units; 0 when a reward is promised without a sum"
         },
         "currency": {
           "type": ["string", "null"],
