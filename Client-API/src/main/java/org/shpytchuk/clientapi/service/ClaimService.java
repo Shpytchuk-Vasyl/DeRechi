@@ -48,10 +48,7 @@ public abstract class ClaimService<T extends Thing, C extends Claim<T>> {
     public ClaimDto claim(Long itemId, ContactInfoInput contact) {
         T item = findItem(itemId);
         ContactInfo author = item.getInfo();
-        if (author.getPhone() == null && author.getEmail() == null) {
-            log.info("Claim on {} item {} refused: the author left neither phone nor email", kind.label(), itemId);
-            throw unreachable(author);
-        }
+
 
         Optional<C> repeat = claimRepository.findFirstByItemIdAndContactInfoPhoneOrderByIdAsc(itemId, contact.phone())
                 .or(() -> claimRepository.findFirstByItemIdAndContactInfoEmailIgnoreCaseOrderByIdAsc(itemId, contact.email()));
@@ -69,6 +66,12 @@ public abstract class ClaimService<T extends Thing, C extends Claim<T>> {
         claim.setCreatedAt(Instant.now());
         claimRepository.save(claim);
         log.info("Claim {} created on {} item {}", claim.getId(), kind.label(), itemId);
+
+        if (author.getPhone() == null && author.getEmail() == null) {
+            log.info("Claim on {} item {} refused: the author left neither phone nor email", kind.label(), itemId);
+            throw unreachable(author);
+        }
+
         return ClaimMapper.toDto(claim, false);
     }
 
