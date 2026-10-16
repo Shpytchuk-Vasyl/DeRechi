@@ -8,6 +8,7 @@ import org.shpytchuk.adminapi.entity.detail.ContactInfo.SocialMediaEnum;
 public record NotificationRequestedEvent(
         String subject,
         String message,
+        String smsMessage,
         @Nullable String phone,
         @Nullable String email,
         @NonNull SocialMediaEnum[] socialMedias,

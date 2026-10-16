@@ -18,6 +18,8 @@ import org.shpytchuk.adminapi.repository.matching.SimilarItemRepository;
 import org.shpytchuk.adminapi.view.Formats;
 import org.shpytchuk.adminapi.view.matching.NotifiedMatch;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -35,6 +37,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -85,6 +88,9 @@ class MatchNotificationServiceTest {
         assertThat(event.getValue().message())
                 .contains("Загублений рюкзак", "Знайдений рюкзак", "Метро Хрещатик", "finder@example.com")
                 .doesNotContain("{0}", "notification.match.body");
+        assertThat(event.getValue().smsMessage())
+                .isEqualTo("DeRechi: схоже, знайшли «Загублений рюкз...»: +380 50 987 6543")
+                .hasSizeLessThanOrEqualTo(70);
 
         assertThat(match.getNotifiedAt()).isNotNull();
         assertThat(match.getNotifiedBy()).isEqualTo("admin@derechi.local");
@@ -108,6 +114,37 @@ class MatchNotificationServiceTest {
         assertThat(event.getValue().message())
                 .contains("Знайдений рюкзак")
                 .doesNotContain("null", " та ", "{6}");
+    }
+
+    @Test
+    void fitsTheSmsIntoOnePaidPartInEveryLanguage() {
+        SimilarItem match = match();
+        match.getLostItem().setTitle("Чорний шкіряний рюкзак з ноутбуком");
+        when(repository.findById(new SimilarItem.SimilarItemId(2L, 1L))).thenReturn(Optional.of(match));
+
+        for (String language : new String[]{"en", "uk", "pl", "de", "fr"}) {
+            LocaleContextHolder.setLocale(Locale.of(language));
+            service.notifyOwner(1L, 2L, "admin@derechi.local", NotifyChannel.ALL);
+        }
+
+        var events = forClass(NotificationRequestedEvent.class);
+        verify(rabbitTemplate, times(5))
+                .convertAndSend(eq("notification.exchange"), eq("notification.match.found"), events.capture());
+        assertThat(events.getAllValues()).allSatisfy(event -> assertThat(event.smsMessage())
+                .as(event.smsMessage())
+                .startsWith("DeRechi")
+                .contains("Чорний шкіряний...", "+380 50 987 6543")
+                .doesNotContain("{", "finder@example.com", "Метро Хрещатик")
+                .hasSizeLessThanOrEqualTo(70));
+    }
+
+    @ParameterizedTest(name = "\"{0}\" -> \"{1}\"")
+    @CsvSource(delimiter = '|', value = {
+            "Загублений рюкзак        | Загублений рюкз...",
+            "Ключі від кварт          | Ключі від кварт",
+            "Синій гаманець і картки  | Синій гаманець..."})
+    void cutsTitlesLongerThanFifteenCharactersForTheSms(String title, String expected) {
+        assertThat(MatchNotificationService.shortTitle(title)).isEqualTo(expected);
     }
 
     @Test

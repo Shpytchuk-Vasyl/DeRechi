@@ -32,6 +32,10 @@ public class MatchNotificationService {
     private static final String SUBJECT_KEY = "notification.match.subject";
     private static final String BODY_KEY = "notification.match.body";
     private static final String BODY_PHONE_ONLY_KEY = "notification.match.bodyPhoneOnly";
+    private static final String SMS_KEY = "notification.match.sms";
+
+    static final int SMS_TITLE_MAX_LENGTH = 15;
+    private static final String TITLE_ELLIPSIS = "...";
 
     private final SimilarItemRepository similarItemRepository;
     private final RabbitTemplate rabbitTemplate;
@@ -65,13 +69,15 @@ public class MatchNotificationService {
         FoundItem found = match.getFoundItem();
         ContactInfo owner = lost.getInfo();
         ContactInfo finder = found.getInfo();
+        String finderContact = finderContact(finder);
 
         NotificationRequestedEvent event = new NotificationRequestedEvent(
                 text(SUBJECT_KEY),
                 text(finder.getEmail() == null ? BODY_PHONE_ONLY_KEY : BODY_KEY,
                         lost.getTitle(), formats.date(lost.getDate()),
                         found.getTitle(), found.getPlace().getName(), formats.date(found.getDate()),
-                        finderContact(finder), finder.getEmail()),
+                        finderContact, finder.getEmail()),
+                text(SMS_KEY, shortTitle(lost.getTitle()), finderContact),
                 notifyChannel.isNeedPhone() ? owner.getPhone() : null,
                 notifyChannel.isNeedEmail() ? owner.getEmail() : null,
                 socialMedias(notifyChannel),
@@ -86,6 +92,13 @@ public class MatchNotificationService {
         return finder.getProfileUrl() == null
                 ? finder.getNickName()
                 : "%s (%s)".formatted(finder.getNickName(), finder.getProfileUrl());
+    }
+
+    static String shortTitle(String title) {
+        if (title.codePointCount(0, title.length()) <= SMS_TITLE_MAX_LENGTH) {
+            return title;
+        }
+        return title.substring(0, title.offsetByCodePoints(0, SMS_TITLE_MAX_LENGTH)).strip() + TITLE_ELLIPSIS;
     }
 
     private static SocialMediaEnum[] socialMedias(NotifyChannel channel) {

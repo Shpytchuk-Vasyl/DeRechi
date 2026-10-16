@@ -24,11 +24,12 @@ class RabbitConfigTest {
 
     @Test
     void labelsAMatchNotificationWithItsTypeIdNotTheClassName() {
-        Message message = converter.toMessage(new NotificationRequestedEvent("Subject", "Body", null,
+        Message message = converter.toMessage(new NotificationRequestedEvent("Subject", "Body", "SMS", null,
                 "owner@example.com", new SocialMediaEnum[]{SocialMediaEnum.TELEGRAM}, "match:1:2"), new MessageProperties());
 
         assertThat(message.getMessageProperties().getHeaders()).containsEntry("__TypeId__", "NOTIFICATION");
         assertThat(body(message))
+                .contains("\"smsMessage\":\"SMS\"")
                 .contains("\"email\":\"owner@example.com\"")
                 .contains("\"socialMedias\":[\"TELEGRAM\"]")
                 .contains("\"deduplicationKey\":\"match:1:2\"");
