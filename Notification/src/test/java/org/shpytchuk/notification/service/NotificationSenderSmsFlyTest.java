@@ -39,7 +39,7 @@ class NotificationSenderSmsFlyTest {
     void sendsTheEventPhoneThroughSmsFly() {
         server.expect(requestTo(API))
                 .andExpect(jsonPath("$.data.recipient").value("380501234567"))
-                .andExpect(jsonPath("$.data.sms.text").value("Схоже, ми знайшли вашу річ"))
+                .andExpect(jsonPath("$.data.sms.text").value("DeRechi: вашу річ знайшли"))
                 .andRespond(withSuccess("""
                         {"success":1,"data":{"messageID":"FAPI1","sms":{"status":"ACCEPTD","cost":"1.289"}}}
                         """, MediaType.APPLICATION_JSON));
@@ -61,7 +61,7 @@ class NotificationSenderSmsFlyTest {
     }
 
     private static NotificationRequestedEvent event() {
-        return new NotificationRequestedEvent("Знахідка", "Схоже, ми знайшли вашу річ", "+380501234567", null,
-                new SocialMediaEnum[0], "match:1:2");
+        return new NotificationRequestedEvent("Знахідка", "Схоже, ми знайшли вашу річ", "DeRechi: вашу річ знайшли",
+                "+380501234567", null, new SocialMediaEnum[0], "match:1:2");
     }
 }

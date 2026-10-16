@@ -48,6 +48,18 @@ class NotificationSenderTest {
     }
 
     @Test
+    void sendsTheShortTextBySmsAndTheFullOneByEmail() {
+        sender.send(new NotificationRequestedEvent("Знахідка", "Схоже, ми знайшли вашу річ",
+                "DeRechi: вашу річ знайшли", "+380501234567", "user@derechi.local", new SocialMediaEnum[0], "match:1:2"));
+
+        assertThat(hub.sent())
+                .extracting(SentNotification::channel, SentNotification::content)
+                .containsExactly(
+                        tuple("email", "Схоже, ми знайшли вашу річ"),
+                        tuple("sms", "DeRechi: вашу річ знайшли"));
+    }
+
+    @Test
     void skipsContactsTheEventDoesNotCarry() {
         sender.send(event(null, "user@derechi.local", "match:1:2"));
 
@@ -57,7 +69,7 @@ class NotificationSenderTest {
     @Test
     void writesOnlyByEmailToSomeoneKnownByEmailAndAFacebookProfile() {
         NotificationRequestedEvent event = new NotificationRequestedEvent("Знахідка", "Схоже, ми знайшли вашу річ",
-                null, "user@derechi.local", new SocialMediaEnum[]{SocialMediaEnum.FACEBOOK}, "match:1:2");
+                null, null, "user@derechi.local", new SocialMediaEnum[]{SocialMediaEnum.FACEBOOK}, "match:1:2");
 
         NotificationSender.Delivery delivery = sender.send(event);
 
@@ -144,6 +156,7 @@ class NotificationSenderTest {
         return new NotificationRequestedEvent(
                 "Знахідка",
                 "Схоже, ми знайшли вашу річ",
+                null,
                 phone,
                 email,
                 new SocialMediaEnum[0],

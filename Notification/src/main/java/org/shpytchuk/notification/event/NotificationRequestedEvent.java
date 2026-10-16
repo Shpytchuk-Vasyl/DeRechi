@@ -6,6 +6,7 @@ import org.jspecify.annotations.Nullable;
 public record NotificationRequestedEvent(
         String subject,
         String message,
+        @Nullable String smsMessage,
         @Nullable String phone,
         @Nullable String email,
         SocialMediaEnum[] socialMedias,

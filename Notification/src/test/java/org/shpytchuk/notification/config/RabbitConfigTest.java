@@ -26,15 +26,16 @@ class RabbitConfigTest {
         properties.setContentType(MessageProperties.CONTENT_TYPE_JSON);
         properties.setHeader("__TypeId__", "NOTIFICATION");
         String json = """
-                {"subject":"Знахідка","message":"Схоже, ми знайшли вашу річ","phone":"+380501234567",
-                 "email":"user@derechi.local","socialMedias":["TELEGRAM","VIBER"],"deduplicationKey":"match:1:2"}
+                {"subject":"Знахідка","message":"Схоже, ми знайшли вашу річ","smsMessage":"DeRechi: вашу річ знайшли",
+                 "phone":"+380501234567","email":"user@derechi.local","socialMedias":["TELEGRAM","VIBER"],
+                 "deduplicationKey":"match:1:2"}
                 """;
 
         Object event = converter.fromMessage(new Message(json.getBytes(StandardCharsets.UTF_8), properties));
 
         assertThat(event).usingRecursiveComparison().isEqualTo(new NotificationRequestedEvent(
-                "Знахідка", "Схоже, ми знайшли вашу річ", "+380501234567", "user@derechi.local",
-                new SocialMediaEnum[]{SocialMediaEnum.TELEGRAM, SocialMediaEnum.VIBER}, "match:1:2"));
+                "Знахідка", "Схоже, ми знайшли вашу річ", "DeRechi: вашу річ знайшли", "+380501234567",
+                "user@derechi.local", new SocialMediaEnum[]{SocialMediaEnum.TELEGRAM, SocialMediaEnum.VIBER}, "match:1:2"));
     }
 
     @Test
@@ -48,6 +49,7 @@ class RabbitConfigTest {
 
         assertThat(event).isInstanceOfSatisfying(NotificationRequestedEvent.class, notification -> {
             assertThat(notification.phone()).isNull();
+            assertThat(notification.smsMessage()).isNull();
             assertThat(notification.deduplicationKey()).isNull();
             assertThat(notification.email()).isEqualTo("user@derechi.local");
         });

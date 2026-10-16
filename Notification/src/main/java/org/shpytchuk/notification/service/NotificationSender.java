@@ -72,7 +72,7 @@ public class NotificationSender {
         route.address(notify, recipient)
                 .via(route.channel())
                 .subject(event.subject())
-                .content(event.message())
+                .content(route.content(event))
                 .deduplicationKey(key)
                 .send();
         delivery.sent().add(name);

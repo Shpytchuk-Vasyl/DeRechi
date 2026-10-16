@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 class NotificationRequestedListenerTest {
 
     private static final NotificationRequestedEvent EVENT = new NotificationRequestedEvent(
-            "Знахідка", "Схоже, ми знайшли вашу річ", "+380501234567", "user@derechi.local",
+            "Знахідка", "Схоже, ми знайшли вашу річ", null, "+380501234567", "user@derechi.local",
             new SocialMediaEnum[0], "match:1:2");
 
     private NotificationSender sender;
