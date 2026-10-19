@@ -8,6 +8,7 @@ import { type Look, Znaida } from "@/components/mascot/znaida"
 import { toast } from "@/components/pouf/toaster"
 import { useRouter } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
+import { recordMascotCatch } from "@/lib/browser-storage"
 
 export function MascotRoamer() {
   const t = useTranslations("game")
@@ -17,7 +18,7 @@ export function MascotRoamer() {
 
   function catchHim() {
     hide()
-    const { count, prize } = recordCatch()
+    const { count, prize } = recordMascotCatch(CATCHES)
     if (prize) {
       router.push(paths.prize)
       return
@@ -146,16 +147,6 @@ function findPerch(exclude: Element | null): Perch | null {
 }
 
 const CATCHES = 5
-const CAUGHT_KEY = "znaida-caught"
-
-function recordCatch(): { count: number; prize: boolean } {
-  let count = 0
-  try {
-    count = (Number(localStorage.getItem(CAUGHT_KEY)) || 0) + 1
-    localStorage.setItem(CAUGHT_KEY, String(count >= CATCHES ? 0 : count))
-  } catch {}
-  return { count, prize: count >= CATCHES }
-}
 
 const rand = (min: number, max: number) => min + Math.random() * (max - min)
 

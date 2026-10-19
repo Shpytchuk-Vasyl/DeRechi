@@ -164,6 +164,21 @@
     "lost": "Zgubione",
     "found": "Znalezione",
     "cityLink": "Wszystkie ogłoszenia {in}",
+    "share": "Udostępnij",
+    "shareCopied": "Skopiowano",
+    "shareFailed": "Nie udało się udostępnić. Skopiuj link z paska adresu.",
+    "shareImage": "Obrazek z QR",
+    "shareImageFailed": "Nie udało się przygotować obrazka. Spróbuj ponownie.",
+    "cardScan": "Zeskanuj, aby otworzyć ogłoszenie",
+    "publishedTitle": "Ogłoszenie opublikowane",
+    "publishedText": {
+      "lost": "Udostępnij je w lokalnych grupach i czatach: im więcej osób je zobaczy, tym większa szansa, że ktoś zauważył twoją rzecz.",
+      "found": "Udostępnij je w lokalnych grupach i czatach: im więcej osób je zobaczy, tym szybciej znajdzie się właściciel."
+    },
+    "shareText": {
+      "lost": "{title} ({place}). Pomóż odnaleźć — może ktoś widział.",
+      "found": "{title} ({place}). Pomóż odnaleźć właściciela."
+    },
     "reward": "Nagroda {amount}",
     "rewardNegotiable": "Nagroda",
     "lostOn": "Zgubiono",

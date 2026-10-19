@@ -16,6 +16,7 @@ import { toast } from "@/components/pouf/toaster"
 import { usePhoto } from "@/hooks/use-photo"
 import { useRouter } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
+import { markJustPublished } from "@/lib/browser-storage"
 import { draftSchema, type ReportDraft, todayIso } from "@/schema/report-schema"
 import PreviewAside from "./preview-aside"
 import { LAST, STEPS } from "./steps/report-steps"
@@ -120,6 +121,7 @@ export default function ReportForm({ kind, categories, maxUploadBytes, compact =
     const result = await createNotice(kind, { ...values, image })
     if (result.ok) {
       draft.clear()
+      markJustPublished(kind, result.id)
       router.replace(paths.item(kind, result.id))
       return
     }

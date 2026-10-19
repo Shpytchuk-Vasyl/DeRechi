@@ -1,15 +1,12 @@
 "use client"
 
-import { useCallback, useEffect, useRef } from "react"
-import type { DeepPartial, UseFormReset, UseFormWatch } from "react-hook-form"
+import { useEffect, useRef } from "react"
+import type { UseFormReset, UseFormWatch } from "react-hook-form"
 import type { ItemKind } from "@/api/items"
+import { clearReportDraft, loadReportDraft, saveReportDraft } from "@/lib/browser-storage"
 import type { ReportDraft } from "@/schema/report-schema"
 
-const DRAFT_TTL_MS = 5 * 60_000
-
 const SAVE_DELAY_MS = 400
-
-type SavedDraft = { at: number; step: number; values: DeepPartial<ReportDraft> }
 
 type Options = {
   kind: ItemKind
@@ -20,36 +17,16 @@ type Options = {
 }
 
 export function useReportDraft({ kind, step, watch, reset, onRestore }: Options) {
-  const key = `report-draft:${kind}`
   const stepRef = useRef(step)
   stepRef.current = step
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const write = useCallback(
-    (values: DeepPartial<ReportDraft>) => {
-      try {
-        const draft: SavedDraft = {
-          at: Date.now(),
-          step: stepRef.current,
-          values,
-        }
-        sessionStorage.setItem(key, JSON.stringify(draft))
-      } catch {}
-    },
-    [key],
-  )
-
   // biome-ignore lint/correctness/useExhaustiveDependencies: mount only
   useEffect(() => {
     const handle = setTimeout(() => {
+      const saved = loadReportDraft(kind)
+      if (!saved) return
       try {
-        const raw = sessionStorage.getItem(key)
-        if (!raw) return
-        const saved = JSON.parse(raw) as SavedDraft
-        if (Date.now() - saved.at > DRAFT_TTL_MS) {
-          sessionStorage.removeItem(key)
-          return
-        }
         reset(saved.values)
         onRestore(saved.step)
       } catch {}
@@ -62,20 +39,18 @@ export function useReportDraft({ kind, step, watch, reset, onRestore }: Options)
       if (timer.current !== null) clearTimeout(timer.current)
       timer.current = setTimeout(() => {
         timer.current = null
-        write(values)
+        saveReportDraft(kind, stepRef.current, values)
       }, SAVE_DELAY_MS)
     })
     return () => {
       subscription.unsubscribe()
     }
-  }, [watch, write])
+  }, [watch, kind])
 
   function clear() {
     if (timer.current !== null) clearTimeout(timer.current)
     timer.current = null
-    try {
-      sessionStorage.removeItem(key)
-    } catch {}
+    clearReportDraft(kind)
   }
 
   return { clear }

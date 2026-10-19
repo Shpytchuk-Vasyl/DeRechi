@@ -164,6 +164,21 @@
     "lost": "Verloren",
     "found": "Gefunden",
     "cityLink": "Alle Meldungen {in}",
+    "share": "Teilen",
+    "shareCopied": "Kopiert",
+    "shareFailed": "Teilen hat nicht geklappt. Kopiere den Link aus der Adressleiste.",
+    "shareImage": "Bild mit QR",
+    "shareImageFailed": "Das Bild konnte nicht erstellt werden. Versuch es noch einmal.",
+    "cardScan": "Scannen, um die Anzeige zu öffnen",
+    "publishedTitle": "Deine Anzeige ist online",
+    "publishedText": {
+      "lost": "Teile sie in Gruppen und Chats in deiner Gegend: Je mehr Leute sie sehen, desto größer die Chance, dass jemand deinen Gegenstand bemerkt hat.",
+      "found": "Teile sie in Gruppen und Chats in deiner Gegend: Je mehr Leute sie sehen, desto schneller meldet sich der Besitzer."
+    },
+    "shareText": {
+      "lost": "{title} ({place}). Hilf beim Finden – vielleicht hat es jemand gesehen.",
+      "found": "{title} ({place}). Hilf, den Besitzer zu finden."
+    },
     "reward": "Finderlohn {amount}",
     "rewardNegotiable": "Finderlohn",
     "lostOn": "Verloren am",

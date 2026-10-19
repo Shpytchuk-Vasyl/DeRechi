@@ -10,8 +10,8 @@ import { Skeleton, Skeletons } from "@/components/pouf/skeleton"
 import { Heading, Text } from "@/components/pouf/text"
 import { Link } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
-import { shortPlace, tidyPlace } from "@/lib/address"
-import { cityOf, withCity } from "@/lib/cities"
+import { tidyPlace } from "@/lib/address"
+import { cityOf } from "@/lib/cities"
 import { absoluteFileUrl } from "@/lib/env/client"
 import { countryName } from "@/lib/intl/country"
 import { formatNoticeDate, fromIsoDate } from "@/lib/intl/dates"
@@ -19,9 +19,9 @@ import { formatMoney } from "@/lib/intl/money"
 import { mapsUrl } from "@/lib/maps"
 import { absoluteUrl, ITEM_LOCALE, isStale, joinSentences, jsonLd, snippet } from "@/lib/seo"
 import ClaimCard from "@/screens/found_lost/claim/claim-card"
+import { noticePlace } from "@/screens/found_lost/notice-place"
 import PhotoViewer from "@/screens/found_lost/photo-viewer"
-
-const TITLE_PLACE_LIMIT = 40
+import ShareActions from "@/screens/found_lost/share-actions"
 
 type Props = {
   kind: ItemKind
@@ -43,6 +43,7 @@ export default async function ItemDetailPage({ kind, id, compact = false }: Prop
   const locale = await getLocale()
   const maps = mapsUrl(item.place.lat, item.place.lon)
   const city = cityOf(item.place)
+  const place = noticePlace(item.place.name, city ? tcity(`${city.slug}.name`) : undefined)
 
   return (
     <>
@@ -93,7 +94,7 @@ export default async function ItemDetailPage({ kind, id, compact = false }: Prop
             {item.title}
           </Heading>
 
-          <div className="mt-3.5 flex flex-wrap gap-2.5">
+          <div className="mt-3.5 flex flex-wrap items-center gap-2.5">
             <Badge>{tc(item.category.key)}</Badge>
             {item.compensation ? (
               <Badge tone="yellow">
@@ -102,6 +103,14 @@ export default async function ItemDetailPage({ kind, id, compact = false }: Prop
                   : t("rewardNegotiable")}
               </Badge>
             ) : null}
+            <ShareActions
+              kind={kind}
+              id={item.id}
+              title={item.title}
+              text={t(`shareText.${kind}`, { title: item.title, place })}
+              url={absoluteUrl(locale, paths.item(kind, item.id))}
+              image={`/${locale}${paths.card(kind, item.id)}`}
+            />
           </div>
 
           <dl className="mt-6 grid grid-cols-[90px_1fr] gap-x-4 gap-y-3 text-base">
@@ -237,19 +246,15 @@ export async function itemMetadata(kind: ItemKind, locale: string, id: string): 
     getFormatter({ locale }),
   ])
   const city = cityOf(item.place)
-  const place = tidyPlace(item.place.name)
 
   const date = format.dateTime(new Date(item.date), { dateStyle: "medium" })
   const title = t("metaTitle", {
     title: item.title,
-    place: withCity(
-      snippet(shortPlace(place), TITLE_PLACE_LIMIT),
-      city ? tcity(`${city.slug}.name`) : undefined,
-    ),
+    place: noticePlace(item.place.name, city ? tcity(`${city.slug}.name`) : undefined),
   })
   const summary = t("metaSummary", {
     category: tc(item.category.key),
-    place,
+    place: tidyPlace(item.place.name),
     date,
   })
   const description = snippet(item.description ? joinSentences(summary, item.description) : summary)

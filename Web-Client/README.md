@@ -293,8 +293,9 @@ driver.js, mounted per page with `<Tour id="home" />`. Steps point at `data-tour
 rather than class names, and a step whose element is not on the current screen is dropped
 instead of being shown against a page corner.
 
-It runs itself once per visitor (`derechi.tour.<id>` in localStorage, wrapped in try/catch
-because private windows throw) and afterwards only from the header button. That button comes
+It runs itself once per visitor (`derechi.tour.<id>` in localStorage, through
+`src/lib/browser-storage.ts` like everything else the site keeps in the browser, since private
+windows throw) and afterwards only from the header button. That button comes
 from `TourProvider`: a page with a tour registers its run function, and the button renders
 only when one has, so it never offers a tour that is not there.
 
@@ -315,12 +316,27 @@ the `ITEM_LOCALE` (`uk`) copy is indexed. Each copy keeps a self `canonical` and
 other four answer `noindex, follow`, and the sitemap lists notices by their `/uk/` URL alone.
 
 Each notice has its own `opengraph-image.tsx` (`src/screens/found_lost/item-og-image.tsx`): photo,
-title, place and date. There is no lost/found badge: notice titles mostly start with the verb
-already ("Загублено …"), and the badge only repeated it. Only JPEG and PNG photos are drawn (`next/og` reads no
-WebP); the rest, and a notice without a photo, get the text-only card. Both cards load Nunito from
+a lost/found plaque in the kind's colour (pink/mint, as on the list headers), the reward when there
+is one, title, the short place with its city (`noticePlace`, the same as in the `<title>`) and date.
+The plaque does repeat the verb most imported titles start with ("Загублено …"), but titles people
+type themselves often do not, and in a feed the kind is the first thing a reader needs. Only JPEG
+and PNG photos are drawn (`next/og` reads no WebP); the rest, and a notice without a photo, get the
+text-only card. Both cards load Nunito from
 Google Fonts through `src/lib/og-font.ts`, subset to the card's text, so the cards use the site's
 font rather than the `next/og` default (Geist). Other pages inherit the generic card from
 `[locale]/opengraph-image.tsx`.
+
+A notice page also offers two share buttons (`src/screens/found_lost/share-actions.tsx`). "Share"
+opens the system share sheet with a short text and the link, or copies both where there is no sheet
+(desktop). "Image with QR" fetches `/{locale}/{kind}/{id}/card.png`, a 1080×1080 square for feeds
+and printing: plaque, reward, photo, title, place, date, the link and a QR code of it
+(`src/lib/qr.ts`, `qrcode-generator`). The card carries no phone number on purpose: it spreads
+beyond our control, and contact goes through the site. It answers `noindex` and is cached for an
+hour. Where the sheet takes files it is shared as a file, otherwise downloaded. The file is fetched
+ahead (on hover or focus, or at once after publishing), because the sheet only opens while the click
+still counts as the person's own gesture. Right after a notice is published, the report form leaves
+a mark in `sessionStorage` (`markJustPublished`), and the page shows the same buttons in a card
+asking to share the notice in local groups, until it is closed.
 
 Nothing is indexable unless `NODE_ENV` is `production` **and** `NEXT_PUBLIC_SITE_URL` is a public
 host (`INDEXABLE` in `src/lib/seo.ts`): `next dev`, a local `pnpm start` and a LAN address all

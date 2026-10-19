@@ -4,6 +4,7 @@ import { driver } from "driver.js"
 import { useTranslations } from "next-intl"
 import { useCallback, useEffect, useRef } from "react"
 import { useTour } from "@/components/tour/tour-context"
+import { hasSeenTour, rememberTour } from "@/lib/browser-storage"
 import "driver.js/dist/driver.css"
 
 export type TourId = "home" | "report"
@@ -11,22 +12,6 @@ export type TourId = "home" | "report"
 const STEPS: Record<TourId, string[]> = {
   home: ["report", "search", "recent", "language"],
   report: ["details", "photo", "place", "contacts"],
-}
-
-const SEEN_PREFIX = "derechi.tour."
-
-function seen(id: TourId): boolean {
-  try {
-    return window.localStorage.getItem(SEEN_PREFIX + id) === "done"
-  } catch {
-    return true
-  }
-}
-
-function remember(id: TourId) {
-  try {
-    window.localStorage.setItem(SEEN_PREFIX + id, "done")
-  } catch {}
 }
 
 export function Tour({ id }: { id: TourId }) {
@@ -58,7 +43,7 @@ export function Tour({ id }: { id: TourId }) {
       nextBtnText: common("next"),
       prevBtnText: common("back"),
       doneBtnText: common("done"),
-      onDestroyed: () => remember(id),
+      onDestroyed: () => rememberTour(id),
     }).drive()
   }, [id, t, common])
 
@@ -70,7 +55,7 @@ export function Tour({ id }: { id: TourId }) {
   latest.current = run
 
   useEffect(() => {
-    if (seen(id)) {
+    if (hasSeenTour(id)) {
       return
     }
 

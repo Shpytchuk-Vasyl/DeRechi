@@ -164,6 +164,21 @@
     "lost": "Lost",
     "found": "Found",
     "cityLink": "All notices {in}",
+    "share": "Share",
+    "shareCopied": "Copied",
+    "shareFailed": "Could not share. Copy the link from the address bar.",
+    "shareImage": "Image with QR",
+    "shareImageFailed": "Could not prepare the image. Please try again.",
+    "cardScan": "Scan to open the notice",
+    "publishedTitle": "Your notice is published",
+    "publishedText": {
+      "lost": "Share it in local groups and chats: the more people see it, the better the chance someone noticed your item.",
+      "found": "Share it in local groups and chats: the more people see it, the sooner the owner turns up."
+    },
+    "shareText": {
+      "lost": "{title} ({place}). Please help find it — maybe someone has seen it.",
+      "found": "{title} ({place}). Please help find the owner."
+    },
     "reward": "Reward {amount}",
     "rewardNegotiable": "Reward",
     "lostOn": "Lost on",
