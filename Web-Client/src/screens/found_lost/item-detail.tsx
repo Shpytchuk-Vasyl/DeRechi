@@ -8,6 +8,7 @@ import { Stack } from "@/components/pouf/layout"
 import { Badge } from "@/components/pouf/media"
 import { Skeleton, Skeletons } from "@/components/pouf/skeleton"
 import { Heading, Text } from "@/components/pouf/text"
+import { guideByCategory, guideTexts } from "@/content/guides"
 import { Link } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
 import { tidyPlace } from "@/lib/address"
@@ -44,6 +45,8 @@ export default async function ItemDetailPage({ kind, id, compact = false }: Prop
   const maps = mapsUrl(item.place.lat, item.place.lon)
   const city = cityOf(item.place)
   const place = noticePlace(item.place.name, city ? tcity(`${city.slug}.name`) : undefined)
+  const guideSlug = guideByCategory(item.category.key)
+  const guide = guideSlug ? guideTexts(locale).guides[guideSlug] : undefined
 
   return (
     <>
@@ -142,10 +145,19 @@ export default async function ItemDetailPage({ kind, id, compact = false }: Prop
               ) : null}
             </dd>
           </dl>
-          {city ? (
-            <Link href={paths.city(city.slug)} className="mt-4 inline-flex font-extrabold">
-              {t("cityLink", { in: tcity(`${city.slug}.in`) })}
-            </Link>
+          {city || guide ? (
+            <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
+              {city ? (
+                <Link href={paths.city(city.slug)} className="inline-flex font-extrabold">
+                  {t("cityLink", { in: tcity(`${city.slug}.in`) })}
+                </Link>
+              ) : null}
+              {guideSlug && guide ? (
+                <Link href={paths.guide(guideSlug)} className="inline-flex font-extrabold">
+                  {kind === "lost" ? guide.linkLost : guide.linkFound}
+                </Link>
+              ) : null}
+            </div>
           ) : null}
 
           <Heading level={2} className="mt-7 text-xl">

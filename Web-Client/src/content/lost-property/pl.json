@@ -1,0 +1,143 @@
+{
+  "title": "Gdzie jeszcze pytać {in}",
+  "lead": "Jeśli rzeczy nie ma wśród ogłoszeń, zapytaj tam, gdzie mogła zostać oddana.",
+  "leadEmpty": "Nie znaleźliśmy jeszcze sprawdzonego miejskiego biura rzeczy znalezionych {in}. Oto co działa w całej Ukrainie.",
+  "types": {
+    "metro": "Metro",
+    "city_transport": "Komunikacja miejska",
+    "city_service": "Służba miejska"
+  },
+  "kinds": {
+    "office": "Biuro rzeczy znalezionych",
+    "rules": "Bez biura rzeczy znalezionych"
+  },
+  "officialPage": "Oficjalna strona",
+  "telegram": "Kanał na Telegramie",
+  "nationalTitle": "W całej Ukrainie",
+  "national": {
+    "railway": {
+      "title": "Pociągi i dworce",
+      "text": "Ukrzaliznycia przyjmuje zgłoszenia o zapomnianych rzeczach online: opisz rzecz, datę oraz pociąg lub dworzec.",
+      "link": "Zgłoszenie na stronie Ukrzaliznyci"
+    },
+    "bus": {
+      "title": "Autobusy i marszrutki",
+      "text": "Zgodnie z ogólnokrajowymi przepisami przewozowymi kierowca, który znajdzie w pojeździe zapomnianą rzecz, sporządza protokół i oddaje ją przewoźnikowi. Pytaj więc przewoźnika obsługującego trasę.",
+      "link": "Punkt 82 Zasad, uchwała Gabinetu Ministrów nr 176"
+    },
+    "finder": {
+      "title": "Znalazłeś cudzą rzecz",
+      "text": "Jeśli właściciela nie widać, prawo nakazuje zgłosić znalezisko policji lub radzie miasta. Rzecz znalezioną w pojeździe lub w budynku oddaje się kierowcy, ochronie lub administracji.",
+      "link": "Artykuł 337 Kodeksu cywilnego"
+    }
+  },
+  "needsCheck": "wymaga potwierdzenia",
+  "checked": "Kontakty sprawdzone {date}. Zmieniają się, więc przed wizytą lepiej zadzwonić.",
+  "report": "Zgłoś nieścisłość",
+  "places": {
+    "kyiv-metro": {
+      "name": "Biuro rzeczy znalezionych metra w Kijowie",
+      "text": "Na stacji Dorohożyczi. W dni robocze 8:00–17:00, w piątek do 15:45, przerwa 12:00–12:45."
+    },
+    "lviv-bureau": {
+      "name": "Biuro rzeczy znalezionych we Lwowie",
+      "text": "Miejskie biuro: trafiają tu rzeczy znalezione w tramwajach, trolejbusach i na mieście, a znaleziska są publikowane na kanale w Telegramie. Telefon działa w dni robocze 9:00–17:00."
+    },
+    "chernivtsi-trolleybus": {
+      "name": "Czerniowieckie przedsiębiorstwo trolejbusowe",
+      "text": "Rzeczy zgubione w trolejbusach i autobusach przedsiębiorstwa szuka się przez formularz online: opisz rzecz i zostaw numer telefonu, a zadzwonią, jeśli coś się zgadza. Wszystkie znaleziska trafiają na kanał w Telegramie."
+    },
+    "dnipro-metro": {
+      "name": "Metro w Dnieprze",
+      "text": "Nie ma osobnego biura rzeczy znalezionych. O zapomnianej lub zgubionej rzeczy powiedz dyżurnemu personelowi stacji lub ochronie metra."
+    },
+    "kharkiv-metro": {
+      "name": "Metro w Charkowie",
+      "text": "Nie ma osobnego biura rzeczy znalezionych. Zapomnianą rzecz zgłoś pracownikom metra na stacji lub policji."
+    },
+    "chernihiv-trolleybus": {
+      "name": "Czernihowskie przedsiębiorstwo trolejbusowe",
+      "text": "Zgodnie z regulaminem przewoźnika rzeczy znalezione w trolejbusie oddaje się kontrolerowi, konduktorowi, kierowcy lub dyspozytorowi na przystanku końcowym. Tam pytaj."
+    },
+    "kyiv-kpt": {
+      "name": "Kyjiwpastrans",
+      "text": "O rzecz zostawioną w tramwaju, trolejbusie lub autobusie miejskim pytaj przewoźnika: dyspozytora lub kierowcę na trasie."
+    },
+    "kharkiv-transport": {
+      "name": "Komunikacja elektryczna w Charkowie",
+      "text": "O rzecz zostawioną w tramwaju, trolejbusie lub autobusie miejskim pytaj przewoźnika: dyspozytora lub kierowcę na trasie."
+    },
+    "dnipro-transport": {
+      "name": "Komunikacja elektryczna w Dnieprze",
+      "text": "Rzeczy znalezione w tramwajach i trolejbusach trafiają do dyspozytorni trasy, gdzie są wpisywane do rejestru. Tam pytaj."
+    },
+    "odesa-transport": {
+      "name": "Komunikacja elektryczna w Odessie",
+      "text": "Według prasy znaleziska z tramwajów i trolejbusów wydaje się przy ul. Wodoprowidnej 1, gdzie działa centrum informacyjne przedsiębiorstwa."
+    },
+    "zaporizhzhia-transport": {
+      "name": "Komunikacja elektryczna w Zaporożu",
+      "text": "O rzecz zostawioną w tramwaju, trolejbusie lub autobusie miejskim pytaj przewoźnika: dyspozytora lub kierowcę na trasie."
+    },
+    "vinnytsia-transport": {
+      "name": "Winnickie przedsiębiorstwo transportowe",
+      "text": "Kierowcy przekazują rzeczy znalezione w tramwajach dyspozytorom, więc pytaj w dyspozytorni tego środka transportu, którym jechałeś."
+    },
+    "lutsk-transport": {
+      "name": "Łuckie przedsiębiorstwo trolejbusowe",
+      "text": "Kierowcy przekazują rzeczy znalezione w trolejbusach do kasy lub dyspozytorni. Dzwoń do punktu dyspozytorskiego."
+    },
+    "lutsk-department": {
+      "name": "Wydział transportu rady miasta Łucka",
+      "text": "Sam rzeczy nie szuka, ale po numerze trasy i godzinie przejazdu wskaże przewoźnika i poda jego telefon. Większość linii autobusowych w Łucku jest prywatna."
+    },
+    "zhytomyr-transport": {
+      "name": "Żytomierskie przedsiębiorstwo tramwajowo-trolejbusowe",
+      "text": "O rzecz zostawioną w tramwaju, trolejbusie lub autobusie miejskim pytaj przewoźnika: dyspozytora lub kierowcę na trasie."
+    },
+    "ivano-frankivsk-transport": {
+      "name": "Elektroawtotrans",
+      "text": "O rzecz zostawioną w tramwaju, trolejbusie lub autobusie miejskim pytaj przewoźnika: dyspozytora lub kierowcę na trasie."
+    },
+    "kropyvnytskyi-bus": {
+      "name": "Autobusy miejskie w Kropywnyckim",
+      "text": "Zgodnie z przepisami miejskimi pasażer autobusu ma zgłosić kierowcy znalezione zapomniane rzeczy, dokumenty i kosztowności. O rzecz zgubioną w autobusie pytaj więc kierowcę lub przewoźnika."
+    },
+    "mykolaiv-transport": {
+      "name": "Komunikacja elektryczna w Mikołajowie",
+      "text": "O rzecz zostawioną w tramwaju, trolejbusie lub autobusie miejskim pytaj przewoźnika: dyspozytora lub kierowcę na trasie."
+    },
+    "poltava-transport": {
+      "name": "Komunikacja elektryczna w Połtawie",
+      "text": "O rzecz zostawioną w tramwaju, trolejbusie lub autobusie miejskim pytaj przewoźnika: dyspozytora lub kierowcę na trasie."
+    },
+    "rivne-transport": {
+      "name": "Komunikacja elektryczna w Równem",
+      "text": "O rzecz zostawioną w tramwaju, trolejbusie lub autobusie miejskim pytaj przewoźnika: dyspozytora lub kierowcę na trasie."
+    },
+    "sumy-transport": {
+      "name": "Elektroawtotrans w Sumach",
+      "text": "Rzeczy znalezione w trolejbusach i autobusach miejskich przechowuje się w zajezdni przy ul. Charkowskiej 113, a znaleziska publikuje się na kanale w Telegramie."
+    },
+    "ternopil-transport": {
+      "name": "Komunikacja elektryczna w Tarnopolu",
+      "text": "O rzecz zostawioną w tramwaju, trolejbusie lub autobusie miejskim pytaj przewoźnika: dyspozytora lub kierowcę na trasie."
+    },
+    "kherson-transport": {
+      "name": "Komunikacja elektryczna w Chersoniu",
+      "text": "O rzecz zostawioną w tramwaju, trolejbusie lub autobusie miejskim pytaj przewoźnika: dyspozytora lub kierowcę na trasie."
+    },
+    "khmelnytskyi-transport": {
+      "name": "Komunikacja elektryczna w Chmielnickim",
+      "text": "Kierowcy oddają rzeczy znalezione w trolejbusach do dyspozytorni, skąd trafiają do biura rzeczy znalezionych przedsiębiorstwa."
+    },
+    "cherkasy-transport": {
+      "name": "Komunikacja elektryczna w Czerkasach",
+      "text": "O rzecz zostawioną w tramwaju, trolejbusie lub autobusie miejskim pytaj przewoźnika: dyspozytora lub kierowcę na trasie."
+    },
+    "uzhhorod-bus": {
+      "name": "Użhorodzki transport miejski",
+      "text": "Zgodnie z przepisami miejskimi pasażer, który zauważy zapomniane rzeczy, dokumenty lub pieniądze, ma zgłosić to kierowcy na najbliższym przystanku, nie dotykając ich. O zgubę pytaj więc kierowcę lub przewoźnika."
+    }
+  }
+}

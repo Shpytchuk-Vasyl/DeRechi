@@ -1,0 +1,143 @@
+{
+  "title": "Où demander aussi {in}",
+  "lead": "Si votre objet n’est pas parmi les annonces, renseignez-vous là où il a pu être déposé.",
+  "leadEmpty": "Nous n’avons pas encore trouvé de bureau municipal des objets trouvés vérifié {in}. Voici ce qui fonctionne dans toute l’Ukraine.",
+  "types": {
+    "metro": "Métro",
+    "city_transport": "Transports urbains",
+    "city_service": "Service municipal"
+  },
+  "kinds": {
+    "office": "Bureau des objets trouvés",
+    "rules": "Pas de bureau des objets trouvés"
+  },
+  "officialPage": "Page officielle",
+  "telegram": "Chaîne Telegram",
+  "nationalTitle": "Dans toute l’Ukraine",
+  "national": {
+    "railway": {
+      "title": "Trains et gares",
+      "text": "Ukrzaliznytsia reçoit les demandes d’objets oubliés en ligne : décrivez l’objet, la date et le train ou la gare.",
+      "link": "Demande sur le site d’Ukrzaliznytsia"
+    },
+    "bus": {
+      "title": "Bus et marchroutkas",
+      "text": "Selon les règles nationales de transport, le conducteur qui trouve un objet oublié à bord en dresse un procès-verbal et le remet au transporteur. Renseignez-vous donc auprès du transporteur qui exploite la ligne.",
+      "link": "Point 82 des Règles, résolution du Conseil des ministres n° 176"
+    },
+    "finder": {
+      "title": "Vous avez trouvé l’objet de quelqu’un",
+      "text": "Si le propriétaire reste introuvable, la loi demande de déclarer la trouvaille à la police ou au conseil municipal. Un objet trouvé dans un transport ou un bâtiment se remet au conducteur, à la sécurité ou à l’administration.",
+      "link": "Article 337 du Code civil"
+    }
+  },
+  "needsCheck": "à confirmer",
+  "checked": "Contacts vérifiés le {date}. Ils changent : mieux vaut appeler avant de vous déplacer.",
+  "report": "Signaler une erreur",
+  "places": {
+    "kyiv-metro": {
+      "name": "Objets trouvés du métro de Kyiv",
+      "text": "À la station Dorohojytchi. En semaine de 8 h à 17 h, le vendredi jusqu’à 15 h 45, pause de 12 h à 12 h 45."
+    },
+    "lviv-bureau": {
+      "name": "Bureau des objets trouvés de Lviv",
+      "text": "Le bureau municipal : les objets trouvés dans les trams, les trolleybus et en ville y arrivent, et les trouvailles sont publiées sur sa chaîne Telegram. Le téléphone répond en semaine de 9 h à 17 h."
+    },
+    "chernivtsi-trolleybus": {
+      "name": "Régie des trolleybus de Tchernivtsi",
+      "text": "Les objets perdus dans les trolleybus et bus de la régie se recherchent via un formulaire en ligne : décrivez l’objet et laissez votre numéro, on vous rappelle en cas de correspondance. Tout ce qui est trouvé est publié sur sa chaîne Telegram."
+    },
+    "dnipro-metro": {
+      "name": "Métro de Dnipro",
+      "text": "Il n’y a pas de bureau des objets trouvés à part. Signalez un objet oublié ou perdu au personnel de la station ou à la sécurité du métro."
+    },
+    "kharkiv-metro": {
+      "name": "Métro de Kharkiv",
+      "text": "Il n’y a pas de bureau des objets trouvés à part. Signalez un objet oublié au personnel du métro en station ou à la police."
+    },
+    "chernihiv-trolleybus": {
+      "name": "Régie des trolleybus de Tchernihiv",
+      "text": "Selon le règlement de l’exploitant, les objets trouvés dans un trolleybus sont remis au contrôleur, au receveur, au conducteur ou au régulateur au terminus de la ligne. Demandez-y."
+    },
+    "kyiv-kpt": {
+      "name": "Kyivpastrans",
+      "text": "Pour un objet oublié dans un tram, un trolleybus ou un bus urbain, renseignez-vous auprès de l’exploitant : le régulateur ou le conducteur de la ligne."
+    },
+    "kharkiv-transport": {
+      "name": "Transports électriques de Kharkiv",
+      "text": "Pour un objet oublié dans un tram, un trolleybus ou un bus urbain, renseignez-vous auprès de l’exploitant : le régulateur ou le conducteur de la ligne."
+    },
+    "dnipro-transport": {
+      "name": "Transports électriques de Dnipro",
+      "text": "Les objets trouvés dans les trams et trolleybus vont au poste de régulation de la ligne, où ils sont consignés. Renseignez-vous là-bas."
+    },
+    "odesa-transport": {
+      "name": "Transports électriques d’Odessa",
+      "text": "Selon la presse, les objets trouvés dans les trams et trolleybus sont rendus au 1, rue Vodoprovidna, où se trouve le centre d’information de la régie."
+    },
+    "zaporizhzhia-transport": {
+      "name": "Transports électriques de Zaporijjia",
+      "text": "Pour un objet oublié dans un tram, un trolleybus ou un bus urbain, renseignez-vous auprès de l’exploitant : le régulateur ou le conducteur de la ligne."
+    },
+    "vinnytsia-transport": {
+      "name": "Compagnie de transport de Vinnytsia",
+      "text": "Les conducteurs remettent les objets trouvés dans les trams aux régulateurs : renseignez-vous auprès du poste de régulation du transport que vous avez pris."
+    },
+    "lutsk-transport": {
+      "name": "Régie des transports électriques de Loutsk",
+      "text": "Les conducteurs remettent les objets trouvés dans les trolleybus à la caisse ou au poste de régulation. Appelez le poste de régulation."
+    },
+    "lutsk-department": {
+      "name": "Service des transports de la mairie de Loutsk",
+      "text": "Il ne recherche pas les objets lui-même, mais d’après le numéro de ligne et l’heure du trajet, il vous indique le transporteur et son numéro. La plupart des lignes de bus de Loutsk sont privées."
+    },
+    "zhytomyr-transport": {
+      "name": "Régie des trams et trolleybus de Jytomyr",
+      "text": "Pour un objet oublié dans un tram, un trolleybus ou un bus urbain, renseignez-vous auprès de l’exploitant : le régulateur ou le conducteur de la ligne."
+    },
+    "ivano-frankivsk-transport": {
+      "name": "Elektroavtotrans",
+      "text": "Pour un objet oublié dans un tram, un trolleybus ou un bus urbain, renseignez-vous auprès de l’exploitant : le régulateur ou le conducteur de la ligne."
+    },
+    "kropyvnytskyi-bus": {
+      "name": "Bus urbains de Kropyvnytskyï",
+      "text": "Selon le règlement municipal, le passager d’un bus doit signaler au conducteur les objets, documents et valeurs oubliés. Pour un objet perdu dans un bus, demandez donc au conducteur ou au transporteur de la ligne."
+    },
+    "mykolaiv-transport": {
+      "name": "Transports électriques de Mykolaïv",
+      "text": "Pour un objet oublié dans un tram, un trolleybus ou un bus urbain, renseignez-vous auprès de l’exploitant : le régulateur ou le conducteur de la ligne."
+    },
+    "poltava-transport": {
+      "name": "Transports électriques de Poltava",
+      "text": "Pour un objet oublié dans un tram, un trolleybus ou un bus urbain, renseignez-vous auprès de l’exploitant : le régulateur ou le conducteur de la ligne."
+    },
+    "rivne-transport": {
+      "name": "Transports électriques de Rivne",
+      "text": "Pour un objet oublié dans un tram, un trolleybus ou un bus urbain, renseignez-vous auprès de l’exploitant : le régulateur ou le conducteur de la ligne."
+    },
+    "sumy-transport": {
+      "name": "Elektroavtotrans de Soumy",
+      "text": "Les objets trouvés dans les trolleybus et bus municipaux sont gardés au dépôt du 113, rue Kharkivska, et les trouvailles sont publiées sur la chaîne Telegram de la régie."
+    },
+    "ternopil-transport": {
+      "name": "Transports électriques de Ternopil",
+      "text": "Pour un objet oublié dans un tram, un trolleybus ou un bus urbain, renseignez-vous auprès de l’exploitant : le régulateur ou le conducteur de la ligne."
+    },
+    "kherson-transport": {
+      "name": "Transports électriques de Kherson",
+      "text": "Pour un objet oublié dans un tram, un trolleybus ou un bus urbain, renseignez-vous auprès de l’exploitant : le régulateur ou le conducteur de la ligne."
+    },
+    "khmelnytskyi-transport": {
+      "name": "Transports électriques de Khmelnytskyï",
+      "text": "Les conducteurs remettent les objets trouvés dans les trolleybus au poste de régulation, d’où ils rejoignent le bureau des objets trouvés de la régie."
+    },
+    "cherkasy-transport": {
+      "name": "Transports électriques de Tcherkassy",
+      "text": "Pour un objet oublié dans un tram, un trolleybus ou un bus urbain, renseignez-vous auprès de l’exploitant : le régulateur ou le conducteur de la ligne."
+    },
+    "uzhhorod-bus": {
+      "name": "Transports municipaux d’Oujhorod",
+      "text": "Selon le règlement municipal, un passager qui remarque des objets, documents ou de l’argent oubliés doit le signaler au conducteur au prochain arrêt sans y toucher. Pour un objet perdu, demandez donc au conducteur ou au transporteur."
+    }
+  }
+}

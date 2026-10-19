@@ -177,7 +177,7 @@
       "found": "Share it in local groups and chats: the more people see it, the sooner the owner turns up."
     },
     "shareText": {
-      "lost": "{title} ({place}). Please help find it — maybe someone has seen it.",
+      "lost": "{title} ({place}). Please help find it – maybe someone has seen it.",
       "found": "{title} ({place}). Please help find the owner."
     },
     "reward": "Reward {amount}",

@@ -1,0 +1,143 @@
+{
+  "title": "Where else to ask {in}",
+  "lead": "If your item is not among the notices, ask where it may have been handed in.",
+  "leadEmpty": "We have not yet found a verified city lost and found office {in}. Here is what works across Ukraine.",
+  "types": {
+    "metro": "Metro",
+    "city_transport": "City transport",
+    "city_service": "City service"
+  },
+  "kinds": {
+    "office": "Lost and found office",
+    "rules": "No lost and found office"
+  },
+  "officialPage": "Official page",
+  "telegram": "Telegram channel",
+  "nationalTitle": "Across Ukraine",
+  "national": {
+    "railway": {
+      "title": "Trains and stations",
+      "text": "Ukrzaliznytsia takes lost item requests online: describe the item, the date and the train or station.",
+      "link": "Request on the Ukrzaliznytsia site"
+    },
+    "bus": {
+      "title": "Buses and minibuses",
+      "text": "Under the national transport rules, a driver who finds a forgotten item on board writes a report and hands the item to the carrier. So ask the carrier that runs the route.",
+      "link": "Clause 82 of the Rules, Cabinet resolution No. 176"
+    },
+    "finder": {
+      "title": "Found someone else’s item",
+      "text": "If the owner is nowhere to be seen, the law says to report the find to the police or the city council. Something found on transport or inside a building goes to the driver, security or the management.",
+      "link": "Article 337 of the Civil Code"
+    }
+  },
+  "needsCheck": "needs confirming",
+  "checked": "Contacts checked on {date}. They change, so it is best to call before you go.",
+  "report": "Report an error",
+  "places": {
+    "kyiv-metro": {
+      "name": "Kyiv Metro lost and found office",
+      "text": "At Dorohozhychi station. Weekdays 8:00–17:00, Fridays until 15:45, break 12:00–12:45."
+    },
+    "lviv-bureau": {
+      "name": "Lviv lost and found office",
+      "text": "The city office: items found on trams, trolleybuses and around the city end up here, and finds are posted to its Telegram channel. The phone line works on weekdays 9:00–17:00."
+    },
+    "chernivtsi-trolleybus": {
+      "name": "Chernivtsi Trolleybus Company",
+      "text": "Items lost on the company’s trolleybuses and buses are traced through an online form: describe the item and leave your phone number, and they will call you if there is a match. Everything found is posted to its Telegram channel."
+    },
+    "dnipro-metro": {
+      "name": "Dnipro Metro",
+      "text": "There is no separate lost and found office. Tell the station staff or metro security about a forgotten or lost item."
+    },
+    "kharkiv-metro": {
+      "name": "Kharkiv Metro",
+      "text": "There is no separate lost and found office. Report a forgotten item to the metro staff at the station or to the police."
+    },
+    "chernihiv-trolleybus": {
+      "name": "Chernihiv Trolleybus Company",
+      "text": "Under the operator’s rules, items found on a trolleybus are handed to the inspector, conductor, driver or the dispatcher at the last stop of the route. Ask there."
+    },
+    "kyiv-kpt": {
+      "name": "Kyivpastrans",
+      "text": "For something left on a tram, trolleybus or city bus, ask the operator: the dispatcher or the driver on the route."
+    },
+    "kharkiv-transport": {
+      "name": "Kharkiv Electric Transport",
+      "text": "For something left on a tram, trolleybus or city bus, ask the operator: the dispatcher or the driver on the route."
+    },
+    "dnipro-transport": {
+      "name": "Dnipro Electric Transport",
+      "text": "Items found on trams and trolleybuses go to the route’s dispatch office, where they are logged. Ask there."
+    },
+    "odesa-transport": {
+      "name": "Odesa Electric Transport",
+      "text": "According to the press, finds from trams and trolleybuses are handed out at 1 Vodoprovidna St, where the company’s information centre is."
+    },
+    "zaporizhzhia-transport": {
+      "name": "Zaporizhzhia Electric Transport",
+      "text": "For something left on a tram, trolleybus or city bus, ask the operator: the dispatcher or the driver on the route."
+    },
+    "vinnytsia-transport": {
+      "name": "Vinnytsia Transport Company",
+      "text": "Drivers hand items found on trams to the dispatchers, so ask the dispatch office for the kind of transport you took."
+    },
+    "lutsk-transport": {
+      "name": "Lutsk Electric Transport Company",
+      "text": "Drivers hand items found on trolleybuses to the cash office or the dispatch office. Call the dispatch point."
+    },
+    "lutsk-department": {
+      "name": "Lutsk City Council transport department",
+      "text": "It does not look for items itself, but from the route number and time of the trip it will tell you which carrier runs it and give you its number. Most bus routes in Lutsk are private."
+    },
+    "zhytomyr-transport": {
+      "name": "Zhytomyr Tram and Trolleybus Company",
+      "text": "For something left on a tram, trolleybus or city bus, ask the operator: the dispatcher or the driver on the route."
+    },
+    "ivano-frankivsk-transport": {
+      "name": "Elektroavtotrans",
+      "text": "For something left on a tram, trolleybus or city bus, ask the operator: the dispatcher or the driver on the route."
+    },
+    "kropyvnytskyi-bus": {
+      "name": "Kropyvnytskyi city buses",
+      "text": "Under the city rules, a bus passenger must tell the driver about forgotten items, documents and valuables. So for something lost on a bus, ask the driver or the route’s carrier."
+    },
+    "mykolaiv-transport": {
+      "name": "Mykolaiv Electric Transport",
+      "text": "For something left on a tram, trolleybus or city bus, ask the operator: the dispatcher or the driver on the route."
+    },
+    "poltava-transport": {
+      "name": "Poltava Electric Transport",
+      "text": "For something left on a tram, trolleybus or city bus, ask the operator: the dispatcher or the driver on the route."
+    },
+    "rivne-transport": {
+      "name": "Rivne city electric transport",
+      "text": "For something left on a tram, trolleybus or city bus, ask the operator: the dispatcher or the driver on the route."
+    },
+    "sumy-transport": {
+      "name": "Sumy Elektroavtotrans",
+      "text": "Items found on trolleybuses and municipal buses are kept at the depot at 113 Kharkivska St, and finds are posted to the electric transport’s Telegram channel."
+    },
+    "ternopil-transport": {
+      "name": "Ternopil Electric Transport",
+      "text": "For something left on a tram, trolleybus or city bus, ask the operator: the dispatcher or the driver on the route."
+    },
+    "kherson-transport": {
+      "name": "Kherson city electric transport",
+      "text": "For something left on a tram, trolleybus or city bus, ask the operator: the dispatcher or the driver on the route."
+    },
+    "khmelnytskyi-transport": {
+      "name": "Khmelnytskyi Electric Transport",
+      "text": "Drivers hand items found on trolleybuses to the dispatch office, and from there they go to the company’s lost and found."
+    },
+    "cherkasy-transport": {
+      "name": "Cherkasy Electric Transport",
+      "text": "For something left on a tram, trolleybus or city bus, ask the operator: the dispatcher or the driver on the route."
+    },
+    "uzhhorod-bus": {
+      "name": "Uzhhorod Municipal Transport",
+      "text": "Under the city rules, a passenger who notices forgotten items, documents or money on board must tell the driver at the next stop without touching them. So for something lost, ask the driver or the carrier."
+    }
+  }
+}

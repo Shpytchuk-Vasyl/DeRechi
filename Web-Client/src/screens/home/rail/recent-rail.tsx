@@ -13,12 +13,13 @@ const RAIL_SIZE = 5
 type Props = {
   kind: ItemKind
   near?: NearInput
+  categoryId?: string
   title?: string
   seeAll?: { label: string; query: Record<string, string> }
   empty?: string
 }
 
-export default async function RecentRail({ kind, near, title, seeAll, empty }: Props) {
+export default async function RecentRail({ kind, near, categoryId, title, seeAll, empty }: Props) {
   const t = await getTranslations("home")
   const headingId = `recent-${kind}-heading`
 
@@ -41,17 +42,22 @@ export default async function RecentRail({ kind, near, title, seeAll, empty }: P
             </ErrorNote>
           }
         >
-          <RailItems kind={kind} near={near} empty={empty} />
+          <RailItems kind={kind} near={near} categoryId={categoryId} empty={empty} />
         </ErrorBoundary>
       </section>
     </Stack>
   )
 }
 
-async function RailItems({ kind, near, empty }: Pick<Props, "kind" | "near" | "empty">) {
+async function RailItems({
+  kind,
+  near,
+  categoryId,
+  empty,
+}: Pick<Props, "kind" | "near" | "categoryId" | "empty">) {
   const { items } = await fetchItems(kind, {
     first: RAIL_SIZE,
-    ...(near ? { filter: { near } } : {}),
+    ...(near || categoryId ? { filter: { near, categoryId } } : {}),
   })
 
   if (items.length === 0) {

@@ -13,7 +13,7 @@ const ESCAPES: Record<string, string> = {
   "'": "&#39;",
 }
 
-function escape(text: string): string {
+function escapeHtml(text: string): string {
   return text.replace(/[&<>"']/g, (char) => ESCAPES[char])
 }
 
@@ -30,8 +30,8 @@ export async function GET(_request: Request, ctx: RouteContext<"/[locale]/mainte
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>${escape(t("title"))} | DeRechi</title>
-<meta name="description" content="${escape(t("metaDescription"))}">
+<title>${escapeHtml(t("title"))} | DeRechi</title>
+<meta name="description" content="${escapeHtml(t("metaDescription"))}">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <style>
   :root { --bg: #f0e9ff; --ink: #3a2e5c; --muted: #71609b; --accent: #c9a8ff; --on-accent: #3a2e5c; color-scheme: light dark; }
@@ -49,9 +49,9 @@ export async function GET(_request: Request, ctx: RouteContext<"/[locale]/mainte
 </head>
 <body>
 <main>
-  <h1>${escape(t("title"))}</h1>
-  <p>${escape(t("text"))}</p>
-  <a href="/${locale}">${escape(t("home"))}</a>
+  <h1>${escapeHtml(t("title"))}</h1>
+  <p>${escapeHtml(t("text"))}</p>
+  <a href="/${locale}">${escapeHtml(t("home"))}</a>
 </main>
 </body>
 </html>`

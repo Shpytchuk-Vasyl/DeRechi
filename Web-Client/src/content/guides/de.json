@@ -1,0 +1,503 @@
+{
+  "eyebrow": "Ratgeber",
+  "contents": "Auf dieser Seite",
+  "readingTime": "{minutes} Min. Lesezeit",
+  "checked": "Aktualisiert am {date}",
+  "checkNowTitle": "Prüfe, ob deine Sache schon gefunden wurde",
+  "checkNowText": "Wer etwas findet, veröffentlicht es hier und in lokalen Gruppen. Sieh die Funde durch und veröffentliche deine eigene Anzeige: Wer deine Sache findet, findet dich dann leichter.",
+  "ctaLost": "Verlust melden",
+  "faqTitle": "Häufige Fragen",
+  "relatedTitle": "Weitere Ratgeber",
+  "cityNote": "Wohin du dich in deiner Stadt wendest — Behörden, Fundbüros, Verkehrsbetriebe — steht auf der Seite der Stadt.",
+  "cityLink": "Stadt wählen",
+  "index": {
+    "title": "Ratgeber: Was tun, wenn du etwas verloren hast",
+    "description": "Anleitungen für die erste Stunde nach dem Verlust: wo suchen, wie Betrüger erkennen, was mit einem Fund tun. Dokumente, Schlüssel, Geldbörse, Handy, Tiere.",
+    "lead": "Kurz und auf den Punkt: was du sofort tust, wo du suchst, wie du Betrüger erkennst und was du tust, wenn du etwas Fremdes gefunden hast.",
+    "read": "Lesen"
+  },
+  "guides": {
+    "documents": {
+      "title": "Dokumente verloren: Was tun",
+      "shortTitle": "Dokumente",
+      "description": "Was du in der ersten Stunde nach dem Verlust von Pass oder Ausweis tust, wo du suchst, wie du Betrüger erkennst und was du mit gefundenen Dokumenten tust.",
+      "lead": "Pass, Ausweis, Führerschein: schnell verloren, und jemand anderes kann sie benutzen. Darum erst absichern, dann suchen und erst dann ersetzen.",
+      "linkLost": "Dokumente verloren? Was tun",
+      "linkFound": "Dokumente gefunden? Wo du sie abgibst",
+      "ctaFound": "Gefundene Dokumente",
+      "railTitle": "Gefundene Dokumente auf DeRechi",
+      "railEmpty": "Gerade gibt es keine Anzeigen über gefundene Dokumente. Veröffentliche deine: Wer sie findet, findet dich dann leichter.",
+      "sections": [
+        {
+          "id": "first-hour",
+          "heading": "Die erste Stunde",
+          "steps": [
+            {
+              "title": "War eine Bankkarte dabei, sperre sie",
+              "text": "In der App oder über die Hotline der Bank. Eine neue Karte ist schnell ausgestellt; abgebuchtes Geld zurückzuholen ist viel schwerer."
+            },
+            {
+              "title": "Wurden die Dokumente gestohlen, melde es der Polizei",
+              "text": "Die Anzeige hält Datum und Umstände fest. Versucht jemand, das Dokument zu benutzen, hast du den Beleg, dass du es da schon nicht mehr hattest."
+            },
+            {
+              "title": "Geh deinen Weg zurück",
+              "text": "Tasche, Jackentaschen, Auto, die Kleidung von gestern. Rufe dort an, wo du warst: Café, Taxi, Bahnhof, Laden. Die meisten verlorenen Sachen tauchen in den ersten Stunden genau dort auf."
+            },
+            {
+              "title": "Prüfe, ob das Dokument schon gefunden wurde",
+              "text": "Sieh die gefundenen Dokumente auf DeRechi und in lokalen Gruppen durch. Veröffentliche eine Verlustanzeige mit Art des Dokuments und Ort."
+            }
+          ]
+        },
+        {
+          "id": "where-to-look",
+          "heading": "Wo suchen",
+          "body": [
+            "Ein Dokument kommt meist auf demselben Weg zurück, auf dem es verloren ging: Jemand hebt es auf und gibt es dort ab, wo er es gefunden hat, oder bei der nächsten Polizeidienststelle.",
+            [
+              "Das Lokal oder das Verkehrsmittel, das du genutzt hast: Personal, Fahrer, Fundbüro des Verkehrsbetriebs.",
+              "Die Polizeidienststelle oder das Fundbüro nahe dem Verlustort: Dorthin bringt man gefundene Dokumente meist.",
+              "Dein Briefkasten: Finder werfen Dokumente oft in den nächsten Postbriefkasten, und die Post stellt sie an die im Dokument eingetragene Adresse zu.",
+              "Lokale Gruppen und DeRechi: Suche nach Art des Dokuments und Nachnamen."
+            ],
+            {
+              "tone": "tip",
+              "text": "Hinterlasse auch dort eine Notiz, wo du es verloren hast: Im Café oder am Bahnhof sehen sie die, die nach dir aufräumen."
+            }
+          ]
+        },
+        {
+          "id": "replace",
+          "heading": "Ersatz",
+          "body": [
+            "Ersatz bekommst du bei der Stelle, die das Dokument ausgestellt hat: Pässe und Ausweise bei der Passbehörde, Führerscheine bei der Führerscheinstelle, Studierendenausweise bei der Hochschule, Bankkarten bei der Bank. Was genau nötig ist und was es kostet, hängt vom Land ab: Sieh auf der offiziellen Seite der Behörde oder auf der Seite deiner Stadt nach. Hast du den Pass im Ausland verloren, wende dich an das Konsulat deines Landes: Es stellt ein Dokument für die Heimreise aus.",
+            {
+              "tone": "warning",
+              "text": "Nach der Verlustmeldung bei der ausstellenden Stelle ist das alte Dokument ungültig, auch wenn es am nächsten Tag wieder auftaucht. Du darfst es nicht benutzen: Gib es bei der Stelle ab, die das neue ausgestellt hat."
+            }
+          ]
+        },
+        {
+          "id": "scams",
+          "heading": "Betrüger erkennen",
+          "body": [
+            [
+              "Zahle nie im Voraus „für die Rückgabe“ und schicke keine Codes aus SMS: Um Geld zu empfangen, braucht niemand einen Code.",
+              "Schicke keine Fotos deiner anderen Dokumente „zur Bestätigung“. Wer dein Dokument wirklich gefunden hat, sieht ohnehin, wem es gehört.",
+              "Triff dich tagsüber an einem belebten Ort, nicht zu Hause.",
+              "Wird das Dokument „als Geisel“ gegen Geld zurückgehalten, geh zur Polizei."
+            ]
+          ]
+        },
+        {
+          "id": "found",
+          "heading": "Fremde Dokumente gefunden?",
+          "steps": [
+            {
+              "title": "Bring sie zur Polizei oder zurück an den Fundort",
+              "text": "Die nächste Polizeidienststelle nimmt gefundene Dokumente an, so kommen sie am schnellsten zum Besitzer zurück. Eine Bankkarte bringst du in eine Filiale dieser Bank oder meldest sie über die Hotline der Bank: Die Karte wird gesperrt, und der Besitzer bekommt eine neue. Verschicken musst du sie an niemanden."
+            },
+            {
+              "title": "Fotografiere und veröffentliche keine Seiten mit Daten",
+              "text": "Mit Fotos von Dokumenten werden Kredite erschlichen. In der Anzeige reichen Art des Dokuments, Name des Besitzers und Fundort."
+            },
+            {
+              "title": "Veröffentliche eine Anzeige auf DeRechi",
+              "text": "Der Besitzer sucht schon und sieht die Funde in der Stadt durch. Die Anzeige dauert eine Minute, und deine Kontaktdaten zeigen wir nie vollständig."
+            }
+          ]
+        }
+      ],
+      "faq": [
+        {
+          "q": "Muss ich zur Polizei, wenn das Dokument nur verloren gegangen ist?",
+          "a": "Für den Ersatz meist nicht, solange es nicht gestohlen wurde. Aber die Anzeige hält das Verlustdatum fest: Versucht jemand, das Dokument zu benutzen, hast du den Beleg, dass du es da schon nicht mehr hattest."
+        },
+        {
+          "q": "Jemand hat mein Dokument gefunden und will eine Belohnung. Ist das normal?",
+          "a": "Danke sagen darfst du, und in vielen Ländern gibt das Gesetz dem Finder ein Recht auf Belohnung. Aber zahle nie im Voraus und gib keine Codes aus SMS weiter: Rechne beim Treffen ab, wenn das Dokument in deiner Hand ist."
+        },
+        {
+          "q": "Darf ich ein Foto des gefundenen Passes veröffentlichen, damit der Besitzer ihn erkennt?",
+          "a": "Nein. Mit Fotos von Dokumenten werden Kredite erschlichen und Konten gehackt. Art des Dokuments, Name und Fundort reichen: Der Besitzer erkennt es auch so."
+        }
+      ]
+    },
+    "keys": {
+      "title": "Schlüssel verloren: Was tun",
+      "shortTitle": "Schlüssel",
+      "description": "Wo verlorene Schlüssel meist auftauchen, wann du das Schloss wechselst, wie du Wohnung und Auto sicherst und was du mit einem gefundenen Schlüsselbund tust.",
+      "lead": "Schlüssel gehen am häufigsten verloren, und fast immer ganz in der Nähe. Die eigentliche Frage ist nicht „wo sind sie“, sondern „weiß der Finder, zu welcher Tür sie gehören“.",
+      "linkLost": "Schlüssel verloren? Was tun",
+      "linkFound": "Schlüssel gefunden? So kommen sie zum Besitzer",
+      "ctaFound": "Gefundene Schlüssel",
+      "railTitle": "Gefundene Schlüssel auf DeRechi",
+      "railEmpty": "Gerade gibt es keine Anzeigen über gefundene Schlüssel. Veröffentliche deine: Wer sie findet, findet dich dann leichter.",
+      "sections": [
+        {
+          "id": "first-hour",
+          "heading": "Die erste Stunde",
+          "steps": [
+            {
+              "title": "Prüfe, ob am Bund etwas auf die Adresse hinweist",
+              "text": "Ein Anhänger, ein Kassenzettel, ein Anhänger mit Kennzeichen oder Hausnummer. Lässt sich die Adresse erschließen, wechsle das Schloss, ohne zu warten."
+            },
+            {
+              "title": "Geh deinen Weg zurück",
+              "text": "Taschen, Rucksack, das Türschloss, das Auto, die Sitzbank vor dem Hauseingang. Schlüssel fallen meist dort heraus, wo du Handy oder Geldbörse gezückt hast."
+            },
+            {
+              "title": "Frag dort nach, wo du warst",
+              "text": "Sicherheitsdienst, Personal, Fahrer, Nachbarn. Gefundene Schlüssel bleiben meist am Tresen liegen oder hängen neben der Tür."
+            },
+            {
+              "title": "Prüfe die Funde auf DeRechi",
+              "text": "Suche nach dem Aussehen des Bunds: Anzahl der Schlüssel, Anhänger, Farbe. Veröffentliche eine Verlustanzeige."
+            }
+          ]
+        },
+        {
+          "id": "where-to-look",
+          "heading": "Wo suchen",
+          "body": [
+            [
+              "An den Türen, die du zuletzt aufgeschlossen hast: Wohnung, Auto, Büro.",
+              "In Jackentaschen und im Futter der Tasche.",
+              "An Empfangstresen und in den Fundbüros der Orte, an denen du warst.",
+              "In den Gruppen von Haus, Viertel und Stadt: Gefundene Schlüssel werden dort sehr oft gepostet."
+            ],
+            {
+              "tone": "tip",
+              "text": "Beschreibe in der Anzeige Anhänger und Anzahl der Schlüssel, aber nie Adresse oder Autokennzeichen."
+            }
+          ]
+        },
+        {
+          "id": "secure",
+          "heading": "Schloss wechseln oder nicht",
+          "body": [
+            "Wenn am Bund nichts auf die Adresse hinwies und du ihn nicht zusammen mit Dokumenten verloren hast, ist das Risiko klein: Von einem Schlüssel allein findet kaum jemand deine Tür. Gab es eine Adresse oder ging der Bund zusammen mit Geldbörse oder Pass verloren, wechsle den Schließzylinder sofort.",
+            [
+              "Autoschlüssel: Hast du einen Ersatz, lass den verlorenen in der Werkstatt aus dem Speicher des Autos löschen, damit sich das Auto damit nicht mehr starten lässt. Bis dahin parke das Auto weit weg vom Verlustort: Ein Druck auf den Schlüssel zeigt, welches Auto deins ist.",
+              "Büro- oder Haustürschlüssel mit Gegensprechanlage: Sag der Verwaltung Bescheid, damit der alte Schlüssel gesperrt wird.",
+              "Elektronische Karten: beim Herausgeber deaktivieren."
+            ]
+          ]
+        },
+        {
+          "id": "found",
+          "heading": "Fremde Schlüssel gefunden?",
+          "steps": [
+            {
+              "title": "Lass sie am Fundort oder gib sie an der Rezeption ab",
+              "text": "Der Besitzer kommt genau hierher zurück. Ist der Ort verlassen, bring sie zum nächsten Lokal oder zur Polizei."
+            },
+            {
+              "title": "Veröffentliche eine Anzeige auf DeRechi",
+              "text": "Beschreibe Anhänger und Anzahl der Schlüssel, aber fotografiere keine Anhänger mit Adresse. Der Besitzer beweist sein Eigentum, indem er beschreibt, was die Anzeige verschweigt."
+            }
+          ]
+        }
+      ],
+      "faq": [
+        {
+          "q": "Kann jemand über meine Schlüssel meine Wohnung finden?",
+          "a": "Ein Schlüssel allein trägt keine Adresse. Das Risiko entsteht, wenn ein Anhänger, ein Kassenzettel oder eine Visitenkarte dabei ist oder die Schlüssel zusammen mit Dokumenten verloren gingen. Dann wechsle das Schloss."
+        },
+        {
+          "q": "Ich habe Schlüssel gefunden und niemand meldet sich. Was tun?",
+          "a": "Gib sie bei der nächsten Polizeidienststelle oder im Fundbüro des Fundorts ab. Lass die Anzeige auf DeRechi stehen: Der Besitzer sieht sie vielleicht erst Tage später."
+        },
+        {
+          "q": "Wie lange warten, bevor ich das Schloss wechsle?",
+          "a": "Lässt sich die Adresse erschließen, gar nicht. Wenn nicht, gib dir ein paar Tage zum Suchen: Die meisten Schlüssel tauchen in den ersten Tagen auf."
+        }
+      ]
+    },
+    "wallet": {
+      "title": "Geldbörse verloren: Was tun",
+      "shortTitle": "Geldbörse",
+      "description": "Was du in den ersten Minuten sperrst, wo du eine verlorene Geldbörse suchst, wie du Karten und Dokumente ersetzt und was du mit einer gefundenen tust.",
+      "lead": "In einer Geldbörse steckt selten nur Geld: Karten, Dokumente, Zugangskarten. Darum kommt zuerst nicht die Suche, sondern das Sperren von allem, was jemand benutzen könnte.",
+      "linkLost": "Geldbörse verloren? Was tun",
+      "linkFound": "Geldbörse gefunden? So kommt sie zum Besitzer",
+      "ctaFound": "Gefundene Geldbörsen",
+      "railTitle": "Gefundene Geldbörsen auf DeRechi",
+      "railEmpty": "Gerade gibt es keine Anzeigen über gefundene Geldbörsen. Veröffentliche deine: Wer sie findet, findet dich dann leichter.",
+      "sections": [
+        {
+          "id": "first-hour",
+          "heading": "Die ersten 15 Minuten",
+          "steps": [
+            {
+              "title": "Sperre die Karten",
+              "text": "In der Banking-App oder über die Hotline. Kontaktlos lässt sich auch ohne PIN bezahlen, darum ist das wirklich das Erste."
+            },
+            {
+              "title": "Überlege, was sonst noch drin war",
+              "text": "Dokumente, Zugangskarte, Zeitkarte, Schlüssel, eine notierte PIN. Jedes davon muss einzeln gesperrt oder ersetzt werden."
+            },
+            {
+              "title": "Geh deinen Weg zurück und frag nach",
+              "text": "Kasse, Tisch, Taxi, Bus. Eine Geldbörse wird oft gefunden und beim Personal oder beim Fahrer abgegeben."
+            },
+            {
+              "title": "Prüfe die Funde auf DeRechi und veröffentliche eine Anzeige",
+              "text": "Beschreibe Farbe, Material und Inhalt, aber nie Kartennummern."
+            }
+          ]
+        },
+        {
+          "id": "where-to-look",
+          "heading": "Wo suchen",
+          "body": [
+            "Geldbörsen werden oft von ehrlichen Leuten gefunden und am Fundort oder bei der Polizei abgegeben. Oft ohne das Bargeld, aber mit Karten und Dokumenten, und gerade die sind am schwersten zu ersetzen.",
+            [
+              "Das Lokal oder das Verkehrsmittel, in dem du zuletzt bezahlt hast.",
+              "Die Polizeidienststelle nahe dem Verlustort.",
+              "Dein Briefkasten: Dokumente aus einer gefundenen Geldbörse landen oft in einem Postbriefkasten und kommen per Post zu dir.",
+              "Lokale Gruppen und DeRechi: Suche nach Farbe und Inhalt."
+            ],
+            {
+              "tone": "tip",
+              "text": "War ein Dokument mit deiner Adresse in der Geldbörse, schau noch ein paar Tage in den Briefkasten."
+            }
+          ]
+        },
+        {
+          "id": "restore",
+          "heading": "Ersatz",
+          "body": [
+            "Karten stellt die Bank neu aus, Dokumente die Stelle, die sie ausgegeben hat, Zeitkarte und Zugangskarte der Verkehrsbetrieb oder der Arbeitgeber. Prüfe die Kartenumsätze in der Banking-App noch ein paar Tage lang und widersprich unbekannten Abbuchungen sofort. Wurde die Geldbörse gestohlen, erstatte Anzeige: Die braucht die Versicherung und oft auch der Ersatz der Dokumente.",
+            {
+              "tone": "warning",
+              "text": "Ein Anruf „von der Bank“ mit der Bitte, einen SMS-Code oder Kartendaten zu nennen, ist Betrug, auch wenn der Anrufer vom Verlust weiß. Die Bank sperrt eine Karte selbst, ohne Codes."
+            }
+          ]
+        },
+        {
+          "id": "found",
+          "heading": "Fremde Geldbörse gefunden?",
+          "steps": [
+            {
+              "title": "Nimm nichts heraus außer dem, was du zum Finden des Besitzers brauchst",
+              "text": "Ein Name auf Karte oder Dokument reicht. Lass das Bargeld liegen: Es wird bei der Rückgabe gezählt."
+            },
+            {
+              "title": "Gib sie bei der Polizei oder am Fundort ab",
+              "text": "Personal des Lokals, Fahrer, Sicherheitsdienst: Der Besitzer kommt genau hierher zurück. Eine Bankkarte bringst du in eine Filiale dieser Bank oder meldest sie der Bank: Sie wird gesperrt, und der Besitzer bekommt eine neue."
+            },
+            {
+              "title": "Veröffentliche eine Anzeige auf DeRechi",
+              "text": "Farbe, Material, Ort. Keine Fotos von Karten oder Dokumenten. Der Besitzer beweist sein Eigentum, indem er den Inhalt beschreibt."
+            }
+          ]
+        }
+      ],
+      "faq": [
+        {
+          "q": "Die Geldbörse wurde gefunden, aber ohne Bargeld. Was nun?",
+          "a": "Das kommt oft vor, und Karten und Dokumente sind trotzdem die Rückgabe wert. War es viel Bargeld, kannst du Anzeige erstatten, die Chancen sind aber gering."
+        },
+        {
+          "q": "Muss ich das Schloss wechseln, wenn Schlüssel mit den Dokumenten in der Geldbörse waren?",
+          "a": "Ja, wenn sich aus den Dokumenten deine Adresse ergibt. Wechsle den Schließzylinder, ohne zu warten, bis die Geldbörse auftaucht."
+        },
+        {
+          "q": "Ich habe eine Geldbörse ohne Kontaktdaten gefunden. Wohin damit?",
+          "a": "Zur nächsten Polizeidienststelle oder ins Fundbüro des Fundorts. Und veröffentliche eine Anzeige auf DeRechi: Besitzer suchen oft genau hier."
+        }
+      ]
+    },
+    "electronics": {
+      "title": "Handy verloren: Was tun",
+      "shortTitle": "Handy und Geräte",
+      "description": "Wie du ein verlorenes Handy, Kopfhörer oder Laptop über die eingebauten Dienste findest, was du sperrst und was du mit einem gefundenen Gerät tust.",
+      "lead": "Ein Handy ist das Einzige, das selbst sagen kann, wo es ist. Bis der Akku leer ist, hast du ein paar Stunden, um das zu nutzen.",
+      "linkLost": "Handy oder Gerät verloren? Was tun",
+      "linkFound": "Handy gefunden? So kommt es zum Besitzer",
+      "ctaFound": "Gefundene Geräte",
+      "railTitle": "Gefundene Geräte auf DeRechi",
+      "railEmpty": "Gerade gibt es keine Anzeigen über gefundene Geräte. Veröffentliche deine: Wer es findet, findet dich dann leichter.",
+      "sections": [
+        {
+          "id": "first-hour",
+          "heading": "Die erste Stunde",
+          "steps": [
+            {
+              "title": "Rufe deine eigene Nummer an",
+              "text": "Von einem fremden Handy oder über einen Messenger. Liegt das Handy in der Nähe, hört man es; hat es jemand aufgehoben, geht ein ehrlicher Mensch ran."
+            },
+            {
+              "title": "Schau, wo das Gerät ist",
+              "text": "Find Hub (früher „Mein Gerät finden“) bei Android, „Wo ist?“ bei Apple. Dort kannst du auch einen Ton abspielen, eine Nachricht mit deinem Kontakt auf dem Sperrbildschirm anzeigen und das Gerät sperren."
+            },
+            {
+              "title": "Sperre Bildschirm und Zahlungen, die SIM erst später",
+              "text": "Den Bildschirm sperrst du über den Suchdienst, Zahlungen über die Bank: Mit dem Handy lassen sich Überweisungen bestätigen und Passwörter zurücksetzen. Die SIM-Karte sperrst du beim Anbieter erst, nachdem du den Suchdienst genutzt hast, oder sofort, wenn das Handy sicher gestohlen wurde: Ohne SIM meldet es außerhalb von WLAN keinen Standort. Kopfhörer und Laptop brauchen diesen Schritt nicht."
+            },
+            {
+              "title": "Veröffentliche eine Anzeige",
+              "text": "Auf DeRechi und in lokalen Gruppen: Modell, Farbe, Hülle, Ort. IMEI und Seriennummer nicht veröffentlichen, aber für die Polizei aufheben."
+            }
+          ]
+        },
+        {
+          "id": "where-to-look",
+          "heading": "Wo suchen",
+          "body": [
+            [
+              "Dort, wo das Gerät in Find Hub oder „Wo ist?“ zuletzt auf der Karte war.",
+              "Das Lokal oder das Verkehrsmittel: Handys bleiben beim Personal oder beim Fahrer.",
+              "Das Fundbüro des Verkehrsbetriebs: Im Nahverkehr werden Geräte zentral gesammelt.",
+              "DeRechi und lokale Gruppen: Suche nach Modell und Farbe."
+            ],
+            {
+              "tone": "tip",
+              "text": "Hinterlasse auf dem Sperrbildschirm eine Nachricht mit einer anderen Nummer. Wer das Handy findet, muss dann nicht raten, wie er dich erreicht."
+            }
+          ]
+        },
+        {
+          "id": "protect",
+          "heading": "Wenn das Handy nicht zurückkommt",
+          "body": [
+            "War das Handy nicht mit einem Code gesperrt oder wurde es gestohlen, ändere die Passwörter für E-Mail, Banking und Messenger sofort. Sonst tu es nach ein, zwei Tagen ohne Lebenszeichen: Melde dich auf allen Geräten von allen Sitzungen ab und lösche das Handy bei Bedarf aus der Ferne (nach dem Löschen lässt es sich meist nicht mehr orten). Wurde es gestohlen, erstatte Anzeige mit der IMEI (sie steht auf der Verpackung, auf dem Kaufbeleg und in der Geräteliste deines Google- oder Apple-Kontos): Die braucht auch die Versicherung.",
+            {
+              "tone": "warning",
+              "text": "Eine Nachricht „Dein iPhone wurde gefunden, folge dem Link, um den Standort zu sehen“ ist Betrug und zielt auf dein Apple-ID- oder Google-Passwort. Den Standort siehst du nur in der offiziellen App nach."
+            }
+          ]
+        },
+        {
+          "id": "found",
+          "heading": "Fremdes Handy gefunden?",
+          "steps": [
+            {
+              "title": "Versuche nicht, es zu entsperren",
+              "text": "Lass es eingeschaltet und warte auf einen Anruf. Auf dem Sperrbildschirm steht oft ein Kontakt des Besitzers oder eine Nachricht von ihm."
+            },
+            {
+              "title": "Nimm Anrufe an oder rufe selbst an",
+              "text": "Der Besitzer ruft fast sicher an. Ist der Bildschirm nicht gesperrt, rufe einen der letzten Kontakte an und sag, wo das Handy ist."
+            },
+            {
+              "title": "Gib es bei der Polizei oder an der Rezeption ab und veröffentliche eine Anzeige",
+              "text": "Beschreibe auf DeRechi Modell, Farbe und Hülle. Der Besitzer beweist sein Eigentum, indem er die Nummer oder das Hintergrundbild nennt."
+            }
+          ]
+        }
+      ],
+      "faq": [
+        {
+          "q": "Lässt sich ein ausgeschaltetes Handy finden?",
+          "a": "Find Hub und „Wo ist?“ zeigen den letzten Standort vor dem Ausschalten. Neuere Apple-Modelle und manche Android-Handys sind auch ausgeschaltet sichtbar. Aktiviere „Als verloren markieren“ (Apple) oder „Gerät schützen“ (Android): Sobald das Handy online geht, bekommst du eine Benachrichtigung."
+        },
+        {
+          "q": "Und bei Kopfhörern, Uhr oder Laptop?",
+          "a": "Dieselbe Reihenfolge: der Suchdienst des Herstellers, Lokal und Verkehrsmittel, eine Anzeige auf DeRechi. Einen Laptop zusätzlich sperren und die Passwörter ändern, denn darauf sind deine Konten offen."
+        },
+        {
+          "q": "Der Finder will Geld für die Rückgabe. Zahlen?",
+          "a": "Ein Dankeschön nach der Rückgabe ist deine Sache. Im Voraus zahlen oder Links „zur Bestätigung“ öffnen lohnt sich nicht: So werden Geld und Kontozugang gleichzeitig abgegriffen."
+        }
+      ]
+    },
+    "animals": {
+      "title": "Tier entlaufen: Was tun",
+      "shortTitle": "Tiere",
+      "description": "Wie du Katze oder Hund in den ersten Stunden suchst, wen du informierst, wie du Betrüger erkennst und was du mit einem gefundenen Tier tust.",
+      "lead": "Eine Katze versteckt sich meist ein paar Häuser weiter, ein Hund läuft weiter. Die ersten Stunden entscheiden alles: Handle sofort und hol die Nachbarn dazu.",
+      "linkLost": "Tier entlaufen? Was tun",
+      "linkFound": "Tier gefunden? So findest du den Halter",
+      "ctaFound": "Gefundene Tiere",
+      "railTitle": "Gefundene Tiere auf DeRechi",
+      "railEmpty": "Gerade gibt es keine Anzeigen über gefundene Tiere. Veröffentliche deine: Wer es findet, findet dich dann leichter.",
+      "sections": [
+        {
+          "id": "first-hour",
+          "heading": "Die ersten Stunden",
+          "steps": [
+            {
+              "title": "Geh die Umgebung ab und rufe leise",
+              "text": "Katzen verstecken sich unter Autos, in Kellern und auf Bäumen im Umkreis weniger Häuser. Hunde laufen weiter, kommen aber auf der gewohnten Spazierroute zurück. Nimm das Lieblingsfutter mit und rufe mit ruhiger Stimme: Schreien verschreckt. Laufe dem Tier nicht hinterher: Erschrocken läuft es noch weiter weg. Gehe in die Hocke, sprich leise und lass es von selbst kommen."
+            },
+            {
+              "title": "Informiere Nachbarn und Hausmeister",
+              "text": "Bitte sie, in Keller, Garagen und Treppenhäuser zu schauen. Hinterlasse deine Nummer."
+            },
+            {
+              "title": "Veröffentliche eine Anzeige mit Foto",
+              "text": "Auf DeRechi und in den Gruppen des Viertels: Foto, Name, Merkmale, Ort und Uhrzeit. Sag, ob das Tier scheu ist und wie man sich ihm nähert."
+            },
+            {
+              "title": "Hänge Zettel auf",
+              "text": "Hauseingänge, Haltestellen, Läden, Tierarztpraxen im Umkreis von einem Kilometer. Großes Foto, Name, Telefonnummer."
+            }
+          ]
+        },
+        {
+          "id": "where-to-look",
+          "heading": "Wen informieren",
+          "body": [
+            [
+              "Tierarztpraxen in der Nähe: Dorthin werden gefundene Tiere gebracht, vor allem verletzte.",
+              "Tierheime und Fundtierstellen: Frag nach und hinterlasse ein Foto mit Kontakt.",
+              "Die Tiergruppen von Viertel und Stadt: Dort wird dein Tier am ehesten gesehen.",
+              "Gibt es einen Chip, informiere das Register, in dem er eingetragen ist, und die Praxis, die ihn gesetzt hat."
+            ],
+            {
+              "tone": "tip",
+              "text": "Abends und im Morgengrauen, wenn es still ist, antwortet eine Katze am ehesten. Stelle eine Transportbox oder einen Karton mit etwas von dir vor den Eingang: Der vertraute Geruch hilft beim Heimkommen."
+            }
+          ]
+        },
+        {
+          "id": "scams",
+          "heading": "Betrüger erkennen",
+          "body": [
+            "Nach der Anzeige können Nachrichten kommen wie „wir haben es gefunden, überweis für den Transport“ oder „schicke den Code, um deine Nummer zu bestätigen“. Ein echter Finder schickt jetzt ein Foto des Tiers, nicht „nach der Zahlung“.",
+            [
+              "Bitte um ein aktuelles Foto oder Video und frag nach Merkmalen, die in der Anzeige fehlen.",
+              "Zahle nie im Voraus und öffne keine Links „zur Bestätigung“.",
+              "Hole das Tier persönlich ab, an einem belebten Ort oder bei einer Tierarztpraxis."
+            ]
+          ]
+        },
+        {
+          "id": "found",
+          "heading": "Fremdes Tier gefunden?",
+          "steps": [
+            {
+              "title": "Prüfe, ob es wirklich entlaufen ist",
+              "text": "Eine gepflegte Katze mit Halsband ist vielleicht nur unterwegs. Ein Hund ohne Halter in der Nähe, verängstigt oder verletzt, braucht Hilfe. Ein verängstigtes oder verletztes Tier nicht mit bloßen Händen packen: Wirf eine Jacke oder ein Handtuch darüber, und bei einem verletzten Tier rufe sofort eine Tierarztpraxis oder die Fundtierstelle an."
+            },
+            {
+              "title": "Prüfe Chip und Marke",
+              "text": "Fast jede Tierarztpraxis liest einen Chip aus, meist kostenlos. Am Halsband kann eine Marke mit Telefonnummer hängen."
+            },
+            {
+              "title": "Veröffentliche eine Anzeige und informiere die Praxen in der Nähe",
+              "text": "Auf DeRechi und in den Gruppen des Viertels: Foto, Ort, Uhrzeit. Der Halter beweist sein Eigentum, indem er Merkmale nennt oder Fotos zeigt."
+            }
+          ]
+        }
+      ],
+      "faq": [
+        {
+          "q": "Wie viel Zeit bleibt, um Katze oder Hund zu finden?",
+          "a": "Die meisten kommen in den ersten drei Tagen zurück, manche erst nach Wochen: Oft hat das Tier die ganze Zeit in der Nähe gelebt. Suche weiter und halte die Anzeige aktuell."
+        },
+        {
+          "q": "Soll ich sofort zum Tierheim fahren?",
+          "a": "Informiere Tierheime und Fundtierstellen gleich am ersten Tag mit Foto und Kontakt, und schau alle paar Tage persönlich vorbei: Tiere kommen nicht sofort dort an."
+        },
+        {
+          "q": "Ich habe ein Tier gefunden, kann es aber nicht behalten. Was tun?",
+          "a": "Frag in der Tierarztpraxis oder in den Gruppen nach einer Pflegestelle und informiere das Tierheim. Die Anzeige auf DeRechi stelle in jedem Fall ein: Halter suchen oft genau hier."
+        }
+      ]
+    }
+  }
+}

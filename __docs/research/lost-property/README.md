@@ -75,15 +75,26 @@ nationally; no station has its own office.
 ## What is on the site
 
 The city pages render `Web-Client/src/content/lost-property/places.ts` (texts in five locales next
-to it), not these files. On 2026-10-19 the official pages were opened by hand and six entries went
-in: Kyiv metro office, Lviv city bureau, Chernivtsi trolleybus form, and the rules for the Dnipro
-and Kharkiv metro and Chernihiv trolleybuses. Every city page also shows the national block
-(Ukrzaliznytsia's form, the finder's duty under Civil Code art. 337).
+to it), not these files. Every city has at least one entry. An entry marked `needsCheck` is shown
+with "(потребує уточнення)" after its text: what it says comes from news, an unconfirmed channel or
+no source at all beyond the operator's name.
 
-Held back although grouped A or B: Sumy and Lutsk (the contacts are official, the lost-property
-role only from news or an unconfirmed Telegram channel), Odesa, Vinnytsia and Khmelnytskyi (same),
-and in Kyiv the Boryspil office, the 15-51 service and the State Migration Service entry (pre-war or
-unopened pages). A phone call that confirms the role is enough to add any of them.
+Confirmed on an official page on 2026-10-19 (no mark): Kyiv metro office, Lviv city bureau,
+Chernivtsi trolleybus form, the Dnipro and Kharkiv metro rules, the Chernihiv trolleybus rules, and
+the city rules of Uzhhorod (buses, clause 9.1.20) and Kropyvnytskyi (buses, clause 6.7). The last two
+were quoted by the research agent from official PDFs that could not be reopened by hand here; check
+them against the PDFs listed in `_city-rules.json`.
+
+The national tram and trolleybus rules were repealed in 2017 (Мінрегіон order No. 277), so the
+"hand it to the driver or the dispatcher at the last stop" wording is each city's own and had to be
+found per city; `_city-rules.json` records the search. For buses the national rule stands: clause 82
+of the Rules approved by КМУ resolution No. 176 (the driver writes a report and hands the item to the
+carrier). It is in the national block on every city page, with Ukrzaliznytsia's form and the
+finder's duty under Civil Code art. 337.
+
+Not shown at all: Boryspil airport and the 15-51 service in Kyiv (pre-war pages), the State Migration
+Service entry (page never opened), Lutsk's ЦНАП (news from 2019 and 2021), and every phone number
+known only from news.
 
 ## Rechecking
 

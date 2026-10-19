@@ -2,7 +2,7 @@ import { cx } from "class-variance-authority"
 import { MapPin } from "lucide-react"
 import { getLocale, getTranslations } from "next-intl/server"
 import { Stack } from "@/components/pouf/layout"
-import { Heading } from "@/components/pouf/text"
+import { Heading, Text } from "@/components/pouf/text"
 import { Link } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
 import { CITIES, type City } from "@/lib/cities"
@@ -39,7 +39,12 @@ function position(city: City): React.CSSProperties {
   return { left: `${(x / MAP.width) * 100}%`, top: `${(y / MAP.height) * 100}%` }
 }
 
-export default async function CityMap() {
+type Props = {
+  description?: string
+  hash?: string
+}
+
+export default async function CityMap({ description, hash = "" }: Props) {
   const [locale, t, tc] = await Promise.all([
     getLocale(),
     getTranslations("home"),
@@ -53,6 +58,11 @@ export default async function CityMap() {
         <Heading level={2} id="cities-heading">
           {t("citiesTitle")}
         </Heading>
+        {description ? (
+          <Text muted className="block leading-relaxed">
+            {description}
+          </Text>
+        ) : null}
 
         <div className="relative mx-auto aspect-1000/683 w-full max-w-5xl -rotate-1">
           <svg
@@ -77,7 +87,7 @@ export default async function CityMap() {
                 style={position(city)}
               >
                 <Link
-                  href={paths.city(city.slug)}
+                  href={`${paths.city(city.slug)}${hash}`}
                   className="group absolute -translate-x-1/2 -translate-y-full px-0.5 pt-0.5 no-underline lg:px-1 lg:pt-1"
                 >
                   <MapPin
@@ -104,6 +114,7 @@ export default async function CityMap() {
           <CityPicker
             cities={[...cities].sort((a, b) => a.name.localeCompare(b.name, locale))}
             label={t("citiesPick")}
+            hash={hash}
           />
         </div>
       </section>

@@ -7,15 +7,16 @@ import { paths } from "@/i18n/paths"
 type Props = {
   cities: { slug: string; name: string }[]
   label: string
+  hash?: string
 }
 
-export default function CityPicker({ cities, label }: Props) {
+export default function CityPicker({ cities, label, hash = "" }: Props) {
   const router = useRouter()
 
   return (
     <Select
       value=""
-      onChange={(slug) => router.push(paths.city(slug))}
+      onChange={(slug) => router.push(`${paths.city(slug)}${hash}`)}
       options={cities.map((city) => ({ value: city.slug, label: city.name }))}
       placeholder={label}
       label={label}

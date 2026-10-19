@@ -1,3 +1,5 @@
+import { Link } from "@/i18n/navigation"
+
 interface BreadcrumbItem {
   label: string
   href?: string
@@ -27,9 +29,9 @@ export function Breadcrumb({ items }: BreadcrumbProps) {
                   {item.label}
                 </span>
               ) : (
-                <a className="pouf-breadcrumb__link" href={item.href}>
+                <Link className="pouf-breadcrumb__link" href={item.href}>
                   {item.label}
-                </a>
+                </Link>
               )}
             </li>
           )

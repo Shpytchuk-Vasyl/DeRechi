@@ -1,0 +1,503 @@
+{
+  "eyebrow": "Poradnik",
+  "contents": "Na tej stronie",
+  "readingTime": "{minutes} min czytania",
+  "checked": "Zaktualizowano {date}",
+  "checkNowTitle": "Sprawdź, czy twoja rzecz już się znalazła",
+  "checkNowText": "Ludzie, którzy coś znajdują, publikują to tutaj i w lokalnych grupach. Przejrzyj znalezione rzeczy i opublikuj własne ogłoszenie: temu, kto znajdzie twoją rzecz, łatwiej będzie cię odnaleźć.",
+  "ctaLost": "Zgłoś zgubę",
+  "faqTitle": "Częste pytania",
+  "relatedTitle": "Inne poradniki",
+  "cityNote": "Gdzie zgłosić się w twoim mieście — służby, biura rzeczy znalezionych, przewoźnicy — zebraliśmy na stronie miasta.",
+  "cityLink": "Wybierz miasto",
+  "index": {
+    "title": "Poradniki: co robić, gdy coś zgubisz",
+    "description": "Krótkie poradniki na pierwszą godzinę po zgubie: gdzie szukać, jak uniknąć oszustów i co zrobić ze znaleziskiem. Dokumenty, klucze, portfel, telefon, zwierzęta.",
+    "lead": "Krótko i na temat: co zrobić od razu, gdzie szukać, jak nie dać się oszukać i co zrobić, gdy znajdziesz cudzą rzecz.",
+    "read": "Czytaj"
+  },
+  "guides": {
+    "documents": {
+      "title": "Zgubione dokumenty: co robić",
+      "shortTitle": "Dokumenty",
+      "description": "Co zrobić w pierwszej godzinie po zgubieniu paszportu lub dowodu, gdzie szukać, jak chronić się przed oszustami i co zrobić ze znalezionymi cudzymi dokumentami.",
+      "lead": "Paszport, dowód, prawo jazdy: łatwo je zgubić, a skorzystać może z nich ktoś inny. Dlatego najpierw zabezpiecz się, potem szukaj, a dopiero potem odtwarzaj.",
+      "linkLost": "Zgubione dokumenty? Co robić",
+      "linkFound": "Znalezione dokumenty? Gdzie je oddać",
+      "ctaFound": "Znalezione dokumenty",
+      "railTitle": "Znalezione dokumenty na DeRechi",
+      "railEmpty": "Na razie nie ma ogłoszeń o znalezionych dokumentach. Opublikuj swoje: temu, kto je znajdzie, łatwiej będzie cię odnaleźć.",
+      "sections": [
+        {
+          "id": "first-hour",
+          "heading": "Pierwsza godzina",
+          "steps": [
+            {
+              "title": "Jeśli z dokumentami była karta bankowa, zablokuj ją",
+              "text": "W aplikacji lub przez infolinię banku. Nową kartę łatwo wydać ponownie, a odzyskać pobrane pieniądze jest znacznie trudniej."
+            },
+            {
+              "title": "Jeśli dokumenty skradziono, powiadom policję",
+              "text": "Zgłoszenie dokumentuje datę i okoliczności. Jeśli ktoś spróbuje użyć dokumentu, masz dowód, że wtedy nie było go już w twoich rękach."
+            },
+            {
+              "title": "Wróć po swoich śladach",
+              "text": "Torba, kieszenie, samochód, wczorajsze ubranie. Zadzwoń do miejsc z twojej trasy: do kawiarni, taksówki, na dworzec, do sklepu. Większość zgubionych rzeczy odnajduje się właśnie tam w pierwszych godzinach."
+            },
+            {
+              "title": "Sprawdź, czy dokumentu już nie znaleziono",
+              "text": "Przejrzyj znalezione dokumenty na DeRechi i w lokalnych grupach. Opublikuj ogłoszenie o zgubie z rodzajem dokumentu i miejscem."
+            }
+          ]
+        },
+        {
+          "id": "where-to-look",
+          "heading": "Gdzie szukać",
+          "body": [
+            "Dokument najczęściej wraca tą samą drogą, którą się zgubił: ktoś go podnosi i oddaje tam, gdzie znalazł, albo na najbliższy komisariat.",
+            [
+              "Lokal lub środek transportu z twojej trasy: obsługa, kierowca, biuro rzeczy znalezionych przewoźnika.",
+              "Komisariat lub biuro rzeczy znalezionych w pobliżu miejsca zguby: tam najczęściej trafiają znalezione dokumenty.",
+              "Twoja skrzynka na listy: znalazca często wrzuca dokument do ulicznej skrzynki pocztowej, a poczta dostarcza go na adres podany w dokumencie.",
+              "Lokalne grupy i DeRechi: szukaj po rodzaju dokumentu i nazwisku."
+            ],
+            {
+              "tone": "tip",
+              "text": "Zostaw kartkę z numerem także w miejscu zguby: w kawiarni czy na dworcu zobaczą je ci, którzy sprzątają po tobie."
+            }
+          ]
+        },
+        {
+          "id": "replace",
+          "heading": "Odtworzenie",
+          "body": [
+            "Dokument odtwarza ten, kto go wydał: paszport i dowód — urząd, który je wydaje, prawo jazdy — organ wydający prawa jazdy, legitymację — uczelnia, kartę bankową — bank. Co dokładnie jest potrzebne i ile to kosztuje, zależy od kraju, dlatego sprawdź oficjalną stronę urzędu lub stronę swojego miasta. Jeśli paszport zginął za granicą, zgłoś się do konsulatu swojego kraju: wyda dokument na powrót do domu.",
+            {
+              "tone": "warning",
+              "text": "Po zgłoszeniu zguby w urzędzie, który wydaje dokument, stary staje się nieważny, nawet jeśli znajdzie się następnego dnia. Nie wolno z niego korzystać: przekaż go urzędowi, który wydał nowy."
+            }
+          ]
+        },
+        {
+          "id": "scams",
+          "heading": "Jak nie dać się oszukać",
+          "body": [
+            [
+              "Nie płać „za zwrot” z góry i nie wysyłaj kodów z SMS: żeby otrzymać pieniądze, kody nie są potrzebne.",
+              "Nie wysyłaj zdjęć innych swoich dokumentów „na potwierdzenie”. Kto naprawdę znalazł twój dokument, i tak widzi, czyj jest.",
+              "Spotykaj się w dzień, w ludnym miejscu, nie w domu.",
+              "Jeśli dokument jest „zakładnikiem” i ktoś żąda pieniędzy, zgłoś się na policję."
+            ]
+          ]
+        },
+        {
+          "id": "found",
+          "heading": "Jeśli znajdziesz cudze dokumenty",
+          "steps": [
+            {
+              "title": "Zanieś na policję albo oddaj w miejscu znalezienia",
+              "text": "Najbliższy komisariat przyjmuje znalezione dokumenty i tak najszybciej wrócą do właściciela. Kartę bankową zanieś do oddziału tego banku albo powiadom bank przez infolinię: kartę zablokują, a właściciel dostanie nową. Nie trzeba jej nikomu przesyłać."
+            },
+            {
+              "title": "Nie fotografuj i nie publikuj stron z danymi",
+              "text": "Na zdjęcie dokumentu wyłudza się kredyty. W ogłoszeniu wystarczy rodzaj dokumentu, imię właściciela i miejsce znalezienia."
+            },
+            {
+              "title": "Opublikuj ogłoszenie na DeRechi",
+              "text": "Właściciel już szuka i przegląda znalezione rzeczy w mieście. Ogłoszenie zajmuje minutę, a twoich kontaktów nie pokazujemy w całości."
+            }
+          ]
+        }
+      ],
+      "faq": [
+        {
+          "q": "Czy muszę iść na policję, jeśli dokument po prostu się zgubił?",
+          "a": "Do odtworzenia zwykle nie, chyba że został skradziony. Ale zgłoszenie dokumentuje datę zguby, więc jeśli ktoś spróbuje użyć dokumentu, masz dowód, że wtedy nie było go już w twoich rękach."
+        },
+        {
+          "q": "Ktoś znalazł mój dokument i prosi o nagrodę. Czy to normalne?",
+          "a": "Podziękować można, a w wielu krajach prawo daje znalazcy prawo do nagrody. Ale nie płać z góry i nie podawaj kodów z SMS: rozlicz się przy spotkaniu, gdy dokument jest już w twoich rękach."
+        },
+        {
+          "q": "Czy mogę opublikować zdjęcie znalezionego paszportu, żeby właściciel go rozpoznał?",
+          "a": "Nie. Na zdjęcie dokumentu wyłudza się kredyty i włamuje na konta. Wystarczy napisać rodzaj dokumentu, imię i miejsce znalezienia: właściciel i tak go rozpozna."
+        }
+      ]
+    },
+    "keys": {
+      "title": "Zgubione klucze: co robić",
+      "shortTitle": "Klucze",
+      "description": "Gdzie najczęściej odnajdują się zgubione klucze, kiedy wymienić zamek, jak zabezpieczyć mieszkanie i auto i co zrobić ze znalezionym pękiem kluczy.",
+      "lead": "Klucze gubi się najczęściej i prawie zawsze blisko. Najważniejsze pytanie to nie „gdzie są”, ale „czy ten, kto je znalazł, wie, od których są drzwi”.",
+      "linkLost": "Zgubione klucze? Co robić",
+      "linkFound": "Znalezione klucze? Jak oddać je właścicielowi",
+      "ctaFound": "Znalezione klucze",
+      "railTitle": "Znalezione klucze na DeRechi",
+      "railEmpty": "Na razie nie ma ogłoszeń o znalezionych kluczach. Opublikuj swoje: temu, kto je znajdzie, łatwiej będzie cię odnaleźć.",
+      "sections": [
+        {
+          "id": "first-hour",
+          "heading": "Pierwsza godzina",
+          "steps": [
+            {
+              "title": "Sprawdź, czy na kluczach jest coś z adresem",
+              "text": "Zawieszka, paragon, brelok z numerem auta lub klatki. Jeśli da się ustalić adres, lepiej wymienić zamek bez czekania."
+            },
+            {
+              "title": "Wróć po swoich śladach",
+              "text": "Kieszenie, torba, zamek w drzwiach, samochód, ławka przy klatce. Klucze najczęściej wypadają tam, gdzie wyjmuje się telefon lub portfel."
+            },
+            {
+              "title": "Zapytaj w miejscach z twojej trasy",
+              "text": "Ochrona, obsługa, kierowca, sąsiedzi. Znalezione klucze zwykle zostawia się na ladzie albo wiesza przy drzwiach."
+            },
+            {
+              "title": "Sprawdź znalezione rzeczy na DeRechi",
+              "text": "Szukaj po wyglądzie pęku: liczba kluczy, brelok, kolor. Opublikuj ogłoszenie o zgubie."
+            }
+          ]
+        },
+        {
+          "id": "where-to-look",
+          "heading": "Gdzie szukać",
+          "body": [
+            [
+              "Przy ostatnio otwieranych drzwiach: mieszkanie, auto, biuro.",
+              "W kieszeniach kurtki i w podszewce torby.",
+              "Na ladach recepcji i w biurach rzeczy znalezionych miejsc z twojej trasy.",
+              "W grupach bloku, dzielnicy i miasta: znalezione klucze publikuje się tam bardzo często."
+            ],
+            {
+              "tone": "tip",
+              "text": "W ogłoszeniu opisz brelok i liczbę kluczy, ale nie podawaj adresu ani numeru auta."
+            }
+          ]
+        },
+        {
+          "id": "secure",
+          "heading": "Czy wymieniać zamek",
+          "body": [
+            "Jeśli na kluczach nie było niczego z adresem i nie zginęły razem z dokumentami, ryzyko jest małe: po samym kluczu praktycznie nie da się znaleźć twoich drzwi. Jeśli adres był albo klucze zginęły razem z portfelem czy paszportem, wymień wkładkę zamka od razu.",
+            [
+              "Kluczyki do auta: jeśli masz zapasowe, poproś w serwisie o usunięcie zgubionego kluczyka z pamięci auta, żeby nie dało się nim uruchomić samochodu. Do tego czasu przeparkuj auto z dala od miejsca zguby: jedno naciśnięcie pilota pokazuje, który samochód jest twój.",
+              "Klucze do biura lub klatki z domofonem: powiadom administratora, żeby unieważnił stary klucz.",
+              "Karty elektroniczne: dezaktywuj u wydawcy."
+            ]
+          ]
+        },
+        {
+          "id": "found",
+          "heading": "Jeśli znajdziesz cudze klucze",
+          "steps": [
+            {
+              "title": "Zostaw w miejscu znalezienia albo oddaj obsłudze",
+              "text": "Właściciel wróci właśnie tutaj. Jeśli miejsce jest bezludne, zanieś do najbliższego lokalu lub na komisariat."
+            },
+            {
+              "title": "Opublikuj ogłoszenie na DeRechi",
+              "text": "Opisz brelok i liczbę kluczy, ale nie fotografuj zawieszek z adresem. Właściciel udowodni, że klucze są jego, opisując to, czego nie ma w ogłoszeniu."
+            }
+          ]
+        }
+      ],
+      "faq": [
+        {
+          "q": "Czy ktoś może znaleźć moje mieszkanie po kluczach?",
+          "a": "Sam klucz nie zawiera adresu. Ryzyko pojawia się, gdy obok jest zawieszka, paragon, wizytówka albo klucze zgubiły się razem z dokumentami. Wtedy wymień zamek."
+        },
+        {
+          "q": "Mam znalezione klucze i nikt się nie odzywa. Co z nimi zrobić?",
+          "a": "Oddaj na najbliższy komisariat lub do biura rzeczy znalezionych w miejscu znalezienia. Ogłoszenie na DeRechi zostaw: właściciel może je zobaczyć po kilku dniach."
+        },
+        {
+          "q": "Ile czekać, zanim wymienię zamek?",
+          "a": "Jeśli da się ustalić adres, nie czekaj wcale. Jeśli nie, daj sobie kilka dni na poszukiwania: większość kluczy odnajduje się w pierwszych dniach."
+        }
+      ]
+    },
+    "wallet": {
+      "title": "Zgubiony portfel: co robić",
+      "shortTitle": "Portfel",
+      "description": "Co zablokować w pierwszych minutach, gdzie szukać zgubionego portfela, jak odtworzyć karty i dokumenty i co zrobić ze znalezionym cudzym portfelem.",
+      "lead": "W portfelu rzadko są tylko pieniądze: karty, dokumenty, przepustki. Dlatego najpierw nie szukaj, tylko zablokuj to, z czego ktoś może skorzystać.",
+      "linkLost": "Zgubiony portfel? Co robić",
+      "linkFound": "Znaleziony portfel? Jak oddać go właścicielowi",
+      "ctaFound": "Znalezione portfele",
+      "railTitle": "Znalezione portfele na DeRechi",
+      "railEmpty": "Na razie nie ma ogłoszeń o znalezionych portfelach. Opublikuj swoje: temu, kto go znajdzie, łatwiej będzie cię odnaleźć.",
+      "sections": [
+        {
+          "id": "first-hour",
+          "heading": "Pierwsze 15 minut",
+          "steps": [
+            {
+              "title": "Zablokuj karty",
+              "text": "W aplikacji banku lub przez infolinię. Zbliżeniowo można zapłacić bez PIN-u, więc to naprawdę pierwsza rzecz do zrobienia."
+            },
+            {
+              "title": "Przypomnij sobie, co jeszcze było w środku",
+              "text": "Dokumenty, przepustka, bilet okresowy, klucze, zapisany PIN. Każdą z tych rzeczy trzeba zablokować lub odtworzyć osobno."
+            },
+            {
+              "title": "Wróć po śladach i zapytaj",
+              "text": "Kasa, stolik, taksówka, autobus. Portfel często ktoś znajduje i zostawia u obsługi lub kierowcy."
+            },
+            {
+              "title": "Sprawdź znalezione rzeczy na DeRechi i opublikuj ogłoszenie",
+              "text": "Opisz kolor, materiał i zawartość, ale bez numerów kart."
+            }
+          ]
+        },
+        {
+          "id": "where-to-look",
+          "heading": "Gdzie szukać",
+          "body": [
+            "Portfele często znajdują uczciwi ludzie i oddają tam, gdzie znaleźli, albo na policję. Często bez gotówki, ale z kartami i dokumentami, a te najtrudniej odtworzyć.",
+            [
+              "Miejsce ostatniej płatności: lokal lub środek transportu.",
+              "Komisariat w pobliżu miejsca zguby.",
+              "Twoja skrzynka na listy: dokumenty ze znalezionego portfela często trafiają do ulicznej skrzynki pocztowej, a poczta dostarcza je na twój adres.",
+              "Lokalne grupy i DeRechi: szukaj po kolorze i zawartości."
+            ],
+            {
+              "tone": "tip",
+              "text": "Jeśli w portfelu był dokument z adresem, sprawdzaj skrzynkę pocztową jeszcze przez kilka dni."
+            }
+          ]
+        },
+        {
+          "id": "restore",
+          "heading": "Odtworzenie",
+          "body": [
+            "Karty wydaje ponownie bank, dokumenty odtwarza ten, kto je wydał, bilet i przepustkę — przewoźnik lub pracodawca. Transakcje kartami sprawdzaj w aplikacji banku jeszcze przez kilka dni i od razu reklamuj nieznane obciążenia. Jeśli portfel skradziono, zgłoś to na policji: zgłoszenie jest potrzebne do ubezpieczenia i często do odtworzenia dokumentów.",
+            {
+              "tone": "warning",
+              "text": "Telefon „z banku” z prośbą o podanie kodu z SMS lub danych karty to oszustwo, nawet jeśli dzwoniący wie o zgubie. Bank blokuje kartę sam, bez kodów."
+            }
+          ]
+        },
+        {
+          "id": "found",
+          "heading": "Jeśli znajdziesz cudzy portfel",
+          "steps": [
+            {
+              "title": "Nie wyjmuj niczego poza tym, co potrzebne do znalezienia właściciela",
+              "text": "Imię na karcie lub dokumencie wystarczy. Gotówki nie ruszaj: przeliczy się ją przy zwrocie."
+            },
+            {
+              "title": "Oddaj na policję albo w miejscu znalezienia",
+              "text": "Obsługa lokalu, kierowca, ochrona: właściciel wróci właśnie tutaj. Kartę bankową zanieś do oddziału tego banku albo powiadom bank: zablokują ją i wydadzą właścicielowi nową."
+            },
+            {
+              "title": "Opublikuj ogłoszenie na DeRechi",
+              "text": "Kolor, materiał, miejsce. Bez zdjęć kart i dokumentów. Właściciel udowodni, że portfel jest jego, opisując zawartość."
+            }
+          ]
+        }
+      ],
+      "faq": [
+        {
+          "q": "Portfel się znalazł, ale bez gotówki. Co robić?",
+          "a": "Zdarza się to często, a karty i dokumenty i tak warto odzyskać. Jeśli gotówki było dużo, można zgłosić sprawę na policję, ale szanse są niewielkie."
+        },
+        {
+          "q": "Czy trzeba wymieniać zamek, jeśli klucze były w portfelu razem z dokumentami?",
+          "a": "Tak, jeśli z dokumentów da się ustalić adres. Wymień wkładkę zamka, nie czekając, aż portfel się znajdzie."
+        },
+        {
+          "q": "Mam znaleziony portfel bez żadnych kontaktów. Gdzie go oddać?",
+          "a": "Na najbliższy komisariat lub do biura rzeczy znalezionych w miejscu znalezienia. I opublikuj ogłoszenie na DeRechi: właściciele często szukają właśnie tutaj."
+        }
+      ]
+    },
+    "electronics": {
+      "title": "Zgubiony telefon: co robić",
+      "shortTitle": "Telefon i elektronika",
+      "description": "Jak znaleźć zgubiony telefon, słuchawki lub laptop przez wbudowane usługi, co zablokować, gdy nie wracają, i co zrobić ze znalezionym cudzym urządzeniem.",
+      "lead": "Telefon to jedyna rzecz, która sama może powiedzieć, gdzie jest. Dopóki bateria się nie wyczerpie, masz kilka godzin, żeby z tego skorzystać.",
+      "linkLost": "Zgubiony telefon lub elektronika? Co robić",
+      "linkFound": "Znaleziony telefon? Jak oddać go właścicielowi",
+      "ctaFound": "Znaleziona elektronika",
+      "railTitle": "Znaleziona elektronika na DeRechi",
+      "railEmpty": "Na razie nie ma ogłoszeń o znalezionej elektronice. Opublikuj swoje: temu, kto ją znajdzie, łatwiej będzie cię odnaleźć.",
+      "sections": [
+        {
+          "id": "first-hour",
+          "heading": "Pierwsza godzina",
+          "steps": [
+            {
+              "title": "Zadzwoń na swój numer",
+              "text": "Z cudzego telefonu lub przez komunikator. Jeśli telefon jest blisko, ktoś go usłyszy; jeśli ktoś go podniósł, uczciwa osoba odbierze."
+            },
+            {
+              "title": "Sprawdź, gdzie jest urządzenie",
+              "text": "Find Hub (dawniej „Znajdź moje urządzenie”) na Androidzie, „Lokalizator” u Apple. Tam też możesz włączyć dźwięk, wyświetlić na ekranie wiadomość ze swoim kontaktem i zablokować urządzenie."
+            },
+            {
+              "title": "Zablokuj ekran i płatności, kartę SIM później",
+              "text": "Ekran zablokuj przez usługę lokalizacji, płatności w banku: z telefonu można potwierdzić przelew i zresetować hasła. Kartę SIM zablokuj u operatora dopiero po skorzystaniu z lokalizacji albo od razu, jeśli telefon na pewno skradziono: bez karty SIM poza Wi-Fi nie pokaże swojego położenia. Słuchawki i laptop tego kroku nie wymagają."
+            },
+            {
+              "title": "Opublikuj ogłoszenie",
+              "text": "Na DeRechi i w lokalnych grupach: model, kolor, etui, miejsce. Numeru IMEI i numeru seryjnego nie publikuj, ale zachowaj je dla policji."
+            }
+          ]
+        },
+        {
+          "id": "where-to-look",
+          "heading": "Gdzie szukać",
+          "body": [
+            [
+              "Tam, gdzie urządzenie było ostatnio widoczne na mapie w Find Hub lub „Lokalizatorze”.",
+              "Lokal lub środek transportu: telefony zostawia się u obsługi lub kierowcy.",
+              "Biuro rzeczy znalezionych przewoźnika: w komunikacji elektronikę zbiera się centralnie.",
+              "DeRechi i lokalne grupy: szukaj po modelu i kolorze."
+            ],
+            {
+              "tone": "tip",
+              "text": "Umieść na ekranie blokady wiadomość z innym numerem do kontaktu. Ten, kto znajdzie telefon, nie będzie musiał zgadywać, jak cię znaleźć."
+            }
+          ]
+        },
+        {
+          "id": "protect",
+          "heading": "Jeśli telefon nie wraca",
+          "body": [
+            "Jeśli telefon nie był zablokowany kodem albo został skradziony, hasła do poczty, banku i komunikatorów zmień od razu. W pozostałych przypadkach zrób to po dniu lub dwóch bez śladu urządzenia: wyloguj się ze wszystkich sesji na każdym urządzeniu i w razie potrzeby wymaż dane zdalnie (po wymazaniu telefonu zwykle nie da się już śledzić). Jeśli telefon skradziono, zgłoś to na policji, podając IMEI (jest na pudełku, na paragonie i na liście urządzeń twojego konta Google lub Apple): potrzebuje go też ubezpieczyciel.",
+            {
+              "tone": "warning",
+              "text": "Wiadomość „twój iPhone został znaleziony, kliknij link, aby zobaczyć lokalizację” to oszustwo wymierzone w twoje hasło do Apple ID lub Google. Lokalizację sprawdzaj tylko w oficjalnej aplikacji."
+            }
+          ]
+        },
+        {
+          "id": "found",
+          "heading": "Jeśli znajdziesz cudzy telefon",
+          "steps": [
+            {
+              "title": "Nie próbuj go odblokować",
+              "text": "Zostaw go włączonego i poczekaj na połączenie. Na ekranie blokady często jest kontakt do właściciela albo wiadomość od niego."
+            },
+            {
+              "title": "Odbieraj połączenia albo zadzwoń samodzielnie",
+              "text": "Właściciel prawie na pewno zadzwoni. Jeśli ekran nie jest zablokowany, zadzwoń do jednego z ostatnich kontaktów i powiedz, gdzie jest telefon."
+            },
+            {
+              "title": "Oddaj na policję lub obsłudze i opublikuj ogłoszenie",
+              "text": "Na DeRechi opisz model, kolor i etui. Właściciel udowodni, że telefon jest jego, podając numer lub tapetę."
+            }
+          ]
+        }
+      ],
+      "faq": [
+        {
+          "q": "Czy można znaleźć wyłączony telefon?",
+          "a": "Ostatnią lokalizację przed wyłączeniem pokazuje Find Hub lub „Lokalizator”. Nowsze modele Apple i niektóre Androidy widać nawet wyłączone. Włącz „Oznacz jako utracony” (Apple) lub „Zabezpiecz urządzenie” (Android): gdy tylko telefon pojawi się w sieci, dostaniesz powiadomienie."
+        },
+        {
+          "q": "Co ze słuchawkami, zegarkiem lub laptopem?",
+          "a": "Ta sama kolejność: usługa lokalizacji producenta, lokal i transport, ogłoszenie na DeRechi. Laptop dodatkowo zablokuj i zmień hasła, bo są na nim otwarte twoje konta."
+        },
+        {
+          "q": "Znalazca prosi o pieniądze za zwrot. Płacić?",
+          "a": "Podziękowanie po zwrocie to twój wybór. Płacenie z góry lub klikanie linków „na potwierdzenie” nie jest tego warte: tak zabiera się i pieniądze, i dostęp do konta."
+        }
+      ]
+    },
+    "animals": {
+      "title": "Zaginęło zwierzę: co robić",
+      "shortTitle": "Zwierzęta",
+      "description": "Jak szukać zaginionego kota lub psa w pierwszych godzinach, kogo powiadomić, jak nie dać się oszukać i co zrobić, gdy znajdziesz cudze zwierzę.",
+      "lead": "Kot zwykle chowa się kilka domów dalej, pies biegnie dalej. Pierwsze godziny decydują o wszystkim, więc działaj od razu i zaangażuj sąsiadów.",
+      "linkLost": "Zaginęło zwierzę? Co robić",
+      "linkFound": "Znalezione zwierzę? Jak znaleźć jego właściciela",
+      "ctaFound": "Znalezione zwierzęta",
+      "railTitle": "Znalezione zwierzęta na DeRechi",
+      "railEmpty": "Na razie nie ma ogłoszeń o znalezionych zwierzętach. Opublikuj swoje: temu, kto je znajdzie, łatwiej będzie cię odnaleźć.",
+      "sections": [
+        {
+          "id": "first-hour",
+          "heading": "Pierwsze godziny",
+          "steps": [
+            {
+              "title": "Obejdź okolicę i wołaj cicho",
+              "text": "Koty chowają się pod autami, w piwnicach i na drzewach w promieniu kilku domów. Psy biegną dalej, ale wracają znaną trasą spacerów. Weź ulubione jedzenie i wołaj spokojnym głosem: krzyk płoszy. Nie biegnij za zwierzęciem: wystraszone ucieka jeszcze dalej. Przykucnij, mów cicho i pozwól mu podejść samemu."
+            },
+            {
+              "title": "Powiadom sąsiadów i dozorcę",
+              "text": "Poproś, żeby zajrzeli do piwnic, garaży i na klatki. Zostaw swój numer."
+            },
+            {
+              "title": "Opublikuj ogłoszenie ze zdjęciem",
+              "text": "Na DeRechi i w grupach dzielnicy: zdjęcie, imię, znaki szczególne, miejsce i czas. Napisz, czy zwierzę jest płochliwe i jak do niego podchodzić."
+            },
+            {
+              "title": "Rozwieś ulotki",
+              "text": "Klatki, przystanki, sklepy, lecznice weterynaryjne w promieniu kilometra. Duże zdjęcie, imię, telefon."
+            }
+          ]
+        },
+        {
+          "id": "where-to-look",
+          "heading": "Kogo powiadomić",
+          "body": [
+            [
+              "Lecznice weterynaryjne w pobliżu: tam przynosi się znalezione zwierzęta, zwłaszcza ranne.",
+              "Schroniska i służby odławiania: zapytaj i zostaw zdjęcie z kontaktem.",
+              "Grupy dzielnicy i miasta o zwierzętach: tam najpewniej ktoś zobaczy twoje zwierzę.",
+              "Jeśli jest chip, powiadom rejestr, w którym jest zapisany, i lecznicę, która go wszczepiła."
+            ],
+            {
+              "tone": "tip",
+              "text": "Wieczorem i o świcie, gdy jest cicho, kot najczęściej się odzywa. Zostaw przy klatce transporter lub pudełko z twoją rzeczą: znajomy zapach pomaga wrócić."
+            }
+          ]
+        },
+        {
+          "id": "scams",
+          "heading": "Jak nie dać się oszukać",
+          "body": [
+            "Po ogłoszeniu mogą napisać do ciebie „znaleźliśmy, przelej za dostawę” albo „wyślij kod, żeby potwierdzić numer”. Prawdziwy znalazca wyśle zdjęcie zwierzęcia teraz, a nie „po opłacie”.",
+            [
+              "Proś o świeże zdjęcie lub nagranie i dopytuj o cechy, których nie ma w ogłoszeniu.",
+              "Nie płać z góry i nie klikaj linków „na potwierdzenie”.",
+              "Odbieraj zwierzę osobiście, w ludnym miejscu albo przy lecznicy."
+            ]
+          ]
+        },
+        {
+          "id": "found",
+          "heading": "Jeśli znajdziesz cudze zwierzę",
+          "steps": [
+            {
+              "title": "Sprawdź, czy naprawdę się zgubiło",
+              "text": "Zadbany kot w obroży może po prostu spacerować. Pies bez właściciela w pobliżu, wystraszony lub ranny, potrzebuje pomocy. Wystraszonego lub rannego zwierzęcia nie chwytaj gołymi rękami: narzuć kurtkę albo ręcznik, a do rannego od razu wezwij lecznicę lub służbę odławiania."
+            },
+            {
+              "title": "Sprawdź chip i adresówkę",
+              "text": "Niemal każda lecznica odczyta chip, zwykle bezpłatnie. Na obroży może być zawieszka z telefonem."
+            },
+            {
+              "title": "Opublikuj ogłoszenie i powiadom pobliskie lecznice",
+              "text": "Na DeRechi i w grupach dzielnicy: zdjęcie, miejsce, czas. Właściciel udowodni, że zwierzę jest jego, podając cechy lub pokazując zdjęcia."
+            }
+          ]
+        }
+      ],
+      "faq": [
+        {
+          "q": "Ile jest czasu, żeby znaleźć kota lub psa?",
+          "a": "Większość wraca w ciągu trzech dni, ale zdarza się i po tygodniach: często zwierzę cały ten czas mieszka obok. Nie przerywaj poszukiwań i aktualizuj ogłoszenie."
+        },
+        {
+          "q": "Czy od razu jechać do schroniska?",
+          "a": "Powiadom schroniska i służby odławiania już pierwszego dnia, zostawiając zdjęcie i kontakt, a osobiście sprawdzaj co kilka dni: zwierzęta nie trafiają tam od razu."
+        },
+        {
+          "q": "Mam znalezione zwierzę, ale nie mogę go zatrzymać. Co robić?",
+          "a": "Zapytaj w lecznicy lub w grupach o dom tymczasowy i powiadom schronisko. Ogłoszenie na DeRechi zostaw w każdym razie: właściciele często szukają właśnie tutaj."
+        }
+      ]
+    }
+  }
+}

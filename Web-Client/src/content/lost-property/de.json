@@ -1,0 +1,143 @@
+{
+  "title": "Wo du {in} noch fragen kannst",
+  "lead": "Ist dein Gegenstand nicht unter den Anzeigen, frag dort nach, wo er abgegeben worden sein könnte.",
+  "leadEmpty": "Ein geprüftes städtisches Fundbüro {in} haben wir noch nicht gefunden. Das hier gilt in der ganzen Ukraine.",
+  "types": {
+    "metro": "U-Bahn",
+    "city_transport": "Stadtverkehr",
+    "city_service": "Städtischer Dienst"
+  },
+  "kinds": {
+    "office": "Fundbüro",
+    "rules": "Kein Fundbüro"
+  },
+  "officialPage": "Offizielle Seite",
+  "telegram": "Telegram-Kanal",
+  "nationalTitle": "In der ganzen Ukraine",
+  "national": {
+    "railway": {
+      "title": "Züge und Bahnhöfe",
+      "text": "Ukrsalisnyzja nimmt Suchanfragen zu vergessenen Gegenständen online an: Beschreibe den Gegenstand, das Datum und den Zug oder Bahnhof.",
+      "link": "Anfrage auf der Seite von Ukrsalisnyzja"
+    },
+    "bus": {
+      "title": "Busse und Marschrutkas",
+      "text": "Nach den landesweiten Beförderungsregeln hält ein Fahrer, der einen vergessenen Gegenstand findet, das in einem Protokoll fest und übergibt ihn dem Beförderungsunternehmen. Frag also beim Unternehmen nach, das die Linie fährt.",
+      "link": "Punkt 82 der Regeln, Kabinettsbeschluss Nr. 176"
+    },
+    "finder": {
+      "title": "Du hast etwas gefunden",
+      "text": "Ist kein Besitzer in Sicht, verlangt das Gesetz, den Fund der Polizei oder der Stadtverwaltung zu melden. Was in einem Verkehrsmittel oder Gebäude liegt, gibst du dem Fahrer, dem Sicherheitsdienst oder der Verwaltung.",
+      "link": "Artikel 337 des Zivilgesetzbuchs"
+    }
+  },
+  "needsCheck": "noch zu bestätigen",
+  "checked": "Kontakte geprüft am {date}. Sie ändern sich, ruf am besten vorher an.",
+  "report": "Fehler melden",
+  "places": {
+    "kyiv-metro": {
+      "name": "Fundbüro der Kyjiwer U-Bahn",
+      "text": "In der Station Dorohoschytschi. Werktags 8:00–17:00, freitags bis 15:45, Pause 12:00–12:45."
+    },
+    "lviv-bureau": {
+      "name": "Fundbüro Lwiw",
+      "text": "Das städtische Fundbüro: Hier landen Gegenstände aus Straßenbahnen, Oberleitungsbussen und aus der Stadt, und Funde werden im Telegram-Kanal veröffentlicht. Das Telefon ist werktags von 9:00 bis 17:00 besetzt."
+    },
+    "chernivtsi-trolleybus": {
+      "name": "Oberleitungsbus-Betrieb Czernowitz",
+      "text": "Gegenstände, die in Oberleitungsbussen und Bussen des Betriebs verloren gingen, werden über ein Online-Formular gesucht: Beschreibe den Gegenstand und gib deine Telefonnummer an, bei einem Treffer wirst du angerufen. Alle Funde erscheinen im Telegram-Kanal."
+    },
+    "dnipro-metro": {
+      "name": "U-Bahn Dnipro",
+      "text": "Ein eigenes Fundbüro gibt es nicht. Sag dem Stationspersonal oder dem Sicherheitsdienst der U-Bahn Bescheid, wenn du etwas vergessen oder verloren hast."
+    },
+    "kharkiv-metro": {
+      "name": "U-Bahn Charkiw",
+      "text": "Ein eigenes Fundbüro gibt es nicht. Melde einen vergessenen Gegenstand dem U-Bahn-Personal in der Station oder der Polizei."
+    },
+    "chernihiv-trolleybus": {
+      "name": "Oberleitungsbus-Betrieb Tschernihiw",
+      "text": "Nach den Regeln des Betriebs werden im Oberleitungsbus gefundene Gegenstände beim Kontrolleur, Schaffner, Fahrer oder bei der Leitstelle an der Endhaltestelle abgegeben. Frag dort nach."
+    },
+    "kyiv-kpt": {
+      "name": "Kyjiwpastrans",
+      "text": "Hast du etwas in Straßenbahn, Oberleitungsbus oder Stadtbus liegen lassen, frag beim Betreiber nach: bei der Leitstelle oder beim Fahrer der Linie."
+    },
+    "kharkiv-transport": {
+      "name": "Elektrischer Nahverkehr Charkiw",
+      "text": "Hast du etwas in Straßenbahn, Oberleitungsbus oder Stadtbus liegen lassen, frag beim Betreiber nach: bei der Leitstelle oder beim Fahrer der Linie."
+    },
+    "dnipro-transport": {
+      "name": "Elektrischer Nahverkehr Dnipro",
+      "text": "Was in Straßenbahnen und Oberleitungsbussen gefunden wird, kommt in die Leitstelle der Linie und wird dort eingetragen. Frag dort nach."
+    },
+    "odesa-transport": {
+      "name": "Elektrischer Nahverkehr Odesa",
+      "text": "Laut Presse werden Funde aus Straßenbahnen und Oberleitungsbussen in der Wodoprowidna-Straße 1 ausgegeben, wo das Infozentrum des Betriebs sitzt."
+    },
+    "zaporizhzhia-transport": {
+      "name": "Elektrischer Nahverkehr Saporischschja",
+      "text": "Hast du etwas in Straßenbahn, Oberleitungsbus oder Stadtbus liegen lassen, frag beim Betreiber nach: bei der Leitstelle oder beim Fahrer der Linie."
+    },
+    "vinnytsia-transport": {
+      "name": "Verkehrsbetrieb Winnyzja",
+      "text": "Fahrer geben in Straßenbahnen gefundene Gegenstände an die Leitstelle weiter, frag also bei der Leitstelle des Verkehrsmittels, mit dem du gefahren bist."
+    },
+    "lutsk-transport": {
+      "name": "Oberleitungsbus-Betrieb Luzk",
+      "text": "Fahrer geben in Oberleitungsbussen gefundene Gegenstände an der Kasse oder in der Leitstelle ab. Ruf bei der Leitstelle an."
+    },
+    "lutsk-department": {
+      "name": "Verkehrsabteilung der Stadt Luzk",
+      "text": "Sucht selbst keine Gegenstände, nennt dir aber anhand von Liniennummer und Fahrtzeit das zuständige Unternehmen und dessen Telefonnummer. Die meisten Buslinien in Luzk sind privat."
+    },
+    "zhytomyr-transport": {
+      "name": "Straßenbahn- und Oberleitungsbus-Betrieb Schytomyr",
+      "text": "Hast du etwas in Straßenbahn, Oberleitungsbus oder Stadtbus liegen lassen, frag beim Betreiber nach: bei der Leitstelle oder beim Fahrer der Linie."
+    },
+    "ivano-frankivsk-transport": {
+      "name": "Elektroawtotrans",
+      "text": "Hast du etwas in Straßenbahn, Oberleitungsbus oder Stadtbus liegen lassen, frag beim Betreiber nach: bei der Leitstelle oder beim Fahrer der Linie."
+    },
+    "kropyvnytskyi-bus": {
+      "name": "Stadtbusse Kropywnyzkyj",
+      "text": "Nach den städtischen Regeln muss ein Fahrgast dem Fahrer vergessene Gegenstände, Dokumente und Wertsachen melden. Für etwas, das im Bus verloren ging, frag also den Fahrer oder das Busunternehmen der Linie."
+    },
+    "mykolaiv-transport": {
+      "name": "Elektrischer Nahverkehr Mykolajiw",
+      "text": "Hast du etwas in Straßenbahn, Oberleitungsbus oder Stadtbus liegen lassen, frag beim Betreiber nach: bei der Leitstelle oder beim Fahrer der Linie."
+    },
+    "poltava-transport": {
+      "name": "Elektrischer Nahverkehr Poltawa",
+      "text": "Hast du etwas in Straßenbahn, Oberleitungsbus oder Stadtbus liegen lassen, frag beim Betreiber nach: bei der Leitstelle oder beim Fahrer der Linie."
+    },
+    "rivne-transport": {
+      "name": "Elektrischer Nahverkehr Riwne",
+      "text": "Hast du etwas in Straßenbahn, Oberleitungsbus oder Stadtbus liegen lassen, frag beim Betreiber nach: bei der Leitstelle oder beim Fahrer der Linie."
+    },
+    "sumy-transport": {
+      "name": "Elektroawtotrans Sumy",
+      "text": "In Oberleitungsbussen und städtischen Bussen gefundene Gegenstände werden im Depot in der Charkiwska-Straße 113 aufbewahrt, und Funde erscheinen im Telegram-Kanal des Betriebs."
+    },
+    "ternopil-transport": {
+      "name": "Elektrischer Nahverkehr Ternopil",
+      "text": "Hast du etwas in Straßenbahn, Oberleitungsbus oder Stadtbus liegen lassen, frag beim Betreiber nach: bei der Leitstelle oder beim Fahrer der Linie."
+    },
+    "kherson-transport": {
+      "name": "Elektrischer Nahverkehr Cherson",
+      "text": "Hast du etwas in Straßenbahn, Oberleitungsbus oder Stadtbus liegen lassen, frag beim Betreiber nach: bei der Leitstelle oder beim Fahrer der Linie."
+    },
+    "khmelnytskyi-transport": {
+      "name": "Elektrischer Nahverkehr Chmelnyzkyj",
+      "text": "Fahrer geben in Oberleitungsbussen gefundene Gegenstände in der Leitstelle ab, von dort kommen sie ins Fundbüro des Betriebs."
+    },
+    "cherkasy-transport": {
+      "name": "Elektrischer Nahverkehr Tscherkassy",
+      "text": "Hast du etwas in Straßenbahn, Oberleitungsbus oder Stadtbus liegen lassen, frag beim Betreiber nach: bei der Leitstelle oder beim Fahrer der Linie."
+    },
+    "uzhhorod-bus": {
+      "name": "Städtischer Verkehrsbetrieb Uschhorod",
+      "text": "Nach den städtischen Regeln meldet ein Fahrgast, der vergessene Gegenstände, Dokumente oder Geld bemerkt, das dem Fahrer an der nächsten Haltestelle, ohne sie anzufassen. Frag also den Fahrer oder das Busunternehmen."
+    }
+  }
+}

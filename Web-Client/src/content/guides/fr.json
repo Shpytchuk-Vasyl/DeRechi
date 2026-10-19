@@ -1,0 +1,503 @@
+{
+  "eyebrow": "Guide",
+  "contents": "Sur cette page",
+  "readingTime": "{minutes} min de lecture",
+  "checked": "Mis à jour le {date}",
+  "checkNowTitle": "Vérifiez si votre objet a déjà été trouvé",
+  "checkNowText": "Les personnes qui trouvent quelque chose le publient ici et dans les groupes locaux. Parcourez les objets trouvés et publiez votre propre annonce : la personne qui trouvera votre objet vous retrouvera plus facilement.",
+  "ctaLost": "Signaler la perte",
+  "faqTitle": "Questions fréquentes",
+  "relatedTitle": "Autres guides",
+  "cityNote": "Où s’adresser dans votre ville — services, bureaux des objets trouvés, transporteurs — est rassemblé sur la page de la ville.",
+  "cityLink": "Choisir une ville",
+  "index": {
+    "title": "Guides : que faire quand vous avez perdu quelque chose",
+    "description": "La première heure après une perte : où chercher, comment éviter les escrocs, que faire d’un objet trouvé. Documents, clés, portefeuille, téléphone, animaux.",
+    "lead": "Court et concret : quoi faire tout de suite, où chercher, comment éviter les escrocs et que faire quand vous avez trouvé l’objet de quelqu’un.",
+    "read": "Lire"
+  },
+  "guides": {
+    "documents": {
+      "title": "Documents perdus : que faire",
+      "shortTitle": "Documents",
+      "description": "Que faire la première heure après la perte d’un passeport ou d’une carte d’identité, où chercher, comment éviter les escrocs, que faire des documents trouvés.",
+      "lead": "Passeport, carte d’identité, permis de conduire : faciles à perdre, et quelqu’un d’autre peut s’en servir. Alors protégez-vous d’abord, cherchez ensuite, et seulement après, refaites-les.",
+      "linkLost": "Documents perdus ? Que faire",
+      "linkFound": "Documents trouvés ? Où les déposer",
+      "ctaFound": "Documents trouvés",
+      "railTitle": "Documents trouvés sur DeRechi",
+      "railEmpty": "Il n’y a pas d’annonces de documents trouvés pour le moment. Publiez la vôtre : la personne qui les trouvera vous retrouvera plus facilement.",
+      "sections": [
+        {
+          "id": "first-hour",
+          "heading": "La première heure",
+          "steps": [
+            {
+              "title": "Si une carte bancaire était avec les documents, bloquez-la",
+              "text": "Dans l’application ou via la ligne d’assistance de la banque. Une nouvelle carte est vite émise ; récupérer de l’argent débité est bien plus difficile."
+            },
+            {
+              "title": "Si les documents ont été volés, prévenez la police",
+              "text": "La plainte fixe la date et les circonstances. Si quelqu’un tente d’utiliser le document, vous avez la preuve qu’il n’était déjà plus entre vos mains."
+            },
+            {
+              "title": "Refaites votre trajet",
+              "text": "Sac, poches, voiture, vêtements d’hier. Appelez les endroits de votre trajet : café, taxi, gare, magasin. La plupart des objets perdus y réapparaissent dans les premières heures."
+            },
+            {
+              "title": "Vérifiez si le document a déjà été trouvé",
+              "text": "Parcourez les documents trouvés sur DeRechi et dans les groupes locaux. Publiez une annonce de perte avec le type de document et le lieu."
+            }
+          ]
+        },
+        {
+          "id": "where-to-look",
+          "heading": "Où chercher",
+          "body": [
+            "Un document revient le plus souvent par le chemin où il s’est perdu : quelqu’un le ramasse et le dépose là où il l’a trouvé, ou au commissariat le plus proche.",
+            [
+              "L’établissement ou le transport que vous avez utilisé : le responsable, le chauffeur, le bureau des objets trouvés du transporteur.",
+              "Le commissariat ou le bureau des objets trouvés près du lieu de la perte : c’est là qu’on apporte le plus souvent les documents trouvés.",
+              "Votre boîte aux lettres : la personne qui trouve des documents les glisse souvent dans une boîte postale, et la poste les livre à l’adresse figurant sur le document.",
+              "Les groupes locaux et DeRechi : cherchez par type de document et par nom."
+            ],
+            {
+              "tone": "tip",
+              "text": "Laissez aussi un mot là où vous l’avez perdu : dans un café ou une gare, ceux qui nettoient après vous le verront."
+            }
+          ]
+        },
+        {
+          "id": "replace",
+          "heading": "Le remplacement",
+          "body": [
+            "Le document est refait par celui qui l’a délivré : le passeport et la carte d’identité par le service qui les délivre, le permis par le service des permis, la carte d’étudiant par l’université, la carte bancaire par la banque. Ce qu’il faut apporter et ce que cela coûte dépend du pays : consultez le site officiel du service ou la page de votre ville. Si vous avez perdu votre passeport à l’étranger, adressez-vous au consulat de votre pays : il délivre un document pour rentrer.",
+            {
+              "tone": "warning",
+              "text": "Une fois la perte déclarée au service qui le délivre, l’ancien document n’est plus valable, même s’il réapparaît le lendemain. Vous ne pouvez plus l’utiliser : remettez-le au service qui a délivré le nouveau."
+            }
+          ]
+        },
+        {
+          "id": "scams",
+          "heading": "Éviter les escrocs",
+          "body": [
+            [
+              "Ne payez jamais « pour la restitution » à l’avance et n’envoyez aucun code reçu par SMS : pour recevoir de l’argent, personne n’a besoin d’un code.",
+              "N’envoyez pas de photos de vos autres documents « pour confirmer ». Celui qui a vraiment trouvé votre document voit déjà à qui il appartient.",
+              "Rencontrez-vous en journée dans un lieu fréquenté, pas chez vous.",
+              "Si l’on garde le document « en otage » contre de l’argent, adressez-vous à la police."
+            ]
+          ]
+        },
+        {
+          "id": "found",
+          "heading": "Vous avez trouvé les documents de quelqu’un ?",
+          "steps": [
+            {
+              "title": "Apportez-les à la police ou rapportez-les là où vous les avez trouvés",
+              "text": "Le commissariat le plus proche accepte les documents trouvés, et c’est le chemin le plus rapide vers le propriétaire. Apportez une carte bancaire dans une agence de cette banque ou prévenez la banque par sa ligne d’assistance : la carte est bloquée et le propriétaire en reçoit une nouvelle. Inutile de l’envoyer à qui que ce soit."
+            },
+            {
+              "title": "Ne photographiez pas et ne publiez pas les pages avec les données",
+              "text": "Les photos de documents servent à contracter des crédits. Dans l’annonce, le type de document, le prénom du propriétaire et le lieu suffisent."
+            },
+            {
+              "title": "Publiez une annonce sur DeRechi",
+              "text": "Le propriétaire cherche déjà et parcourt les objets trouvés en ville. L’annonce prend une minute, et nous n’affichons jamais vos contacts en entier."
+            }
+          ]
+        }
+      ],
+      "faq": [
+        {
+          "q": "Faut-il aller à la police si le document est simplement perdu ?",
+          "a": "Pour le remplacement, en général non, sauf en cas de vol. Mais une déclaration de perte en fixe la date : si quelqu’un tente d’utiliser le document, vous avez la preuve qu’il n’était déjà plus entre vos mains."
+        },
+        {
+          "q": "Quelqu’un a trouvé mon document et demande une récompense. Est-ce normal ?",
+          "a": "Remercier est possible, et dans beaucoup de pays la loi donne à celui qui trouve un droit à récompense. Mais ne payez jamais à l’avance et ne communiquez aucun code reçu par SMS : réglez lors de la rencontre, quand le document est entre vos mains."
+        },
+        {
+          "q": "Puis-je publier la photo d’un passeport trouvé pour que le propriétaire le reconnaisse ?",
+          "a": "Non. Les photos de documents servent à contracter des crédits et à pirater des comptes. Le type de document, le prénom et le lieu suffisent : le propriétaire le reconnaîtra de toute façon."
+        }
+      ]
+    },
+    "keys": {
+      "title": "Clés perdues : que faire",
+      "shortTitle": "Clés",
+      "description": "Où les clés perdues réapparaissent le plus souvent, quand changer la serrure, comment protéger l’appartement et la voiture, et que faire d’un trousseau trouvé.",
+      "lead": "Les clés sont l’objet que l’on perd le plus, et presque toujours tout près. La vraie question n’est pas « où sont-elles » mais « celui qui les a trouvées sait-il quelle porte elles ouvrent ».",
+      "linkLost": "Clés perdues ? Que faire",
+      "linkFound": "Clés trouvées ? Comment les rendre à leur propriétaire",
+      "ctaFound": "Clés trouvées",
+      "railTitle": "Clés trouvées sur DeRechi",
+      "railEmpty": "Il n’y a pas d’annonces de clés trouvées pour le moment. Publiez la vôtre : la personne qui les trouvera vous retrouvera plus facilement.",
+      "sections": [
+        {
+          "id": "first-hour",
+          "heading": "La première heure",
+          "steps": [
+            {
+              "title": "Vérifiez si quelque chose sur les clés révèle l’adresse",
+              "text": "Une étiquette, un ticket, un porte-clés avec une plaque d’immatriculation ou un numéro d’immeuble. Si l’adresse peut être devinée, changez la serrure sans attendre."
+            },
+            {
+              "title": "Refaites votre trajet",
+              "text": "Poches, sac, serrure de la porte, voiture, banc près de l’entrée. Les clés tombent le plus souvent là où vous avez sorti votre téléphone ou votre portefeuille."
+            },
+            {
+              "title": "Demandez sur les lieux de votre trajet",
+              "text": "Gardien, responsable, chauffeur, voisins. Les clés trouvées sont généralement laissées au comptoir ou accrochées près de la porte."
+            },
+            {
+              "title": "Vérifiez les objets trouvés sur DeRechi",
+              "text": "Cherchez par l’aspect du trousseau : nombre de clés, porte-clés, couleur. Publiez une annonce de perte."
+            }
+          ]
+        },
+        {
+          "id": "where-to-look",
+          "heading": "Où chercher",
+          "body": [
+            [
+              "Près des portes que vous avez ouvertes en dernier : appartement, voiture, bureau.",
+              "Dans les poches du manteau et la doublure du sac.",
+              "Aux comptoirs d’accueil et aux bureaux des objets trouvés des lieux de votre trajet.",
+              "Dans les groupes de l’immeuble, du quartier et de la ville : les clés trouvées y sont publiées très souvent."
+            ],
+            {
+              "tone": "tip",
+              "text": "Dans l’annonce, décrivez le porte-clés et le nombre de clés, jamais l’adresse ni la plaque d’immatriculation."
+            }
+          ]
+        },
+        {
+          "id": "secure",
+          "heading": "Faut-il changer la serrure",
+          "body": [
+            "Si rien sur les clés ne révélait l’adresse et que vous ne les avez pas perdues avec des documents, le risque est faible : presque impossible de trouver votre porte à partir de la clé seule. S’il y avait une adresse, ou si les clés ont disparu avec un portefeuille ou un passeport, changez le cylindre de la serrure tout de suite.",
+            [
+              "Clés de voiture : si vous avez un double, demandez au garage de supprimer la clé perdue de la mémoire de la voiture pour qu’elle ne puisse plus la démarrer. En attendant, garez la voiture loin du lieu de la perte : une pression sur la clé montre quelle voiture est la vôtre.",
+              "Clés de bureau ou d’entrée avec interphone : prévenez le gestionnaire pour que l’ancienne clé soit désactivée.",
+              "Cartes électroniques : faites-les désactiver par l’émetteur."
+            ]
+          ]
+        },
+        {
+          "id": "found",
+          "heading": "Vous avez trouvé les clés de quelqu’un ?",
+          "steps": [
+            {
+              "title": "Laissez-les là où vous les avez trouvées, ou remettez-les au responsable",
+              "text": "Le propriétaire reviendra exactement ici. Si l’endroit est désert, apportez-les à l’établissement le plus proche ou au commissariat."
+            },
+            {
+              "title": "Publiez une annonce sur DeRechi",
+              "text": "Décrivez le porte-clés et le nombre de clés, mais ne photographiez pas d’étiquette avec une adresse. Le propriétaire prouvera que les clés sont à lui en décrivant ce que l’annonce ne dit pas."
+            }
+          ]
+        }
+      ],
+      "faq": [
+        {
+          "q": "Quelqu’un peut-il trouver mon appartement grâce à mes clés ?",
+          "a": "Une clé seule ne porte aucune adresse. Le risque apparaît quand il y a une étiquette, un ticket ou une carte de visite avec, ou quand les clés ont été perdues avec des documents. Dans ce cas, changez la serrure."
+        },
+        {
+          "q": "J’ai trouvé des clés et personne ne répond. Qu’en faire ?",
+          "a": "Déposez-les au commissariat le plus proche ou au bureau des objets trouvés du lieu où vous les avez trouvées. Laissez l’annonce sur DeRechi : le propriétaire peut la voir quelques jours plus tard."
+        },
+        {
+          "q": "Combien de temps attendre avant de changer la serrure ?",
+          "a": "Si l’adresse peut être devinée, n’attendez pas du tout. Sinon, accordez-vous quelques jours de recherche : la plupart des clés réapparaissent dans les premiers jours."
+        }
+      ]
+    },
+    "wallet": {
+      "title": "Portefeuille perdu : que faire",
+      "shortTitle": "Portefeuille",
+      "description": "Quoi bloquer dans les premières minutes, où chercher un portefeuille perdu, comment refaire les cartes et les documents, et que faire d’un portefeuille trouvé.",
+      "lead": "Un portefeuille contient rarement seulement de l’argent : cartes, documents, badges. La première chose n’est donc pas la recherche, mais le blocage de tout ce dont quelqu’un pourrait se servir.",
+      "linkLost": "Portefeuille perdu ? Que faire",
+      "linkFound": "Portefeuille trouvé ? Comment le rendre à son propriétaire",
+      "ctaFound": "Portefeuilles trouvés",
+      "railTitle": "Portefeuilles trouvés sur DeRechi",
+      "railEmpty": "Il n’y a pas d’annonces de portefeuilles trouvés pour le moment. Publiez la vôtre : la personne qui le trouvera vous retrouvera plus facilement.",
+      "sections": [
+        {
+          "id": "first-hour",
+          "heading": "Les 15 premières minutes",
+          "steps": [
+            {
+              "title": "Bloquez les cartes",
+              "text": "Dans l’application de la banque ou via la ligne d’assistance. Le sans-contact passe sans code PIN, c’est donc vraiment la première chose à faire."
+            },
+            {
+              "title": "Rappelez-vous ce qu’il y avait d’autre dedans",
+              "text": "Documents, badge, titre de transport, clés, code PIN noté. Chacun de ces éléments doit être bloqué ou refait séparément."
+            },
+            {
+              "title": "Refaites votre trajet et demandez",
+              "text": "La caisse, la table, le taxi, le bus. Un portefeuille est souvent trouvé et laissé au responsable ou au chauffeur."
+            },
+            {
+              "title": "Vérifiez les objets trouvés sur DeRechi et publiez une annonce",
+              "text": "Décrivez la couleur, la matière et le contenu, mais jamais les numéros de carte."
+            }
+          ]
+        },
+        {
+          "id": "where-to-look",
+          "heading": "Où chercher",
+          "body": [
+            "Les portefeuilles sont souvent trouvés par des gens honnêtes et déposés là où ils ont été trouvés, ou à la police. Souvent sans l’argent liquide, mais avec les cartes et les documents, et ce sont eux les plus difficiles à refaire.",
+            [
+              "L’établissement ou le transport où vous avez payé en dernier.",
+              "Le commissariat près du lieu de la perte.",
+              "Votre boîte aux lettres : les documents d’un portefeuille trouvé sont souvent glissés dans une boîte postale et livrés à votre adresse.",
+              "Les groupes locaux et DeRechi : cherchez par couleur et par contenu."
+            ],
+            {
+              "tone": "tip",
+              "text": "S’il y avait dans le portefeuille un document avec votre adresse, surveillez encore votre boîte aux lettres quelques jours."
+            }
+          ]
+        },
+        {
+          "id": "restore",
+          "heading": "Refaire les cartes et les documents",
+          "body": [
+            "Les cartes sont réémises par la banque, les documents par ceux qui les ont délivrés, le titre de transport et le badge par le transporteur ou l’employeur. Surveillez encore quelques jours les opérations par carte dans l’application de la banque et contestez tout de suite les débits inconnus. Si le portefeuille a été volé, portez plainte : la plainte est nécessaire pour l’assurance et souvent pour refaire les documents.",
+            {
+              "tone": "warning",
+              "text": "Un appel « de la banque » demandant un code reçu par SMS ou les données de la carte est une escroquerie, même si l’appelant est au courant de la perte. La banque bloque une carte elle-même, sans code."
+            }
+          ]
+        },
+        {
+          "id": "found",
+          "heading": "Vous avez trouvé le portefeuille de quelqu’un ?",
+          "steps": [
+            {
+              "title": "Ne sortez rien d’autre que ce qu’il faut pour retrouver le propriétaire",
+              "text": "Un nom sur une carte ou un document suffit. Ne touchez pas à l’argent : il sera compté à la restitution."
+            },
+            {
+              "title": "Déposez-le à la police ou là où vous l’avez trouvé",
+              "text": "Le responsable de l’établissement, le chauffeur, le gardien : le propriétaire reviendra exactement ici. Apportez une carte bancaire dans une agence de cette banque ou prévenez la banque : elle est bloquée et le propriétaire en reçoit une nouvelle."
+            },
+            {
+              "title": "Publiez une annonce sur DeRechi",
+              "text": "Couleur, matière, lieu. Pas de photos des cartes ni des documents. Le propriétaire prouvera que le portefeuille est à lui en décrivant son contenu."
+            }
+          ]
+        }
+      ],
+      "faq": [
+        {
+          "q": "Le portefeuille a été retrouvé, mais sans l’argent. Que faire ?",
+          "a": "C’est fréquent, et les cartes et les documents valent quand même la peine d’être récupérés. S’il y avait beaucoup d’argent, vous pouvez porter plainte, mais les chances sont faibles."
+        },
+        {
+          "q": "Dois-je changer la serrure si mes clés étaient dans le portefeuille avec mes documents ?",
+          "a": "Oui, si les documents révèlent votre adresse. Changez le cylindre de la serrure sans attendre que le portefeuille réapparaisse."
+        },
+        {
+          "q": "J’ai trouvé un portefeuille sans aucun contact dedans. Où le déposer ?",
+          "a": "Au commissariat le plus proche ou au bureau des objets trouvés du lieu où vous l’avez trouvé. Et publiez une annonce sur DeRechi : les propriétaires cherchent souvent ici."
+        }
+      ]
+    },
+    "electronics": {
+      "title": "Téléphone perdu : que faire",
+      "shortTitle": "Téléphone et appareils",
+      "description": "Comment retrouver un téléphone, des écouteurs ou un ordinateur perdus grâce aux services intégrés, quoi bloquer, et que faire d’un appareil trouvé.",
+      "lead": "Le téléphone est le seul objet qui peut dire lui-même où il est. Tant que la batterie tient, vous avez quelques heures pour en profiter.",
+      "linkLost": "Téléphone ou appareil perdu ? Que faire",
+      "linkFound": "Téléphone trouvé ? Comment le rendre à son propriétaire",
+      "ctaFound": "Appareils trouvés",
+      "railTitle": "Appareils trouvés sur DeRechi",
+      "railEmpty": "Il n’y a pas d’annonces d’appareils trouvés pour le moment. Publiez la vôtre : la personne qui le trouvera vous retrouvera plus facilement.",
+      "sections": [
+        {
+          "id": "first-hour",
+          "heading": "La première heure",
+          "steps": [
+            {
+              "title": "Appelez votre propre numéro",
+              "text": "Depuis un autre téléphone ou via une messagerie. S’il est à proximité, on l’entendra ; si quelqu’un l’a ramassé, une personne honnête répondra."
+            },
+            {
+              "title": "Regardez où se trouve l’appareil",
+              "text": "Find Hub (anciennement « Localiser mon appareil ») sur Android, « Localiser » chez Apple. Vous pouvez aussi y faire sonner l’appareil, afficher un message avec votre contact à l’écran et le verrouiller."
+            },
+            {
+              "title": "Verrouillez l’écran et les paiements, la SIM plus tard",
+              "text": "Verrouillez l’écran via le service de localisation et les paiements via la banque : avec le téléphone, on peut confirmer un virement et réinitialiser des mots de passe. Ne bloquez la carte SIM chez l’opérateur qu’après avoir utilisé la localisation, ou tout de suite si le téléphone a été volé à coup sûr : sans SIM, hors Wi-Fi, il n’enverra pas sa position. Les écouteurs et l’ordinateur n’ont pas besoin de cette étape."
+            },
+            {
+              "title": "Publiez une annonce",
+              "text": "Sur DeRechi et dans les groupes locaux : modèle, couleur, coque, lieu. Ne publiez ni l’IMEI ni le numéro de série, mais gardez-les pour la police."
+            }
+          ]
+        },
+        {
+          "id": "where-to-look",
+          "heading": "Où chercher",
+          "body": [
+            [
+              "Là où l’appareil a été vu en dernier sur la carte de Find Hub ou de « Localiser ».",
+              "L’établissement ou le transport : les téléphones sont laissés au responsable ou au chauffeur.",
+              "Le bureau des objets trouvés du transporteur : dans les transports, les appareils sont centralisés.",
+              "DeRechi et les groupes locaux : cherchez par modèle et par couleur."
+            ],
+            {
+              "tone": "tip",
+              "text": "Affichez sur l’écran verrouillé un message avec un autre numéro. Celui qui trouvera le téléphone n’aura pas à deviner comment vous joindre."
+            }
+          ]
+        },
+        {
+          "id": "protect",
+          "heading": "Si le téléphone ne revient pas",
+          "body": [
+            "Si le téléphone n’était pas verrouillé par un code ou s’il a été volé, changez tout de suite les mots de passe de votre e-mail, de votre banque et de vos applications de messagerie. Sinon, faites-le après un jour ou deux sans signe de l’appareil : déconnectez toutes les sessions sur tous les appareils et, si besoin, effacez le téléphone à distance (après l’effacement, il ne peut en général plus être localisé). En cas de vol, portez plainte en indiquant l’IMEI (il figure sur la boîte, sur le ticket de caisse et dans la liste des appareils de votre compte Google ou Apple) : l’assurance en a besoin aussi.",
+            {
+              "tone": "warning",
+              "text": "Un message « votre iPhone a été retrouvé, suivez le lien pour voir sa position » est une escroquerie qui vise votre mot de passe Apple ID ou Google. Ne consultez la position que dans l’application officielle."
+            }
+          ]
+        },
+        {
+          "id": "found",
+          "heading": "Vous avez trouvé le téléphone de quelqu’un ?",
+          "steps": [
+            {
+              "title": "N’essayez pas de le déverrouiller",
+              "text": "Laissez-le allumé et attendez un appel. L’écran verrouillé affiche souvent un contact du propriétaire ou un message de sa part."
+            },
+            {
+              "title": "Répondez aux appels, ou appelez vous-même",
+              "text": "Le propriétaire appellera presque à coup sûr. Si l’écran n’est pas verrouillé, appelez l’un des derniers contacts et dites où se trouve le téléphone."
+            },
+            {
+              "title": "Déposez-le à la police ou au responsable, et publiez une annonce",
+              "text": "Sur DeRechi, décrivez le modèle, la couleur et la coque. Le propriétaire prouvera que le téléphone est à lui en donnant le numéro ou le fond d’écran."
+            }
+          ]
+        }
+      ],
+      "faq": [
+        {
+          "q": "Peut-on retrouver un téléphone éteint ?",
+          "a": "Find Hub et « Localiser » montrent la dernière position avant l’extinction. Les modèles Apple récents et certains Android restent visibles même éteints. Activez « Marquer comme perdu » (Apple) ou « Sécuriser l’appareil » (Android) : dès que le téléphone se reconnecte, vous recevez une notification."
+        },
+        {
+          "q": "Et pour des écouteurs, une montre ou un ordinateur portable ?",
+          "a": "Même démarche : le service de localisation du fabricant, l’établissement et le transport, une annonce sur DeRechi. Pour un ordinateur, verrouillez-le en plus et changez vos mots de passe, car vos comptes y sont ouverts."
+        },
+        {
+          "q": "La personne qui l’a trouvé demande de l’argent pour le rendre. Faut-il payer ?",
+          "a": "Remercier après la restitution, c’est votre choix. Payer à l’avance ou suivre des liens « pour confirmer » ne vaut pas le coup : c’est ainsi que l’on perd à la fois l’argent et l’accès au compte."
+        }
+      ]
+    },
+    "animals": {
+      "title": "Animal perdu : que faire",
+      "shortTitle": "Animaux",
+      "description": "Comment chercher un chat ou un chien perdu dans les premières heures, qui prévenir, comment éviter les escrocs et que faire d’un animal trouvé.",
+      "lead": "Un chat se cache généralement à quelques maisons ; un chien va plus loin. Les premières heures décident de tout : agissez tout de suite et mobilisez les voisins.",
+      "linkLost": "Animal perdu ? Que faire",
+      "linkFound": "Animal trouvé ? Comment retrouver son maître",
+      "ctaFound": "Animaux trouvés",
+      "railTitle": "Animaux trouvés sur DeRechi",
+      "railEmpty": "Il n’y a pas d’annonces d’animaux trouvés pour le moment. Publiez la vôtre : la personne qui le trouvera vous retrouvera plus facilement.",
+      "sections": [
+        {
+          "id": "first-hour",
+          "heading": "Les premières heures",
+          "steps": [
+            {
+              "title": "Faites le tour du quartier et appelez doucement",
+              "text": "Les chats se cachent sous les voitures, dans les caves et dans les arbres à quelques maisons. Les chiens vont plus loin mais reviennent par l’itinéraire habituel des promenades. Prenez sa nourriture préférée et appelez d’une voix calme : crier effraie. Ne courez pas après l’animal : effrayé, il fuit encore plus loin. Accroupissez-vous, parlez doucement et laissez-le venir de lui-même."
+            },
+            {
+              "title": "Prévenez les voisins et le gardien",
+              "text": "Demandez-leur de regarder dans les caves, les garages et les cages d’escalier. Laissez votre numéro."
+            },
+            {
+              "title": "Publiez une annonce avec photo",
+              "text": "Sur DeRechi et dans les groupes du quartier : photo, nom, signes particuliers, lieu et heure. Dites si l’animal est craintif et comment l’approcher."
+            },
+            {
+              "title": "Posez des affichettes",
+              "text": "Entrées d’immeubles, arrêts de bus, commerces, cliniques vétérinaires dans un rayon d’un kilomètre. Une grande photo, le nom, un numéro de téléphone."
+            }
+          ]
+        },
+        {
+          "id": "where-to-look",
+          "heading": "Qui prévenir",
+          "body": [
+            [
+              "Les cliniques vétérinaires proches : c’est là qu’on amène les animaux trouvés, surtout blessés.",
+              "Les refuges et la fourrière : demandez, et laissez une photo avec votre contact.",
+              "Les groupes du quartier et de la ville consacrés aux animaux : c’est là que votre animal a le plus de chances d’être repéré.",
+              "S’il est pucé, prévenez le registre où la puce est enregistrée et la clinique qui l’a posée."
+            ],
+            {
+              "tone": "tip",
+              "text": "Le soir et à l’aube, quand tout est calme, un chat répond le plus souvent. Laissez une caisse de transport ou un carton avec un de vos vêtements près de l’entrée : une odeur familière l’aide à rentrer."
+            }
+          ]
+        },
+        {
+          "id": "scams",
+          "heading": "Éviter les escrocs",
+          "body": [
+            "Après l’annonce, vous pouvez recevoir des messages du type « on l’a trouvé, payez la livraison » ou « envoyez le code pour confirmer votre numéro ». La personne qui l’a vraiment trouvé envoie une photo de l’animal tout de suite, pas « après paiement ».",
+            [
+              "Demandez une photo ou une vidéo récente et vérifiez des signes particuliers absents de l’annonce.",
+              "Ne payez jamais à l’avance et ne suivez aucun lien « pour confirmer ».",
+              "Récupérez l’animal en personne, dans un lieu fréquenté ou près d’une clinique vétérinaire."
+            ]
+          ]
+        },
+        {
+          "id": "found",
+          "heading": "Vous avez trouvé l’animal de quelqu’un ?",
+          "steps": [
+            {
+              "title": "Vérifiez qu’il est vraiment perdu",
+              "text": "Un chat soigné avec un collier se promène peut-être simplement. Un chien sans maître à proximité, effrayé ou blessé, a besoin d’aide. N’attrapez pas à mains nues un animal effrayé ou blessé : jetez une veste ou une serviette sur lui, et pour un animal blessé appelez tout de suite une clinique vétérinaire ou la fourrière."
+            },
+            {
+              "title": "Vérifiez la puce et la médaille",
+              "text": "Presque toutes les cliniques vétérinaires lisent une puce, en général gratuitement. Le collier peut porter une médaille avec un numéro de téléphone."
+            },
+            {
+              "title": "Publiez une annonce et prévenez les cliniques proches",
+              "text": "Sur DeRechi et dans les groupes du quartier : photo, lieu, heure. Le maître prouvera que l’animal est à lui en citant ses signes particuliers ou en montrant des photos."
+            }
+          ]
+        }
+      ],
+      "faq": [
+        {
+          "q": "Combien de temps a-t-on pour retrouver un chat ou un chien ?",
+          "a": "La plupart reviennent dans les trois premiers jours, mais certains après des semaines : souvent l’animal a vécu tout ce temps à proximité. Continuez à chercher et tenez l’annonce à jour."
+        },
+        {
+          "q": "Faut-il aller tout de suite au refuge ?",
+          "a": "Prévenez les refuges et la fourrière dès le premier jour, en laissant une photo et votre contact, et passez-y en personne tous les deux ou trois jours : les animaux n’y arrivent pas immédiatement."
+        },
+        {
+          "q": "J’ai trouvé un animal mais je ne peux pas le garder. Que faire ?",
+          "a": "Demandez à la clinique vétérinaire ou dans les groupes une famille d’accueil temporaire et prévenez le refuge. Publiez l’annonce sur DeRechi dans tous les cas : les maîtres cherchent souvent ici."
+        }
+      ]
+    }
+  }
+}

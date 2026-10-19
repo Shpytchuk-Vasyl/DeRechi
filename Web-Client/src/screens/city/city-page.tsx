@@ -6,10 +6,8 @@ import { MascotRoamer } from "@/components/mascot/mascot-roamer"
 import { paths } from "@/i18n/paths"
 import { cityArea, cityBySlug } from "@/lib/cities"
 import { cityPageJsonLd, jsonLd, pageAlternates } from "@/lib/seo"
-import Benefits from "@/screens/home/benefits/benefits"
+import LostProperty from "@/screens/city/lost-property"
 import ClosingCall from "@/screens/home/closing-call"
-import Explainer from "@/screens/home/explainer/explainer"
-import Faq from "@/screens/home/faq/faq"
 import Hero from "@/screens/home/hero"
 import QuickSearch from "@/screens/home/quick-search/quick-search"
 import RecentRail from "@/screens/home/rail/recent-rail"
@@ -79,13 +77,7 @@ export default async function CityPage({ locale, slug }: { locale: string; slug:
           empty={t("empty")}
         />
 
-        <Explainer kind="found" />
-
-        <Explainer kind="lost" />
-
-        <Benefits />
-
-        <Faq />
+        <LostProperty locale={locale} slug={slug} where={where} />
 
         <ClosingCall />
       </div>

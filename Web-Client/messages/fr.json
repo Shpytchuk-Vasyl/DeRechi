@@ -177,7 +177,7 @@
       "found": "Partagez-la dans les groupes et discussions de votre quartier : plus elle est vue, plus vite le propriétaire se manifestera."
     },
     "shareText": {
-      "lost": "{title} ({place}). Aidez à le retrouver — quelqu’un l’a peut-être vu.",
+      "lost": "{title} ({place}). Aidez à le retrouver – quelqu’un l’a peut-être vu.",
       "found": "{title} ({place}). Aidez à retrouver son propriétaire."
     },
     "reward": "Récompense {amount}",

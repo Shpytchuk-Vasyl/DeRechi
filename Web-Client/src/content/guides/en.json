@@ -1,0 +1,503 @@
+{
+  "eyebrow": "Guide",
+  "contents": "On this page",
+  "readingTime": "{minutes} min read",
+  "checked": "Updated {date}",
+  "checkNowTitle": "Check whether your item has already been found",
+  "checkNowText": "People who find things post them here and in local groups. Look through the finds and post your own notice: whoever finds your item will find you more easily.",
+  "ctaLost": "Report the loss",
+  "faqTitle": "Frequently asked questions",
+  "relatedTitle": "Other guides",
+  "cityNote": "Where to turn in your own city — the services, lost property offices and carriers — is listed on the city page.",
+  "cityLink": "Choose a city",
+  "index": {
+    "title": "Guides: what to do when you have lost something",
+    "description": "Short guides for the first hour after a loss: where to look, how to stay clear of scammers and what to do with a find. Documents, keys, wallet, phone, pets.",
+    "lead": "Short and to the point: what to do right away, where to look, how to stay clear of scammers and what to do when you have found something.",
+    "read": "Read"
+  },
+  "guides": {
+    "documents": {
+      "title": "Lost your documents: what to do",
+      "shortTitle": "Documents",
+      "description": "What to do in the first hour after losing a passport or ID card, where to look, how to avoid scammers and what to do with documents you have found.",
+      "lead": "A passport, an ID card, a driving licence: easy to lose, and someone else can use them. So secure yourself first, then search, and only then replace.",
+      "linkLost": "Lost your documents? What to do",
+      "linkFound": "Found documents? Where to hand them in",
+      "ctaFound": "Found documents",
+      "railTitle": "Found documents on DeRechi",
+      "railEmpty": "There are no notices about found documents right now. Post yours: whoever finds it will find you more easily.",
+      "sections": [
+        {
+          "id": "first-hour",
+          "heading": "The first hour",
+          "steps": [
+            {
+              "title": "If a bank card was with the documents, block it",
+              "text": "In the banking app or through the bank's hotline. A new card is easy to issue; money taken from the account is much harder to get back."
+            },
+            {
+              "title": "If the documents were stolen, tell the police",
+              "text": "A report records the date and the circumstances. If someone tries to use the document, you have proof that it was no longer with you."
+            },
+            {
+              "title": "Retrace your steps",
+              "text": "Bag, pockets, car, yesterday's clothes. Call the places you have been: the café, the taxi, the station, the shop. Most lost things turn up there within the first hours."
+            },
+            {
+              "title": "Check whether the document has already been found",
+              "text": "Look through the found documents on DeRechi and in local groups. Post a notice about the loss with the kind of document and the place."
+            }
+          ]
+        },
+        {
+          "id": "where-to-look",
+          "heading": "Where to look",
+          "body": [
+            "A document most often comes back the same way it was lost: someone picks it up and hands it in where they found it, or at the nearest police station.",
+            [
+              "The venue or the transport you used: the manager, the driver, the carrier's lost property office.",
+              "The police station or lost property office near the place of loss: that is where found documents are usually taken.",
+              "Your letterbox: finders often drop documents into the nearest post box, and the postal service delivers them to the address shown in the document.",
+              "Local groups and DeRechi: search by the kind of document and the surname."
+            ],
+            {
+              "tone": "tip",
+              "text": "Leave a note with your number where you lost it too: in a café or at a station it is seen by the people who clean up after you."
+            }
+          ]
+        },
+        {
+          "id": "replace",
+          "heading": "Replacing it",
+          "body": [
+            "A document is replaced by whoever issued it: passports and ID cards by the passport authority, driving licences by the licensing authority, student cards by the university, bank cards by the bank. What exactly you need and what it costs depends on the country, so check the official site of the service or your city page. If you lost your passport abroad, go to your country's consulate: it issues a document for the journey home.",
+            {
+              "tone": "warning",
+              "text": "Once you have reported the loss to the issuing service, the old document is invalid, even if it turns up the next day. You may not use it: hand it in to the service that issued the new one."
+            }
+          ]
+        },
+        {
+          "id": "scams",
+          "heading": "Staying clear of scammers",
+          "body": [
+            [
+              "Never pay “for the return” in advance and never send codes from text messages: nobody needs a code to receive money.",
+              "Do not send photos of your other documents “to confirm”. Whoever really found your document can already see whose it is.",
+              "Meet in daylight in a public place, not at home.",
+              "If the document is held “hostage” for money, go to the police."
+            ]
+          ]
+        },
+        {
+          "id": "found",
+          "heading": "Found someone's documents?",
+          "steps": [
+            {
+              "title": "Take them to the police or back to where you found them",
+              "text": "The nearest police station accepts found documents, and that is the fastest way back to the owner. Take a bank card to a branch of that bank or tell the bank through its hotline: the card is blocked and the owner gets a new one. There is no need to send it to anyone."
+            },
+            {
+              "title": "Do not photograph or post the pages with personal data",
+              "text": "Photos of documents are used to take out loans. A notice needs only the kind of document, the owner's name and where you found it."
+            },
+            {
+              "title": "Post a notice on DeRechi",
+              "text": "The owner is already searching through the finds in town. A notice takes a minute, and we never show your contact details in full."
+            }
+          ]
+        }
+      ],
+      "faq": [
+        {
+          "q": "Do I need to go to the police if the document was simply lost?",
+          "a": "Usually not for the replacement, unless it was stolen. But a report records the date of loss, so if someone tries to use the document you have proof that it was no longer with you."
+        },
+        {
+          "q": "Someone found my document and asks for a reward. Is that normal?",
+          "a": "You may thank them, and in many countries the law gives the finder a right to a reward. But never pay in advance and never share codes from text messages: settle up when you meet and the document is in your hands."
+        },
+        {
+          "q": "Can I post a photo of a passport I found so the owner recognises it?",
+          "a": "No. Photos of documents are used to take out loans and break into accounts. The kind of document, the name and where you found it are enough: the owner will recognise it anyway."
+        }
+      ]
+    },
+    "keys": {
+      "title": "Lost your keys: what to do",
+      "shortTitle": "Keys",
+      "description": "Where lost keys most often turn up, when to change the lock, how to secure your flat and car, and what to do with a bunch of keys you have found.",
+      "lead": "Keys are the most common thing to lose, and they are almost always close by. The real question is not “where are they” but “does whoever found them know which door they open”.",
+      "linkLost": "Lost your keys? What to do",
+      "linkFound": "Found keys? How to get them back to the owner",
+      "ctaFound": "Found keys",
+      "railTitle": "Found keys on DeRechi",
+      "railEmpty": "There are no notices about found keys right now. Post yours: whoever finds them will find you more easily.",
+      "sections": [
+        {
+          "id": "first-hour",
+          "heading": "The first hour",
+          "steps": [
+            {
+              "title": "Check whether anything on the keys gives away an address",
+              "text": "A tag, a receipt, a fob with a car or building number. If the address can be worked out, change the lock without waiting."
+            },
+            {
+              "title": "Retrace your steps",
+              "text": "Pockets, bag, the door lock, the car, the bench by the entrance. Keys most often fall out where you took out your phone or wallet."
+            },
+            {
+              "title": "Ask at the places you have been",
+              "text": "Security, the manager, the driver, the neighbours. Found keys are usually left at the desk or hung by the door."
+            },
+            {
+              "title": "Check the finds on DeRechi",
+              "text": "Search by the look of the bunch: how many keys, the fob, the colour. Post a notice about the loss."
+            }
+          ]
+        },
+        {
+          "id": "where-to-look",
+          "heading": "Where to look",
+          "body": [
+            [
+              "By the doors you opened last: the flat, the car, the office.",
+              "In coat pockets and the lining of the bag.",
+              "At reception desks and the lost property offices of the places you visited.",
+              "In the groups of your building, district and city: found keys are posted there all the time."
+            ],
+            {
+              "tone": "tip",
+              "text": "In the notice describe the fob and the number of keys, but never the address or the car number."
+            }
+          ]
+        },
+        {
+          "id": "secure",
+          "heading": "Should you change the lock",
+          "body": [
+            "If nothing on the keys gave away an address and you did not lose them together with documents, the risk is small: a key alone will hardly lead anyone to your door. If there was an address, or the keys went missing together with a wallet or passport, change the lock cylinder right away.",
+            [
+              "Car keys: if you have a spare, ask a service centre to delete the lost key from the car's memory so it can no longer start it. Until that is done, park the car away from where you lost the keys: one press on the fob shows which car is yours.",
+              "Office or entrance keys with an intercom: tell the manager so the old key is cancelled.",
+              "Electronic cards: deactivate them with the issuer."
+            ]
+          ]
+        },
+        {
+          "id": "found",
+          "heading": "Found someone's keys?",
+          "steps": [
+            {
+              "title": "Leave them where you found them, or hand them to the manager",
+              "text": "The owner will come back to this very place. If the spot is deserted, take them to the nearest venue or police station."
+            },
+            {
+              "title": "Post a notice on DeRechi",
+              "text": "Describe the fob and the number of keys, but do not photograph tags with an address. The owner will prove the keys are theirs by describing what the notice leaves out."
+            }
+          ]
+        }
+      ],
+      "faq": [
+        {
+          "q": "Can someone find my flat from my keys?",
+          "a": "A key on its own carries no address. The risk appears when there is a tag, a receipt or a business card with it, or when the keys were lost together with documents. In that case change the lock."
+        },
+        {
+          "q": "I found keys and nobody responds. What do I do with them?",
+          "a": "Hand them to the nearest police station or to the lost property office of the place where you found them. Leave the notice on DeRechi up: the owner may see it days later."
+        },
+        {
+          "q": "How long should I wait before changing the lock?",
+          "a": "If the address can be worked out, do not wait at all. If not, give yourself a few days to search: most keys turn up within the first days."
+        }
+      ]
+    },
+    "wallet": {
+      "title": "Lost your wallet: what to do",
+      "shortTitle": "Wallet",
+      "description": "What to block in the first minutes, where to look for a lost wallet, how to replace the cards and documents, and what to do with a wallet you have found.",
+      "lead": "A wallet rarely holds only money: cards, documents, passes. So the first thing is not the search but blocking whatever someone could use.",
+      "linkLost": "Lost your wallet? What to do",
+      "linkFound": "Found a wallet? How to get it back to the owner",
+      "ctaFound": "Found wallets",
+      "railTitle": "Found wallets on DeRechi",
+      "railEmpty": "There are no notices about found wallets right now. Post yours: whoever finds it will find you more easily.",
+      "sections": [
+        {
+          "id": "first-hour",
+          "heading": "The first 15 minutes",
+          "steps": [
+            {
+              "title": "Block the cards",
+              "text": "In the banking app or through the hotline. Contactless payments go through without a PIN, so this really is the first thing to do."
+            },
+            {
+              "title": "Remember what else was inside",
+              "text": "Documents, a pass, a travel card, keys, a written-down PIN. Each of these has to be blocked or replaced separately."
+            },
+            {
+              "title": "Retrace your steps and ask",
+              "text": "The till, the table, the taxi, the bus. A wallet is often found and left with the manager or the driver."
+            },
+            {
+              "title": "Check the finds on DeRechi and post a notice",
+              "text": "Describe the colour, the material and what was inside, but never card numbers."
+            }
+          ]
+        },
+        {
+          "id": "where-to-look",
+          "heading": "Where to look",
+          "body": [
+            "Wallets are often found by honest people and handed in where they were found, or to the police. Often without the cash, but with the cards and documents, which are the hardest to replace.",
+            [
+              "The venue or the transport where you last paid.",
+              "The police station near the place of loss.",
+              "Your letterbox: documents from a found wallet are often dropped into a post box and delivered to your address.",
+              "Local groups and DeRechi: search by colour and contents."
+            ],
+            {
+              "tone": "tip",
+              "text": "If there was a document with your address in the wallet, keep checking your letterbox for a few days."
+            }
+          ]
+        },
+        {
+          "id": "restore",
+          "heading": "Replacing things",
+          "body": [
+            "Cards are reissued by the bank, documents by whoever issued them, the travel card and the pass by the carrier or the employer. Keep checking the card transactions in the banking app for a few more days and dispute any charge you do not recognise at once. If the wallet was stolen, report it to the police: the report is needed for insurance and often for replacing documents.",
+            {
+              "tone": "warning",
+              "text": "A call “from the bank” asking you to read out a code from a text message or your card details is a scam, even if they know about the loss. The bank blocks a card itself, without codes."
+            }
+          ]
+        },
+        {
+          "id": "found",
+          "heading": "Found someone's wallet?",
+          "steps": [
+            {
+              "title": "Take out nothing beyond what you need to find the owner",
+              "text": "A name on a card or a document is enough. Leave the cash: it will be counted when the wallet is returned."
+            },
+            {
+              "title": "Hand it to the police or back to where you found it",
+              "text": "The venue's manager, the driver, security: the owner will come back to this very place. Take a bank card to a branch of that bank or tell the bank: it is blocked and the owner gets a new one."
+            },
+            {
+              "title": "Post a notice on DeRechi",
+              "text": "Colour, material, place. No photos of cards or documents. The owner will prove the wallet is theirs by describing what is inside."
+            }
+          ]
+        }
+      ],
+      "faq": [
+        {
+          "q": "The wallet was found, but without the cash. What now?",
+          "a": "That happens often, and the cards and documents are still worth getting back. If there was a lot of cash, you can report it to the police, but the chances are slim."
+        },
+        {
+          "q": "Do I need to change the lock if my keys were in the wallet with my documents?",
+          "a": "Yes, if the documents give away your address. Change the lock cylinder without waiting for the wallet to turn up."
+        },
+        {
+          "q": "I found a wallet with no contact details in it. Where does it go?",
+          "a": "To the nearest police station or to the lost property office of the place where you found it. And post a notice on DeRechi: owners often search right here."
+        }
+      ]
+    },
+    "electronics": {
+      "title": "Lost your phone: what to do",
+      "shortTitle": "Phone and devices",
+      "description": "How to find a lost phone, earbuds or laptop with the built-in services, what to block if they are not coming back, and what to do with a device you found.",
+      "lead": "A phone is the one thing that can say where it is. Until the battery dies you have a few hours to use that.",
+      "linkLost": "Lost a phone or a device? What to do",
+      "linkFound": "Found a phone? How to get it back to the owner",
+      "ctaFound": "Found devices",
+      "railTitle": "Found devices on DeRechi",
+      "railEmpty": "There are no notices about found devices right now. Post yours: whoever finds it will find you more easily.",
+      "sections": [
+        {
+          "id": "first-hour",
+          "heading": "The first hour",
+          "steps": [
+            {
+              "title": "Call your own number",
+              "text": "From someone else's phone or through a messenger. If the phone is nearby it will be heard; if someone picked it up, an honest person will answer."
+            },
+            {
+              "title": "See where the device is",
+              "text": "Find Hub (formerly Find My Device) on Android, Find My on Apple. There you can also play a sound, show a message with your contact on the screen and lock the device."
+            },
+            {
+              "title": "Lock the screen and payments; the SIM later",
+              "text": "Lock the screen through the finding service and payments through the bank: a phone can confirm a transfer and reset passwords. Block the SIM card with the operator only after you have used the finding service, or at once if the phone was definitely stolen: without a SIM it will not report its location away from Wi-Fi. Earbuds and laptops do not need this step."
+            },
+            {
+              "title": "Post a notice",
+              "text": "On DeRechi and in local groups: model, colour, case, place. Do not post the IMEI or the serial number, but keep them for the police."
+            }
+          ]
+        },
+        {
+          "id": "where-to-look",
+          "heading": "Where to look",
+          "body": [
+            [
+              "Where the device was last seen on the map in Find Hub or Find My.",
+              "The venue or the transport: phones are left with the manager or the driver.",
+              "The carrier's lost property office: on public transport devices are collected centrally.",
+              "DeRechi and local groups: search by model and colour."
+            ],
+            {
+              "tone": "tip",
+              "text": "Put a message with another number on the lock screen. Whoever finds the phone will not have to guess how to reach you."
+            }
+          ]
+        },
+        {
+          "id": "protect",
+          "heading": "If the phone is not coming back",
+          "body": [
+            "If the phone had no screen lock or was stolen, change the passwords for email, banking and messengers at once. Otherwise do it after a day or two without a sign of the device: sign out of all sessions on every device and, if needed, erase the phone remotely (after erasing, a phone usually can no longer be tracked). If it was stolen, report it to the police with the IMEI (it is on the box, on the receipt and in the device list of your Google or Apple account): insurance needs that too.",
+            {
+              "tone": "warning",
+              "text": "A message saying “your iPhone has been found, follow the link to see its location” is a scam aimed at your Apple ID or Google password. Check the location only in the official app."
+            }
+          ]
+        },
+        {
+          "id": "found",
+          "heading": "Found someone's phone?",
+          "steps": [
+            {
+              "title": "Do not try to unlock it",
+              "text": "Leave it switched on and wait for a call. The lock screen often shows the owner's contact or a message from them."
+            },
+            {
+              "title": "Answer the calls, or make one yourself",
+              "text": "The owner will almost certainly call. If the screen is not locked, call one of the recent contacts and say where the phone is."
+            },
+            {
+              "title": "Hand it to the police or the manager, and post a notice",
+              "text": "On DeRechi describe the model, the colour and the case. The owner will prove the phone is theirs by naming the number or the wallpaper."
+            }
+          ]
+        }
+      ],
+      "faq": [
+        {
+          "q": "Can a phone be found when it is switched off?",
+          "a": "Find Hub and Find My show the last location before it was switched off. Newer Apple models and some Android phones are visible even when off. Turn on “Mark as lost” (Apple) or “Secure device” (Android): as soon as the phone comes online you get a notification."
+        },
+        {
+          "q": "What about earbuds, a watch or a laptop?",
+          "a": "The same routine: the maker's finding service, the venue and the transport, a notice on DeRechi. For a laptop also lock it and change your passwords, since your accounts are open on it."
+        },
+        {
+          "q": "The finder asks for money to return it. Should I pay?",
+          "a": "Thanking them after the return is your choice. Paying in advance or following links “to confirm” is not worth it: that is how both the money and the account get taken."
+        }
+      ]
+    },
+    "animals": {
+      "title": "Lost a pet: what to do",
+      "shortTitle": "Pets",
+      "description": "How to search for a lost cat or dog in the first hours, whom to tell, how to stay clear of scammers and what to do if you have found someone's pet.",
+      "lead": "A cat usually hides a few houses away; a dog runs further. The first hours decide everything, so act at once and get the neighbours involved.",
+      "linkLost": "Lost a pet? What to do",
+      "linkFound": "Found a pet? How to find its owner",
+      "ctaFound": "Found pets",
+      "railTitle": "Found pets on DeRechi",
+      "railEmpty": "There are no notices about found pets right now. Post yours: whoever finds it will find you more easily.",
+      "sections": [
+        {
+          "id": "first-hour",
+          "heading": "The first hours",
+          "steps": [
+            {
+              "title": "Walk the neighbourhood and call softly",
+              "text": "Cats hide under cars, in basements and up trees within a few houses. Dogs run further but come back along the familiar walking route. Bring a favourite food and call in a calm voice: shouting frightens them. Do not run after the animal: once scared, it runs further. Crouch, speak softly and let it come to you."
+            },
+            {
+              "title": "Tell the neighbours and the caretaker",
+              "text": "Ask them to look into basements, garages and stairwells. Leave your number."
+            },
+            {
+              "title": "Post a notice with a photo",
+              "text": "On DeRechi and in the district's groups: photo, name, markings, place and time. Say whether the animal is timid and how to approach it."
+            },
+            {
+              "title": "Put up flyers",
+              "text": "Entrances, bus stops, shops and vet clinics within a kilometre. A big photo, the name, a phone number."
+            }
+          ]
+        },
+        {
+          "id": "where-to-look",
+          "heading": "Whom to tell",
+          "body": [
+            [
+              "Vet clinics nearby: found animals are brought there, especially injured ones.",
+              "Shelters and animal control: ask, and leave a photo with your contact.",
+              "The district's and the city's pet groups: that is where your pet is most likely to be spotted.",
+              "If there is a microchip, tell the registry it is recorded in and the clinic that implanted it."
+            ],
+            {
+              "tone": "tip",
+              "text": "In the evening and at dawn, when it is quiet, a cat is most likely to answer. Leave a carrier or a box with something of yours by the entrance: a familiar smell helps it come home."
+            }
+          ]
+        },
+        {
+          "id": "scams",
+          "heading": "Staying clear of scammers",
+          "body": [
+            "After the notice you may get messages like “we found it, pay for delivery” or “send the code to confirm your number”. A real finder sends a photo of the animal now, not “after payment”.",
+            [
+              "Ask for a fresh photo or video and check markings that the notice leaves out.",
+              "Never pay in advance and never follow links “to confirm”.",
+              "Collect the animal in person, in a public place or by a vet clinic."
+            ]
+          ]
+        },
+        {
+          "id": "found",
+          "heading": "Found someone's pet?",
+          "steps": [
+            {
+              "title": "Check whether it is really lost",
+              "text": "A well-kept cat with a collar may simply be out. A dog with no owner nearby, frightened or injured, needs help. Do not grab a frightened or injured animal with bare hands: throw a jacket or a towel over it, and for an injured one call a vet clinic or animal control right away."
+            },
+            {
+              "title": "Check for a chip and a tag",
+              "text": "Almost any vet clinic can read a chip, usually for free. The collar may carry a tag with a phone number."
+            },
+            {
+              "title": "Post a notice and tell the clinics nearby",
+              "text": "On DeRechi and in the district's groups: photo, place, time. The owner will prove the animal is theirs by naming its markings or showing photos."
+            }
+          ]
+        }
+      ],
+      "faq": [
+        {
+          "q": "How long is there to find a cat or a dog?",
+          "a": "Most come back within the first three days, but some after weeks: often the animal has been living nearby the whole time. Keep searching and keep the notice updated."
+        },
+        {
+          "q": "Should I go to the shelter straight away?",
+          "a": "Tell the shelters and animal control on the very first day, leaving a photo and your contact, and check in person every few days: animals are not brought in at once."
+        },
+        {
+          "q": "I found a pet but cannot keep it. What do I do?",
+          "a": "Ask the vet clinic or the local groups about temporary fostering and tell the shelter. Post the notice on DeRechi in any case: owners often search right here."
+        }
+      ]
+    }
+  }
+}

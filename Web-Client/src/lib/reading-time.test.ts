@@ -10,7 +10,19 @@ describe("reading time", () => {
   it("rounds to whole minutes and never says zero", () => {
     expect(readingMinutes([])).toBe(1)
     expect(readingMinutes(["слово"])).toBe(1)
-    expect(readingMinutes([Array(WORDS_PER_MINUTE * 3).fill("слово").join(" ")])).toBe(3)
-    expect(readingMinutes([Array(Math.round(WORDS_PER_MINUTE * 2.4)).fill("a").join(" ")])).toBe(2)
+    expect(
+      readingMinutes([
+        Array(WORDS_PER_MINUTE * 3)
+          .fill("слово")
+          .join(" "),
+      ]),
+    ).toBe(3)
+    expect(
+      readingMinutes([
+        Array(Math.round(WORDS_PER_MINUTE * 2.4))
+          .fill("a")
+          .join(" "),
+      ]),
+    ).toBe(2)
   })
 })

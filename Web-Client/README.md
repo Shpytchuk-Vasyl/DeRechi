@@ -346,8 +346,9 @@ asking to share the notice in local groups, until it is closed.
 `/{locale}/guide` and `/{locale}/guide/{slug}` (`src/screens/guide/`) are long-form "what to do
 if you lost X" pages, one per notice category, written for the person searching the web in the
 first hour: a lead, sections with paragraphs, lists, callouts and numbered steps, a card that sends
-them to the found notices of that category with a live rail of the latest ones, an FAQ, a note with
-every city linked to the "where to turn" section of its page (`#lost-property`), and related guides. A sticky contents list sits
+them to the found notices of that category with a live rail of the latest ones, an FAQ, the home
+page's city map with every pin landing on the "where to turn" section of the city page
+(`#lost-property`, `CityMap`'s `hash` prop), and related guides. A sticky contents list sits
 beside the article on wide screens and folds into a `<details>` above it on narrow ones. The
 advice is general on purpose, the same in every country: which office, which phone number, which
 transport operator belongs on the city pages, not here.
