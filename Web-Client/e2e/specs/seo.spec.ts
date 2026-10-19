@@ -11,6 +11,8 @@ const KEY_PAGES = [
   "/report/lost",
   "/report/found",
   "/safety",
+  "/guide",
+  "/guide/documents",
   "/terms",
   "/privacy",
 ]

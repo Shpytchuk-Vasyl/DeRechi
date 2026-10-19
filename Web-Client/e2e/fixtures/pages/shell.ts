@@ -11,7 +11,7 @@ export const LANGUAGE_NAMES: Record<Locale, string> = {
 }
 
 export type BottomTab = "home" | "lost" | "found"
-export type FooterGroup = "footerNotices" | "footerDocuments"
+export type FooterGroup = "footerNotices" | "footerGuides" | "footerDocuments"
 export type FooterLink = "lost" | "found" | "terms" | "privacy" | "safety"
 
 export class Shell {

@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next"
 import { cityHasNotices } from "@/api/cities"
 import { fetchItems, type ItemKind } from "@/api/items"
+import { GUIDE_SLUGS } from "@/content/guides"
 import { paths } from "@/i18n/paths"
 import { routing } from "@/i18n/routing"
 import { CACHE } from "@/lib/cache"
@@ -46,6 +47,16 @@ async function pageEntries(): Promise<MetadataRoute.Sitemap> {
     paths.safety,
   ].map(pageEntry)
 
+  const guides: MetadataRoute.Sitemap = [
+    paths.guides,
+    ...GUIDE_SLUGS.map((slug) => paths.guide(slug)),
+  ].map((path) => ({
+    url: absoluteUrl(routing.defaultLocale, path),
+    changeFrequency: "monthly",
+    priority: 0.7,
+    alternates: alternates(path),
+  }))
+
   const documents: MetadataRoute.Sitemap = [paths.terms, paths.privacy].map((path) => ({
     url: absoluteUrl(routing.defaultLocale, path),
     changeFrequency: "yearly",
@@ -59,7 +70,7 @@ async function pageEntries(): Promise<MetadataRoute.Sitemap> {
     ),
   )
 
-  return [...pages, ...documents, ...cities.filter((entry) => entry !== null)]
+  return [...pages, ...guides, ...documents, ...cities.filter((entry) => entry !== null)]
 }
 
 function monthWindow(back: number, now = new Date()): { dateFrom: string; dateTo: string } {

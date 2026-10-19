@@ -137,6 +137,11 @@ test.describe("footer", () => {
     ] as const
 
     await expect(shell.footerNav("footerNotices").getByRole("link")).toHaveCount(2)
+    await expect(shell.footerNav("footerGuides").getByRole("link")).toHaveCount(5)
+    await expect(shell.footerNav("footerGuides").getByRole("link").first()).toHaveAttribute(
+      "href",
+      `/${appLocale}/guide/documents`,
+    )
     await expect(shell.footerNav("footerDocuments").getByRole("link")).toHaveCount(3)
     for (const { group, link, path } of links) {
       await expect(shell.footerLink(group, link)).toHaveAttribute("href", `/${appLocale}${path}`)

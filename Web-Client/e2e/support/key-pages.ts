@@ -38,6 +38,11 @@ export async function openSafety({ page, t, go }: WalkContext): Promise<void> {
   await expect(page).toHaveTitle(t("app.titleTemplate", { page: t("safety.title") }))
 }
 
+export async function openGuide({ page, go }: WalkContext): Promise<void> {
+  await go("/guide/documents")
+  await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toBeVisible()
+}
+
 export async function openTerms({ page, go }: WalkContext): Promise<void> {
   await go("/terms")
   await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toBeVisible()

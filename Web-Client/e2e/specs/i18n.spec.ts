@@ -40,6 +40,12 @@ const KEY_PAGES: KeyPage[] = [
     status: 200,
     title: (t) => t("app.titleTemplate", { page: t("safety.title") }),
   },
+  { path: "/guide", status: 200, title: (t, h1) => t("app.titleTemplate", { page: h1 }) },
+  {
+    path: "/guide/documents",
+    status: 200,
+    title: (t, h1) => t("app.titleTemplate", { page: h1 }),
+  },
   { path: "/terms", status: 200, title: (t, h1) => t("app.titleTemplate", { page: h1 }) },
   {
     path: "/lviv",

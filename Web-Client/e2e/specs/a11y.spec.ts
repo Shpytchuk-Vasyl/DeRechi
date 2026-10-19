@@ -2,7 +2,14 @@ import AxeBuilder from "@axe-core/playwright"
 import type { Page, TestInfo } from "@playwright/test"
 import { expect, test } from "../fixtures/base"
 import { ClaimCard, Toasts } from "../fixtures/pages"
-import { openDetails, openHome, openList, openSafety, walkReport } from "../support/key-pages"
+import {
+  openDetails,
+  openGuide,
+  openHome,
+  openList,
+  openSafety,
+  walkReport,
+} from "../support/key-pages"
 import { allowDocumentStatus } from "../support/site"
 
 const TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]
@@ -76,6 +83,11 @@ test.describe("accessibility", () => {
   test("safety", async ({ page, t, go, shared }, testInfo) => {
     await openSafety({ page, t, go, shared })
     await expectAccessible(page, testInfo, "safety")
+  })
+
+  test("guide", async ({ page, t, go, shared }, testInfo) => {
+    await openGuide({ page, t, go, shared })
+    await expectAccessible(page, testInfo, "guide")
   })
 
   test("404", async ({ page, t, go, consoleErrors }, testInfo) => {

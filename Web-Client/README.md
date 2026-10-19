@@ -341,6 +341,28 @@ still counts as the person's own gesture. Right after a notice is published, the
 a mark in `sessionStorage` (`markJustPublished`), and the page shows the same buttons in a card
 asking to share the notice in local groups, until it is closed.
 
+### Guides
+
+`/{locale}/guide` and `/{locale}/guide/{slug}` (`src/screens/guide/`) are long-form "what to do
+if you lost X" pages, one per notice category, written for the person searching the web in the
+first hour: a lead, sections with paragraphs, lists, callouts and numbered steps, a card that sends
+them to the found notices of that category with a live rail of the latest ones, an FAQ, a note with
+every city linked to the "where to turn" section of its page (`#lost-property`), and related guides. A sticky contents list sits
+beside the article on wide screens and folds into a `<details>` above it on narrow ones. The
+advice is general on purpose, the same in every country: which office, which phone number, which
+transport operator belongs on the city pages, not here.
+
+The texts live in `src/content/guides/` like the legal texts do: one JSON per locale with the
+shared labels and a `guides` map, typed by `types.ts`, read through `guideTexts(locale)` in
+`index.ts`, which also holds the slug list and the per-guide metadata (category, dates, related
+guides). Icons are the only thing in `guide-icons.tsx`. `guides.test.ts` checks that every locale
+carries every guide with the same sections, blocks and steps, so a translation cannot silently
+drop a paragraph. A guide's `title` is both its `<h1>` and its `<title>`. The pages are in the
+sitemap (`monthly`, 0.7), in the footer under "Guides", and linked from every notice of their
+category; each carries `Article`, `FAQPage` and `BreadcrumbList` JSON-LD, the index a
+`CollectionPage`. Adding a guide: a slug and metadata in `index.ts`, an icon, and the texts in all
+five JSON files.
+
 Nothing is indexable unless `NODE_ENV` is `production` **and** `NEXT_PUBLIC_SITE_URL` is a public
 host (`INDEXABLE` in `src/lib/seo.ts`): `next dev`, a local `pnpm start` and a LAN address all
 answer `noindex` on every page and `Disallow: /` in `robots.txt`, so a tunnel or a shared link
