@@ -13,4 +13,6 @@ export const paths = {
   card: (kind: ItemKind, id: string) => `/${kind}/${id}/card.png` as const,
   report: (kind: ItemKind) => `/report/${kind}` as const,
   city: (slug: string) => `/${slug}` as const,
+  guides: "/guide",
+  guide: (slug: string) => `/guide/${slug}` as const,
 } as const

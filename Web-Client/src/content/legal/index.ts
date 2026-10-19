@@ -37,6 +37,7 @@ export function legalTexts(
   countryCode: string,
 ): {
   updated: string
+  readingTime: string
   updatedOn: string
   country: string
   slots: JurisdictionTexts
@@ -46,6 +47,7 @@ export function legalTexts(
   const law = jurisdiction(countryCode)
   return {
     updated: texts.updated,
+    readingTime: texts.readingTime,
     updatedOn: law.updated,
     country: law.code,
     slots: law.texts[locale],

@@ -16,6 +16,7 @@ export type LegalDoc = {
 
 export type LegalTexts = {
   updated: string
+  readingTime: string
   terms: LegalDoc
   privacy: LegalDoc
 }
