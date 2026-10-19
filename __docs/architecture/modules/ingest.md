@@ -1,12 +1,12 @@
 # Ingest
 
-Imports lost-and-found notices from outside sources and publishes them. The sources are Telegram (a userbot session reads the chats of one Telegram folder) and Facebook groups (read through a logged-in account once an hour); a model through OpenRouter extracts the notice, and the result goes to the publishers in `INGEST_PUBLISHERS`: the site (Client-API's public GraphQL), our Telegram channel. It also listens to `ingest.queue` and mirrors the notices created on the site and in the admin panel into the channel, deleting a post when its notice is archived or deleted. What it does step by step is in [the feature page](../../features/telegram-ingest.md).
+Imports lost-and-found notices from outside sources and publishes them. The sources are Telegram (a userbot session reads the chats of one Telegram folder) and Facebook groups (read through a logged-in account once an hour); a model through OpenRouter extracts the notice, and the result goes to the publishers in `INGEST_PUBLISHERS`: the site (Client-API's public GraphQL), our Telegram channel. It also listens to `ingest.queue` and mirrors the notices created on the site and in the admin panel into the channel, editing a post when its notice is edited in the admin panel and deleting it when the notice is archived or deleted. What it does step by step is in [the feature page](../../features/telegram-ingest.md).
 
 | | |
 |---|---|
 | Port | 8086 (serves nothing public); actuator on the management port 9086 |
-| Consumes | Telegram updates (TDLib through TDLight); Facebook group pages and the group feed query of `www.facebook.com`, polled; `ingest.queue` (`notice.*.created`, `notice.*.archived`, `notice.*.deleted` from `notice.status.exchange`) |
-| Produces | notices through the API entry, Caddy for now (`createLostItem` / `createFoundItem`), photos in MinIO, posts in our Telegram channel (Bot API), deletions of channel posts; no events |
+| Consumes | Telegram updates (TDLib through TDLight); Facebook group pages and the group feed query of `www.facebook.com`, polled; `ingest.queue` (`notice.*.created`, `notice.*.updated`, `notice.*.archived`, `notice.*.deleted` from `notice.status.exchange`) |
+| Produces | notices through the API entry, Caddy for now (`createLostItem` / `createFoundItem`), photos in MinIO, posts in our Telegram channel (Bot API), edits and deletions of channel posts; no events |
 | Needs | PostgreSQL (`ingest_post`), RabbitMQ, the API entry (Caddy) with Client-API behind it, MinIO; OpenRouter, Google Places, Telegram, Facebook |
 | Stack | TDLight Java (TDLib 1.8.66), libphonenumber, Tess4J + system Tesseract, ONNX Runtime + YuNet, Spring for GraphQL client, Spring Cloud AWS S3, Lombok |
 | Instances | exactly one: the TDLib session cannot be shared |
@@ -21,19 +21,19 @@ One package per stage. The root of a stage package is what the pipeline sees: th
 | `source/telegram/` | `TelegramPostSource` (the `PostSource` named `telegram`) over `TelegramSource` / `TdlightTelegramSource`, `MessageMapper`, `PostBuffer` and `PostGroup` (an album or a text with its photos sent separately become one post), `AuthorPhoneResolver`, `AuthorProfileResolver`, `TelegramDetails`, `ChatSettingsParser`, `TelegramLogin` (`--login`) |
 | `source/facebook/` | `FacebookPostSource` (the `PostSource` named `facebook`, polls the groups), `FacebookGroupReader` (the group page, then the feed query page by page), `FacebookParser`, `FacebookClient` (the account's cookies), `FacebookDetails` / `FacebookActor` (the post's author) |
 | `phone/` | `PhoneExtractor`, `Masker`, `PhoneHasher` |
-| `image/` | `ImageRedactor`, `RedactedImage`, `RedactionMode` |
+| `image/` | `ImageRedactor`, `RedactedImage` (the JPEG, the mode and the OCR lines kept for the owner's name), `RedactionMode`, `Rotations` (quarter turns) |
 | `image/redaction/` | `DefaultImageRedactor` (what to blur), `DocumentDetector`, `Blur` |
-| `image/ocr/` | `OcrEngine`, `OcrLine`, `TesseractOcrEngine` |
+| `image/ocr/` | `OcrEngine`, `OcrPage` (lines plus the quarter turns that put the photo upright), `OcrLine`, `TesseractOcrEngine` |
 | `image/face/` | `FaceDetector`, `YuNetFaceDetector` |
-| `extraction/` | `Extractor`, `ExtractionRequest`, `Extraction` (the model's answer), `ExtractionResult`, `ExtractionPolicy` (is the answer a usable notice, which phone to take), `PromptBuilder` (`prompts/extract.md`, `prompts/extraction-schema.json`) |
-| `extraction/openrouter/` | `OpenRouterExtractor`, `CompletionRequest`, `DailyCallCounter` |
+| `extraction/` | `Extractor`, `ExtractionRequest`, `Extraction` (the model's answer), `ExtractionResult`, `ExtractionPolicy` (is the answer a usable notice, which phone to take), `OwnerNameFinder` with `OwnerNameRequest`, `OwnerName`, `OwnerNameResult` (the second call that reads the owner's name off a document's OCR lines), `PromptBuilder` (`prompts/extract.md`, `prompts/extraction-schema.json`, `prompts/owner-name.md`, `prompts/owner-name-schema.json`) |
+| `extraction/openrouter/` | `OpenRouterClient` (one strict-schema completion: model, fallback, retries, the daily budget), `OpenRouterExtractor`, `OpenRouterOwnerNameFinder`, `CompletionRequest`, `DailyCallCounter` |
 | `place/` | `PlaceResolver`, `ResolvedPlace` |
 | `place/google/` | `GoogleLegacyPlaceResolver` (`GOOGLE_PLACES_API=LEGACY`, default) or `GooglePlaceResolver` (`NEW`), both on `TextSearchPlaceResolver` |
 | `pipeline/` | `IngestQueue`, `IngestPipeline`, `PostLedger`, `IngestMetrics`, `Notice`, `Notices` |
 | `publish/` | `Publisher`, `Publishers` (runs the list of `INGEST_PUBLISHERS`), `Publication`, `SiteItem` |
 | `publish/site/` | `SitePublisher` (`site`), `ImageUploader` / `S3ImageUploader` (MinIO) |
-| `publish/telegram/` | `ChannelPoster` (`channel`; `postFromSite` and `delete` for one notice), `ChannelMirror` (notices from the site), `StoredPhotos` (a photo from the bucket by key), `BotApiClient`, `CaptionBuilder`, `ChannelPost` |
-| `event/` | `NoticeEventListener` (`ingest.queue`), `ItemCreatedEvent`, `ItemArchivedEvent`, `ItemDeletedEvent`, `EventType`, `EventTypeScanner`: copied per module like in the other consumers |
+| `publish/telegram/` | `ChannelPoster` (`channel`; `postFromSite`, `edit` and `delete` for one notice), `ChannelMirror` (notices from the site), `StoredPhotos` (a photo from the bucket by key, also the placeholder), `BotApiClient`, `CaptionBuilder`, `ChannelPost` |
+| `event/` | `NoticeEventListener` (`ingest.queue`), `ItemEvent` (what `ItemCreatedEvent` and `ItemUpdatedEvent` share for a channel post), `ItemCreatedEvent`, `ItemUpdatedEvent`, `ItemArchivedEvent`, `ItemDeletedEvent`, `EventType`, `EventTypeScanner`: copied per module like in the other consumers |
 | `client/` | `DeRechiApi` / `GraphQlDeRechiApi` and `NewItem`: Client-API, used by the pipeline (categories, countries) and by `site`; `HttpCalls` for every HTTP client |
 | `model/` | `ItemKind`, `Money`, `SocialMedia`, `Outcome`: the values shared by the model's answer, the notice, the ledger, the publishers and the metrics |
 
@@ -65,7 +65,7 @@ A new source (a website, say) is one `@Component` implementing `PostSource` with
 
 `channel` keeps the id of its post in `ingest_post.message_id` of the post's own row (`PostLedger.posted`). A notice from the site gets a row of its own once `ChannelMirror` has posted it (`PostLedger.postedFromSite`: `source` `site` or `admin`, `channel` `internal`, `external_id` `lost/7`, status `PUBLISHED`, the message id), and a notice that already has a row in `ingest_post` is not posted again. Either post can be deleted when the notice is archived or deleted.
 
-Each publisher turns the `Notice` into its own format (`SitePublisher` into Client-API's `NewItem`, `ChannelPost.of` into a channel post), so the pipeline knows none of them.
+Each publisher turns the `Notice` into its own format (`SitePublisher` into Client-API's `NewItem`, `ChannelPost.of` into a channel post), so the pipeline knows none of them. A notice without a photo but with `placeholderPhoto` (a found document or wallet, `INGEST_PLACEHOLDER_*`) is created with that storage key as its image, and `channel` loads the picture from the bucket for the post.
 
 A new publisher (a Viber group, say) is one `@Component` implementing `Publisher` with its own name, in its own subpackage of `publish/`; adding the name to `INGEST_PUBLISHERS` turns it on. An unknown name fails the start.
 

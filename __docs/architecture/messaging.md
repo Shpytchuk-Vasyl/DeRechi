@@ -17,7 +17,7 @@ service's queue binds every key it wants from any of them:
 
 | Exchange | Routing keys | Producer | Bound queues |
 |---|---|---|---|
-| `notice.status.exchange` (topic) | `notice.<kind>.created`, `notice.<kind>.returned`, `notice.<kind>.archived`, `notice.<kind>.deleted` | `Client-API` (`created`, `returned`), `Admin-API` (`created`, `deleted`), `Worker` (`archived`) | `worker.queue` (`created`, `returned`), `ingest.queue` (`created`, `archived`, `deleted`) |
+| `notice.status.exchange` (topic) | `notice.<kind>.created`, `notice.<kind>.updated`, `notice.<kind>.returned`, `notice.<kind>.archived`, `notice.<kind>.deleted` | `Client-API` (`created`, `returned`), `Admin-API` (`created`, `updated`, `deleted`), `Worker` (`archived`) | `worker.queue` (`created`, `updated`, `returned`), `ingest.queue` (`created`, `updated`, `archived`, `deleted`) |
 | `claims.exchange` (topic) | `claim.<kind>.claimed`, `claim.<kind>.paid` | `Client-API` | `worker.queue` |
 | `notice.action.exchange` (topic) | `notice.<kind>.archive` | `Admin-API` | `worker.queue` |
 | `notification.exchange` (topic) | `notification.match.found`, `notification.claim.*` | `Admin-API`, `Worker` | `notification.queue` (`notification.#`) |
@@ -33,7 +33,7 @@ its own name, and each DLQ is bound by that name, so a rejection lands in exactl
 however many queues share the original routing key.
 
 A second consumer of an event is a binding of its service's queue to that key; the producer
-does not change. `ingest.queue` takes `created`, `archived` and `deleted` but not `returned`:
+does not change. `ingest.queue` takes `created`, `updated`, `archived` and `deleted` but not `returned`:
 `Worker` archives every returned notice right away, and the `archived` that follows names the
 notice, while `returned` carries a claim id.
 
@@ -46,6 +46,7 @@ Prometheus metrics on 15692.
 | Event | Type id | Producer | Exchange and routing key | Consumer |
 |---|---|---|---|---|
 | `ItemCreatedEvent` | `ITEM_CREATED` | `Client-API`, `ItemEventAspect` after `ItemService.create(...)` returns; `Admin-API`, `ArchivableAdminItemService.create(form)` after the commit | `notice.status.exchange`, `notice.lost.created` or `notice.found.created` | `Worker`, `WorkerQueueListener.onItemCreated`; `Ingest`, `NoticeEventListener.onCreated` |
+| `ItemUpdatedEvent` | `ITEM_UPDATED` | `Admin-API`, `ArchivableAdminItemService.update(id, form)` after the commit | `notice.status.exchange`, `notice.lost.updated` or `notice.found.updated` | `Worker`, `WorkerQueueListener.onItemUpdated` (matching again); `Ingest`, `NoticeEventListener.onUpdated` (the channel post) |
 | `ItemArchivedEvent` | `ITEM_ARCHIVED` | `Worker`, `ItemArchiver.archive(kind, id)` after the commit | `notice.status.exchange` (from `derechi.archive.exchange`), `notice.lost.archived`, `notice.found.archived` | `Ingest`, `NoticeEventListener.onArchived` |
 | `ItemDeletedEvent` | `ITEM_DELETED` | `Admin-API`, `ArchivableAdminItemService.delete(id)` after the commit | `notice.status.exchange` (from `derechi.notice-status.exchange`), `notice.lost.deleted`, `notice.found.deleted` | `Ingest`, `NoticeEventListener.onDeleted` |
 | `ClaimEvent` | `CLAIM` | `Client-API`, `ClaimEventAspect` after `ClaimService.claim(..)` / `confirm(..)` / `markPaid(..)` returns | `claims.exchange`, `claim.<kind>.claimed`, `claim.<kind>.paid`; `notice.status.exchange`, `notice.<kind>.returned` | `Worker`, `WorkerQueueListener.onClaim` |
@@ -58,6 +59,13 @@ Prometheus metrics on 15692.
 `categoryKey`, `placeName`, `compensation`, `currency` and `image` (the storage key). `Worker`
 ignores the fields only `Ingest` uses; Jackson 3 skips unknown properties. The routing key
 says whether it was a lost or a found notice; the payload does not.
+
+`ItemUpdatedEvent` has the same shape as `ItemCreatedEvent`: `Worker` drops the notice's candidates
+nobody was notified about (`similar_item.notified_at IS NULL`) and searches again, keeping the notified
+ones; `Ingest` edits the channel post in place (`editMessageMedia` with the photo, `editMessageText`
+without), and when Telegram refuses the edit with a 400 other than "message is not modified" (a photo
+added to or removed from the notice, a message too old to edit) it deletes the post and makes a new
+one. Only the admin panel edits notices, so only `Admin-API` sends it.
 
 `ItemArchivedEvent` and `ItemDeletedEvent` carry only the `id` of the live notice: for an archived
 one the id it had before `Worker` moved it into history, not the id of the history copy.
@@ -77,7 +85,7 @@ skips a `repeated` result, so a second claim from the same person or a second cl
 confirm link sends nothing. See [../features/claims.md](../features/claims.md).
 
 In `Admin-API` the archive request and the match notification are a plain
-`RabbitTemplate.convertAndSend(exchange, key, event)`. `created` and `deleted` in `Admin-API`
+`RabbitTemplate.convertAndSend(exchange, key, event)`. `created`, `updated` and `deleted` in `Admin-API`
 and `archived` in `Worker` go through `AfterCommitPublisher`: the service hands the message to
 the transaction, and a `@TransactionalEventListener` sends it after the commit, so `Ingest` never
 posts or deletes a notice whose transaction rolled back. A broker failure at that point is a
@@ -100,7 +108,8 @@ for both kinds. A payload class without a method lands in the `@RabbitHandler(is
 method, which rejects it.
 
 `Ingest` does the same on `ingest.queue` with `NoticeEventListener`: `onCreated` for
-`ItemCreatedEvent`, `onArchived` for `ItemArchivedEvent`, `onDeleted` for `ItemDeletedEvent`. It reads
+`ItemCreatedEvent`, `onUpdated` for `ItemUpdatedEvent`, `onArchived` for `ItemArchivedEvent`, `onDeleted` for
+`ItemDeletedEvent`. It reads
 the kind from the routing key (`notice.<kind>.<verb>`) and rejects a key whose verb does not match the
 event; the work is in
 [`ChannelMirror`](../features/telegram-ingest.md#notices-from-the-site).
@@ -173,7 +182,9 @@ restart, so a redelivery after a restart or to a second instance is sent again. 
 `(found_item_id, lost_item_id)`, so reprocessing the same event does not create duplicates.
 `Ingest` writes an `internal` row in `ingest_post` once it has posted a notice, so a redelivered
 `created` finds the row and posts nothing (a crash between the post and the row posts it twice); a
-redelivered `archived` or `deleted` finds no `message_id` left and does nothing.
+redelivered `archived` or `deleted` finds no `message_id` left and does nothing, and a redelivered `updated`
+edits the post to the same text, which Telegram answers with "message is not modified" and `Ingest` takes
+as done.
 
 ## Local development
 

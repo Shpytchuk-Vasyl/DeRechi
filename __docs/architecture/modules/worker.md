@@ -199,7 +199,7 @@ SQL because this module's `Place` maps only the id and the coordinate):
   twice, most relevant first, the full name above the first name alone, the rank of each candidate
   equal to PostgreSQL's own `ts_rank_cd` of the `|` query, five at most, the description's words found and ranked with the title's, blank title and description match nothing, a Ukrainian title goes through
   `ts_rank_ukrainian`);
-- `handler/ItemCreatedHandlerTests`: both handler beans end to end into `similar_item`, a
+- `handler/ItemMatchHandlerTests`: both handler beans end to end into `similar_item`, a
   redelivered event does not duplicate rows;
 - `repository/ClaimRepositoryTests`: the derived queries `ClaimFollowUpJob` selects its work with;
 - `cron/ClaimFollowUpsTests`: purge and the reminder stamp against the real foreign keys;

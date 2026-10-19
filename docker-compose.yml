@@ -257,6 +257,7 @@ services:
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-derechi-app-secret}
     volumes:
       - ./docker/minio/derechi-app-policy.json:/derechi-app-policy.json:ro
+      - ./docker/minio/placeholders:/placeholders:ro
     entrypoint: ["/bin/sh", "-c"]
     command:
       - >-
@@ -266,7 +267,8 @@ services:
         mc admin policy create local derechi-app /derechi-app-policy.json &&
         mc admin user add local "$$MINIO_ACCESS_KEY" "$$MINIO_SECRET_KEY" &&
         { mc admin policy attach local derechi-app --user "$$MINIO_ACCESS_KEY" || true; } &&
-        echo 'buckets and the application account ready'
+        mc cp --recursive /placeholders/ local/derechi-files/placeholders/ &&
+        echo 'buckets, the placeholder photos and the application account ready'
 
   caddy:
     <<: *infra

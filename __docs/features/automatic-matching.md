@@ -9,6 +9,7 @@ Every new notice is compared in the background against notices of the opposite k
 3. `ItemMatchHandler<T>` is one class with two beans wired in `ItemSearchConfig`: `lostItemCreatedHandler` searches `found_item`, `foundItemCreatedHandler` searches `lost_item`. Each delegates to the `ItemService<T>` bean of the opposite kind and holds the `KindOps` of the kind that arrived.
 4. `ItemService.findMostSuitable` runs one query that returns the ids and ranks of the five best candidates (`MatchCandidate`).
 5. The handler writes the pairs with `KindOps.insertMatches`, which calls `SimilarItemRepository.insertForLost` or `insertForFound` so the new notice lands in its own column; both wrap `insertAll` (one statement with arrays). The pair `(found_item_id, lost_item_id)` is the primary key.
+6. An edit in the admin panel publishes `ItemUpdatedEvent` (`notice.<kind>.updated`, the same shape) after the commit. `WorkerQueueListener.onItemUpdated` hands it to the same `ItemMatchHandler` bean (`ItemUpdatedHandler`), which first deletes the notice's candidates nobody was notified about (`similar_item.notified_at IS NULL`, `KindOps.deleteUnnotifiedMatches`) and then searches again; a notified pair stays and only gets its rank refreshed.
 
 ## Candidate rules
 
@@ -55,7 +56,7 @@ The `ukrainian` and `polish` configurations are not built into PostgreSQL. `dock
 - The radius, the date window and the page size are constants, not configuration.
 - Only the title is used for detection and ranking input; the candidate's description is part of the document but the event's description is not sent.
 - A notice created while `Worker` is down is matched when the service comes back (the queue is durable), but a notice whose publish failed in `Client-API` is never matched.
-- Matching is one-shot at creation time. A lost notice posted before the matching found notice is still found, because the found notice triggers its own search in the other direction, but edits in the admin panel do not re-run matching.
+- Matching runs at creation and after an edit in the admin panel. A lost notice posted before the matching found notice is still found, because the found notice triggers its own search in the other direction. An edit redoes only the edited notice's own candidate list: pairs where it is someone else's candidate are not recalculated.
 - The project README floats an idea of score thresholds (around 0.8 to notify an admin, above 0.9 to confirm with an external model before notifying the owner). Nothing of that is implemented.
 
 ## Where to look
@@ -66,4 +67,4 @@ The `ukrainian` and `polish` configurations are not built into PostgreSQL. `dock
 - `Worker/src/main/java/org/shpytchuk/worker/language/`
 - `Worker/src/main/java/org/shpytchuk/worker/config/FullTextFunctionContributor.java`
 - `DB-Postgres/changelog/changes/001-extentions-and-configuration.sql`, `004-similar_item.postgresql.sql`
-- Tests: `ItemServiceTests` and `ItemCreatedHandlerTests` (Worker, on the Testcontainers database), `ItemMatchHandlerTest`, `KindOpsTest`, `LanguageResolverTest`, `WorkerQueueListenerTest`, `RoutingKeyDispatcherTest`, `RabbitConfigTest`; `MatchServiceTests` in Admin-API for the page that shows the result
+- Tests: `ItemServiceTests` and `ItemMatchHandlerTests` (Worker, on the Testcontainers database), `ItemMatchHandlerTest`, `KindOpsTest`, `LanguageResolverTest`, `WorkerQueueListenerTest`, `RoutingKeyDispatcherTest`, `RabbitConfigTest`; `MatchServiceTests` in Admin-API for the page that shows the result

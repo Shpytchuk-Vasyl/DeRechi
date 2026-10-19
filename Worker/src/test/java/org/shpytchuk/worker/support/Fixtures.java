@@ -13,6 +13,7 @@ import org.shpytchuk.worker.entity.matching.Claim;
 import org.shpytchuk.worker.entity.thing.Thing;
 import org.shpytchuk.worker.entity.thing.ThingCategory;
 import org.shpytchuk.worker.event.ItemCreatedEvent;
+import org.shpytchuk.worker.event.ItemUpdatedEvent;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
@@ -110,6 +111,17 @@ public final class Fixtures {
 
     public static ItemCreatedEvent created(Long id, String title, LocalDate date, Long categoryId, double lat, double lon) {
         ItemCreatedEvent event = new ItemCreatedEvent();
+        event.setId(id);
+        event.setTitle(title);
+        event.setDate(date);
+        event.setCategory(categoryId);
+        event.setLat(lat);
+        event.setLon(lon);
+        return event;
+    }
+
+    public static ItemUpdatedEvent updated(Long id, String title, LocalDate date, Long categoryId, double lat, double lon) {
+        ItemUpdatedEvent event = new ItemUpdatedEvent();
         event.setId(id);
         event.setTitle(title);
         event.setDate(date);

@@ -36,9 +36,9 @@ One queue per consuming service; every queue dead-letters into `dead-letter.exch
 
 | Queue (quorum) | Exchange (topic) and binding | Dead letter |
 |---|---|---|
-| `worker.queue` | `notice.status.exchange`: `notice.*.created`, `notice.*.returned`; `claims.exchange`: `claim.*.claimed`, `claim.*.paid`; `notice.action.exchange`: `notice.*.archive` | `dead-letter.exchange` -> `worker.dlq` |
+| `worker.queue` | `notice.status.exchange`: `notice.*.created`, `notice.*.updated`, `notice.*.returned`; `claims.exchange`: `claim.*.claimed`, `claim.*.paid`; `notice.action.exchange`: `notice.*.archive` | `dead-letter.exchange` -> `worker.dlq` |
 | `notification.queue` | `notification.exchange`: `notification.#` | `dead-letter.exchange` -> `notification.dlq` |
-| `ingest.queue` | `notice.status.exchange`: `notice.*.created`, `notice.*.archived`, `notice.*.deleted` | `dead-letter.exchange` -> `ingest.dlq` |
+| `ingest.queue` | `notice.status.exchange`: `notice.*.created`, `notice.*.updated`, `notice.*.archived`, `notice.*.deleted` | `dead-letter.exchange` -> `ingest.dlq` |
 
 `ingest.queue` is read by `Ingest`, which mirrors notices from the site into the Telegram channel. An earlier version of the file bound it with `notice.*.returned`; on a broker where that binding was imported, delete it in the UI, or `Ingest` rejects every returned notice into `ingest.dlq`.
 

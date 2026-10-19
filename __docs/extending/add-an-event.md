@@ -1,10 +1,10 @@
 # Add an event
 
-A new asynchronous message between services over RabbitMQ. The pattern is already in place several times (`ITEM_CREATED` from `Client-API` and `Admin-API` to `Worker` and `Ingest`, `ITEM_ARCHIVED` from `Worker` and `ITEM_DELETED` from `Admin-API` to `Ingest`, `NOTIFICATION` from `Admin-API` and `Worker` to `Notification`); copy it rather than inventing another way.
+A new asynchronous message between services over RabbitMQ. The pattern is already in place several times (`ITEM_CREATED` from `Client-API` and `Admin-API` to `Worker` and `Ingest`, `ITEM_UPDATED` from `Admin-API` to `Worker` and `Ingest`, `ITEM_ARCHIVED` from `Worker` and `ITEM_DELETED` from `Admin-API` to `Ingest`, `NOTIFICATION` from `Admin-API` and `Worker` to `Notification`); copy it rather than inventing another way.
 
 ## Before you start
 
-Read [Messaging](../architecture/messaging.md). The example adds `ITEM_UPDATED`, published by `Admin-API` when a notice is edited, consumed by `Ingest` to edit the notice's channel post (today an edit does not reach the channel).
+Read [Messaging](../architecture/messaging.md). The example retraces `ITEM_UPDATED`, published by `Admin-API` when a notice is edited and consumed by `Ingest` to edit the notice's channel post (and by `Worker` to run the matching again); it is in the code now, so every step below has a real counterpart to look at.
 
 ## How events are typed
 
@@ -21,10 +21,12 @@ Each module has its own copy of `EventType` and `EventTypeScanner`; they are del
 
    ```java
    @EventType("ITEM_UPDATED")
-   public record ItemUpdatedEvent(Long id, String title, String description) { }
+   public record ItemUpdatedEvent(Long id, LocalDate date, Long category, String categoryKey, Double lat, Double lon,
+                                  String placeName, String title, String description, Integer compensation,
+                                  String currency, String image, String origin) { }
    ```
 
-   Records work for publishing (Jackson reads the components). Keep payloads flat and small: ids and the few values the consumer needs, no entities.
+   Records work for publishing (Jackson reads the components). Keep payloads flat and small: ids and the few values the consumer needs, no entities (`ItemUpdatedEvent` mirrors `ItemCreatedEvent` because both consumers need the same fields).
 
 2. **Event class, consumer side.** `Ingest/src/main/java/org/shpytchuk/ingest/event/ItemUpdatedEvent.java` with the same id and the same property names. The consumer-side events in `Worker` are mutable classes with Lombok (`@Getter @Setter @NoArgsConstructor`), in `Ingest` and `Notification` records; either works as long as the property names match.
 
@@ -41,18 +43,18 @@ Each module has its own copy of `EventType` and `EventTypeScanner`; they are del
 4. **Publish.** In the service, after the state change:
 
    ```java
-   publisher.publish(noticeStatus.exchange(), kind().noticeKey("updated"), new ItemUpdatedEvent(id, title, description));
+   publisher.publish(noticeStatus.exchange(), kind().noticeKey("updated"), ItemUpdatedEvent.of(item));
    ```
 
    `Admin-API` keeps exchange and routing key in `derechi.notifications.*` (`NotificationProperties`), `derechi.archive.exchange` and `derechi.notice-status.exchange` (`NoticeStatusProperties`) and builds the notice keys with `ItemKind.noticeKey`; `Worker` keeps the exchange of `archived` in `derechi.archive.exchange`; `Client-API` keeps the exchanges in `event/Exchanges` and builds the keys with `ItemKind.noticeKey` / `claimKey`. Prefer a `@ConfigurationProperties` record for anything new. A plain `rabbitTemplate.convertAndSend` inside a `@Transactional` method sends before commit; if that matters, use `AfterCommitPublisher` in `Admin-API` and `Worker` (a `@TransactionalEventListener` sends after the commit; a broker failure there is only a `WARN`), or an `@AfterReturning` aspect with `@Order(0)` as `Client-API` does in `ItemEventAspect` and `ClaimEventAspect`, making sure the advised method owns the outermost transaction.
 
-5. **Consume.** A service reads its one queue through one listener class. In `Worker` that is `WorkerQueueListener`: `@RabbitListener` on the class and a `@RabbitHandler` method per event class (the converter picks the class from `__TypeId__`, Spring the method by its parameter). Each method resolves its handler with `RoutingKeyDispatcher<H>`: built from the handler beans and a `routingKey()` function, `resolve(message)` reads the received routing key and throws `AmqpRejectAndDontRequeueException` for a key nobody handles (`onItemCreated` and `onClaim` dispatch to handler beans, `onArchiveRequested` to an `ItemKind`). A new handler for an event the service already reads is one more bean with its own `routingKey()`; a new event class is one more `@RabbitHandler` method. `Ingest` reads `ingest.queue` through `NoticeEventListener` the same way, but parses the kind and the verb out of `notice.<kind>.<verb>` itself; the example is one more `@RabbitHandler` method there that hands `ItemUpdatedEvent` to `ChannelMirror`. Never add a second `@RabbitListener` on the same queue: two listeners on one queue compete, and each message reaches only one of them.
+5. **Consume.** A service reads its one queue through one listener class. In `Worker` that is `WorkerQueueListener`: `@RabbitListener` on the class and a `@RabbitHandler` method per event class (the converter picks the class from `__TypeId__`, Spring the method by its parameter). Each method resolves its handler with `RoutingKeyDispatcher<H>`: built from the handler beans and a `routingKey()` function, `resolve(message)` reads the received routing key and throws `AmqpRejectAndDontRequeueException` for a key nobody handles (`onItemCreated` and `onClaim` dispatch to handler beans, `onArchiveRequested` to an `ItemKind`). A new handler for an event the service already reads is one more bean with its own `routingKey()`; a new event class is one more `@RabbitHandler` method. `Ingest` reads `ingest.queue` through `NoticeEventListener` the same way, but parses the kind and the verb out of `notice.<kind>.<verb>` itself; for the example that is the `onUpdated` method there, which hands `ItemUpdatedEvent` to `ChannelMirror.updated`. In `Worker` the item handlers (`ItemCreatedHandler`, `ItemUpdatedHandler`) expose only `kind()`, and the listener builds their keys itself, so one bean (`ItemMatchHandler`) can serve both verbs. Never add a second `@RabbitListener` on the same queue: two listeners on one queue compete, and each message reaches only one of them.
 
    Queue names come from properties (`derechi.worker.queue`, `derechi.notification.queue`, `derechi.events.queue` in `Ingest`); a new consuming service adds `derechi.<service>.queue` to its `application.yaml` and references it as `@RabbitListener(queues = "${...}")`.
 
 6. **Failure policy.** Consumers already set `spring.rabbitmq.listener.simple.retry.max-retries: 2` (Boot 4's name; the old `max-attempts` is silently ignored) and `default-requeue-rejected: false`, so a failing message is attempted three times in-process and then dead-letters. Throw for transient failures; throw `AmqpRejectAndDontRequeueException` for messages that can never succeed so they go to the DLQ immediately.
 
-7. **Idempotency.** RabbitMQ delivers at least once. Design the handler so a replay is harmless (the example edits a post to the same text, which is naturally idempotent; inserts should use a natural key, as `similar_item` does with its composite primary key).
+7. **Idempotency.** RabbitMQ delivers at least once. Design the handler so a replay is harmless (the example edits a post to the same text, which Telegram answers with "message is not modified" and `BotApiClient` treats as success; inserts should use a natural key, as `similar_item` does with its composite primary key).
 
 ## Tests to add or update
 

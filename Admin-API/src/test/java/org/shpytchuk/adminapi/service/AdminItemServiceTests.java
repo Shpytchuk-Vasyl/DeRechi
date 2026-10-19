@@ -2,6 +2,7 @@ package org.shpytchuk.adminapi.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.shpytchuk.adminapi.config.CountriesConfig;
 import org.shpytchuk.adminapi.config.property.ArchiveProperties;
 import org.shpytchuk.adminapi.config.property.NoticeStatusProperties;
@@ -15,6 +16,7 @@ import org.shpytchuk.adminapi.entity.lost.LostItemClaim;
 import org.shpytchuk.adminapi.entity.lost.LostItemHistory;
 import org.shpytchuk.adminapi.entity.thing.Thing;
 import org.shpytchuk.adminapi.entity.thing.ThingCategory;
+import org.shpytchuk.adminapi.event.ItemUpdatedEvent;
 import org.shpytchuk.adminapi.exception.NotFoundException;
 import org.shpytchuk.adminapi.form.ItemFilter;
 import org.shpytchuk.adminapi.form.ItemForm;
@@ -42,6 +44,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 
 @Import({LostItemAdminService.class, FoundItemAdminService.class, LostItemHistoryAdminService.class,
         ItemFormApplier.class, CountriesConfig.class, AdminItemServiceTests.Properties.class})
@@ -163,6 +168,26 @@ class AdminItemServiceTests extends AbstractRepositoryTests {
     }
 
     @Test
+    void updateAnnouncesTheEditedNoticeWithTheSavedValues() {
+        Long id = lostItems.create(Fixtures.form("Гаманець", wallets.getId(), "ChIJrynok", "UA")).getId();
+        entityManager.flush();
+        entityManager.clear();
+
+        ItemForm form = lostItems.form(id);
+        form.setTitle("Чорний гаманець");
+        form.setCategoryId(keys.getId());
+        lostItems.update(id, form);
+
+        ArgumentCaptor<ItemUpdatedEvent> event = ArgumentCaptor.forClass(ItemUpdatedEvent.class);
+        verify(publisher).publish(eq("notice.status.exchange"), eq("notice.lost.updated"), event.capture());
+        assertThat(event.getValue()).extracting(ItemUpdatedEvent::id, ItemUpdatedEvent::title,
+                        ItemUpdatedEvent::category, ItemUpdatedEvent::categoryKey, ItemUpdatedEvent::placeName,
+                        ItemUpdatedEvent::lat, ItemUpdatedEvent::lon, ItemUpdatedEvent::currency, ItemUpdatedEvent::origin)
+                .containsExactly(id, "Чорний гаманець", keys.getId(), "KEYS", "Площа Ринок", 49.8419, 24.0315, "UAH",
+                        "admin");
+    }
+
+    @Test
     void keepsANickNameContactWithoutAPhoneThroughTheForm() {
         ItemForm created = Fixtures.form("Гаманець", wallets.getId(), "ChIJrynok", "UA");
         created.setPhone(null);
@@ -206,6 +231,7 @@ class AdminItemServiceTests extends AbstractRepositoryTests {
         entityManager.flush();
         entityManager.clear();
 
+        verify(publisher).publish(eq("notice.status.exchange"), eq("notice.found.updated"), any(ItemUpdatedEvent.class));
         FoundItem updated = entityManager.find(FoundItem.class, imported.getId());
         assertThat(updated.getTitle()).isEqualTo("Ключі від авто");
         assertThat(updated.getInfo().getPhone()).isNull();

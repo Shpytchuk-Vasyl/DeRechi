@@ -189,6 +189,7 @@ except where the table says otherwise. An empty `TELEGRAM_API_ID`/`TELEGRAM_API_
 | `INGEST_MAX_AGE` | `P30D` | same | older notices are skipped (`too_old`); Client-API accepts 30 days |
 | `INGEST_SITE_LOCALE` | `uk` | same | locale segment of the notice links in captions |
 | `INGEST_MIN_CONFIDENCE` | `0.6` | same | extractions with a lower model confidence are skipped as `rejected` |
+| `INGEST_PLACEHOLDER_DOCUMENTS` / `INGEST_PLACEHOLDER_WALLET` | empty (`placeholders/documents.jpg` / `placeholders/wallet.jpg` in `env.local`) | same | storage key, in the files bucket, of the stand-in photo for a found document or wallet posted without a photo; the notice is created with that key and the channel post carries the picture. Empty keeps skipping such posts as `no_photo`. `minio-init` uploads `docker/minio/placeholders/` to the local bucket; on the hosted storage upload the same files by hand |
 | `DERECHI_SITE_URL` | `http://localhost:3000` | same | base of the notice links in captions |
 | `TELEGRAM_API_ID` / `TELEGRAM_API_HASH` | `0` / empty | same | the application from my.telegram.org; `0` means not configured |
 | `TELEGRAM_PHONE` | empty | same | phone of the Telegram account, needed only by the one-off `--login` |
