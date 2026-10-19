@@ -1,3 +1,4 @@
+import { Icon } from "lucide-react"
 import { categoryArt } from "@/components/items/category-art"
 import { Badge } from "@/components/pouf/media"
 import { Link } from "@/i18n/navigation"
@@ -6,7 +7,7 @@ import { paths } from "@/i18n/paths"
 type Props = { category: string; label: string; near?: Record<string, string> }
 
 export default function CategoryChip({ category, label, near }: Props) {
-  const { icon: Icon, tone } = categoryArt(category)
+  const { icon, tone } = categoryArt(category)
 
   return (
     <Link
@@ -18,7 +19,7 @@ export default function CategoryChip({ category, label, near }: Props) {
           className="inline-flex w-0 -translate-x-2 overflow-hidden opacity-0 transition-[width,opacity,translate] ease-out group-hover:w-4 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:w-4 group-focus-visible:translate-x-0 group-focus-visible:opacity-100 motion-reduce:transition-none"
           aria-hidden
         >
-          <Icon className="size-4 shrink-0 stroke-[2.25]" />
+          <Icon iconNode={icon} className="size-4 shrink-0 stroke-[2.25]" />
         </span>
         {label}
       </Badge>

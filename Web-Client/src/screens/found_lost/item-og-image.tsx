@@ -1,6 +1,8 @@
 import { ImageResponse } from "next/og"
 import { getFormatter, getTranslations } from "next-intl/server"
+import { createElement } from "react"
 import { fetchItem, type ItemKind } from "@/api/items"
+import { type ArtTone, categoryArt } from "@/components/items/category-art"
 import { paths } from "@/i18n/paths"
 import { locales } from "@/i18n/routing"
 import { cityOf } from "@/lib/cities"
@@ -17,17 +19,29 @@ const CARD = 1080
 const CARD_PADDING = 56
 const CARD_PHOTO_HEIGHT = 440
 const CARD_QR = 220
+const CARD_ART_ICON = 160
+const ART_TONE_SHARE = 0.6
 const TITLE_MAX = 110
 const PHOTO_TYPES = /^image\/(jpeg|png)$/
+
+const TONES: Record<ArtTone, string> = {
+  pink: "#ffb3d1",
+  purple: "#c9a8ff",
+  blue: "#9ec8ff",
+  mint: "#a8f0d0",
+  yellow: "#ffe58a",
+  orange: "#ffb38a",
+  idle: "#c9a8ff",
+}
 
 const COLORS = {
   bg: "#f0e9ff",
   ink: "#3a2e5c",
   muted: "#71609b",
   surface: "#ffffff",
-  lost: "#ffb3d1",
-  found: "#a8f0d0",
-  reward: "#ffe58a",
+  lost: TONES.pink,
+  found: TONES.mint,
+  reward: TONES.yellow,
 }
 
 type Font = { name: string; data: ArrayBuffer; weight: NunitoWeight; style: "normal" }
@@ -40,6 +54,7 @@ type Frame = {
 
 type Notice = {
   kind: ItemKind
+  category: string
   label: string
   title: string
   details: string[]
@@ -52,20 +67,22 @@ export async function itemOgImage(
   locale: string,
   id: string,
 ): Promise<ImageResponse> {
-  const [notice, app] = await Promise.all([
+  const [notice, app, t] = await Promise.all([
     loadNotice(kind, locale, id),
     getTranslations({ locale, namespace: "app" }),
+    getTranslations({ locale, namespace: "item" }),
   ])
   const title = notice?.title ?? app("homeTitle")
   const details = notice?.details ?? [app("description")]
+  const noPhoto = t("noPhoto")
   const frame = await loadFrame(locale)
   const fonts = await loadFonts(
     [...details, frame.host].join(""),
-    [title, frame.brand, notice?.label ?? "", notice?.reward ?? ""].join(""),
+    [title, frame.brand, notice?.label ?? "", notice?.reward ?? "", noPhoto].join(""),
   )
 
   return new ImageResponse(
-    <OgCard notice={notice} title={title} details={details} frame={frame} />,
+    <OgCard notice={notice} title={title} details={details} frame={frame} noPhoto={noPhoto} />,
     { width: WIDTH, height: HEIGHT, fonts },
   )
 }
@@ -83,9 +100,10 @@ export async function itemCardImage(kind: ItemKind, locale: string, id: string):
   const url = absoluteUrl(locale, paths.item(kind, id))
   const link = url.replace(/^https?:\/\/(www\.)?/, "")
   const scan = t("cardScan")
+  const noPhoto = t("noPhoto")
   const fonts = await loadFonts(
     [...notice.details, scan].join(""),
-    [notice.title, notice.label, notice.reward ?? "", frame.brand, link].join(""),
+    [notice.title, notice.label, notice.reward ?? "", frame.brand, link, noPhoto].join(""),
   )
 
   return new ImageResponse(
@@ -95,6 +113,7 @@ export async function itemCardImage(kind: ItemKind, locale: string, id: string):
       qr={qrDataUrl(url, COLORS.ink)}
       scan={scan}
       link={link}
+      noPhoto={noPhoto}
     />,
     {
       width: CARD,
@@ -123,6 +142,7 @@ async function loadNotice(kind: ItemKind, locale: string, id: string): Promise<N
 
   return {
     kind,
+    category: item.category.key,
     label: t(kind).toLocaleUpperCase(locale),
     title: clip(item.title, TITLE_MAX),
     details: [
@@ -155,11 +175,13 @@ function OgCard({
   title,
   details,
   frame,
+  noPhoto,
 }: {
   notice: Notice | null
   title: string
   details: string[]
   frame: Frame
+  noPhoto: string
 }) {
   return (
     <div
@@ -180,6 +202,14 @@ function OgCard({
           width={HEIGHT}
           height={HEIGHT}
           style={{ objectFit: "cover" }}
+        />
+      ) : notice ? (
+        <CategoryPlaceholder
+          categoryKey={notice.category}
+          label={noPhoto}
+          width={HEIGHT}
+          height={HEIGHT}
+          radius={0}
         />
       ) : null}
 
@@ -219,12 +249,14 @@ function NoticeCard({
   qr,
   scan,
   link,
+  noPhoto,
 }: {
   notice: Notice
   frame: Frame
   qr: string
   scan: string
   link: string
+  noPhoto: string
 }) {
   const inner = CARD - CARD_PADDING * 2
 
@@ -257,22 +289,12 @@ function NoticeCard({
           style={{ objectFit: "cover", borderRadius: 36 }}
         />
       ) : (
-        <div
-          style={{
-            width: inner,
-            height: CARD_PHOTO_HEIGHT,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: 36,
-            background: COLORS[notice.kind],
-          }}
-        >
-          {frame.logo ? (
-            // biome-ignore lint/performance/noImgElement: next/og renders plain elements, not next/image
-            <img src={frame.logo} alt="" width={180} height={180} style={{ borderRadius: 44 }} />
-          ) : null}
-        </div>
+        <CategoryPlaceholder
+          categoryKey={notice.category}
+          label={noPhoto}
+          width={inner}
+          height={CARD_PHOTO_HEIGHT}
+        />
       )}
 
       <div style={{ display: "flex", gap: 40, alignItems: "flex-end" }}>
@@ -320,6 +342,53 @@ function NoticeCard({
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+function CategoryPlaceholder({
+  categoryKey,
+  label,
+  width,
+  height,
+  radius = 36,
+}: {
+  categoryKey: string
+  label: string
+  width: number
+  height: number
+  radius?: number
+}) {
+  const { icon, tone } = categoryArt(categoryKey)
+
+  return (
+    <div
+      style={{
+        width,
+        height,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 16,
+        borderRadius: radius,
+        background: mix(TONES[tone], COLORS.surface, ART_TONE_SHARE),
+      }}
+    >
+      <svg
+        aria-hidden
+        width={CARD_ART_ICON}
+        height={CARD_ART_ICON}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke={COLORS.ink}
+        strokeWidth={1.75}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {icon.map(([tag, attrs], index) => createElement(tag, { ...attrs, key: index }))}
+      </svg>
+      <div style={{ display: "flex", fontSize: 30, fontWeight: 800 }}>{label}</div>
     </div>
   )
 }
@@ -405,6 +474,15 @@ function clip(text: string, max: number): string {
 
 function font(data: ArrayBuffer, weight: Font["weight"]): Font {
   return { name: "Nunito", data, weight, style: "normal" }
+}
+
+function mix(color: string, base: string, share: number): string {
+  const channel = (at: number) =>
+    Math.round(
+      Number.parseInt(color.slice(at, at + 2), 16) * share +
+        Number.parseInt(base.slice(at, at + 2), 16) * (1 - share),
+    )
+  return `#${[1, 3, 5].map((at) => channel(at).toString(16).padStart(2, "0")).join("")}`
 }
 
 async function imageDataUrl(url: string): Promise<string | null> {

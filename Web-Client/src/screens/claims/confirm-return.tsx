@@ -5,10 +5,11 @@ import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { confirmReturn } from "@/app/actions/claim"
 import { Button } from "@/components/pouf/Button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/pouf/card"
 import { ErrorNote } from "@/components/pouf/feedback"
 import { LinkButton } from "@/components/pouf/link-button"
 import { Blob } from "@/components/pouf/media"
+import { Heading, Text } from "@/components/pouf/text"
+import type { Tone } from "@/components/pouf/tone"
 import { paths } from "@/i18n/paths"
 
 type State = "idle" | "done" | "invalid" | "failed"
@@ -33,33 +34,35 @@ export default function ConfirmReturn({ token }: { token: string }) {
 
   if (state === "done") {
     return (
-      <Shell icon={<CircleCheck />} tone="mint" title={t("doneTitle")} text={t("doneText")}>
-        <LinkButton href={paths.home}>{t("home")}</LinkButton>
-      </Shell>
+      <Screen icon={<CircleCheck />} tone="mint" title={t("doneTitle")} text={t("doneText")}>
+        <LinkButton href={paths.home} size="lg">
+          {t("home")}
+        </LinkButton>
+      </Screen>
     )
   }
 
   if (state === "invalid") {
     return (
-      <Shell icon={<Unlink />} tone="orange" title={t("invalidTitle")} text={t("invalidText")}>
-        <LinkButton href={paths.home} variant="quiet">
+      <Screen icon={<Unlink />} tone="orange" title={t("invalidTitle")} text={t("invalidText")}>
+        <LinkButton href={paths.home} size="lg" variant="quiet">
           {t("home")}
         </LinkButton>
-      </Shell>
+      </Screen>
     )
   }
 
   return (
-    <Shell icon={<PackageCheck />} tone="purple" title={t("title")} text={t("text")}>
+    <Screen icon={<PackageCheck />} tone="purple" title={t("title")} text={t("text")}>
       {state === "failed" ? <ErrorNote>{tc("error.failed")}</ErrorNote> : null}
       <Button size="lg" onClick={confirm} loading={pending}>
         {t("button")}
       </Button>
-    </Shell>
+    </Screen>
   )
 }
 
-function Shell({
+function Screen({
   icon,
   tone,
   title,
@@ -67,19 +70,24 @@ function Shell({
   children,
 }: {
   icon: React.ReactElement
-  tone: "mint" | "orange" | "purple"
+  tone: Tone
   title: string
   text: string
   children: React.ReactNode
 }) {
   return (
-    <Card className="mx-auto max-w-xl items-center text-center">
-      <CardHeader>
-        <Blob icon={icon} tone={tone} size="md" />
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{text}</CardDescription>
-      </CardHeader>
-      <CardContent className="mt-2 flex flex-col items-center gap-4">{children}</CardContent>
-    </Card>
+    <div
+      aria-live="polite"
+      className="mx-auto flex max-w-160 flex-col items-center gap-6 px-4 py-12 text-center"
+    >
+      <Blob icon={icon} tone={tone} size="lg" />
+      <Heading level={1} className="whitespace-normal">
+        {title}
+      </Heading>
+      <Text size="lg" muted className="block max-w-md">
+        {text}
+      </Text>
+      <div className="flex flex-col items-center gap-4">{children}</div>
+    </div>
   )
 }

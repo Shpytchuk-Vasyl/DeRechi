@@ -5,15 +5,21 @@ import {
   FileText,
   Gem,
   Headphones,
+  type IconNode,
   KeyRound,
-  type LucideIcon,
   Package,
   Shirt,
   Wallet,
-} from "lucide-react"
+} from "lucide"
+import { Icon } from "lucide-react"
 import { type Tone, toneClass } from "@/components/pouf/tone"
 
-type Art = { icon: LucideIcon; tone: Tone }
+export type ArtTone = Extract<
+  Tone,
+  "pink" | "purple" | "blue" | "mint" | "yellow" | "orange" | "idle"
+>
+
+export type Art = { icon: IconNode; tone: ArtTone }
 
 const OTHER: Art = { icon: Package, tone: "idle" }
 
@@ -44,7 +50,7 @@ export function CategoryArt({
   className?: string
   iconClassName?: string
 }) {
-  const { icon: Icon, tone } = categoryArt(categoryKey)
+  const { icon, tone } = categoryArt(categoryKey)
 
   return (
     <span
@@ -54,7 +60,7 @@ export function CategoryArt({
         className,
       )}
     >
-      <Icon className={cx("stroke-[1.75]", iconClassName)} aria-hidden />
+      <Icon iconNode={icon} className={cx("stroke-[1.75]", iconClassName)} aria-hidden />
       {label ? <span className="font-bold text-sm">{label}</span> : null}
     </span>
   )

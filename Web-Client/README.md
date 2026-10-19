@@ -321,7 +321,7 @@ is one, title, the short place with its city (`noticePlace`, the same as in the 
 The plaque does repeat the verb most imported titles start with ("Загублено …"), but titles people
 type themselves often do not, and in a feed the kind is the first thing a reader needs. Only JPEG
 and PNG photos are drawn (`next/og` reads no WebP); the rest, and a notice without a photo, get the
-text-only card. Both cards load Nunito from
+category art in the photo's place, as on the site (see the share card below). Both cards load Nunito from
 Google Fonts through `src/lib/og-font.ts`, subset to the card's text, so the cards use the site's
 font rather than the `next/og` default (Geist). Other pages inherit the generic card from
 `[locale]/opengraph-image.tsx`.
@@ -330,8 +330,11 @@ A notice page also offers two share buttons (`src/screens/found_lost/share-actio
 opens the system share sheet with a short text and the link, or copies both where there is no sheet
 (desktop). "Image with QR" fetches `/{locale}/{kind}/{id}/card.png`, a 1080×1080 square for feeds
 and printing: plaque, reward, photo, title, place, date, the link and a QR code of it
-(`src/lib/qr.ts`, `qrcode-generator`). The card carries no phone number on purpose: it spreads
-beyond our control, and contact goes through the site. It answers `noindex` and is cached for an
+(`src/lib/qr.ts`, `qrcode-generator`). A notice without a photo, or with one the card cannot draw,
+shows the same category art as the site (`category-art.tsx`): the icon nodes come from the `lucide`
+package, pinned to the `lucide-react` version, because `lucide-react` components read a React context
+and do not render under `next/og`. The card carries no phone number on purpose: it spreads beyond our
+control, and contact goes through the site. It answers `noindex` and is cached for an
 hour. Where the sheet takes files it is shared as a file, otherwise downloaded. The file is fetched
 ahead (on hover or focus, or at once after publishing), because the sheet only opens while the click
 still counts as the person's own gesture. Right after a notice is published, the report form leaves

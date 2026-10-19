@@ -3,6 +3,7 @@ import { escapeRegExp, ItemCard, ItemPage } from "../fixtures/pages"
 import { ListPage } from "../fixtures/pages/list-page"
 import { browserCountryName, browserNoticeDate } from "../support/browser-intl"
 import type { ItemKind } from "../support/data"
+import { env } from "../support/env"
 import { jsonLdScripts, readJsonLd } from "../support/seo"
 import type { SharedItemKey } from "../support/shared"
 
@@ -251,4 +252,21 @@ test.describe("JSON-LD", () => {
     const types = (await readJsonLd(page)).map((node) => node["@type"])
     expect(types).not.toContain("ItemPage")
   })
+})
+
+test.describe("share card", () => {
+  for (const key of ["foundPhoto", "lostNoPhoto"] as const) {
+    test(`${key}: card.png is a 1080×1080 PNG of the notice`, async ({
+      appLocale,
+      request,
+      shared,
+    }) => {
+      const item = shared.items[key]
+      const response = await request.get(
+        new URL(`/${appLocale}${item.path}/card.png`, env.baseURL).toString(),
+      )
+      expect(response.status()).toBe(200)
+      expect(response.headers()["content-type"]).toBe("image/png")
+    })
+  }
 })
