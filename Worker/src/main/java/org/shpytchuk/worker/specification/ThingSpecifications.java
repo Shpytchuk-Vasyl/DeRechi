@@ -9,7 +9,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.shpytchuk.worker.entity.thing.Thing;
-import org.shpytchuk.worker.event.ItemCreatedEvent;
+import org.shpytchuk.worker.service.ItemData;
 import org.shpytchuk.worker.language.SearchLanguage;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
@@ -28,7 +28,7 @@ public final class ThingSpecifications {
     private ThingSpecifications() {
     }
 
-    public static <T extends Thing> Specification<T> byFilter(ItemCreatedEvent event, String text,
+    public static <T extends Thing> Specification<T> byFilter(ItemData event, String text,
                                                               SearchLanguage language) {
         LocalDate date = event.getDate();
 

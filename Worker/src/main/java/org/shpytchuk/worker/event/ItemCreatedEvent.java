@@ -3,6 +3,7 @@ package org.shpytchuk.worker.event;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.shpytchuk.worker.service.ItemData;
 
 import java.time.LocalDate;
 
@@ -10,7 +11,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @EventType("ITEM_CREATED")
-public class ItemCreatedEvent {
+public class ItemCreatedEvent implements ItemData {
     private Long id;
     private LocalDate date;
     private Long category;

@@ -5,8 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.shpytchuk.worker.event.ArchiveRequestedEvent;
 import org.shpytchuk.worker.event.ClaimEvent;
 import org.shpytchuk.worker.event.ItemCreatedEvent;
+import org.shpytchuk.worker.event.ItemUpdatedEvent;
 import org.shpytchuk.worker.handler.ClaimHandler;
 import org.shpytchuk.worker.handler.ItemCreatedHandler;
+import org.shpytchuk.worker.handler.ItemUpdatedHandler;
 import org.shpytchuk.worker.service.ItemArchiver;
 import org.shpytchuk.worker.service.ItemKind;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
@@ -27,6 +29,8 @@ class WorkerQueueListenerTest {
 
     private ItemCreatedHandler lostCreated;
     private ItemCreatedHandler foundCreated;
+    private ItemUpdatedHandler lostUpdated;
+    private ItemUpdatedHandler foundUpdated;
     private ClaimHandler claimed;
     private ClaimHandler returned;
     private ItemArchiver archiver;
@@ -34,12 +38,15 @@ class WorkerQueueListenerTest {
 
     @BeforeEach
     void setUp() {
-        lostCreated = createdHandler("notice.lost.created");
-        foundCreated = createdHandler("notice.found.created");
+        lostCreated = createdHandler(ItemKind.LOST);
+        foundCreated = createdHandler(ItemKind.FOUND);
+        lostUpdated = updatedHandler(ItemKind.LOST);
+        foundUpdated = updatedHandler(ItemKind.FOUND);
         claimed = claimHandler("claim.lost.claimed");
         returned = claimHandler("notice.found.returned");
         archiver = mock(ItemArchiver.class);
-        listener = new WorkerQueueListener(List.of(lostCreated, foundCreated), List.of(claimed, returned), archiver);
+        listener = new WorkerQueueListener(List.of(lostCreated, foundCreated), List.of(lostUpdated, foundUpdated),
+                List.of(claimed, returned), archiver);
     }
 
     @Test
@@ -49,6 +56,17 @@ class WorkerQueueListenerTest {
         listener.onItemCreated(event, message("notice.found.created"));
 
         verify(foundCreated).onItemCreated(event);
+        verify(lostCreated, never()).onItemCreated(any());
+    }
+
+    @Test
+    void dispatchesAnEditedNoticeByTheReceivedRoutingKey() {
+        ItemUpdatedEvent event = new ItemUpdatedEvent();
+
+        listener.onItemUpdated(event, message("notice.lost.updated"));
+
+        verify(lostUpdated).onItemUpdated(event);
+        verify(foundUpdated, never()).onItemUpdated(any());
         verify(lostCreated, never()).onItemCreated(any());
     }
 
@@ -74,6 +92,9 @@ class WorkerQueueListenerTest {
         assertThatThrownBy(() -> listener.onItemCreated(new ItemCreatedEvent(), message("claim.lost.claimed")))
                 .isInstanceOf(AmqpRejectAndDontRequeueException.class)
                 .hasMessageContaining("claim.lost.claimed");
+        assertThatThrownBy(() -> listener.onItemUpdated(new ItemUpdatedEvent(), message("notice.lost.created")))
+                .isInstanceOf(AmqpRejectAndDontRequeueException.class)
+                .hasMessageContaining("notice.lost.created");
         assertThatThrownBy(() -> listener.onClaim(claimEvent(7L), message("notice.lost.archived")))
                 .isInstanceOf(AmqpRejectAndDontRequeueException.class)
                 .hasMessageContaining("notice.lost.archived");
@@ -82,6 +103,7 @@ class WorkerQueueListenerTest {
                 .hasMessageContaining("claim.lost.claimed");
 
         verify(lostCreated, never()).onItemCreated(any());
+        verify(lostUpdated, never()).onItemUpdated(any());
         verify(claimed, never()).handle(any());
         verify(returned, never()).handle(any());
         verify(archiver, never()).archive(any(), anyLong());
@@ -98,14 +120,20 @@ class WorkerQueueListenerTest {
     @Test
     void refusesToStartWithTwoHandlersForOneKey() {
         assertThatThrownBy(() -> new WorkerQueueListener(
-                List.of(lostCreated, createdHandler("notice.lost.created")), List.of(), archiver))
+                List.of(lostCreated, createdHandler(ItemKind.LOST)), List.of(), List.of(), archiver))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("notice.lost.created");
     }
 
-    private static ItemCreatedHandler createdHandler(String routingKey) {
+    private static ItemCreatedHandler createdHandler(ItemKind kind) {
         ItemCreatedHandler handler = mock(ItemCreatedHandler.class);
-        when(handler.routingKey()).thenReturn(routingKey);
+        when(handler.kind()).thenReturn(kind);
+        return handler;
+    }
+
+    private static ItemUpdatedHandler updatedHandler(ItemKind kind) {
+        ItemUpdatedHandler handler = mock(ItemUpdatedHandler.class);
+        when(handler.kind()).thenReturn(kind);
         return handler;
     }
 

@@ -4,8 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.shpytchuk.worker.event.ArchiveRequestedEvent;
 import org.shpytchuk.worker.event.ClaimEvent;
 import org.shpytchuk.worker.event.ItemCreatedEvent;
+import org.shpytchuk.worker.event.ItemUpdatedEvent;
 import org.shpytchuk.worker.handler.ClaimHandler;
 import org.shpytchuk.worker.handler.ItemCreatedHandler;
+import org.shpytchuk.worker.handler.ItemUpdatedHandler;
 import org.shpytchuk.worker.service.ItemArchiver;
 import org.shpytchuk.worker.service.ItemKind;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
@@ -24,13 +26,16 @@ public class WorkerQueueListener {
     static final String ARCHIVE = "archive";
 
     private final RoutingKeyDispatcher<ItemCreatedHandler> created;
+    private final RoutingKeyDispatcher<ItemUpdatedHandler> updated;
     private final RoutingKeyDispatcher<ClaimHandler> claims;
     private final RoutingKeyDispatcher<ItemKind> archives =
             new RoutingKeyDispatcher<>(List.of(ItemKind.values()), kind -> kind.noticeKey(ARCHIVE));
     private final ItemArchiver archiver;
 
-    public WorkerQueueListener(List<ItemCreatedHandler> created, List<ClaimHandler> claims, ItemArchiver archiver) {
-        this.created = new RoutingKeyDispatcher<>(created, ItemCreatedHandler::routingKey);
+    public WorkerQueueListener(List<ItemCreatedHandler> created, List<ItemUpdatedHandler> updated,
+                               List<ClaimHandler> claims, ItemArchiver archiver) {
+        this.created = new RoutingKeyDispatcher<>(created, handler -> handler.kind().noticeKey(ItemCreatedHandler.VERB));
+        this.updated = new RoutingKeyDispatcher<>(updated, handler -> handler.kind().noticeKey(ItemUpdatedHandler.VERB));
         this.claims = new RoutingKeyDispatcher<>(claims, ClaimHandler::routingKey);
         this.archiver = archiver;
     }
@@ -38,6 +43,11 @@ public class WorkerQueueListener {
     @RabbitHandler
     public void onItemCreated(ItemCreatedEvent event, Message message) {
         created.resolve(message).onItemCreated(event);
+    }
+
+    @RabbitHandler
+    public void onItemUpdated(ItemUpdatedEvent event, Message message) {
+        updated.resolve(message).onItemUpdated(event);
     }
 
     @RabbitHandler

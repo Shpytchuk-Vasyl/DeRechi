@@ -6,6 +6,7 @@ import org.shpytchuk.worker.event.ArchiveRequestedEvent;
 import org.shpytchuk.worker.event.ClaimEvent;
 import org.shpytchuk.worker.event.ItemArchivedEvent;
 import org.shpytchuk.worker.event.ItemCreatedEvent;
+import org.shpytchuk.worker.event.ItemUpdatedEvent;
 import org.shpytchuk.worker.event.NotificationRequestedEvent;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
@@ -48,6 +49,22 @@ class RabbitConfigTest {
         assertThat(event).isInstanceOfSatisfying(ItemCreatedEvent.class, created -> {
             assertThat(created.getId()).isEqualTo(7L);
             assertThat(created.getDescription()).isEqualTo("Brown");
+        });
+    }
+
+    @Test
+    void readsAnItemUpdatedEventFromAdminApi() {
+        Object event = converter.fromMessage(message("ITEM_UPDATED",
+                "{\"id\":7,\"date\":\"2026-09-10\",\"category\":2,\"categoryKey\":\"WALLET\",\"lat\":49.84,"
+                        + "\"lon\":24.03,\"placeName\":\"Rynok Square\",\"title\":\"Wallet\",\"description\":\"Brown\","
+                        + "\"image\":\"items/2026/09/a.jpg\",\"origin\":\"admin\"}"));
+
+        assertThat(event).isInstanceOfSatisfying(ItemUpdatedEvent.class, updated -> {
+            assertThat(updated.getId()).isEqualTo(7L);
+            assertThat(updated.getCategory()).isEqualTo(2L);
+            assertThat(updated.getLat()).isEqualTo(49.84);
+            assertThat(updated.getTitle()).isEqualTo("Wallet");
+            assertThat(updated.getDescription()).isEqualTo("Brown");
         });
     }
 

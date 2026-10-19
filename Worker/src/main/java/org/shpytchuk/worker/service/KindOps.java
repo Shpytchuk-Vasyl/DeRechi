@@ -38,6 +38,7 @@ public final class KindOps<T extends Thing, H extends Thing, C extends Claim> {
     private final BiConsumer<H, Instant> archivedAt;
     private final MatchInsert insertMatches;
     private final ToIntFunction<Long> deleteMatches;
+    private final ToIntFunction<Long> deleteUnnotifiedMatches;
 
     public static KindOps<LostItem, LostItemHistory, LostItemClaim> lost(LostItemRepository items,
                                                                          LostItemHistoryRepository histories,
@@ -45,7 +46,7 @@ public final class KindOps<T extends Thing, H extends Thing, C extends Claim> {
                                                                          SimilarItemRepository matches) {
         return new KindOps<>(ItemKind.LOST, items, histories, claims,
                 LostItemHistory::new, LostItemHistory::setArchivedAt,
-                matches::insertForLost, matches::deleteByLostItemId);
+                matches::insertForLost, matches::deleteByLostItemId, matches::deleteUnnotifiedByLostItemId);
     }
 
     public static KindOps<FoundItem, FoundItemHistory, FoundItemClaim> found(FoundItemRepository items,
@@ -54,7 +55,7 @@ public final class KindOps<T extends Thing, H extends Thing, C extends Claim> {
                                                                              SimilarItemRepository matches) {
         return new KindOps<>(ItemKind.FOUND, items, histories, claims,
                 FoundItemHistory::new, FoundItemHistory::setArchivedAt,
-                matches::insertForFound, matches::deleteByFoundItemId);
+                matches::insertForFound, matches::deleteByFoundItemId, matches::deleteUnnotifiedByFoundItemId);
     }
 
     public ItemKind kind() {
@@ -81,6 +82,10 @@ public final class KindOps<T extends Thing, H extends Thing, C extends Claim> {
 
     public int deleteMatches(Long itemId) {
         return deleteMatches.applyAsInt(itemId);
+    }
+
+    public int deleteUnnotifiedMatches(Long itemId) {
+        return deleteUnnotifiedMatches.applyAsInt(itemId);
     }
 
     @FunctionalInterface

@@ -43,6 +43,14 @@ public interface SimilarItemRepository extends JpaRepository<SimilarItem, Simila
     int deleteByLostItemId(@Param("lostItemId") Long lostItemId);
 
     @Modifying
+    @Query(value = "DELETE FROM similar_item WHERE lost_item_id = :lostItemId AND notified_at IS NULL", nativeQuery = true)
+    int deleteUnnotifiedByLostItemId(@Param("lostItemId") Long lostItemId);
+
+    @Modifying
+    @Query(value = "DELETE FROM similar_item WHERE found_item_id = :foundItemId AND notified_at IS NULL", nativeQuery = true)
+    int deleteUnnotifiedByFoundItemId(@Param("foundItemId") Long foundItemId);
+
+    @Modifying
     @Query("delete from SimilarItem s where s.id.foundItemId = :foundItemId")
     int deleteByFoundItemId(@Param("foundItemId") Long foundItemId);
 }

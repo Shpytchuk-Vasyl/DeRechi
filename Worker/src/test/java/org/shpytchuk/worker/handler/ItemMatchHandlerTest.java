@@ -4,7 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.shpytchuk.worker.entity.found.FoundItem;
 import org.shpytchuk.worker.entity.lost.LostItem;
 import org.shpytchuk.worker.entity.thing.Thing;
+import org.mockito.InOrder;
 import org.shpytchuk.worker.event.ItemCreatedEvent;
+import org.shpytchuk.worker.event.ItemUpdatedEvent;
 import org.shpytchuk.worker.repository.SimilarItemRepository;
 import org.shpytchuk.worker.repository.found.FoundItemClaimRepository;
 import org.shpytchuk.worker.repository.found.FoundItemHistoryRepository;
@@ -12,6 +14,7 @@ import org.shpytchuk.worker.repository.found.FoundItemRepository;
 import org.shpytchuk.worker.repository.lost.LostItemClaimRepository;
 import org.shpytchuk.worker.repository.lost.LostItemHistoryRepository;
 import org.shpytchuk.worker.repository.lost.LostItemRepository;
+import org.shpytchuk.worker.service.ItemKind;
 import org.shpytchuk.worker.service.ItemService;
 import org.shpytchuk.worker.service.KindOps;
 import org.shpytchuk.worker.service.MatchCandidate;
@@ -24,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -37,9 +41,33 @@ class ItemMatchHandlerTest {
             mock(SimilarItemRepository.class, withSettings().defaultAnswer(CALLS_REAL_METHODS));
 
     @Test
-    void routingKeysFollowTheKindOfTheNewNotice() {
-        assertThat(new ItemMatchHandler<>(lost(), search(FoundItem.class)).routingKey()).isEqualTo("notice.lost.created");
-        assertThat(new ItemMatchHandler<>(found(), search(LostItem.class)).routingKey()).isEqualTo("notice.found.created");
+    void handlesTheKindOfItsOwnNotices() {
+        assertThat(new ItemMatchHandler<>(lost(), search(FoundItem.class)).kind()).isEqualTo(ItemKind.LOST);
+        assertThat(new ItemMatchHandler<>(found(), search(LostItem.class)).kind()).isEqualTo(ItemKind.FOUND);
+    }
+
+    @Test
+    void anEditedLostItemDropsItsUnnotifiedCandidatesAndSearchesAgain() {
+        ItemService<FoundItem> foundItemSearch = search(FoundItem.class, new MatchCandidate(10L, 0.9));
+        doReturn(2).when(similarItems).deleteUnnotifiedByLostItemId(7L);
+        doReturn(1).when(similarItems).insertAll(any(), any(), any());
+
+        new ItemMatchHandler<>(lost(), foundItemSearch).onItemUpdated(updatedEvent(7L));
+
+        InOrder inOrder = inOrder(similarItems);
+        inOrder.verify(similarItems).deleteUnnotifiedByLostItemId(7L);
+        inOrder.verify(similarItems).insertAll(new Long[]{10L}, new Long[]{7L}, new Double[]{0.9});
+        verify(similarItems, never()).deleteByLostItemId(any());
+    }
+
+    @Test
+    void anEditedFoundItemDropsItsUnnotifiedCandidatesEvenWhenNothingMatchesNow() {
+        doReturn(1).when(similarItems).deleteUnnotifiedByFoundItemId(8L);
+
+        new ItemMatchHandler<>(found(), search(LostItem.class)).onItemUpdated(updatedEvent(8L));
+
+        verify(similarItems).deleteUnnotifiedByFoundItemId(8L);
+        verify(similarItems, never()).insertAll(any(), any(), any());
     }
 
     @Test
@@ -89,5 +117,16 @@ class ItemMatchHandlerTest {
 
     private static ItemCreatedEvent event(long id) {
         return Fixtures.created(id, "Wallet", LocalDate.of(2026, 9, 10), 1L, 49.8419, 24.0315);
+    }
+
+    private static ItemUpdatedEvent updatedEvent(long id) {
+        ItemUpdatedEvent event = new ItemUpdatedEvent();
+        event.setId(id);
+        event.setTitle("Wallet");
+        event.setDate(LocalDate.of(2026, 9, 10));
+        event.setCategory(1L);
+        event.setLat(49.8419);
+        event.setLon(24.0315);
+        return event;
     }
 }

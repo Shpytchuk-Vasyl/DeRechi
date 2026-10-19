@@ -7,7 +7,6 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Root;
 import lombok.AllArgsConstructor;
 import org.shpytchuk.worker.entity.thing.Thing;
-import org.shpytchuk.worker.event.ItemCreatedEvent;
 import org.shpytchuk.worker.language.LanguageResolver;
 import org.shpytchuk.worker.language.SearchLanguage;
 import org.shpytchuk.worker.specification.ThingSpecifications;
@@ -26,7 +25,7 @@ public class ItemService<T extends Thing> {
     private final Class<T> type;
     private final LanguageResolver languageResolver;
 
-    public List<MatchCandidate> findMostSuitable(ItemCreatedEvent event) {
+    public List<MatchCandidate> findMostSuitable(ItemData event) {
         String text = searchText(event);
         SearchLanguage language = languageResolver.resolve(text);
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -41,7 +40,7 @@ public class ItemService<T extends Thing> {
         return entityManager.createQuery(query).setMaxResults(MAX_CANDIDATES).getResultList();
     }
 
-    private static String searchText(ItemCreatedEvent event) {
+    private static String searchText(ItemData event) {
         return Stream.of(event.getTitle(), event.getDescription())
                 .filter(StringUtils::hasText)
                 .map(String::strip)
