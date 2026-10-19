@@ -10,6 +10,7 @@ import { Skeleton, Skeletons } from "@/components/pouf/skeleton"
 import { Heading, Text } from "@/components/pouf/text"
 import { Link } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
+import { shortPlace, tidyPlace } from "@/lib/address"
 import { cityOf, withCity } from "@/lib/cities"
 import { absoluteFileUrl } from "@/lib/env/client"
 import { countryName } from "@/lib/intl/country"
@@ -19,6 +20,8 @@ import { mapsUrl } from "@/lib/maps"
 import { absoluteUrl, ITEM_LOCALE, isStale, joinSentences, jsonLd, snippet } from "@/lib/seo"
 import ClaimCard from "@/screens/found_lost/claim/claim-card"
 import PhotoViewer from "@/screens/found_lost/photo-viewer"
+
+const TITLE_PLACE_LIMIT = 40
 
 type Props = {
   kind: ItemKind
@@ -234,16 +237,19 @@ export async function itemMetadata(kind: ItemKind, locale: string, id: string): 
     getFormatter({ locale }),
   ])
   const city = cityOf(item.place)
+  const place = tidyPlace(item.place.name)
 
   const date = format.dateTime(new Date(item.date), { dateStyle: "medium" })
   const title = t("metaTitle", {
     title: item.title,
-    place: withCity(item.place.name, city ? tcity(`${city.slug}.name`) : undefined),
-    date,
+    place: withCity(
+      snippet(shortPlace(place), TITLE_PLACE_LIMIT),
+      city ? tcity(`${city.slug}.name`) : undefined,
+    ),
   })
   const summary = t("metaSummary", {
     category: tc(item.category.key),
-    place: item.place.name,
+    place,
     date,
   })
   const description = snippet(item.description ? joinSentences(summary, item.description) : summary)

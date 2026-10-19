@@ -54,10 +54,15 @@ export function cityOf(place: { lat?: number | null; lon?: number | null }): Cit
 }
 
 export function withCity(place: string, city: string | undefined): string {
-  if (!city || place.toLocaleLowerCase().includes(city.toLocaleLowerCase())) {
+  if (!city || namesCity(place, city)) {
     return place
   }
   return `${place}, ${city}`
+}
+
+function namesCity(place: string, city: string): boolean {
+  const name = city.toLocaleLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+  return new RegExp(`(^|[^\\p{L}])${name}($|[^\\p{L}])`, "u").test(place.toLocaleLowerCase())
 }
 
 export function cityArea(city: City): { lat: number; lon: number; radiusKm: number } {

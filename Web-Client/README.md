@@ -360,7 +360,10 @@ whole east within Ukraine, public domain), the main polygon simplified (Douglas-
 projection, so a pin is placed from a city's `lat`/`lon` alone. A notice page links the city its
 coordinates fall into (`cityOf`); that city's name is also added
 after the place in the notice's `<title>` (`withCity`: "Привокзальний ринок, Львів"), since people
-search by city, not by street, unless the place already names it. Names and the
+search by city, not by street, unless the place already names it as a whole word ("Тернопільська
+школа" does not). The title keeps only the first part of the address (`shortPlace`, cut to 40
+characters) and no date, so it fits the ~60 characters a search result shows; the description
+carries the whole address without the postcode (`tidyPlace`) and the date. Names and the
 "in <city>" forms are in the bundles' `city` namespace, so a new city is a registry entry plus
 `city.<slug>` in all five bundles (`cities.test.ts` checks that they match).
 

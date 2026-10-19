@@ -186,7 +186,7 @@
     "openPhoto": "Відкрити фото на весь екран",
     "closePhoto": "Закрити",
     "noPhoto": "Без фото",
-    "metaTitle": "{title} – {place}, {date}",
+    "metaTitle": "{title} – {place}",
     "metaSummary": "{category} · {place} · {date}"
   },
   "claim": {

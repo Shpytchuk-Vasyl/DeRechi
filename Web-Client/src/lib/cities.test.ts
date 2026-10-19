@@ -29,6 +29,15 @@ describe("cities", () => {
     expect(withCity("Одеса", "Одеса")).toBe("Одеса")
     expect(withCity("вулиця Шевченка, Львів", "Львів")).toBe("вулиця Шевченка, Львів")
     expect(withCity("Гречани", undefined)).toBe("Гречани")
+    expect(withCity("ТЦ (Львів)", "Львів")).toBe("ТЦ (Львів)")
+    expect(withCity("Івано-Франківськ", "Івано-Франківськ")).toBe("Івано-Франківськ")
+  })
+
+  it("adds the city after a place that only contains it inside a longer word", () => {
+    expect(withCity("Тернопільська школа № 11", "Тернопіль")).toBe(
+      "Тернопільська школа № 11, Тернопіль",
+    )
+    expect(withCity("вулиця Київська", "Київ")).toBe("вулиця Київська, Київ")
   })
 
   it("keeps the city areas apart, so a place belongs to at most one", () => {

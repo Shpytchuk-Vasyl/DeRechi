@@ -186,7 +186,7 @@
     "openPhoto": "Foto im Vollbild öffnen",
     "closePhoto": "Schließen",
     "noPhoto": "Kein Foto",
-    "metaTitle": "{title} – {place}, {date}",
+    "metaTitle": "{title} – {place}",
     "metaSummary": "{category} · {place} · {date}"
   },
   "claim": {
