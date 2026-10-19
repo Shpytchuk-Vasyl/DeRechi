@@ -6,6 +6,7 @@ import org.shpytchuk.adminapi.entity.thing.Thing;
 import org.shpytchuk.adminapi.event.ArchiveRequestedEvent;
 import org.shpytchuk.adminapi.event.ItemCreatedEvent;
 import org.shpytchuk.adminapi.event.ItemDeletedEvent;
+import org.shpytchuk.adminapi.event.ItemUpdatedEvent;
 import org.shpytchuk.adminapi.form.ItemForm;
 import org.shpytchuk.adminapi.mapper.ItemFormApplier;
 import org.shpytchuk.adminapi.repository.detail.ContactInfoRepository;
@@ -20,6 +21,7 @@ public abstract class ArchivableAdminItemService<T extends Thing> extends AdminI
 
     private static final String ARCHIVE = "archive";
     private static final String CREATED = "created";
+    private static final String UPDATED = "updated";
     private static final String DELETED = "deleted";
 
     private final RabbitTemplate rabbitTemplate;
@@ -52,6 +54,14 @@ public abstract class ArchivableAdminItemService<T extends Thing> extends AdminI
     public T create(ItemForm form) {
         T item = super.create(form);
         publisher.publish(noticeStatus.exchange(), kind().noticeKey(CREATED), ItemCreatedEvent.of(item));
+        return item;
+    }
+
+    @Override
+    @Transactional
+    public T update(Long id, ItemForm form) {
+        T item = super.update(id, form);
+        publisher.publish(noticeStatus.exchange(), kind().noticeKey(UPDATED), ItemUpdatedEvent.of(item));
         return item;
     }
 

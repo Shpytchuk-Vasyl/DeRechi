@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.shpytchuk.adminapi.entity.detail.ContactInfo.SocialMediaEnum;
 import org.shpytchuk.adminapi.event.ArchiveRequestedEvent;
 import org.shpytchuk.adminapi.event.ItemDeletedEvent;
+import org.shpytchuk.adminapi.event.ItemUpdatedEvent;
 import org.shpytchuk.adminapi.event.NotificationRequestedEvent;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
@@ -11,6 +12,7 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,6 +43,19 @@ class RabbitConfigTest {
 
         assertThat(message.getMessageProperties().getHeaders()).containsEntry("__TypeId__", "ARCHIVE_REQUESTED");
         assertThat(body(message)).contains("\"id\":5").contains("\"actor\":\"admin@derechi.local\"");
+    }
+
+    @Test
+    void labelsAnUpdatedItemWithItsTypeId() {
+        Message message = converter.toMessage(new ItemUpdatedEvent(7L, LocalDate.of(2026, 9, 10), 2L, "WALLET",
+                49.84, 24.03, "Rynok Square", "Wallet", "Brown", null, "UAH", null, "admin"), new MessageProperties());
+
+        assertThat(message.getMessageProperties().getHeaders()).containsEntry("__TypeId__", "ITEM_UPDATED");
+        assertThat(body(message))
+                .contains("\"id\":7")
+                .contains("\"categoryKey\":\"WALLET\"")
+                .contains("\"title\":\"Wallet\"")
+                .contains("\"origin\":\"admin\"");
     }
 
     @Test

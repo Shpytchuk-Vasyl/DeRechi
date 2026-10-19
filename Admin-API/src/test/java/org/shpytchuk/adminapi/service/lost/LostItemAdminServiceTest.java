@@ -16,6 +16,7 @@ import org.shpytchuk.adminapi.entity.thing.ThingCategory;
 import org.shpytchuk.adminapi.event.ArchiveRequestedEvent;
 import org.shpytchuk.adminapi.event.ItemCreatedEvent;
 import org.shpytchuk.adminapi.event.ItemDeletedEvent;
+import org.shpytchuk.adminapi.event.ItemUpdatedEvent;
 import org.shpytchuk.adminapi.exception.NotFoundException;
 import org.shpytchuk.adminapi.form.ItemForm;
 import org.shpytchuk.adminapi.mapper.ItemFormApplier;
@@ -113,6 +114,28 @@ class LostItemAdminServiceTest {
         assertThat(event.getValue()).extracting(ItemCreatedEvent::id, ItemCreatedEvent::category,
                         ItemCreatedEvent::categoryKey, ItemCreatedEvent::lat, ItemCreatedEvent::lon,
                         ItemCreatedEvent::placeName, ItemCreatedEvent::title, ItemCreatedEvent::origin)
+                .containsExactly(7L, 1L, "KEYS", 52.2, 21.0, "Park", "Рюкзак", "admin");
+    }
+
+    @Test
+    void updateAnnouncesTheEditedNoticeWithWhatMatchingAndTheChannelPostNeed() {
+        ThingCategory category = new ThingCategory();
+        category.setId(1L);
+        category.setKey("KEYS");
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
+        when(placeRepository.save(any())).thenAnswer(call -> call.getArgument(0));
+        LostItem item = item(7L);
+        item.setInfo(new ContactInfo());
+        when(repository.findWithDetailsById(7L)).thenReturn(Optional.of(item));
+        when(repository.save(any())).thenAnswer(call -> call.getArgument(0));
+
+        service.update(7L, form("owner@example.com"));
+
+        ArgumentCaptor<ItemUpdatedEvent> event = ArgumentCaptor.forClass(ItemUpdatedEvent.class);
+        verify(publisher).publish(eq("notice.status.exchange"), eq("notice.lost.updated"), event.capture());
+        assertThat(event.getValue()).extracting(ItemUpdatedEvent::id, ItemUpdatedEvent::category,
+                        ItemUpdatedEvent::categoryKey, ItemUpdatedEvent::lat, ItemUpdatedEvent::lon,
+                        ItemUpdatedEvent::placeName, ItemUpdatedEvent::title, ItemUpdatedEvent::origin)
                 .containsExactly(7L, 1L, "KEYS", 52.2, 21.0, "Park", "Рюкзак", "admin");
     }
 
