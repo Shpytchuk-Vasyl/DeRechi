@@ -292,10 +292,8 @@ class ClaimControllerTests extends AbstractGraphQlTests {
     void answersAClaimOnALostNoticeKnownOnlyByANickNameWithItAndStoresNothing() {
         Long itemId = lostItem("ChIJrynok", Fixtures.nickName(SocialMediaEnum.TELEGRAM, NICK_NAME, PROFILE)).getId();
 
-        GraphQlTester.Response response = claimLost(itemId, claimant(PHONE, EMAIL));
+        expectAuthorUnreachable(claimLost(itemId, claimant(PHONE, EMAIL)), "TELEGRAM", NICK_NAME, PROFILE);
 
-        expectAuthorUnreachable(response, "TELEGRAM", NICK_NAME, PROFILE);
-        response.path("claimLostItem").valueIsNull();
         assertThat(lostClaimRepository.findAll()).isEmpty();
         assertThat(contactInfoRepository.count()).isEqualTo(1);
         verify(rabbitTemplate, never()).convertAndSend(any(String.class), any(String.class), any(Object.class));
@@ -313,7 +311,7 @@ class ClaimControllerTests extends AbstractGraphQlTests {
     }
 
     @Test
-    void answersARepeatWithTheNickNameOnceTheAuthorHasNoPhoneOrEmailLeft() {
+    void answersARepeatWithTheExistingClaimEvenOnceTheAuthorHasNoPhoneOrEmailLeft() {
         LostItem item = lostItem("ChIJrynok");
         Long first = claimLostId(item.getId(), claimant(PHONE, EMAIL));
         ContactInfo author = item.getInfo();
@@ -324,7 +322,9 @@ class ClaimControllerTests extends AbstractGraphQlTests {
         author.setSocialMedias(new SocialMediaEnum[]{SocialMediaEnum.TELEGRAM});
         contactInfoRepository.save(author);
 
-        expectAuthorUnreachable(claimLost(item.getId(), claimant(PHONE, EMAIL)), "TELEGRAM", NICK_NAME, PROFILE);
+        claimLost(item.getId(), claimant(PHONE, EMAIL))
+                .path("claimLostItem.repeated").entity(Boolean.class).isEqualTo(true)
+                .path("claimLostItem.id").entity(Long.class).isEqualTo(first);
 
         assertThat(lostClaimRepository.findAll()).extracting(LostItemClaim::getId).containsExactly(first);
         verify(rabbitTemplate, times(1))
