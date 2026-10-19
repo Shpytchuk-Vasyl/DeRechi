@@ -1,4 +1,4 @@
-import type { Place } from "./types"
+import type { Country, Place } from "./types"
 
 export const PLACES: Place[] = [
   {
@@ -286,11 +286,16 @@ export const PLACES: Place[] = [
   },
 ]
 
-export const NATIONAL = {
-  railway: "https://services.uz.gov.ua/lost-and-found",
-  bus: "https://zakon.rada.gov.ua/laws/show/176-97-%D0%BF",
-  finder: "https://zakon.rada.gov.ua/laws/show/435-15",
-  checked: "2026-10-19",
-} as const
+export const COUNTRIES: Country[] = [
+  {
+    code: "UA",
+    checked: "2026-10-19",
+    links: {
+      railway: "https://services.uz.gov.ua/lost-and-found",
+      bus: "https://zakon.rada.gov.ua/laws/show/176-97-%D0%BF",
+      finder: "https://zakon.rada.gov.ua/laws/show/435-15",
+    },
+  },
+]
 
 export const UNTRUSTED_HOSTS = ["troleybus.sumy.ua", "depo.vn.ua"]

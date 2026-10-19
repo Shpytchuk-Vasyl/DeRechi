@@ -1,15 +1,20 @@
 import { describe, expect, it } from "vitest"
 import { locales } from "@/i18n/routing"
 import { CITIES } from "@/lib/cities"
-import { lostProperty, lostPropertyTexts, NATIONAL, PLACES, UNTRUSTED_HOSTS } from "./index"
+import {
+  COUNTRIES,
+  country,
+  lostProperty,
+  lostPropertyTexts,
+  PLACES,
+  UNTRUSTED_HOSTS,
+} from "./index"
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
 
 function links(): string[] {
   return [
-    NATIONAL.railway,
-    NATIONAL.bus,
-    NATIONAL.finder,
+    ...COUNTRIES.flatMap((it) => Object.values(it.links)),
     ...PLACES.flatMap((place) => [place.url ?? "", place.telegram ?? "", ...place.sources]),
   ].filter((link) => link.startsWith("http"))
 }
@@ -55,7 +60,7 @@ describe("lost property", () => {
   })
 
   it("records when and against what every entry was checked", () => {
-    expect(NATIONAL.checked).toMatch(ISO_DATE)
+    for (const it of COUNTRIES) expect(it.checked, it.code).toMatch(ISO_DATE)
     for (const place of PLACES) {
       expect(place.checked, place.id).toMatch(ISO_DATE)
       expect(place.sources.length, place.id).toBeGreaterThan(0)
@@ -74,9 +79,35 @@ describe("lost property", () => {
     }
   })
 
+  it("has the national advice for the country of every city, in every locale", () => {
+    for (const city of CITIES) {
+      expect(COUNTRIES.map((it) => it.code), city.slug).toContain(city.countryCode)
+    }
+    for (const locale of locales) {
+      const texts = lostPropertyTexts(locale)
+      const codes = COUNTRIES.map((it) => it.code).sort()
+      expect(Object.keys(texts.national).sort(), locale).toEqual(codes)
+      for (const it of COUNTRIES) {
+        const keys = Object.keys(texts.national[it.code].items).sort()
+        expect(keys, `${locale}/${it.code}`).toEqual(Object.keys(it.links).sort())
+      }
+    }
+  })
+
+  it("shows a country's advice in the order of its links", () => {
+    const { national } = lostProperty("uk", "kyiv", "UA")
+    expect(national.items.map((item) => item.key)).toEqual(Object.keys(country("UA").links))
+    expect(national.items[0].url).toBe(country("UA").links[national.items[0].key])
+  })
+
+  it("falls back to the first country for an unknown one", () => {
+    expect(country("XX")).toBe(COUNTRIES[0])
+  })
+
   it("has something local for every city with a page", () => {
     for (const city of CITIES) {
-      expect(lostProperty("uk", city.slug).places.length, city.slug).toBeGreaterThan(0)
+      const { places } = lostProperty("uk", city.slug, city.countryCode)
+      expect(places.length, city.slug).toBeGreaterThan(0)
     }
   })
 
@@ -87,12 +118,12 @@ describe("lost property", () => {
   })
 
   it("gives a city its own places and the oldest check date among them", () => {
-    const kyiv = lostProperty("uk", "kyiv")
+    const kyiv = lostProperty("uk", "kyiv", "UA")
     expect(kyiv.places.map((place) => place.id)).toEqual(["kyiv-metro", "kyiv-kpt"])
     expect(kyiv.places[0].name).toBe(lostPropertyTexts("uk").places["kyiv-metro"].name)
     expect(kyiv.checked).toMatch(ISO_DATE)
 
-    expect(lostProperty("uk", "atlantis").places).toEqual([])
+    expect(lostProperty("uk", "atlantis", "UA").places).toEqual([])
   })
 
   it("falls back to the default locale for an unknown one", () => {

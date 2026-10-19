@@ -77,7 +77,7 @@ export default async function CityPage({ locale, slug }: { locale: string; slug:
           empty={t("empty")}
         />
 
-        <LostProperty locale={locale} slug={slug} where={where} />
+        <LostProperty locale={locale} slug={slug} countryCode={city.countryCode} where={where} />
 
         <ClosingCall />
       </div>

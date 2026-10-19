@@ -23,6 +23,14 @@ export type PlaceTexts = { name: string; text: string }
 
 export type NationalTexts = { title: string; text: string; link: string }
 
+export type Country = {
+  code: string
+  checked: string
+  links: Record<string, string>
+}
+
+export type CountryTexts = { title: string; items: Record<string, NationalTexts> }
+
 export type LostPropertyTexts = {
   title: string
   lead: string
@@ -31,8 +39,7 @@ export type LostPropertyTexts = {
   kinds: Record<PlaceKind, string>
   officialPage: string
   telegram: string
-  nationalTitle: string
-  national: { railway: NationalTexts; bus: NationalTexts; finder: NationalTexts }
+  national: Record<string, CountryTexts>
   needsCheck: string
   checked: string
   report: string

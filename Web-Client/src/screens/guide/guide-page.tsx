@@ -141,7 +141,7 @@ export default async function GuidePage({ locale, slug }: Props) {
       <div className="mt-7 flex flex-col gap-6">
         <Card tint="lost" className="lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
           <CardHeader>
-            <CardTitle>
+            <CardTitle level={2}>
               {texts.checkNowTitle}
             </CardTitle>
             <CardDescription>

@@ -1,33 +1,34 @@
 export type City = {
   slug: string
+  countryCode: string
   lat: number
   lon: number
   radiusKm: number
 }
 
 export const CITIES: readonly City[] = [
-  { slug: "kyiv", lat: 50.4501, lon: 30.5234, radiusKm: 20 },
-  { slug: "lviv", lat: 49.8397, lon: 24.0297, radiusKm: 12 },
-  { slug: "kharkiv", lat: 49.9935, lon: 36.2304, radiusKm: 15 },
-  { slug: "odesa", lat: 46.4825, lon: 30.7233, radiusKm: 15 },
-  { slug: "dnipro", lat: 48.4647, lon: 35.0462, radiusKm: 15 },
-  { slug: "zaporizhzhia", lat: 47.8388, lon: 35.1396, radiusKm: 15 },
-  { slug: "vinnytsia", lat: 49.2331, lon: 28.4682, radiusKm: 10 },
-  { slug: "lutsk", lat: 50.7472, lon: 25.3254, radiusKm: 10 },
-  { slug: "zhytomyr", lat: 50.2547, lon: 28.6587, radiusKm: 10 },
-  { slug: "uzhhorod", lat: 48.6208, lon: 22.2879, radiusKm: 10 },
-  { slug: "ivano-frankivsk", lat: 48.9226, lon: 24.7111, radiusKm: 10 },
-  { slug: "kropyvnytskyi", lat: 48.5079, lon: 32.2623, radiusKm: 10 },
-  { slug: "mykolaiv", lat: 46.975, lon: 31.9946, radiusKm: 12 },
-  { slug: "poltava", lat: 49.5883, lon: 34.5514, radiusKm: 10 },
-  { slug: "rivne", lat: 50.6199, lon: 26.2516, radiusKm: 10 },
-  { slug: "sumy", lat: 50.9077, lon: 34.7981, radiusKm: 10 },
-  { slug: "ternopil", lat: 49.5535, lon: 25.5948, radiusKm: 10 },
-  { slug: "kherson", lat: 46.6354, lon: 32.6169, radiusKm: 12 },
-  { slug: "khmelnytskyi", lat: 49.4229, lon: 26.9871, radiusKm: 10 },
-  { slug: "cherkasy", lat: 49.4444, lon: 32.0598, radiusKm: 10 },
-  { slug: "chernivtsi", lat: 48.2915, lon: 25.9403, radiusKm: 10 },
-  { slug: "chernihiv", lat: 51.4982, lon: 31.2893, radiusKm: 10 },
+  { slug: "kyiv", countryCode: "UA", lat: 50.4501, lon: 30.5234, radiusKm: 20 },
+  { slug: "lviv", countryCode: "UA", lat: 49.8397, lon: 24.0297, radiusKm: 12 },
+  { slug: "kharkiv", countryCode: "UA", lat: 49.9935, lon: 36.2304, radiusKm: 15 },
+  { slug: "odesa", countryCode: "UA", lat: 46.4825, lon: 30.7233, radiusKm: 15 },
+  { slug: "dnipro", countryCode: "UA", lat: 48.4647, lon: 35.0462, radiusKm: 15 },
+  { slug: "zaporizhzhia", countryCode: "UA", lat: 47.8388, lon: 35.1396, radiusKm: 15 },
+  { slug: "vinnytsia", countryCode: "UA", lat: 49.2331, lon: 28.4682, radiusKm: 10 },
+  { slug: "lutsk", countryCode: "UA", lat: 50.7472, lon: 25.3254, radiusKm: 10 },
+  { slug: "zhytomyr", countryCode: "UA", lat: 50.2547, lon: 28.6587, radiusKm: 10 },
+  { slug: "uzhhorod", countryCode: "UA", lat: 48.6208, lon: 22.2879, radiusKm: 10 },
+  { slug: "ivano-frankivsk", countryCode: "UA", lat: 48.9226, lon: 24.7111, radiusKm: 10 },
+  { slug: "kropyvnytskyi", countryCode: "UA", lat: 48.5079, lon: 32.2623, radiusKm: 10 },
+  { slug: "mykolaiv", countryCode: "UA", lat: 46.975, lon: 31.9946, radiusKm: 12 },
+  { slug: "poltava", countryCode: "UA", lat: 49.5883, lon: 34.5514, radiusKm: 10 },
+  { slug: "rivne", countryCode: "UA", lat: 50.6199, lon: 26.2516, radiusKm: 10 },
+  { slug: "sumy", countryCode: "UA", lat: 50.9077, lon: 34.7981, radiusKm: 10 },
+  { slug: "ternopil", countryCode: "UA", lat: 49.5535, lon: 25.5948, radiusKm: 10 },
+  { slug: "kherson", countryCode: "UA", lat: 46.6354, lon: 32.6169, radiusKm: 12 },
+  { slug: "khmelnytskyi", countryCode: "UA", lat: 49.4229, lon: 26.9871, radiusKm: 10 },
+  { slug: "cherkasy", countryCode: "UA", lat: 49.4444, lon: 32.0598, radiusKm: 10 },
+  { slug: "chernivtsi", countryCode: "UA", lat: 48.2915, lon: 25.9403, radiusKm: 10 },
+  { slug: "chernihiv", countryCode: "UA", lat: 51.4982, lon: 31.2893, radiusKm: 10 },
 ]
 
 const EARTH_RADIUS_KM = 6371

@@ -13,22 +13,26 @@
   },
   "officialPage": "Official page",
   "telegram": "Telegram channel",
-  "nationalTitle": "Across Ukraine",
   "national": {
-    "railway": {
-      "title": "Trains and stations",
-      "text": "Ukrzaliznytsia takes lost item requests online: describe the item, the date and the train or station.",
-      "link": "Request on the Ukrzaliznytsia site"
-    },
-    "bus": {
-      "title": "Buses and minibuses",
-      "text": "Under the national transport rules, a driver who finds a forgotten item on board writes a report and hands the item to the carrier. So ask the carrier that runs the route.",
-      "link": "Clause 82 of the Rules, Cabinet resolution No. 176"
-    },
-    "finder": {
-      "title": "Found someone else’s item",
-      "text": "If the owner is nowhere to be seen, the law says to report the find to the police or the city council. Something found on transport or inside a building goes to the driver, security or the management.",
-      "link": "Article 337 of the Civil Code"
+    "UA": {
+      "title": "Across Ukraine",
+      "items": {
+        "railway": {
+          "title": "Trains and stations",
+          "text": "Ukrzaliznytsia takes lost item requests online: describe the item, the date and the train or station.",
+          "link": "Request on the Ukrzaliznytsia site"
+        },
+        "bus": {
+          "title": "Buses and minibuses",
+          "text": "Under the national transport rules, a driver who finds a forgotten item on board writes a report and hands the item to the carrier. So ask the carrier that runs the route.",
+          "link": "Clause 82 of the Rules, Cabinet resolution No. 176"
+        },
+        "finder": {
+          "title": "Found someone else’s item",
+          "text": "If the owner is nowhere to be seen, the law says to report the find to the police or the city council. Something found on transport or inside a building goes to the driver, security or the management.",
+          "link": "Article 337 of the Civil Code"
+        }
+      }
     }
   },
   "needsCheck": "needs confirming",

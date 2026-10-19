@@ -13,22 +13,26 @@
   },
   "officialPage": "Offizielle Seite",
   "telegram": "Telegram-Kanal",
-  "nationalTitle": "In der ganzen Ukraine",
   "national": {
-    "railway": {
-      "title": "Züge und Bahnhöfe",
-      "text": "Ukrsalisnyzja nimmt Suchanfragen zu vergessenen Gegenständen online an: Beschreibe den Gegenstand, das Datum und den Zug oder Bahnhof.",
-      "link": "Anfrage auf der Seite von Ukrsalisnyzja"
-    },
-    "bus": {
-      "title": "Busse und Marschrutkas",
-      "text": "Nach den landesweiten Beförderungsregeln hält ein Fahrer, der einen vergessenen Gegenstand findet, das in einem Protokoll fest und übergibt ihn dem Beförderungsunternehmen. Frag also beim Unternehmen nach, das die Linie fährt.",
-      "link": "Punkt 82 der Regeln, Kabinettsbeschluss Nr. 176"
-    },
-    "finder": {
-      "title": "Du hast etwas gefunden",
-      "text": "Ist kein Besitzer in Sicht, verlangt das Gesetz, den Fund der Polizei oder der Stadtverwaltung zu melden. Was in einem Verkehrsmittel oder Gebäude liegt, gibst du dem Fahrer, dem Sicherheitsdienst oder der Verwaltung.",
-      "link": "Artikel 337 des Zivilgesetzbuchs"
+    "UA": {
+      "title": "In der ganzen Ukraine",
+      "items": {
+        "railway": {
+          "title": "Züge und Bahnhöfe",
+          "text": "Ukrsalisnyzja nimmt Suchanfragen zu vergessenen Gegenständen online an: Beschreibe den Gegenstand, das Datum und den Zug oder Bahnhof.",
+          "link": "Anfrage auf der Seite von Ukrsalisnyzja"
+        },
+        "bus": {
+          "title": "Busse und Marschrutkas",
+          "text": "Nach den landesweiten Beförderungsregeln hält ein Fahrer, der einen vergessenen Gegenstand findet, das in einem Protokoll fest und übergibt ihn dem Beförderungsunternehmen. Frag also beim Unternehmen nach, das die Linie fährt.",
+          "link": "Punkt 82 der Regeln, Kabinettsbeschluss Nr. 176"
+        },
+        "finder": {
+          "title": "Du hast etwas gefunden",
+          "text": "Ist kein Besitzer in Sicht, verlangt das Gesetz, den Fund der Polizei oder der Stadtverwaltung zu melden. Was in einem Verkehrsmittel oder Gebäude liegt, gibst du dem Fahrer, dem Sicherheitsdienst oder der Verwaltung.",
+          "link": "Artikel 337 des Zivilgesetzbuchs"
+        }
+      }
     }
   },
   "needsCheck": "noch zu bestätigen",

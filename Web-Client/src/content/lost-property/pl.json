@@ -13,22 +13,26 @@
   },
   "officialPage": "Oficjalna strona",
   "telegram": "Kanał na Telegramie",
-  "nationalTitle": "W całej Ukrainie",
   "national": {
-    "railway": {
-      "title": "Pociągi i dworce",
-      "text": "Ukrzaliznycia przyjmuje zgłoszenia o zapomnianych rzeczach online: opisz rzecz, datę oraz pociąg lub dworzec.",
-      "link": "Zgłoszenie na stronie Ukrzaliznyci"
-    },
-    "bus": {
-      "title": "Autobusy i marszrutki",
-      "text": "Zgodnie z ogólnokrajowymi przepisami przewozowymi kierowca, który znajdzie w pojeździe zapomnianą rzecz, sporządza protokół i oddaje ją przewoźnikowi. Pytaj więc przewoźnika obsługującego trasę.",
-      "link": "Punkt 82 Zasad, uchwała Gabinetu Ministrów nr 176"
-    },
-    "finder": {
-      "title": "Znalazłeś cudzą rzecz",
-      "text": "Jeśli właściciela nie widać, prawo nakazuje zgłosić znalezisko policji lub radzie miasta. Rzecz znalezioną w pojeździe lub w budynku oddaje się kierowcy, ochronie lub administracji.",
-      "link": "Artykuł 337 Kodeksu cywilnego"
+    "UA": {
+      "title": "W całej Ukrainie",
+      "items": {
+        "railway": {
+          "title": "Pociągi i dworce",
+          "text": "Ukrzaliznycia przyjmuje zgłoszenia o zapomnianych rzeczach online: opisz rzecz, datę oraz pociąg lub dworzec.",
+          "link": "Zgłoszenie na stronie Ukrzaliznyci"
+        },
+        "bus": {
+          "title": "Autobusy i marszrutki",
+          "text": "Zgodnie z ogólnokrajowymi przepisami przewozowymi kierowca, który znajdzie w pojeździe zapomnianą rzecz, sporządza protokół i oddaje ją przewoźnikowi. Pytaj więc przewoźnika obsługującego trasę.",
+          "link": "Punkt 82 Zasad, uchwała Gabinetu Ministrów nr 176"
+        },
+        "finder": {
+          "title": "Znalazłeś cudzą rzecz",
+          "text": "Jeśli właściciela nie widać, prawo nakazuje zgłosić znalezisko policji lub radzie miasta. Rzecz znalezioną w pojeździe lub w budynku oddaje się kierowcy, ochronie lub administracji.",
+          "link": "Artykuł 337 Kodeksu cywilnego"
+        }
+      }
     }
   },
   "needsCheck": "wymaga potwierdzenia",

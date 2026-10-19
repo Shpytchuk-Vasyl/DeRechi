@@ -13,22 +13,26 @@
   },
   "officialPage": "Page officielle",
   "telegram": "Chaîne Telegram",
-  "nationalTitle": "Dans toute l’Ukraine",
   "national": {
-    "railway": {
-      "title": "Trains et gares",
-      "text": "Ukrzaliznytsia reçoit les demandes d’objets oubliés en ligne : décrivez l’objet, la date et le train ou la gare.",
-      "link": "Demande sur le site d’Ukrzaliznytsia"
-    },
-    "bus": {
-      "title": "Bus et marchroutkas",
-      "text": "Selon les règles nationales de transport, le conducteur qui trouve un objet oublié à bord en dresse un procès-verbal et le remet au transporteur. Renseignez-vous donc auprès du transporteur qui exploite la ligne.",
-      "link": "Point 82 des Règles, résolution du Conseil des ministres n° 176"
-    },
-    "finder": {
-      "title": "Vous avez trouvé l’objet de quelqu’un",
-      "text": "Si le propriétaire reste introuvable, la loi demande de déclarer la trouvaille à la police ou au conseil municipal. Un objet trouvé dans un transport ou un bâtiment se remet au conducteur, à la sécurité ou à l’administration.",
-      "link": "Article 337 du Code civil"
+    "UA": {
+      "title": "Dans toute l’Ukraine",
+      "items": {
+        "railway": {
+          "title": "Trains et gares",
+          "text": "Ukrzaliznytsia reçoit les demandes d’objets oubliés en ligne : décrivez l’objet, la date et le train ou la gare.",
+          "link": "Demande sur le site d’Ukrzaliznytsia"
+        },
+        "bus": {
+          "title": "Bus et marchroutkas",
+          "text": "Selon les règles nationales de transport, le conducteur qui trouve un objet oublié à bord en dresse un procès-verbal et le remet au transporteur. Renseignez-vous donc auprès du transporteur qui exploite la ligne.",
+          "link": "Point 82 des Règles, résolution du Conseil des ministres n° 176"
+        },
+        "finder": {
+          "title": "Vous avez trouvé l’objet de quelqu’un",
+          "text": "Si le propriétaire reste introuvable, la loi demande de déclarer la trouvaille à la police ou au conseil municipal. Un objet trouvé dans un transport ou un bâtiment se remet au conducteur, à la sécurité ou à l’administration.",
+          "link": "Article 337 du Code civil"
+        }
+      }
     }
   },
   "needsCheck": "à confirmer",
