@@ -18,6 +18,8 @@ class NoticeEventListenerTest {
 
     private static final ItemCreatedEvent CREATED = new ItemCreatedEvent(7L, LocalDate.of(2026, 10, 9), "KEYS",
             "Площа Ринок", "Ключі", null, null, "UAH", null, "site");
+    private static final ItemUpdatedEvent UPDATED = new ItemUpdatedEvent(7L, LocalDate.of(2026, 10, 9), "KEYS",
+            "Площа Ринок", "Ключі від авто", null, null, "UAH", null, "admin");
 
     private final ChannelMirror mirror = mock(ChannelMirror.class);
     private final NoticeEventListener listener = new NoticeEventListener(mirror);
@@ -27,6 +29,13 @@ class NoticeEventListenerTest {
         listener.onCreated(CREATED, message("notice.found.created"));
 
         verify(mirror).created(ItemKind.FOUND, CREATED);
+    }
+
+    @Test
+    void editsAnUpdatedNoticeOfTheKindInTheKey() {
+        listener.onUpdated(UPDATED, message("notice.lost.updated"));
+
+        verify(mirror).updated(ItemKind.LOST, UPDATED);
     }
 
     @Test
@@ -46,6 +55,9 @@ class NoticeEventListenerTest {
         assertThatThrownBy(() -> listener.onCreated(CREATED, message("claim.lost.claimed")))
                 .isInstanceOf(AmqpRejectAndDontRequeueException.class)
                 .hasMessageContaining("claim.lost.claimed");
+        assertThatThrownBy(() -> listener.onUpdated(UPDATED, message("notice.lost.created")))
+                .isInstanceOf(AmqpRejectAndDontRequeueException.class)
+                .hasMessageContaining("notice.lost.created");
 
         verifyNoInteractions(mirror);
     }

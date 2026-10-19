@@ -36,6 +36,8 @@ emails with `[EMAIL_1]`, ... Parts of the photos may be blurred on purpose.
 - `description`: at most 250 characters, in the language of the post (Ukrainian for a Russian
   post). A neutral summary of what, where and when. No phone numbers, emails, usernames, links,
   and no names of people except the owner's name that is in the title.
+- `ownerName`: the owner's name that went into the title, surname and first name as given.
+  `null` when the thing carries no name, or neither the text nor a photo shows it.
 - `category`: one key from the category list in the message, `OTHER` when nothing fits.
 - `date`: `yyyy-MM-dd`, the day the thing was lost or found. Resolve relative dates ("yesterday
   evening", "on Saturday") from `postDate`, never from `today`. `null` when the post does not say.
@@ -88,7 +90,7 @@ Example 1. `postDate: 2026-10-08`, a photo of a Lviv transport card "Леока�
 ```json
 {"isNotice": true, "kind": "FOUND", "title": "Знайдено Леокарту на ім'я Іваненко Петро",
  "description": "Знайдено іменну Леокарту на перехресті вулиць Наукова та Кульпарківська.",
- "category": "DOCUMENTS", "date": null, "placeText": "вулиця Наукова та вулиця Кульпарківська",
+ "ownerName": "Іваненко Петро", "category": "DOCUMENTS", "date": null, "placeText": "вулиця Наукова та вулиця Кульпарківська",
  "city": null, "compensation": null, "contactPhoneRef": null, "socialMedias": ["TELEGRAM"],
  "confidence": 0.9, "rejectReason": null}
 ```
@@ -103,7 +105,7 @@ Example 2. `postDate: 2026-10-06`, no photo:
 ```json
 {"isNotice": true, "kind": "LOST", "title": "Загублено чорний гаманець",
  "description": "Загублено чорний гаманець з банківськими картками біля ТЦ Ocean Plaza ввечері 5 жовтня.",
- "category": "WALLET", "date": "2026-10-05", "placeText": "ТЦ Ocean Plaza", "city": "Київ",
+ "ownerName": null, "category": "WALLET", "date": "2026-10-05", "placeText": "ТЦ Ocean Plaza", "city": "Київ",
  "compensation": {"amount": 500, "currency": "UAH"}, "contactPhoneRef": "PHONE_1",
  "socialMedias": ["VIBER"], "confidence": 0.95, "rejectReason": null}
 ```
@@ -117,7 +119,7 @@ Example 3. `postDate: 2026-10-07`, `chatCity: Львів`, no photo:
 ```json
 {"isNotice": true, "kind": "LOST", "title": "Загублено синій рюкзак",
  "description": "Загублено синій рюкзак у маршрутці 25 біля Львівської політехніки.",
- "category": "BAGS", "date": null,
+ "ownerName": null, "category": "BAGS", "date": null,
  "placeText": "Національний університет «Львівська політехніка»", "city": null,
  "compensation": null, "contactPhoneRef": "PHONE_1", "socialMedias": null,
  "confidence": 0.9, "rejectReason": null}
@@ -133,7 +135,7 @@ Example 4. `postDate: 2026-10-09`, `chatCity: Харків`, no photo, the post 
 ```json
 {"isNotice": true, "kind": "LOST", "title": "Загублено зв'язку ключів з червоним брелоком",
  "description": "Загублено зв'язку ключів з червоним брелоком біля станції метро «Наукова» 8 жовтня.",
- "category": "KEYS", "date": "2026-10-08", "placeText": "станція метро Наукова", "city": null,
+ "ownerName": null, "category": "KEYS", "date": "2026-10-08", "placeText": "станція метро Наукова", "city": null,
  "compensation": {"amount": 300, "currency": "UAH"}, "contactPhoneRef": "PHONE_1",
  "socialMedias": null, "confidence": 0.9, "rejectReason": null}
 ```

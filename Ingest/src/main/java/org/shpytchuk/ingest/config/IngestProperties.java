@@ -1,5 +1,6 @@
 package org.shpytchuk.ingest.config;
 
+import org.jspecify.annotations.Nullable;
 import org.shpytchuk.ingest.model.ItemKind;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
@@ -8,6 +9,9 @@ import java.time.Duration;
 import java.time.Period;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * The pipeline itself.
@@ -18,6 +22,7 @@ import java.util.Locale;
  * @param siteUrl           base of the notice links
  * @param siteLocale        locale segment of the notice links
  * @param minConfidence     extractions below it are skipped as {@code rejected}
+ * @param placeholderPhotos storage key of the stand-in photo per category key, for a found item posted without a photo
  */
 @ConfigurationProperties(prefix = "derechi.ingest")
 public record IngestProperties(
@@ -28,7 +33,8 @@ public record IngestProperties(
         Period maxAge,
         String siteUrl,
         String siteLocale,
-        double minConfidence) {
+        double minConfidence,
+        Map<String, String> placeholderPhotos) {
 
     public IngestProperties {
         publishers = publishers == null ? List.of() : publishers.stream()
@@ -47,6 +53,14 @@ public record IngestProperties(
         if (minConfidence < 0 || minConfidence > 1) {
             throw new IllegalArgumentException("derechi.ingest.min-confidence must be within 0..1");
         }
+        placeholderPhotos = placeholderPhotos == null ? Map.of() : placeholderPhotos.entrySet().stream()
+                .filter(entry -> StringUtils.hasText(entry.getKey()) && StringUtils.hasText(entry.getValue()))
+                .collect(Collectors.toUnmodifiableMap(entry -> entry.getKey().trim().toUpperCase(Locale.ROOT),
+                        entry -> entry.getValue().trim()));
+    }
+
+    public Optional<String> placeholderPhoto(@Nullable String category) {
+        return category == null ? Optional.empty() : Optional.ofNullable(placeholderPhotos.get(category));
     }
 
     public String itemUrl(ItemKind kind, long itemId) {

@@ -27,13 +27,13 @@ class ExtractionPolicyTest {
             new AuthorProfile(SocialMedia.TELEGRAM, "@finder", "https://t.me/finder");
 
     private final ExtractionPolicy policy = new ExtractionPolicy(
-            new IngestProperties(null, "hash", null, 0, null, null, null, 0.6));
+            new IngestProperties(null, "hash", null, 0, null, null, null, 0.6, null));
 
     private static Extraction extraction(@Nullable Boolean isNotice, @Nullable ItemKind kind, @Nullable String title,
                                          @Nullable String category, @Nullable String placeText, @Nullable String city,
                                          @Nullable String phoneRef, @Nullable Double confidence, @Nullable String rejectReason) {
-        return new Extraction(isNotice, kind, title, "Опис", category, LocalDate.parse("2026-10-08"), placeText, city,
-                null, phoneRef, null, confidence, rejectReason);
+        return new Extraction(isNotice, kind, title, "Опис", null, category, LocalDate.parse("2026-10-08"), placeText,
+                city, null, phoneRef, null, confidence, rejectReason);
     }
 
     private static Extraction good() {

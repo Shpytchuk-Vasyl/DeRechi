@@ -13,5 +13,5 @@ import java.util.List;
 public record Notice(ItemKind kind, String title, @Nullable String description, LocalDate date,
                      @Nullable Money compensation, long categoryId, ResolvedPlace place, @Nullable String phone,
                      @Nullable AuthorProfile authorProfile, List<SocialMedia> socialMedias, byte @Nullable [] photo,
-                     String phoneHash) {
+                     @Nullable String placeholderPhoto, String phoneHash) {
 }

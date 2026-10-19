@@ -8,6 +8,7 @@ import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.Word;
 import net.sourceforge.tess4j.util.ImageHelper;
 import org.shpytchuk.ingest.config.redaction.RedactionProperties;
+import org.shpytchuk.ingest.image.Rotations;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -26,6 +27,10 @@ public class TesseractOcrEngine implements OcrEngine {
 
     private static final double MIN_DESKEW_DEGREES = 0.5;
     private static final double MAX_DESKEW_DEGREES = 20;
+    private static final double CONFIDENT_READING = 120;
+    private static final double TURN_ADVANTAGE = 1.5;
+    private static final double MIN_TURNED_READING = 20;
+    private static final List<Integer> SIDEWAYS_TURNS = List.of(1, 3);
 
     private final Tesseract tesseract = new Tesseract();
 
@@ -43,17 +48,44 @@ public class TesseractOcrEngine implements OcrEngine {
     }
 
     @Override
-    public synchronized List<OcrLine> lines(BufferedImage image) {
+    public synchronized OcrPage read(BufferedImage image) {
         BufferedImage gray = ImageHelper.convertImageToGrayscale(image);
-        Rectangle bounds = new Rectangle(image.getWidth(), image.getHeight());
-        List<OcrLine> asIs = read(gray, new AffineTransform(), bounds);
+        Reading best = new Reading(gray, 0, readAsIs(gray));
+        if (isPortrait(gray) && recognized(best.lines()) < CONFIDENT_READING) {
+            double asIs = recognized(best.lines());
+            for (int turns : SIDEWAYS_TURNS) {
+                BufferedImage turned = Rotations.quarterTurns(gray, turns);
+                Reading candidate = new Reading(turned, turns, readAsIs(turned));
+                double score = recognized(candidate.lines());
+                if (score >= MIN_TURNED_READING && score > asIs * TURN_ADVANTAGE && score > recognized(best.lines())) {
+                    best = candidate;
+                }
+            }
+            if (best.quarterTurns() != 0) {
+                log.debug("OCR reads the photo best turned {} quarter(s) clockwise", best.quarterTurns());
+            }
+        }
+        return new OcrPage(deskewed(best), best.quarterTurns());
+    }
+
+    private static boolean isPortrait(BufferedImage image) {
+        return image.getHeight() > image.getWidth();
+    }
+
+    private List<OcrLine> readAsIs(BufferedImage gray) {
+        return read(gray, new AffineTransform(), new Rectangle(gray.getWidth(), gray.getHeight()));
+    }
+
+    private List<OcrLine> deskewed(Reading reading) {
+        BufferedImage gray = reading.gray();
         double skew = new ImageDeskew(gray).getSkewAngle();
         if (Math.abs(skew) <= MIN_DESKEW_DEGREES || Math.abs(skew) > MAX_DESKEW_DEGREES) {
-            return asIs;
+            return reading.lines();
         }
         AffineTransform rotation = rotation(gray, Math.toRadians(-skew));
-        List<OcrLine> straightened = read(rotate(gray, rotation), rotation, bounds);
-        return recognized(straightened) > recognized(asIs) ? straightened : asIs;
+        List<OcrLine> straightened = read(rotate(gray, rotation), rotation,
+                new Rectangle(gray.getWidth(), gray.getHeight()));
+        return recognized(straightened) > recognized(reading.lines()) ? straightened : reading.lines();
     }
 
     private List<OcrLine> read(BufferedImage gray, AffineTransform rotation, Rectangle bounds) {
@@ -107,5 +139,8 @@ public class TesseractOcrEngine implements OcrEngine {
         } catch (NoninvertibleTransformException e) {
             throw new IllegalStateException("a rotation is always invertible", e);
         }
+    }
+
+    private record Reading(BufferedImage gray, int quarterTurns, List<OcrLine> lines) {
     }
 }

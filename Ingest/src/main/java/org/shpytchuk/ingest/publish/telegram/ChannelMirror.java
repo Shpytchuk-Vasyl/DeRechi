@@ -6,6 +6,8 @@ import org.shpytchuk.ingest.config.IngestProperties;
 import org.shpytchuk.ingest.config.bot.BotProperties;
 import org.shpytchuk.ingest.config.events.EventsProperties;
 import org.shpytchuk.ingest.event.ItemCreatedEvent;
+import org.shpytchuk.ingest.event.ItemEvent;
+import org.shpytchuk.ingest.event.ItemUpdatedEvent;
 import org.shpytchuk.ingest.exception.IngestException;
 import org.shpytchuk.ingest.model.ItemKind;
 import org.shpytchuk.ingest.pipeline.IngestMetrics;
@@ -21,6 +23,7 @@ import java.time.Instant;
 public class ChannelMirror {
 
     private static final String POSTED = "posted";
+    private static final String EDITED = "edited";
     private static final String DELETED = "deleted";
     private static final String SITE = "site";
     private static final String ADMIN = "admin";
@@ -54,6 +57,26 @@ public class ChannelMirror {
         }
     }
 
+    public void updated(ItemKind kind, ItemUpdatedEvent event) {
+        if (!enabled()) {
+            log.debug("The channel is off, edited {} item {} is not looked up", kind.path(), event.id());
+            return;
+        }
+        try {
+            boolean edited = poster.edit(kind, event.id(),
+                    ChannelPost.of(kind, event, photos.load(event.image()), ingest.itemUrl(kind, event.id())));
+            if (edited) {
+                metrics.channel(EDITED, "ok");
+                log.info("{} item {} is edited, its channel message follows", kind.path(), event.id());
+            } else {
+                log.debug("{} item {} is edited and has no channel message", kind.path(), event.id());
+            }
+        } catch (RuntimeException e) {
+            metrics.channel(EDITED, "failed");
+            throw e;
+        }
+    }
+
     public void removed(ItemKind kind, long itemId, String reason) {
         if (!enabled()) {
             log.debug("The channel is off, {} {} item {} is not looked up", reason, kind.path(), itemId);
@@ -73,7 +96,7 @@ public class ChannelMirror {
         }
     }
 
-    private static String origin(ItemCreatedEvent event) {
+    private static String origin(ItemEvent event) {
         return ADMIN.equals(event.origin()) ? ADMIN : SITE;
     }
 

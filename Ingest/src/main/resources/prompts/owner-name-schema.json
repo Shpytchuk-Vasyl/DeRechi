@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "properties": {
+    "ownerName": {
+      "type": ["string", "null"],
+      "description": "surname and first name of the document's owner as printed, title case; null when no line is a person's name"
+    },
+    "title": {
+      "type": "string",
+      "description": "the given title with the owner's name added in its language, at most 100 characters; unchanged when ownerName is null"
+    }
+  },
+  "required": ["ownerName", "title"],
+  "additionalProperties": false
+}

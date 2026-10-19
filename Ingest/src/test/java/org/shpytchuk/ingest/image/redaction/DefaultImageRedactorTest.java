@@ -11,6 +11,7 @@ import org.shpytchuk.ingest.image.RedactionMode;
 import org.shpytchuk.ingest.image.face.FaceDetector;
 import org.shpytchuk.ingest.image.ocr.OcrEngine;
 import org.shpytchuk.ingest.image.ocr.OcrLine;
+import org.shpytchuk.ingest.image.ocr.OcrPage;
 import org.shpytchuk.ingest.phone.PhoneExtractor;
 import org.shpytchuk.ingest.support.Images;
 
@@ -269,6 +270,33 @@ class DefaultImageRedactorTest {
     }
 
     @Test
+    void aPhotoOcrReadsSidewaysIsTurnedUprightBeforeItIsBlurred() {
+        RedactedImage result = redactor(turnedOcr(1, line("Тел. 067 123 45 67", new Rectangle(100, 100, 40, 300))))
+                .redact(stripes(), false);
+
+        assertThat(result.mode()).isEqualTo(RedactionMode.PHONES);
+        BufferedImage out = decode(result);
+        assertThat(out.getWidth()).isEqualTo(HEIGHT);
+        assertThat(out.getHeight()).isEqualTo(WIDTH);
+        assertThat(Images.variance(out, new Rectangle(100, 100, 40, 300))).isLessThan(BLURRED);
+    }
+
+    @Test
+    void theTextOfThePhotoIsWhatPhotoTextLetsThrough() {
+        RedactedImage result = redactor(ocr(line("ПАСПОРТ ГРОМАДЯНИНА УКРАЇНИ", PHONE_BOX), line("ШЕВЧЕНКО", TEXT_BOX),
+                line("Тел. 067 123 45 67", CARD_BOX), line("12.08.1964", CARD_BOX), line("4111 1111 1111 1234", CARD_BOX),
+                line("ШЕВЧЕНКО", TEXT_BOX), line("AB 123456", CARD_BOX)))
+                .redact(stripes(), true);
+
+        assertThat(result.text()).containsExactly("ПАСПОРТ ГРОМАДЯНИНА УКРАЇНИ", "ШЕВЧЕНКО");
+    }
+
+    @Test
+    void aFullyBlurredPhotoHasNoText() {
+        assertThat(redactor(ocr(line("ШЕВЧЕНКО", TEXT_BOX))).blurFully(stripes()).text()).isEmpty();
+    }
+
+    @Test
     void blurFullyBlursEverything() {
         RedactedImage result = redactor(ocr()).blurFully(stripes());
 
@@ -324,7 +352,11 @@ class DefaultImageRedactorTest {
     }
 
     private static OcrEngine ocr(List<OcrLine> lines) {
-        return image -> lines;
+        return image -> OcrPage.upright(lines);
+    }
+
+    private static OcrEngine turnedOcr(int quarterTurns, OcrLine... lines) {
+        return image -> new OcrPage(List.of(lines), quarterTurns);
     }
 
     private static OcrLine line(String text, Rectangle box) {

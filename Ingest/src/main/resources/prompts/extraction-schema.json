@@ -18,6 +18,10 @@
       "type": ["string", "null"],
       "description": "at most 250 characters, in the language of the post, Ukrainian when the post is in Russian, neutral, no contacts and no names of people except the owner's name in the title"
     },
+    "ownerName": {
+      "type": ["string", "null"],
+      "description": "the owner's name written on the thing or named in the post, surname and first name as given; null when neither the text nor a photo gives one"
+    },
     "category": {
       "type": ["string", "null"],
       "enum": ["DOCUMENTS", "WALLET", "ELECTRONICS", "JEWELRY", "ANIMALS", "KEYS", "BAGS", "OTHER", null]
@@ -73,6 +77,7 @@
     "kind",
     "title",
     "description",
+    "ownerName",
     "category",
     "date",
     "placeText",

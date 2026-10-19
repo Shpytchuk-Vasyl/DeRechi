@@ -3,6 +3,7 @@ package org.shpytchuk.ingest.image.ocr;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.shpytchuk.ingest.config.redaction.RedactionProperties;
+import org.shpytchuk.ingest.image.Rotations;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -26,7 +27,7 @@ class TesseractOcrEngineIT {
     void readsAPhoneNumberAndItsLine() {
         BufferedImage image = poster(0);
 
-        List<OcrLine> lines = engine.lines(image);
+        List<OcrLine> lines = engine.read(image).lines();
 
         OcrLine phone = lines.stream().filter(l -> digits(l).contains("0671234567")).findFirst()
                 .orElseThrow(() -> new AssertionError("no line with the number among " + lines.size()));
@@ -36,10 +37,19 @@ class TesseractOcrEngineIT {
 
     @Test
     void readsASkewedPosterAndMapsTheBoxBack() {
-        List<OcrLine> lines = engine.lines(poster(Math.toRadians(5)));
+        List<OcrLine> lines = engine.read(poster(Math.toRadians(5))).lines();
 
         assertThat(lines).anySatisfy(l -> assertThat(digits(l)).contains("0671234567"));
         assertThat(lines).allSatisfy(l -> assertThat(new Rectangle(0, 0, 900, 400).contains(l.box())).isTrue());
+    }
+
+    @Test
+    void readsAPosterPhotographedSidewaysAndSaysHowToTurnIt() {
+        OcrPage page = engine.read(Rotations.quarterTurns(poster(0), 3));
+
+        assertThat(page.quarterTurns()).isEqualTo(1);
+        assertThat(page.lines()).anySatisfy(l -> assertThat(digits(l)).contains("0671234567"));
+        assertThat(page.lines()).allSatisfy(l -> assertThat(new Rectangle(0, 0, 900, 400).contains(l.box())).isTrue());
     }
 
     private static String digits(OcrLine line) {

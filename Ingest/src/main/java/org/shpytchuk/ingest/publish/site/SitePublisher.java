@@ -60,7 +60,10 @@ public class SitePublisher {
     private @Nullable String upload(IncomingPost post, Notice notice) {
         byte[] photo = notice.photo();
         if (photo == null) {
-            return null;
+            if (notice.placeholderPhoto() != null) {
+                log.debug("Post {} has no photo, the placeholder {} stands in", post.key(), notice.placeholderPhoto());
+            }
+            return notice.placeholderPhoto();
         }
         long started = System.nanoTime();
         String imageKey = uploader.upload(photo);

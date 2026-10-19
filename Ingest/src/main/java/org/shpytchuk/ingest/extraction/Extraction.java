@@ -14,6 +14,7 @@ public record Extraction(
         @Nullable ItemKind kind,
         @Nullable String title,
         @Nullable String description,
+        @Nullable String ownerName,
         @Nullable String category,
         @Nullable LocalDate date,
         @Nullable String placeText,

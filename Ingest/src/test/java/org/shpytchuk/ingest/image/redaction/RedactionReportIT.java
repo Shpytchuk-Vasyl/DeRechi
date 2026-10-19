@@ -91,7 +91,7 @@ class RedactionReportIT {
         long millis = (System.nanoTime() - started) / 1_000_000;
 
         BufferedImage picture = DefaultImageRedactor.decode(bytes);
-        List<OcrLine> lines = ocr.lines(picture);
+        List<OcrLine> lines = ocr.read(picture).lines();
         List<Rectangle> faces = faceDetector.faces(picture);
         List<Boolean> contacts = lines.stream().map(redactor::hasContact).toList();
         boolean document = documentDetector.looksLikeDocument(lines)

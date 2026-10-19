@@ -63,11 +63,12 @@ class OpenRouterExtractorTest {
     private static final JsonMapper JSON = JsonMapper.builder().build();
     private static final PromptBuilder PROMPTS = new PromptBuilder(JSON);
     private static final IngestProperties INGEST = new IngestProperties(null, "hash", null, 0, null,
-            "https://derechi.test", "uk", 0.6);
+            "https://derechi.test", "uk", 0.6, null);
 
     private static final String ANSWER = """
             {"isNotice": true, "kind": "FOUND", "title": "Знайдено Леокарту",
-             "description": "Знайдено Леокарту на перехресті.", "category": "DOCUMENTS", "date": "2026-10-08",
+             "description": "Знайдено Леокарту на перехресті.", "ownerName": null, "category": "DOCUMENTS",
+             "date": "2026-10-08",
              "placeText": "перехрестя Наукова / Кульпарківська", "city": null,
              "compensation": {"amount": 200, "currency": "UAH"}, "contactPhoneRef": "PHONE_1",
              "socialMedias": ["TELEGRAM"], "confidence": 0.9, "rejectReason": null}
@@ -85,7 +86,8 @@ class OpenRouterExtractorTest {
     private OpenRouterExtractor extractor(OpenRouterProperties properties) {
         RestClient.Builder builder = RestClient.builder();
         server = MockRestServiceServer.bindTo(builder).build();
-        return new OpenRouterExtractor(builder, properties, INGEST, PROMPTS, new DailyCallCounter(clock), JSON);
+        return new OpenRouterExtractor(new OpenRouterClient(builder, properties, INGEST, new DailyCallCounter(clock), JSON),
+                PROMPTS);
     }
 
     private static OpenRouterProperties properties(String apiKey, String fallback, int dailyLimit) {
@@ -192,7 +194,7 @@ class OpenRouterExtractorTest {
         assertThat(result.cost()).isEqualByComparingTo(new BigDecimal("0.0012"));
         assertThat(result.duration().isNegative()).isFalse();
         assertThat(result.extraction()).isEqualTo(new Extraction(true, ItemKind.FOUND, "Знайдено Леокарту",
-                "Знайдено Леокарту на перехресті.", "DOCUMENTS", LocalDate.parse("2026-10-08"),
+                "Знайдено Леокарту на перехресті.", null, "DOCUMENTS", LocalDate.parse("2026-10-08"),
                 "перехрестя Наукова / Кульпарківська", null, new Money(200, "UAH"), "PHONE_1",
                 List.of(SocialMedia.TELEGRAM), 0.9, null));
     }

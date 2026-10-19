@@ -24,6 +24,6 @@ class PhoneHasherTest {
     }
 
     private static PhoneHasher hasher(String key) {
-        return new PhoneHasher(new IngestProperties(null, key, null, 0, null, null, null, 0.6));
+        return new PhoneHasher(new IngestProperties(null, key, null, 0, null, null, null, 0.6, null));
     }
 }

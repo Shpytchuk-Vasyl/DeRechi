@@ -1,6 +1,7 @@
 package org.shpytchuk.ingest.pipeline;
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -17,6 +18,10 @@ import org.shpytchuk.ingest.extraction.ExtractionPolicy;
 import org.shpytchuk.ingest.extraction.ExtractionRequest;
 import org.shpytchuk.ingest.extraction.ExtractionResult;
 import org.shpytchuk.ingest.extraction.Extractor;
+import org.shpytchuk.ingest.extraction.OwnerName;
+import org.shpytchuk.ingest.extraction.OwnerNameFinder;
+import org.shpytchuk.ingest.extraction.OwnerNameRequest;
+import org.shpytchuk.ingest.extraction.OwnerNameResult;
 import org.shpytchuk.ingest.image.ImageRedactor;
 import org.shpytchuk.ingest.image.RedactedImage;
 import org.shpytchuk.ingest.image.RedactionMode;
@@ -61,6 +66,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -81,6 +87,7 @@ class IngestPipelineTest {
     PostSource facebook = mock(PostSource.class);
     ImageRedactor redactor = mock(ImageRedactor.class);
     Extractor extractor = mock(Extractor.class);
+    OwnerNameFinder ownerNames = mock(OwnerNameFinder.class);
     ExtractionPolicy policy = mock(ExtractionPolicy.class);
     PlaceResolver places = mock(PlaceResolver.class);
     DeRechiApi api = mock(DeRechiApi.class);
@@ -276,10 +283,87 @@ class IngestPipelineTest {
     }
 
     @Test
+    void foundDocumentWithoutPhotoTakesThePlaceholder() {
+        extracts(extraction(ItemKind.FOUND, "DOCUMENTS"));
+
+        pipeline().process(post("Знайшов паспорт 067 123 45 67", List.of()));
+
+        Notice notice = accepted();
+        assertThat(notice.photo()).isNull();
+        assertThat(notice.placeholderPhoto()).isEqualTo("placeholders/documents.jpg");
+        assertThat(count("no_photo")).isZero();
+        verifyNoInteractions(ownerNames);
+    }
+
+    @Test
+    void aLostItemWithoutPhotoNeedsNoPlaceholder() {
+        extracts(extraction(ItemKind.LOST, "DOCUMENTS"));
+
+        pipeline().process(post("Загубив паспорт 067 123 45 67", List.of()));
+
+        assertThat(accepted().placeholderPhoto()).isNull();
+    }
+
+    @Test
+    void theOwnersNameIsReadOffTheDocumentPhotoWhenTheModelDidNotGiveOne() {
+        when(redactor.redact(any(), anyBoolean())).thenReturn(new RedactedImage(REDACTED, RedactionMode.DOCUMENT,
+                List.of("ПАСПОРТ ГРОМАДЯНИНА УКРАЇНИ", "ШЕВЧЕНКО", "ТАРАС")));
+        extracts(extraction(ItemKind.FOUND, "DOCUMENTS"));
+        when(ownerNames.find(any())).thenReturn(new OwnerNameResult(
+                new OwnerName("Шевченко Тарас", "Знайдено паспорт на ім'я Шевченко Тарас"), "test/model", null,
+                Duration.ofMillis(300)));
+
+        pipeline().process(post("Знайшов паспорт 067 123 45 67", List.of(new PhotoRef("1", 800, 600))));
+
+        ArgumentCaptor<OwnerNameRequest> request = ArgumentCaptor.forClass(OwnerNameRequest.class);
+        verify(ownerNames).find(request.capture());
+        assertThat(request.getValue().title()).isEqualTo("Гаманець");
+        assertThat(request.getValue().photoText()).containsExactly("ПАСПОРТ ГРОМАДЯНИНА УКРАЇНИ", "ШЕВЧЕНКО", "ТАРАС");
+        assertThat(accepted().title()).isEqualTo("Знайдено паспорт на ім'я Шевченко Тарас");
+    }
+
+    @Test
+    void theTitleStaysWhenThePhotoNamesNobodyOrTheLookupFails() {
+        when(redactor.redact(any(), anyBoolean())).thenReturn(new RedactedImage(REDACTED, RedactionMode.DOCUMENT,
+                List.of("ПАСПОРТ ГРОМАДЯНИНА УКРАЇНИ")));
+        extracts(extraction(ItemKind.FOUND, "DOCUMENTS"));
+        when(ownerNames.find(any()))
+                .thenReturn(new OwnerNameResult(new OwnerName(null, "Гаманець"), "test/model", null, Duration.ZERO))
+                .thenThrow(new OpenRouterUnavailableException("OpenRouter did not take the request: HTTP 503"));
+
+        pipeline().process(post("Знайшов паспорт 067 123 45 67", List.of(new PhotoRef("1", 800, 600))));
+        pipeline().process(post("Знайшов паспорт 067 123 45 68", List.of(new PhotoRef("2", 800, 600))));
+
+        ArgumentCaptor<Notice> notices = ArgumentCaptor.forClass(Notice.class);
+        verify(output, times(2)).publish(any(), notices.capture(), any());
+        assertThat(notices.getAllValues()).extracting(Notice::title).containsExactly("Гаманець", "Гаманець");
+        assertThat(count("failed")).isZero();
+    }
+
+    @Test
+    void theOwnersNameIsNotLookedUpWhenTheModelGaveItOrThePhotoHasNoTextOrItIsNotADocument() {
+        when(redactor.redact(any(), anyBoolean())).thenReturn(new RedactedImage(REDACTED, RedactionMode.DOCUMENT,
+                List.of("ШЕВЧЕНКО")));
+        extracts(extraction(ItemKind.FOUND, "DOCUMENTS", "Шевченко Тарас"));
+        pipeline().process(post("Знайшов паспорт 067 123 45 67", List.of(new PhotoRef("1", 800, 600))));
+
+        when(redactor.redact(any(), anyBoolean())).thenReturn(new RedactedImage(REDACTED, RedactionMode.FULL));
+        extracts(extraction(ItemKind.FOUND, "DOCUMENTS"));
+        pipeline().process(post("Знайшов паспорт 067 123 45 68", List.of(new PhotoRef("2", 800, 600))));
+
+        when(redactor.redact(any(), anyBoolean())).thenReturn(new RedactedImage(REDACTED, RedactionMode.NONE,
+                List.of("ШЕВЧЕНКО")));
+        extracts(extraction(ItemKind.FOUND, "WALLET"));
+        pipeline().process(post("Знайшов гаманець 067 123 45 69", List.of(new PhotoRef("3", 800, 600))));
+
+        verifyNoInteractions(ownerNames);
+    }
+
+    @Test
     void afterMidnightInKyivTheNoticeKeepsTheUtcDateClientApiAccepts() {
         Instant oneThirtyInKyiv = Instant.parse("2026-10-10T22:30:00Z");
         LocalDate kyivDate = LocalDate.of(2026, 10, 11);
-        Extraction tomorrowInUtc = new Extraction(true, ItemKind.LOST, "Гаманець", null, "WALLET", kyivDate,
+        Extraction tomorrowInUtc = new Extraction(true, ItemKind.LOST, "Гаманець", null, null, "WALLET", kyivDate,
                 "вул. Наукова", null, null, "PHONE_1", List.of(), 0.9, null);
         extracts(tomorrowInUtc);
 
@@ -347,8 +431,12 @@ class IngestPipelineTest {
     }
 
     private static Extraction extraction(ItemKind kind, String category) {
-        return new Extraction(true, kind, "Гаманець", "Чорний шкіряний гаманець", category, TODAY, "вул. Наукова",
-                null, null, "PHONE_1", List.of(SocialMedia.VIBER), 0.9, null);
+        return extraction(kind, category, null);
+    }
+
+    private static Extraction extraction(ItemKind kind, String category, @Nullable String ownerName) {
+        return new Extraction(true, kind, "Гаманець", "Чорний шкіряний гаманець", ownerName, category, TODAY,
+                "вул. Наукова", null, null, "PHONE_1", List.of(SocialMedia.VIBER), 0.9, null);
     }
 
     private static IncomingPost post(String text, List<PhotoRef> photos) {
@@ -367,13 +455,13 @@ class IngestPipelineTest {
         IngestProperties properties = properties();
         Clock clock = Clock.fixed(now, ZoneOffset.UTC);
         return new IngestPipeline(properties, new PostSources(List.of(source, facebook)), new PhoneExtractor(),
-                new Masker(), new PhoneHasher(properties), redactor, extractor, policy, places, api, output, ledger,
-                new IngestMetrics(registry, clock, mock(TelegramSource.class)), clock);
+                new Masker(), new PhoneHasher(properties), redactor, extractor, ownerNames, policy, places, api, output,
+                ledger, new IngestMetrics(registry, clock, mock(TelegramSource.class)), clock);
     }
 
     private static IngestProperties properties() {
         return new IngestProperties(List.of(), "key", Duration.ofDays(14), 3, Period.ofDays(30),
-                "https://derechi.example", "uk", 0.6);
+                "https://derechi.example", "uk", 0.6, Map.of("DOCUMENTS", "placeholders/documents.jpg"));
     }
 
     private double count(String outcome) {

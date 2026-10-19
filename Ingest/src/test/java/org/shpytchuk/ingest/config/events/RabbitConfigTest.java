@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.shpytchuk.ingest.event.ItemArchivedEvent;
 import org.shpytchuk.ingest.event.ItemCreatedEvent;
 import org.shpytchuk.ingest.event.ItemDeletedEvent;
+import org.shpytchuk.ingest.event.ItemUpdatedEvent;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.support.converter.MessageConverter;
@@ -27,6 +28,17 @@ class RabbitConfigTest {
 
         assertThat(event).isEqualTo(new ItemCreatedEvent(7L, LocalDate.of(2026, 9, 10), "WALLET", "Rynok Square",
                 "Wallet", "Brown", 500, "UAH", "items/2026/09/a.jpg", "admin"));
+    }
+
+    @Test
+    void readsAnUpdatedItemFromAdminApi() {
+        Object event = converter.fromMessage(message("ITEM_UPDATED",
+                "{\"id\":7,\"date\":\"2026-09-10\",\"category\":2,\"categoryKey\":\"WALLET\",\"lat\":49.84,"
+                        + "\"lon\":24.03,\"placeName\":\"Rynok Square\",\"title\":\"Wallet\",\"description\":\"Brown\","
+                        + "\"compensation\":null,\"currency\":\"UAH\",\"image\":null,\"origin\":\"admin\"}"));
+
+        assertThat(event).isEqualTo(new ItemUpdatedEvent(7L, LocalDate.of(2026, 9, 10), "WALLET", "Rynok Square",
+                "Wallet", "Brown", null, "UAH", null, "admin"));
     }
 
     @Test

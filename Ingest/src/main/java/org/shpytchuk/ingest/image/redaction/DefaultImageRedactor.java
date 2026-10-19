@@ -9,9 +9,11 @@ import org.shpytchuk.ingest.exception.IngestException;
 import org.shpytchuk.ingest.image.ImageRedactor;
 import org.shpytchuk.ingest.image.RedactedImage;
 import org.shpytchuk.ingest.image.RedactionMode;
+import org.shpytchuk.ingest.image.Rotations;
 import org.shpytchuk.ingest.image.face.FaceDetector;
 import org.shpytchuk.ingest.image.ocr.OcrEngine;
 import org.shpytchuk.ingest.image.ocr.OcrLine;
+import org.shpytchuk.ingest.image.ocr.OcrPage;
 import org.shpytchuk.ingest.phone.PhoneExtractor;
 import org.springframework.stereotype.Component;
 
@@ -68,11 +70,14 @@ public class DefaultImageRedactor implements ImageRedactor {
 
     private RedactedImage redact(byte[] image, boolean documentHint, boolean portraitCounts) {
         BufferedImage picture = decode(image);
-        List<OcrLine> lines = lines(picture);
+        OcrPage page = read(picture);
+        picture = Rotations.quarterTurns(picture, page.quarterTurns());
+        List<OcrLine> lines = page.lines();
+        List<String> text = PhotoText.of(lines);
         List<Rectangle> faces = faces(picture);
         if (documentHint || documentDetector.looksLikeDocument(lines)
                 || portraitCounts && documentDetector.looksLikePortraitDocument(faces, lines, picture.getWidth())) {
-            return document(picture, faces);
+            return document(picture, faces, text);
         }
         int hidden = 0;
         for (OcrLine line : lines) {
@@ -82,12 +87,12 @@ public class DefaultImageRedactor implements ImageRedactor {
         }
         RedactionMode mode = hidden == 0 ? RedactionMode.NONE : RedactionMode.PHONES;
         log.debug("Redacted photo: mode {}, {} lines, {} hidden", mode, lines.size(), hidden);
-        return new RedactedImage(encode(picture), mode);
+        return new RedactedImage(encode(picture), mode, text);
     }
 
     @Override
     public RedactedImage blurFully(byte[] image) {
-        return full(decode(image), "requested");
+        return full(decode(image), "requested", List.of());
     }
 
     @Override
@@ -95,12 +100,16 @@ public class DefaultImageRedactor implements ImageRedactor {
         return documentDetector.mentionsDocument(text);
     }
 
-    private List<OcrLine> lines(BufferedImage picture) {
+    private OcrPage read(BufferedImage picture) {
         try {
-            return ocr.lines(picture);
+            OcrPage page = ocr.read(picture);
+            if (page.quarterTurns() != 0) {
+                log.debug("Photo is turned {} quarter(s) clockwise to be upright", page.quarterTurns());
+            }
+            return page;
         } catch (RuntimeException e) {
             log.warn("OCR failed, contacts on the photo are not blurred: {}", getMostSpecificCause(e).toString());
-            return List.of();
+            return OcrPage.empty();
         }
     }
 
@@ -113,20 +122,20 @@ public class DefaultImageRedactor implements ImageRedactor {
         }
     }
 
-    private RedactedImage document(BufferedImage picture, List<Rectangle> faces) {
+    private RedactedImage document(BufferedImage picture, List<Rectangle> faces, List<String> text) {
         if (properties.documentMode() == DocumentMode.FULL) {
-            return full(picture, "document, full mode");
+            return full(picture, "document, full mode", text);
         }
         if (faces.isEmpty()) {
-            return full(picture, "document without a face");
+            return full(picture, "document without a face", text);
         }
         log.debug("Redacted photo: mode {}, {} faces kept", RedactionMode.DOCUMENT, faces.size());
-        return new RedactedImage(encode(Blur.allBut(picture, faces)), RedactionMode.DOCUMENT);
+        return new RedactedImage(encode(Blur.allBut(picture, faces)), RedactionMode.DOCUMENT, text);
     }
 
-    private RedactedImage full(BufferedImage picture, String reason) {
+    private RedactedImage full(BufferedImage picture, String reason, List<String> text) {
         log.debug("Redacted photo: mode {} ({})", RedactionMode.FULL, reason);
-        return new RedactedImage(encode(Blur.whole(picture)), RedactionMode.FULL);
+        return new RedactedImage(encode(Blur.whole(picture)), RedactionMode.FULL, text);
     }
 
     private boolean hideCardNumber(BufferedImage picture, OcrLine line) {

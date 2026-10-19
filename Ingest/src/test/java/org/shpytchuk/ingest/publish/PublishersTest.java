@@ -101,7 +101,7 @@ class PublishersTest {
 
     private Publishers publishers(String... names) {
         IngestProperties properties = new IngestProperties(List.of(names), "key", Duration.ofDays(14), 3,
-                Period.ofDays(30), "https://derechi.example", "uk", 0.6);
+                Period.ofDays(30), "https://derechi.example", "uk", 0.6, null);
         return new Publishers(properties, site, List.of(channel, other), ledger,
                 new IngestMetrics(registry, Clock.systemUTC(), mock(TelegramSource.class)));
     }

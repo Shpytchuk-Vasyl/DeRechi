@@ -3,10 +3,14 @@ package org.shpytchuk.ingest.publish.telegram;
 import org.junit.jupiter.api.Test;
 import org.shpytchuk.ingest.config.bot.BotProperties;
 import org.shpytchuk.ingest.exception.IngestException;
+import org.shpytchuk.ingest.exception.MessageNotEditableException;
 import org.shpytchuk.ingest.exception.StageUnavailableException;
 import org.shpytchuk.ingest.model.ItemKind;
 import org.shpytchuk.ingest.model.Money;
 import org.shpytchuk.ingest.pipeline.PostLedger;
+import org.shpytchuk.ingest.publish.Publication;
+import org.shpytchuk.ingest.publish.SiteItem;
+import org.shpytchuk.ingest.support.Outputs;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -32,6 +36,7 @@ class ChannelPosterTest {
     private final BotApiClient bot = mock(BotApiClient.class);
     private final CaptionBuilder captions = CaptionBuilderTest.builder("uk");
     private final PostLedger ledger = mock(PostLedger.class);
+    private final StoredPhotos photos = mock(StoredPhotos.class);
 
     @Test
     void postsPhotoWithCaption() {
@@ -91,6 +96,63 @@ class ChannelPosterTest {
     }
 
     @Test
+    void aNoticeWithThePlaceholderPostsThePlaceholderFromTheBucket() {
+        when(photos.load("placeholders/documents.jpg")).thenReturn(PHOTO);
+        when(bot.sendPhoto(anyString(), any(), anyString())).thenReturn(11L);
+
+        poster(properties("@derechi")).publish(new Publication(Outputs.post(),
+                Outputs.placeholderNotice("placeholders/documents.jpg"), Outputs.result(),
+                new SiteItem(ItemKind.FOUND, 7L, "https://derechi.site/uk/found/7")));
+
+        verify(bot).sendPhoto(eq("@derechi"), eq(PHOTO), startsWith("🟢 Паспорт"));
+        verify(ledger).posted(ItemKind.FOUND, 7L, 11L);
+    }
+
+    @Test
+    void editsThePhotoMessageOfAnItemInPlace() {
+        when(ledger.messageId(ItemKind.FOUND, 7L)).thenReturn(Optional.of(12L));
+
+        assertThat(poster(properties("@derechi")).edit(ItemKind.FOUND, 7L, post(PHOTO, "https://derechi.site/uk/found/7")))
+                .isTrue();
+
+        verify(bot).editMessageMedia(eq("@derechi"), eq(12L), eq(PHOTO), startsWith("🟢 Ключі"));
+        verify(bot, never()).deleteMessage(anyString(), anyLong());
+        verify(ledger, never()).posted(any(), anyLong(), anyLong());
+    }
+
+    @Test
+    void editsTheTextMessageOfAnItemWithoutAPhoto() {
+        when(ledger.messageId(ItemKind.FOUND, 7L)).thenReturn(Optional.of(12L));
+
+        poster(properties("@derechi")).edit(ItemKind.FOUND, 7L, post(null, "https://derechi.site/uk/found/7"));
+
+        verify(bot).editMessageText(eq("@derechi"), eq(12L), startsWith("🟢 Ключі"));
+    }
+
+    @Test
+    void aMessageThatTakesNoEditIsPostedAnewAndTheOldOneDeleted() {
+        when(ledger.messageId(ItemKind.FOUND, 7L)).thenReturn(Optional.of(12L));
+        doThrow(new MessageNotEditableException("Bot API editMessageMedia failed: HTTP 400 there is no media"))
+                .when(bot).editMessageMedia(anyString(), anyLong(), any(), anyString());
+        when(bot.sendPhoto(anyString(), any(), anyString())).thenReturn(13L);
+
+        poster(properties("@derechi")).edit(ItemKind.FOUND, 7L, post(PHOTO, "https://derechi.site/uk/found/7"));
+
+        verify(bot).deleteMessage("@derechi", 12L);
+        verify(bot).sendPhoto(eq("@derechi"), eq(PHOTO), startsWith("🟢 Ключі"));
+        verify(ledger).posted(ItemKind.FOUND, 7L, 13L);
+    }
+
+    @Test
+    void anItemWithoutAMessageHasNothingToEdit() {
+        when(ledger.messageId(ItemKind.FOUND, 7L)).thenReturn(Optional.empty());
+
+        assertThat(poster(properties("@derechi")).edit(ItemKind.FOUND, 7L, post(PHOTO, "https://x"))).isFalse();
+
+        verifyNoInteractions(bot);
+    }
+
+    @Test
     void deletesTheMessageOfAnItemAndForgetsIt() {
         when(ledger.messageId(ItemKind.LOST, 7L)).thenReturn(Optional.of(12L));
 
@@ -122,7 +184,7 @@ class ChannelPosterTest {
     }
 
     private ChannelPoster poster(BotProperties properties) {
-        return new ChannelPoster(bot, captions, properties, ledger);
+        return new ChannelPoster(bot, captions, properties, ledger, photos);
     }
 
     private static BotProperties properties(String publishChat) {

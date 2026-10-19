@@ -20,6 +20,7 @@ public class NoticeEventListener {
 
     private static final Pattern NOTICE_KEY = Pattern.compile("notice\\.(lost|found)\\.([a-z]+)");
     private static final String CREATED = "created";
+    private static final String UPDATED = "updated";
     private static final String ARCHIVED = "archived";
     private static final String DELETED = "deleted";
 
@@ -28,6 +29,11 @@ public class NoticeEventListener {
     @RabbitHandler
     public void onCreated(ItemCreatedEvent event, Message message) {
         mirror.created(kind(message, CREATED), event);
+    }
+
+    @RabbitHandler
+    public void onUpdated(ItemUpdatedEvent event, Message message) {
+        mirror.updated(kind(message, UPDATED), event);
     }
 
     @RabbitHandler

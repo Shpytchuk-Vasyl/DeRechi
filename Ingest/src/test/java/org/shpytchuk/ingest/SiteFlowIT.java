@@ -141,7 +141,7 @@ class SiteFlowIT {
     }
 
     private static Extraction lost(String title, Money compensation) {
-        return new Extraction(true, ItemKind.LOST, title, "Загубив біля Ратуші", "WALLET", today(), "біля Ратуші",
+        return new Extraction(true, ItemKind.LOST, title, "Загубив біля Ратуші", null, "WALLET", today(), "біля Ратуші",
                 "Львів", compensation, "PHONE_1", List.of(SocialMedia.VIBER), 0.9, null);
     }
 

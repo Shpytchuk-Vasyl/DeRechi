@@ -1,7 +1,7 @@
 package org.shpytchuk.ingest.publish.telegram;
 
 import org.jspecify.annotations.Nullable;
-import org.shpytchuk.ingest.event.ItemCreatedEvent;
+import org.shpytchuk.ingest.event.ItemEvent;
 import org.shpytchuk.ingest.model.ItemKind;
 import org.shpytchuk.ingest.model.Money;
 import org.shpytchuk.ingest.pipeline.Notice;
@@ -28,14 +28,14 @@ public record ChannelPost(
         this(kind, title, description, placeName, date, compensation, photo, itemUrl, null, null);
     }
 
-    static ChannelPost of(Publication publication) {
+    static ChannelPost of(Publication publication, byte @Nullable [] photo) {
         Notice notice = publication.notice();
         return new ChannelPost(notice.kind(), notice.title(), notice.description(), notice.place().name(),
-                notice.date(), notice.compensation(), notice.photo(), Objects.requireNonNull(publication.siteItemUrl()),
+                notice.date(), notice.compensation(), photo, Objects.requireNonNull(publication.siteItemUrl()),
                 city(publication), publication.result().extraction().category());
     }
 
-    static ChannelPost of(ItemKind kind, ItemCreatedEvent event, byte @Nullable [] photo, String itemUrl) {
+    static ChannelPost of(ItemKind kind, ItemEvent event, byte @Nullable [] photo, String itemUrl) {
         Money compensation = event.compensation() == null ? null : new Money(event.compensation(), event.currency());
         return new ChannelPost(kind, event.title(), event.description(), event.placeName(), event.date(), compensation,
                 photo, itemUrl, null, event.categoryKey());

@@ -6,6 +6,7 @@ import org.shpytchuk.ingest.config.IngestProperties;
 import org.shpytchuk.ingest.config.bot.BotProperties;
 import org.shpytchuk.ingest.config.events.EventsProperties;
 import org.shpytchuk.ingest.event.ItemCreatedEvent;
+import org.shpytchuk.ingest.event.ItemUpdatedEvent;
 import org.shpytchuk.ingest.exception.IngestException;
 import org.shpytchuk.ingest.model.ItemKind;
 import org.shpytchuk.ingest.model.Money;
@@ -19,6 +20,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -34,6 +36,8 @@ class ChannelMirrorTest {
     private static final byte[] PHOTO = {(byte) 0xFF, (byte) 0xD8};
     private static final ItemCreatedEvent EVENT = new ItemCreatedEvent(7L, LocalDate.of(2026, 10, 9), "KEYS",
             "Площа Ринок", "Ключі", "Зв'язка з брелоком", 200, "UAH", "items/2026/10/keys.jpg", "admin");
+    private static final ItemUpdatedEvent UPDATED = new ItemUpdatedEvent(7L, LocalDate.of(2026, 10, 9), "KEYS",
+            "Площа Ринок", "Ключі від авто", "Зв'язка з брелоком", 200, "UAH", "items/2026/10/keys.jpg", "admin");
 
     private final ChannelPoster poster = mock(ChannelPoster.class);
     private final PostLedger ledger = mock(PostLedger.class);
@@ -43,9 +47,44 @@ class ChannelMirrorTest {
     @Test
     void doesNothingWhileTheChannelIsNotAPublisher() {
         mirror(List.of("site")).created(ItemKind.FOUND, EVENT);
+        mirror(List.of("site")).updated(ItemKind.FOUND, UPDATED);
         mirror(List.of("site")).removed(ItemKind.FOUND, 7L, "archived");
 
         verifyNoInteractions(poster, ledger);
+    }
+
+    @Test
+    void editsTheMessageOfAnEditedItemWithWhatTheEventCarries() {
+        when(photos.load("items/2026/10/keys.jpg")).thenReturn(PHOTO);
+        when(poster.edit(eq(ItemKind.FOUND), eq(7L), any())).thenReturn(true);
+
+        mirror(List.of("site", "channel")).updated(ItemKind.FOUND, UPDATED);
+
+        ArgumentCaptor<ChannelPost> post = ArgumentCaptor.forClass(ChannelPost.class);
+        verify(poster).edit(eq(ItemKind.FOUND), eq(7L), post.capture());
+        assertThat(post.getValue().title()).isEqualTo("Ключі від авто");
+        assertThat(post.getValue().photo()).isEqualTo(PHOTO);
+        assertThat(post.getValue().itemUrl()).isEqualTo("https://derechi.site/uk/found/7");
+        verify(metrics).channel("edited", "ok");
+    }
+
+    @Test
+    void anEditedItemWithoutAMessageIsNotCounted() {
+        when(poster.edit(eq(ItemKind.FOUND), eq(7L), any())).thenReturn(false);
+
+        mirror(List.of("site", "channel")).updated(ItemKind.FOUND, UPDATED);
+
+        verifyNoInteractions(metrics);
+    }
+
+    @Test
+    void aFailedEditCountsAndIsHandedBackForARetry() {
+        when(poster.edit(eq(ItemKind.FOUND), eq(7L), any())).thenThrow(new IngestException("Bot API editMessageText failed"));
+
+        assertThatThrownBy(() -> mirror(List.of("site", "channel")).updated(ItemKind.FOUND, UPDATED))
+                .isInstanceOf(IngestException.class);
+
+        verify(metrics).channel("edited", "failed");
     }
 
     @Test
@@ -109,7 +148,7 @@ class ChannelMirrorTest {
 
     private ChannelMirror mirror(List<String> publishers) {
         IngestProperties ingest = new IngestProperties(publishers, "key", null, 0, null, "https://derechi.site", "uk",
-                0.6);
+                0.6, null);
         BotProperties bot = new BotProperties(null, "123:token", "@derechi", "uk", null, 0, null);
         EventsProperties events = new EventsProperties("ingest.queue", Duration.ofSeconds(5), Duration.ofMillis(1));
         return new ChannelMirror(poster, ledger, photos, ingest, bot, events, metrics, Clock.systemUTC());

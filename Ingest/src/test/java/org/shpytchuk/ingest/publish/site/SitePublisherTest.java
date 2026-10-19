@@ -45,7 +45,7 @@ class SitePublisherTest {
     SimpleMeterRegistry registry = new SimpleMeterRegistry();
     SitePublisher site = new SitePublisher(
             new IngestProperties(List.of("site"), "key", Duration.ofDays(14), 3, Period.ofDays(30),
-                    "https://derechi.example", "uk", 0.6),
+                    "https://derechi.example", "uk", 0.6, null),
             uploader, api, ledger, new IngestMetrics(registry, Clock.systemUTC(), mock(TelegramSource.class)));
 
     @BeforeEach
@@ -80,6 +80,16 @@ class SitePublisherTest {
         ArgumentCaptor<NewItem> created = ArgumentCaptor.forClass(NewItem.class);
         verify(api).create(created.capture());
         assertThat(created.getValue().imageKey()).isNull();
+    }
+
+    @Test
+    void aNoticeWithoutAPhotoTakesThePlaceholderWithoutAnUpload() {
+        site.publish(Outputs.post(), Outputs.placeholderNotice("placeholders/documents.jpg"));
+
+        verifyNoInteractions(uploader);
+        ArgumentCaptor<NewItem> created = ArgumentCaptor.forClass(NewItem.class);
+        verify(api).create(created.capture());
+        assertThat(created.getValue().imageKey()).isEqualTo("placeholders/documents.jpg");
     }
 
     @Test

@@ -34,17 +34,23 @@ public final class Outputs {
     public static Notice notice(byte @Nullable [] photo) {
         return new Notice(ItemKind.FOUND, "Гаманець", "Чорний шкіряний гаманець", LocalDate.of(2026, 10, 10), null,
                 2L, new ResolvedPlace("gp-1", "вул. Наукова", 49.8, 24.0, "UA"), PHONE, null,
-                List.of(SocialMedia.VIBER), photo, PHONE_HASH);
+                List.of(SocialMedia.VIBER), photo, null, PHONE_HASH);
+    }
+
+    public static Notice placeholderNotice(String placeholderPhoto) {
+        return new Notice(ItemKind.FOUND, "Паспорт", "Паспорт громадянина України", LocalDate.of(2026, 10, 10), null,
+                1L, new ResolvedPlace("gp-1", "вул. Наукова", 49.8, 24.0, "UA"), PHONE, null,
+                List.of(SocialMedia.VIBER), null, placeholderPhoto, PHONE_HASH);
     }
 
     public static Notice profileNotice() {
         return new Notice(ItemKind.FOUND, "Гаманець", "Чорний шкіряний гаманець", LocalDate.of(2026, 10, 10), null,
                 2L, new ResolvedPlace("gp-1", "вул. Наукова", 49.8, 24.0, "UA"), null, PROFILE,
-                List.of(SocialMedia.TELEGRAM), null, PHONE_HASH);
+                List.of(SocialMedia.TELEGRAM), null, null, PHONE_HASH);
     }
 
     public static ExtractionResult result() {
-        Extraction extraction = new Extraction(true, ItemKind.FOUND, "Гаманець", null, "WALLET", null, null, null,
+        Extraction extraction = new Extraction(true, ItemKind.FOUND, "Гаманець", null, null, "WALLET", null, null, null,
                 null, "PHONE_1", null, 0.9, null);
         return new ExtractionResult(extraction, "test/model", BigDecimal.ZERO, Duration.ZERO);
     }

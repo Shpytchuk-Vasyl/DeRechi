@@ -107,6 +107,17 @@ class ExtractionSchemaTest {
     }
 
     @Test
+    void theOwnerNameSchemaMirrorsOwnerNameAndRequiresBothFields() {
+        JsonNode schema = new PromptBuilder(JSON).ownerNameSchema();
+
+        assertThat(schema.path("properties").propertyNames()).containsExactlyElementsOf(names(OwnerName.class));
+        assertThat(strings(schema.path("required"))).containsExactlyElementsOf(names(OwnerName.class));
+        assertThat(strings(schema.path("properties").path("ownerName").path("type"))).contains("null");
+        assertThat(schema.path("properties").path("title").path("type").asString()).isEqualTo("string");
+        assertThat(schema.path("additionalProperties").booleanValue()).isFalse();
+    }
+
+    @Test
     void theCategoryEnumIsTakenFromTheRequest() throws IOException {
         PromptBuilder prompts = new PromptBuilder(JSON);
 

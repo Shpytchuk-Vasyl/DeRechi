@@ -66,6 +66,10 @@ derechi:
     site-url: ${DERECHI_SITE_URL:http://localhost:3000}
     site-locale: ${INGEST_SITE_LOCALE:uk}
     min-confidence: ${INGEST_MIN_CONFIDENCE:0.6}
+    # storage keys of the stand-in photos for a found item posted without one; empty = such posts are skipped (no_photo)
+    placeholder-photos:
+      DOCUMENTS: ${INGEST_PLACEHOLDER_DOCUMENTS:placeholders/documents.jpg}
+      WALLET: ${INGEST_PLACEHOLDER_WALLET:placeholders/wallet.jpg}
 
   events:
     queue: ingest.queue

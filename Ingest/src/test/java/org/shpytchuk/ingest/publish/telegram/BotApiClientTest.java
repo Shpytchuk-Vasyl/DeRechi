@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.shpytchuk.ingest.config.bot.BotProperties;
 import org.shpytchuk.ingest.exception.IngestException;
+import org.shpytchuk.ingest.exception.MessageNotEditableException;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.http.HttpMethod;
@@ -135,6 +136,79 @@ class BotApiClientTest {
         assertThatThrownBy(() -> bot.sendMessage("@nowhere", "text"))
                 .isInstanceOf(IngestException.class)
                 .hasMessage("Bot API sendMessage failed: HTTP 400 Bad Request: chat not found");
+        server.verify();
+    }
+
+    @Test
+    void editMessageTextPostsTheNewHtmlForTheMessage() {
+        server.expect(requestTo(BASE + "/editMessageText"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(jsonPath("$.chat_id").value("@derechi"))
+                .andExpect(jsonPath("$.message_id").value(77))
+                .andExpect(jsonPath("$.text").value("<b>new</b>"))
+                .andExpect(jsonPath("$.parse_mode").value("HTML"))
+                .andExpect(jsonPath("$.link_preview_options.is_disabled").value(true))
+                .andRespond(json(OK));
+
+        bot.editMessageText("@derechi", 77, "<b>new</b>");
+
+        server.verify();
+    }
+
+    @Test
+    void editMessageMediaPostsThePhotoAttachedToTheMediaJson() {
+        server.expect(requestTo(BASE + "/editMessageMedia"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(header("Content-Type", startsWith(MediaType.MULTIPART_FORM_DATA_VALUE)))
+                .andExpect(content().string(containsString("name=\"chat_id\"")))
+                .andExpect(content().string(containsString("name=\"message_id\"")))
+                .andExpect(content().string(containsString("77")))
+                .andExpect(content().string(containsString("name=\"media\"")))
+                .andExpect(content().string(containsString("\"media\":\"attach://photo\"")))
+                .andExpect(content().string(containsString("\"caption\":\"Підпис\"")))
+                .andExpect(content().string(containsString("\"parse_mode\":\"HTML\"")))
+                .andExpect(content().string(containsString("name=\"photo\"; filename=\"photo.jpg\"")))
+                .andRespond(json(OK));
+
+        bot.editMessageMedia("@derechi", 77, new byte[]{(byte) 0xFF, (byte) 0xD8, 1}, "Підпис");
+
+        server.verify();
+    }
+
+    @Test
+    void anUnchangedMessageIsAnEditThatSucceeded() {
+        server.expect(requestTo(BASE + "/editMessageText"))
+                .andRespond(withStatus(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON)
+                        .body("{\"ok\":false,\"error_code\":400,\"description\":\"Bad Request: message is not modified: "
+                                + "specified new message content and reply markup are exactly the same\"}"));
+
+        bot.editMessageText("@derechi", 77, "same");
+
+        server.verify();
+    }
+
+    @Test
+    void aMessageOfTheWrongKindCannotBeEdited() {
+        server.expect(requestTo(BASE + "/editMessageText"))
+                .andRespond(withStatus(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON)
+                        .body("{\"ok\":false,\"error_code\":400,\"description\":\"Bad Request: there is no text in the message to edit\"}"));
+
+        assertThatThrownBy(() -> bot.editMessageText("@derechi", 77, "text"))
+                .isInstanceOf(MessageNotEditableException.class)
+                .hasMessage("Bot API editMessageText failed: HTTP 400 Bad Request: there is no text in the message to edit");
+        server.verify();
+    }
+
+    @Test
+    void aRefusedEditIsAPlainFailure() {
+        server.expect(requestTo(BASE + "/editMessageText"))
+                .andRespond(withStatus(HttpStatus.FORBIDDEN).contentType(MediaType.APPLICATION_JSON)
+                        .body("{\"ok\":false,\"error_code\":403,\"description\":\"Forbidden: bot is not a member\"}"));
+
+        assertThatThrownBy(() -> bot.editMessageText("@derechi", 77, "text"))
+                .isInstanceOf(IngestException.class)
+                .isNotInstanceOf(MessageNotEditableException.class)
+                .hasMessageContaining("HTTP 403");
         server.verify();
     }
 

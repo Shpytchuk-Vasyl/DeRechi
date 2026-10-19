@@ -8,6 +8,7 @@ import org.shpytchuk.ingest.config.IngestProperties;
 import org.shpytchuk.ingest.entity.PostStatus;
 import org.shpytchuk.ingest.exception.ClientApiUnavailableException;
 import org.shpytchuk.ingest.exception.IngestException;
+import org.shpytchuk.ingest.exception.StageUnavailableException;
 import org.shpytchuk.ingest.extraction.*;
 import org.shpytchuk.ingest.image.ImageRedactor;
 import org.shpytchuk.ingest.image.RedactedImage;
@@ -25,6 +26,7 @@ import org.shpytchuk.ingest.source.PhotoRef;
 import org.shpytchuk.ingest.source.PostSource;
 import org.shpytchuk.ingest.source.PostSources;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -49,6 +51,7 @@ public class IngestPipeline {
     private final PhoneHasher hasher;
     private final ImageRedactor redactor;
     private final Extractor extractor;
+    private final OwnerNameFinder ownerNames;
     private final ExtractionPolicy policy;
     private final PlaceResolver placeResolver;
     private final DeRechiApi api;
@@ -152,9 +155,14 @@ public class IngestPipeline {
             finish(post, Outcome.TOO_OLD, phoneHash);
             return;
         }
+        String placeholderPhoto = null;
         if (extraction.kind() == ItemKind.FOUND && photos.isEmpty()) {
-            finish(post, Outcome.NO_PHOTO, phoneHash);
-            return;
+            placeholderPhoto = properties.placeholderPhoto(extraction.category()).orElse(null);
+            if (placeholderPhoto == null) {
+                finish(post, Outcome.NO_PHOTO, phoneHash);
+                return;
+            }
+            log.debug("Post {} has no photo, the {} placeholder stands in", post.key(), extraction.category());
         }
         log.debug("Post {} passed the checks: category {}, date {}", post.key(), categoryId, date);
 
@@ -176,14 +184,40 @@ public class IngestPipeline {
         boolean document = DOCUMENTS_CATEGORY.equals(extraction.category());
         photos = document ? photos : withoutGuessedDocuments(post, photos);
 
+        // =========== step: read the owner's name off a document the model could not ===========
+        String title = extraction.title();
+        if (document && !StringUtils.hasText(extraction.ownerName())) {
+            title = withOwnerName(post, title, photos);
+        }
+
         // =========== step: hand the notice to the output ===========
-        Notice notice = new Notice(extraction.kind(), Notices.cut(extraction.title(), Notices.TITLE_MAX),
+        Notice notice = new Notice(extraction.kind(), Notices.cut(title, Notices.TITLE_MAX),
                 Notices.cut(extraction.description(), Notices.DESCRIPTION_MAX), date,
                 Notices.compensation(extraction.compensation()), categoryId, place, decision.contactPhone(),
                 authorProfile, socialMedias(extraction, authorPhone, authorProfile), publicPhoto(photos, document),
-                phoneHash);
+                placeholderPhoto, phoneHash);
 
         publishers.publish(post, notice, result);
+    }
+
+    private String withOwnerName(IncomingPost post, String title, List<Photo> photos) {
+        List<String> lines = photos.stream().flatMap(photo -> photo.redacted().text().stream()).distinct().toList();
+        if (lines.isEmpty()) {
+            return title;
+        }
+        try {
+            OwnerNameResult result = ownerNames.find(new OwnerNameRequest(title, lines));
+            metrics.llm(result.model(), result.duration(), result.cost());
+            if (!result.answer().found()) {
+                log.debug("Post {}: none of the {} lines on the photos is the owner's name", post.key(), lines.size());
+                return title;
+            }
+            log.debug("Post {}: the owner's name is on a photo, the title carries it now", post.key());
+            return result.answer().title();
+        } catch (IngestException | StageUnavailableException e) {
+            log.warn("Post {}: the owner's name was not looked up, the title stays: {}", post.key(), e.getMessage());
+            return title;
+        }
     }
 
     private static List<String> contacts(List<FoundPhone> phones, @Nullable String authorPhone,

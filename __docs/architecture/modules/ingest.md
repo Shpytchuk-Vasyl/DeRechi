@@ -22,7 +22,7 @@ One package per stage. The root of a stage package is what the pipeline sees: th
 | `source/facebook/` | `FacebookPostSource` (the `PostSource` named `facebook`, polls the groups), `FacebookGroupReader` (the group page, then the feed query page by page), `FacebookParser`, `FacebookClient` (the account's cookies), `FacebookDetails` / `FacebookActor` (the post's author) |
 | `phone/` | `PhoneExtractor`, `Masker`, `PhoneHasher` |
 | `image/` | `ImageRedactor`, `RedactedImage` (the JPEG, the mode and the OCR lines kept for the owner's name), `RedactionMode`, `Rotations` (quarter turns) |
-| `image/redaction/` | `DefaultImageRedactor` (what to blur), `DocumentDetector`, `Blur` |
+| `image/redaction/` | `DefaultImageRedactor` (what to blur), `DocumentDetector`, `Blur`, `PhotoText` (the OCR lines that may go to the model: words only, no digits, handles or links) |
 | `image/ocr/` | `OcrEngine`, `OcrPage` (lines plus the quarter turns that put the photo upright), `OcrLine`, `TesseractOcrEngine` |
 | `image/face/` | `FaceDetector`, `YuNetFaceDetector` |
 | `extraction/` | `Extractor`, `ExtractionRequest`, `Extraction` (the model's answer), `ExtractionResult`, `ExtractionPolicy` (is the answer a usable notice, which phone to take), `OwnerNameFinder` with `OwnerNameRequest`, `OwnerName`, `OwnerNameResult` (the second call that reads the owner's name off a document's OCR lines), `PromptBuilder` (`prompts/extract.md`, `prompts/extraction-schema.json`, `prompts/owner-name.md`, `prompts/owner-name-schema.json`) |
