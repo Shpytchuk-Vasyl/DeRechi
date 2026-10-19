@@ -4,6 +4,7 @@ import org.shpytchuk.ingest.image.ocr.OcrLine;
 
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public final class PhotoText {
 
@@ -12,20 +13,38 @@ public final class PhotoText {
     private static final int MIN_LETTERS = 2;
     private static final Pattern WHITESPACE = Pattern.compile("\\s+");
     private static final Pattern DIGIT = Pattern.compile("\\p{Nd}");
-    private static final Pattern REACHABLE = Pattern.compile("(?i)@|://|\\bwww\\.|\\bt\\.me/");
+    private static final String REACHABLE_MARKS = "@|://|\\bwww\\.|\\bt\\.me/";
+    private static final Pattern REACHABLE = Pattern.compile("(?i)" + REACHABLE_MARKS);
+    private static final Pattern REACHABLE_TOKEN = Pattern.compile("(?i)\\S*(?:" + REACHABLE_MARKS + ")\\S*");
 
     private PhotoText() {
     }
 
     public static List<String> of(List<OcrLine> lines) {
-        return lines.stream()
-                .map(OcrLine::text)
-                .map(text -> WHITESPACE.matcher(text.strip()).replaceAll(" "))
+        return normalized(lines)
                 .filter(PhotoText::isWords)
                 .map(PhotoText::cut)
                 .distinct()
                 .limit(MAX_LINES)
                 .toList();
+    }
+
+    public static List<String> dropped(List<OcrLine> lines) {
+        return normalized(lines)
+                .filter(line -> !isWords(line))
+                .map(PhotoText::masked)
+                .toList();
+    }
+
+    private static Stream<String> normalized(List<OcrLine> lines) {
+        return lines.stream()
+                .map(OcrLine::text)
+                .map(text -> WHITESPACE.matcher(text.strip()).replaceAll(" "));
+    }
+
+    static String masked(String line) {
+        String noContacts = REACHABLE_TOKEN.matcher(line).replaceAll("[contact]");
+        return DIGIT.matcher(noContacts).replaceAll("#");
     }
 
     static boolean isWords(String line) {

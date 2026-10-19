@@ -126,6 +126,17 @@ class PhotoTextTest {
     }
 
     @Test
+    void droppedLinesForTheLogCarryNoDigitsHandlesOrLinks() {
+        List<String> dropped = PhotoText.dropped(List.of(line("ШЕВЧЕНКО"), line("Тел. +380 67 123 45 67"),
+                line("AB 123456"), line("пишіть ivan.petrenko@gmail.com або @ivan_p"), line("https://t.me/ivan_p"),
+                line("<<<<")));
+
+        assertThat(dropped).containsExactly("Тел. +### ## ### ## ##", "AB ######", "пишіть [contact] або [contact]",
+                "[contact]", "<<<<");
+        assertThat(String.join("\n", dropped)).doesNotContainPattern("\\d").doesNotContain("@", "gmail", "t.me");
+    }
+
+    @Test
     void keepsTheOrderOfTheLinesOnThePhoto() {
         List<String> text = PhotoText.of(List.of(line("ПРІЗВИЩЕ"), line("ШЕВЧЕНКО"), line("ІМ'Я"), line("ТАРАС")));
 

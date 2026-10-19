@@ -31,6 +31,10 @@ public class TesseractOcrEngine implements OcrEngine {
     private static final double TURN_ADVANTAGE = 1.5;
     private static final double MIN_TURNED_READING = 20;
     private static final List<Integer> SIDEWAYS_TURNS = List.of(1, 3);
+    private static final int TARGET_LINE_HEIGHT = 40;
+    private static final double MIN_ENLARGEMENT = 1.25;
+    private static final double MAX_ENLARGEMENT = 4;
+    private static final int LINE_MIN_CHARACTERS = 3;
 
     private final Tesseract tesseract = new Tesseract();
 
@@ -49,31 +53,67 @@ public class TesseractOcrEngine implements OcrEngine {
 
     @Override
     public synchronized OcrPage read(BufferedImage image) {
-        BufferedImage gray = ImageHelper.convertImageToGrayscale(image);
-        Reading best = new Reading(gray, 0, readAsIs(gray));
-        if (isPortrait(gray) && recognized(best.lines()) < CONFIDENT_READING) {
-            double asIs = recognized(best.lines());
+        Reading best = enlargedIfShort(image, reading(image, 1.0, 0));
+        if (recognized(best.lines()) < CONFIDENT_READING) {
             for (int turns : SIDEWAYS_TURNS) {
-                BufferedImage turned = Rotations.quarterTurns(gray, turns);
-                Reading candidate = new Reading(turned, turns, readAsIs(turned));
-                double score = recognized(candidate.lines());
-                if (score >= MIN_TURNED_READING && score > asIs * TURN_ADVANTAGE && score > recognized(best.lines())) {
-                    best = candidate;
+                Reading turned = reading(image, best.scale(), turns);
+                if (clearlyBetter(turned, best)) {
+                    best = turned;
                 }
             }
-            if (best.quarterTurns() != 0) {
-                log.debug("OCR reads the photo best turned {} quarter(s) clockwise", best.quarterTurns());
-            }
+            best = enlargedIfShort(image, best);
         }
-        return new OcrPage(deskewed(best), best.quarterTurns());
+        List<OcrLine> lines = deskewed(best);
+        log.debug("OCR read {} line(s) at scale {} turned {} quarter(s) clockwise", lines.size(),
+                String.format("%.2f", best.scale()), best.quarterTurns());
+        return new OcrPage(lines, best.quarterTurns());
     }
 
-    private static boolean isPortrait(BufferedImage image) {
-        return image.getHeight() > image.getWidth();
+    private Reading reading(BufferedImage image, double scale, int quarterTurns) {
+        BufferedImage gray = ImageHelper.convertImageToGrayscale(Rotations.quarterTurns(enlarged(image, scale), quarterTurns));
+        List<OcrLine> lines = read(gray, AffineTransform.getScaleInstance(scale, scale), bounds(gray, scale));
+        return new Reading(gray, quarterTurns, scale, lines);
     }
 
-    private List<OcrLine> readAsIs(BufferedImage gray) {
-        return read(gray, new AffineTransform(), new Rectangle(gray.getWidth(), gray.getHeight()));
+    private Reading enlargedIfShort(BufferedImage image, Reading best) {
+        double enlargement = enlargement(best.lines());
+        if (best.scale() != 1.0 || enlargement < MIN_ENLARGEMENT) {
+            return best;
+        }
+        Reading enlarged = reading(image, enlargement, best.quarterTurns());
+        return recognized(enlarged.lines()) > recognized(best.lines()) ? enlarged : best;
+    }
+
+    private static boolean clearlyBetter(Reading candidate, Reading best) {
+        double score = recognized(candidate.lines());
+        return score >= MIN_TURNED_READING && score > recognized(best.lines()) * TURN_ADVANTAGE;
+    }
+
+    static double enlargement(List<OcrLine> lines) {
+        List<Integer> heights = lines.stream()
+                .filter(line -> characters(line) >= LINE_MIN_CHARACTERS)
+                .map(line -> line.box().height)
+                .sorted()
+                .toList();
+        if (heights.isEmpty()) {
+            return 1.0;
+        }
+        int median = heights.get(heights.size() / 2);
+        return median >= TARGET_LINE_HEIGHT ? 1.0 : Math.min(MAX_ENLARGEMENT, TARGET_LINE_HEIGHT / (double) median);
+    }
+
+    private static BufferedImage enlarged(BufferedImage image, double scale) {
+        if (scale == 1.0) {
+            return image;
+        }
+        int width = (int) Math.round(image.getWidth() * scale);
+        int height = (int) Math.round(image.getHeight() * scale);
+        BufferedImage enlarged = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = enlarged.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g.drawImage(image, 0, 0, width, height, null);
+        g.dispose();
+        return enlarged;
     }
 
     private List<OcrLine> deskewed(Reading reading) {
@@ -83,19 +123,24 @@ public class TesseractOcrEngine implements OcrEngine {
             return reading.lines();
         }
         AffineTransform rotation = rotation(gray, Math.toRadians(-skew));
-        List<OcrLine> straightened = read(rotate(gray, rotation), rotation,
-                new Rectangle(gray.getWidth(), gray.getHeight()));
+        AffineTransform toOcr = new AffineTransform(rotation);
+        toOcr.scale(reading.scale(), reading.scale());
+        List<OcrLine> straightened = read(rotate(gray, rotation), toOcr, bounds(gray, reading.scale()));
         return recognized(straightened) > recognized(reading.lines()) ? straightened : reading.lines();
     }
 
-    private List<OcrLine> read(BufferedImage gray, AffineTransform rotation, Rectangle bounds) {
+    private static Rectangle bounds(BufferedImage gray, double scale) {
+        return new Rectangle((int) Math.round(gray.getWidth() / scale), (int) Math.round(gray.getHeight() / scale));
+    }
+
+    private List<OcrLine> read(BufferedImage gray, AffineTransform toOcr, Rectangle bounds) {
         List<Word> words;
         try {
             words = tesseract.getWords(List.of(gray), TessPageIteratorLevel.RIL_TEXTLINE);
         } catch (LinkageError e) {
             throw new IllegalStateException("Tesseract is not available", e);
         }
-        AffineTransform back = inverse(rotation);
+        AffineTransform back = inverse(toOcr);
         List<OcrLine> lines = new ArrayList<>(words.size());
         for (Word word : words) {
             String text = word.getText().strip();
@@ -108,9 +153,11 @@ public class TesseractOcrEngine implements OcrEngine {
     }
 
     private static double recognized(List<OcrLine> lines) {
-        return lines.stream()
-                .mapToDouble(line -> line.text().codePoints().filter(Character::isLetterOrDigit).count() * line.confidence())
-                .sum();
+        return lines.stream().mapToDouble(line -> characters(line) * line.confidence()).sum();
+    }
+
+    private static long characters(OcrLine line) {
+        return line.text().codePoints().filter(Character::isLetterOrDigit).count();
     }
 
     private static AffineTransform rotation(BufferedImage image, double radians) {
@@ -133,14 +180,14 @@ public class TesseractOcrEngine implements OcrEngine {
         return rotated;
     }
 
-    private static AffineTransform inverse(AffineTransform rotation) {
+    private static AffineTransform inverse(AffineTransform transform) {
         try {
-            return rotation.createInverse();
+            return transform.createInverse();
         } catch (NoninvertibleTransformException e) {
-            throw new IllegalStateException("a rotation is always invertible", e);
+            throw new IllegalStateException("a scaled rotation is always invertible", e);
         }
     }
 
-    private record Reading(BufferedImage gray, int quarterTurns, List<OcrLine> lines) {
+    private record Reading(BufferedImage gray, int quarterTurns, double scale, List<OcrLine> lines) {
     }
 }

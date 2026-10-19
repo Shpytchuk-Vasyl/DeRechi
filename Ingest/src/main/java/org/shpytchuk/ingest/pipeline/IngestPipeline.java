@@ -205,6 +205,8 @@ public class IngestPipeline {
         if (lines.isEmpty()) {
             return title;
         }
+        log.debug("Post {}: asking the model for the owner's name with the title and {} line(s) from the photos: {}",
+                post.key(), lines.size(), lines);
         try {
             OwnerNameResult result = ownerNames.find(new OwnerNameRequest(title, lines));
             metrics.llm(result.model(), result.duration(), result.cost());

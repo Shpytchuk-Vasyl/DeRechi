@@ -74,6 +74,8 @@ public class DefaultImageRedactor implements ImageRedactor {
         picture = Rotations.quarterTurns(picture, page.quarterTurns());
         List<OcrLine> lines = page.lines();
         List<String> text = PhotoText.of(lines);
+        log.debug("OCR read {} line(s); {} may go to the model: {}; dropped: {}", lines.size(), text.size(), text,
+                PhotoText.dropped(lines));
         List<Rectangle> faces = faces(picture);
         if (documentHint || documentDetector.looksLikeDocument(lines)
                 || portraitCounts && documentDetector.looksLikePortraitDocument(faces, lines, picture.getWidth())) {

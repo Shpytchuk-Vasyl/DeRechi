@@ -97,10 +97,12 @@ class RedactionReportIT {
         boolean document = documentDetector.looksLikeDocument(lines)
                 || documentDetector.looksLikePortraitDocument(faces, lines, picture.getWidth());
 
+        List<String> documentText = PhotoText.of(lines);
+
         Files.write(output.resolve(base + ".redacted.jpg"), redacted.jpeg());
         ImageIO.write(debug(picture, lines, contacts, faces), "png", output.resolve(base + ".debug.png").toFile());
         return new Row(name, base, redacted.mode(), document, lines, contacts, faces.size(), picture.getWidth(),
-                picture.getHeight(), millis);
+                picture.getHeight(), millis, documentText);
     }
 
     private static BufferedImage debug(BufferedImage picture, List<OcrLine> lines, List<Boolean> contacts,
@@ -184,7 +186,12 @@ class RedactionReportIT {
                         .append(row.contacts().get(i) ? "yes" : "").append("</td><td>")
                         .append(escape(line.text())).append("</td></tr>\n");
             }
-            html.append("</table></details></section>\n");
+            html.append("</table></details>\n<details><summary>Document text for the owner's name (")
+                    .append(row.documentText().size()).append(" lines)</summary><ol>\n");
+            for (String line : row.documentText()) {
+                html.append("<li>").append(escape(line)).append("</li>\n");
+            }
+            html.append("</ol></details></section>\n");
         }
         return html.append("</body></html>\n").toString();
     }
@@ -222,7 +229,7 @@ class RedactionReportIT {
     }
 
     private record Row(String name, String base, RedactionMode mode, boolean document, List<OcrLine> lines,
-                       List<Boolean> contacts, int faces, int width, int height, long millis) {
+                       List<Boolean> contacts, int faces, int width, int height, long millis, List<String> documentText) {
     }
 
     @Configuration

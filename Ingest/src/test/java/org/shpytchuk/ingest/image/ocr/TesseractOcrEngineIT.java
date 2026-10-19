@@ -44,6 +44,27 @@ class TesseractOcrEngineIT {
     }
 
     @Test
+    void readsSmallPrintBecauseThePhotoIsEnlargedWhenItsLinesAreShort() {
+        BufferedImage image = new BufferedImage(1280, 960, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, 1280, 960);
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g.setColor(Color.BLACK);
+        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
+        g.drawString("ALINA SURMAI", 400, 300);
+        g.dispose();
+
+        OcrPage page = engine.read(image);
+
+        assertThat(page.lines()).anySatisfy(l -> {
+            assertThat(l.text()).containsIgnoringCase("SURMAI");
+            assertThat(l.box().y).isBetween(280, 305);
+            assertThat(l.box().height).isLessThan(30);
+        });
+    }
+
+    @Test
     void readsAPosterPhotographedSidewaysAndSaysHowToTurnIt() {
         OcrPage page = engine.read(Rotations.quarterTurns(poster(0), 3));
 
