@@ -8,7 +8,7 @@
   "ctaLost": "Zgłoś zgubę",
   "faqTitle": "Częste pytania",
   "relatedTitle": "Inne poradniki",
-  "cityNote": "Gdzie zgłosić się w twoim mieście — służby, biura rzeczy znalezionych, przewoźnicy — zebraliśmy na stronie miasta.",
+  "cityNote": "Gdzie zgłosić się w twoim mieście – służby, biura rzeczy znalezionych, przewoźnicy – zebraliśmy na stronie miasta.",
   "cityLink": "Wybierz miasto",
   "index": {
     "title": "Poradniki: co robić, gdy coś zgubisz",
@@ -63,7 +63,7 @@
             ],
             {
               "tone": "tip",
-              "text": "Zostaw kartkę z numerem także w miejscu zguby: w kawiarni czy na dworcu zobaczą je ci, którzy sprzątają po tobie."
+              "text": "Sprawdzaj przez kilka dni z rzędu: znaleziony dokument często trafia na policję lub do twojej skrzynki nie od razu, tylko po dwóch-trzech dniach."
             }
           ]
         },
@@ -71,7 +71,7 @@
           "id": "replace",
           "heading": "Odtworzenie",
           "body": [
-            "Dokument odtwarza ten, kto go wydał: paszport i dowód — urząd, który je wydaje, prawo jazdy — organ wydający prawa jazdy, legitymację — uczelnia, kartę bankową — bank. Co dokładnie jest potrzebne i ile to kosztuje, zależy od kraju, dlatego sprawdź oficjalną stronę urzędu lub stronę swojego miasta. Jeśli paszport zginął za granicą, zgłoś się do konsulatu swojego kraju: wyda dokument na powrót do domu.",
+            "Dokument odtwarza ten, kto go wydał: paszport i dowód – urząd, który je wydaje, prawo jazdy – organ wydający prawa jazdy, legitymację – uczelnia, kartę bankową – bank. Co dokładnie jest potrzebne i ile to kosztuje, zależy od kraju, dlatego sprawdź oficjalną stronę urzędu lub stronę swojego miasta. Jeśli paszport zginął za granicą, zgłoś się do konsulatu swojego kraju: wyda dokument na powrót do domu.",
             {
               "tone": "warning",
               "text": "Po zgłoszeniu zguby w urzędzie, który wydaje dokument, stary staje się nieważny, nawet jeśli znajdzie się następnego dnia. Nie wolno z niego korzystać: przekaż go urzędowi, który wydał nowy."
@@ -269,7 +269,7 @@
           "id": "restore",
           "heading": "Odtworzenie",
           "body": [
-            "Karty wydaje ponownie bank, dokumenty odtwarza ten, kto je wydał, bilet i przepustkę — przewoźnik lub pracodawca. Transakcje kartami sprawdzaj w aplikacji banku jeszcze przez kilka dni i od razu reklamuj nieznane obciążenia. Jeśli portfel skradziono, zgłoś to na policji: zgłoszenie jest potrzebne do ubezpieczenia i często do odtworzenia dokumentów.",
+            "Karty wydaje ponownie bank, dokumenty odtwarza ten, kto je wydał, bilet i przepustkę – przewoźnik lub pracodawca. Transakcje kartami sprawdzaj w aplikacji banku jeszcze przez kilka dni i od razu reklamuj nieznane obciążenia. Jeśli portfel skradziono, zgłoś to na policji: zgłoszenie jest potrzebne do ubezpieczenia i często do odtworzenia dokumentów.",
             {
               "tone": "warning",
               "text": "Telefon „z banku” z prośbą o podanie kodu z SMS lub danych karty to oszustwo, nawet jeśli dzwoniący wie o zgubie. Bank blokuje kartę sam, bez kodów."
@@ -312,7 +312,7 @@
     },
     "electronics": {
       "title": "Zgubiony telefon: co robić",
-      "shortTitle": "Telefon i elektronika",
+      "shortTitle": "Elektronika",
       "description": "Jak znaleźć zgubiony telefon, słuchawki lub laptop przez wbudowane usługi, co zablokować, gdy nie wracają, i co zrobić ze znalezionym cudzym urządzeniem.",
       "lead": "Telefon to jedyna rzecz, która sama może powiedzieć, gdzie jest. Dopóki bateria się nie wyczerpie, masz kilka godzin, żeby z tego skorzystać.",
       "linkLost": "Zgubiony telefon lub elektronika? Co robić",
@@ -433,7 +433,7 @@
             },
             {
               "title": "Rozwieś ulotki",
-              "text": "Klatki, przystanki, sklepy, lecznice weterynaryjne w promieniu kilometra. Duże zdjęcie, imię, telefon."
+              "text": "Klatki, przystanki, sklepy, lecznice weterynaryjne w promieniu kilometra. Nie musisz niczego projektować: na stronie swojego ogłoszenia na DeRechi naciśnij „Obrazek z QR”, a gotowy plakat ze zdjęciem, imieniem i kodem QR do ogłoszenia można od razu wydrukować. Kto zobaczy zwierzę, zeskanuje kod i skontaktuje się z tobą."
             }
           ]
         },

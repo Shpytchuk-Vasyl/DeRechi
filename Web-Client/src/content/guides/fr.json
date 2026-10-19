@@ -8,7 +8,7 @@
   "ctaLost": "Signaler la perte",
   "faqTitle": "Questions fréquentes",
   "relatedTitle": "Autres guides",
-  "cityNote": "Où s’adresser dans votre ville — services, bureaux des objets trouvés, transporteurs — est rassemblé sur la page de la ville.",
+  "cityNote": "Où s’adresser dans votre ville – services, bureaux des objets trouvés, transporteurs – est rassemblé sur la page de la ville.",
   "cityLink": "Choisir une ville",
   "index": {
     "title": "Guides : que faire quand vous avez perdu quelque chose",
@@ -63,7 +63,7 @@
             ],
             {
               "tone": "tip",
-              "text": "Laissez aussi un mot là où vous l’avez perdu : dans un café ou une gare, ceux qui nettoient après vous le verront."
+              "text": "Vérifiez pendant plusieurs jours : un document trouvé arrive souvent à la police ou dans votre boîte aux lettres non pas tout de suite, mais deux ou trois jours plus tard."
             }
           ]
         },
@@ -312,7 +312,7 @@
     },
     "electronics": {
       "title": "Téléphone perdu : que faire",
-      "shortTitle": "Téléphone et appareils",
+      "shortTitle": "Appareils",
       "description": "Comment retrouver un téléphone, des écouteurs ou un ordinateur perdus grâce aux services intégrés, quoi bloquer, et que faire d’un appareil trouvé.",
       "lead": "Le téléphone est le seul objet qui peut dire lui-même où il est. Tant que la batterie tient, vous avez quelques heures pour en profiter.",
       "linkLost": "Téléphone ou appareil perdu ? Que faire",
@@ -433,7 +433,7 @@
             },
             {
               "title": "Posez des affichettes",
-              "text": "Entrées d’immeubles, arrêts de bus, commerces, cliniques vétérinaires dans un rayon d’un kilomètre. Une grande photo, le nom, un numéro de téléphone."
+              "text": "Entrées d’immeubles, arrêts de bus, commerces, cliniques vétérinaires dans un rayon d’un kilomètre. Rien à mettre en page : sur la page de votre annonce sur DeRechi, appuyez sur « Image avec QR », et une affiche prête avec la photo, le nom et un code QR vers l’annonce s’imprime tout de suite. La personne qui verra l’animal scanne le code et vous joint."
             }
           ]
         },

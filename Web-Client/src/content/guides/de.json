@@ -8,7 +8,7 @@
   "ctaLost": "Verlust melden",
   "faqTitle": "Häufige Fragen",
   "relatedTitle": "Weitere Ratgeber",
-  "cityNote": "Wohin du dich in deiner Stadt wendest — Behörden, Fundbüros, Verkehrsbetriebe — steht auf der Seite der Stadt.",
+  "cityNote": "Wohin du dich in deiner Stadt wendest – Behörden, Fundbüros, Verkehrsbetriebe – steht auf der Seite der Stadt.",
   "cityLink": "Stadt wählen",
   "index": {
     "title": "Ratgeber: Was tun, wenn du etwas verloren hast",
@@ -63,7 +63,7 @@
             ],
             {
               "tone": "tip",
-              "text": "Hinterlasse auch dort eine Notiz, wo du es verloren hast: Im Café oder am Bahnhof sehen sie die, die nach dir aufräumen."
+              "text": "Frag ein paar Tage lang nach: Ein gefundenes Dokument erreicht die Polizei oder deinen Briefkasten oft nicht sofort, sondern erst nach zwei, drei Tagen."
             }
           ]
         },
@@ -312,7 +312,7 @@
     },
     "electronics": {
       "title": "Handy verloren: Was tun",
-      "shortTitle": "Handy und Geräte",
+      "shortTitle": "Geräte",
       "description": "Wie du ein verlorenes Handy, Kopfhörer oder Laptop über die eingebauten Dienste findest, was du sperrst und was du mit einem gefundenen Gerät tust.",
       "lead": "Ein Handy ist das Einzige, das selbst sagen kann, wo es ist. Bis der Akku leer ist, hast du ein paar Stunden, um das zu nutzen.",
       "linkLost": "Handy oder Gerät verloren? Was tun",
@@ -433,7 +433,7 @@
             },
             {
               "title": "Hänge Zettel auf",
-              "text": "Hauseingänge, Haltestellen, Läden, Tierarztpraxen im Umkreis von einem Kilometer. Großes Foto, Name, Telefonnummer."
+              "text": "Hauseingänge, Haltestellen, Läden, Tierarztpraxen im Umkreis von einem Kilometer. Gestalten musst du nichts: Tippe auf der Seite deiner Anzeige auf DeRechi auf „Bild mit QR“, und ein fertiges Plakat mit Foto, Name und QR-Code zur Anzeige lässt sich sofort ausdrucken. Wer das Tier sieht, scannt den Code und erreicht dich."
             }
           ]
         },

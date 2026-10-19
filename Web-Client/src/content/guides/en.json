@@ -8,7 +8,7 @@
   "ctaLost": "Report the loss",
   "faqTitle": "Frequently asked questions",
   "relatedTitle": "Other guides",
-  "cityNote": "Where to turn in your own city — the services, lost property offices and carriers — is listed on the city page.",
+  "cityNote": "Where to turn in your own city – the services, lost property offices and carriers – is listed on the city page.",
   "cityLink": "Choose a city",
   "index": {
     "title": "Guides: what to do when you have lost something",
@@ -63,7 +63,7 @@
             ],
             {
               "tone": "tip",
-              "text": "Leave a note with your number where you lost it too: in a café or at a station it is seen by the people who clean up after you."
+              "text": "Keep checking for a few days: a found document often reaches the police or your letterbox not at once but two or three days later."
             }
           ]
         },
@@ -312,7 +312,7 @@
     },
     "electronics": {
       "title": "Lost your phone: what to do",
-      "shortTitle": "Phone and devices",
+      "shortTitle": "Devices",
       "description": "How to find a lost phone, earbuds or laptop with the built-in services, what to block if they are not coming back, and what to do with a device you found.",
       "lead": "A phone is the one thing that can say where it is. Until the battery dies you have a few hours to use that.",
       "linkLost": "Lost a phone or a device? What to do",
@@ -433,7 +433,7 @@
             },
             {
               "title": "Put up flyers",
-              "text": "Entrances, bus stops, shops and vet clinics within a kilometre. A big photo, the name, a phone number."
+              "text": "Entrances, bus stops, shops and vet clinics within a kilometre. There is nothing to design: on your notice page on DeRechi press “Image with QR”, and a ready poster with the photo, the name and a QR code to the notice is yours to print at once. Whoever spots the animal scans the code and reaches you."
             }
           ]
         },
