@@ -29,6 +29,7 @@ you just started.
 | [extending/](extending/README.md) | Step-by-step checklists for the changes we make often: a new language, country, permission, social network, notification channel, event, module. |
 | [processes/](processes/README.md) | Team processes: code review, database changes, releases, Keycloak realm changes, definition of done. |
 | [developer-guide/](developer-guide/README.md) | The day-to-day workflow from ticket to production: branching, testing, pull requests, troubleshooting. |
+| [research/](research/lost-property/README.md) | Raw research behind product content, with sources: lost-property contacts per city. Not publishable as it stands. |
 
 ## Docs that live elsewhere
 
