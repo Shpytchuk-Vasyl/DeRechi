@@ -32,7 +32,7 @@ export default function FiltersBar({
   const t = useTranslations("list")
 
   return (
-    <Card variant="tight" className="sticky top-2 z-30 hidden md:block">
+    <Card variant="tight" className="sticky top-2 z-30 hidden md:block" data-nosnippet="">
       <form
         onSubmit={apply}
         className="grid gap-4 md:grid-cols-[1fr_200px_260px_auto] md:items-end"

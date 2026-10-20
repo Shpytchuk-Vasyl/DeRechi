@@ -44,10 +44,10 @@ export default function FiltersSheet({
 
   return (
     <form onSubmit={apply} className="sticky top-2 z-30 flex items-end gap-2 md:hidden">
-      <div className="min-w-0 flex-1 [&_label]:sr-only">
+      <div className="min-w-0 flex-1 [&_label]:sr-only" data-nosnippet="">
         <SearchField draft={draft} patch={patch} />
       </div>
-      <div className="relative">
+      <div className="relative" data-nosnippet="">
         <IconButton
           variant="solid"
           label={t("filters")}

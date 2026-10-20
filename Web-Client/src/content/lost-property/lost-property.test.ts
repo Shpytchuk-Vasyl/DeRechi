@@ -81,7 +81,10 @@ describe("lost property", () => {
 
   it("has the national advice for the country of every city, in every locale", () => {
     for (const city of CITIES) {
-      expect(COUNTRIES.map((it) => it.code), city.slug).toContain(city.countryCode)
+      expect(
+        COUNTRIES.map((it) => it.code),
+        city.slug,
+      ).toContain(city.countryCode)
     }
     for (const locale of locales) {
       const texts = lostPropertyTexts(locale)

@@ -1,20 +1,12 @@
 import { cx } from "class-variance-authority"
-import {
-  Building2,
-  BusFront,
-  ExternalLink,
-  Phone,
-  Scale,
-  Send,
-  TrainFront,
-} from "lucide-react"
+import { Building2, BusFront, ExternalLink, Phone, Scale, Send, TrainFront } from "lucide-react"
 import { getFormatter } from "next-intl/server"
 import type { ReactElement, ReactNode } from "react"
 import { buttonClasses } from "@/components/pouf/Button"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/pouf/card"
 import { Blob } from "@/components/pouf/media"
-import type { Tone } from "@/components/pouf/tone"
 import { Text } from "@/components/pouf/text"
+import type { Tone } from "@/components/pouf/tone"
 import {
   type CityPlace,
   type LostPropertyTexts,

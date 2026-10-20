@@ -72,7 +72,7 @@ export async function listMetadata(
 
   return {
     title: kind === "lost" ? t("lostTitle") : t("foundTitle"),
-    description: kind === "lost" ? t("lostDescription") : t("foundDescription"),
+    description: kind === "lost" ? t("lostMetaDescription") : t("foundMetaDescription"),
     alternates: pageAlternates(locale, path),
     pagination: nextQuery ? { next: `/${locale}/${kind}?${nextQuery}` } : undefined,
   }

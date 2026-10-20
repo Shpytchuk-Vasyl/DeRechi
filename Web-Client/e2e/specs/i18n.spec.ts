@@ -14,20 +14,28 @@ type KeyPage = {
   path: string
   status: number
   title: (t: Translator, h1: string) => string
+  description?: (t: Translator) => string
   alternates?: boolean
 }
 
 const KEY_PAGES: KeyPage[] = [
-  { path: "/", status: 200, title: (t) => t("app.homeTitle") },
+  {
+    path: "/",
+    status: 200,
+    title: (t) => t("app.homeTitle"),
+    description: (t) => t("app.homeDescription"),
+  },
   {
     path: "/lost",
     status: 200,
     title: (t) => t("app.titleTemplate", { page: t("list.lostTitle") }),
+    description: (t) => t("list.lostMetaDescription"),
   },
   {
     path: "/found",
     status: 200,
     title: (t) => t("app.titleTemplate", { page: t("list.foundTitle") }),
+    description: (t) => t("list.foundMetaDescription"),
     alternates: true,
   },
   {
@@ -51,6 +59,7 @@ const KEY_PAGES: KeyPage[] = [
     path: "/lviv",
     status: 200,
     title: (t) => t("app.titleTemplate", { page: t("cityPage.title", { in: t("city.lviv.in") }) }),
+    description: (t) => t("cityPage.description", { in: t("city.lviv.in") }),
     alternates: true,
   },
   { path: "/nope-e2e", status: 404, title: (t) => t("app.name") },
@@ -144,7 +153,7 @@ for (const locale of LOCALES) {
 
     test.describe("key pages", () => {
       for (const key of KEY_PAGES) {
-        test(`${key.path} answers ${key.status}, every text translated${key.alternates ? ", canonical and hreflang" : ""}`, async ({
+        test(`${key.path} answers ${key.status}, every text translated${key.description ? ", own meta description" : ""}${key.alternates ? ", canonical and hreflang" : ""}`, async ({
           page,
           go,
           t,
@@ -159,6 +168,12 @@ for (const locale of LOCALES) {
           const h1 = page.getByRole("main").getByRole("heading", { level: 1 }).first()
           await expect(h1).toBeVisible()
           await expect(page).toHaveTitle(key.title(t, (await h1.innerText()).trim()))
+          if (key.description) {
+            await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+              "content",
+              key.description(t),
+            )
+          }
 
           const text = await page.locator("body").innerText()
           expect(untranslated(text, locale)).toEqual([])

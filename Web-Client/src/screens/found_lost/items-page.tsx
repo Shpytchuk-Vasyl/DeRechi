@@ -22,7 +22,7 @@ export default async function ItemsPage({ kind, searchParams }: Props) {
     <>
       <ItemFilters key={JSON.stringify(search)} search={search} categories={categories} />
 
-      <div className="mt-6 flex flex-wrap items-center gap-3">
+      <div className="mt-6 flex flex-wrap items-center gap-3" data-nosnippet="">
         <Text size="sm" muted className="flex-1">
           {page.items.length > 0 ? t("showingSome", { shown: page.items.length }) : null}
         </Text>

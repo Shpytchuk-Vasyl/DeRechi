@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/layout/page-header"
 import { PageMeta } from "@/components/layout/page-meta"
 import { Breadcrumb } from "@/components/pouf/breadcrumb"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/pouf/card"
+import { Row } from "@/components/pouf/layout"
 import { LinkButton } from "@/components/pouf/link-button"
 import { Blob } from "@/components/pouf/media"
 import { Eyebrow, Heading, Text } from "@/components/pouf/text"
@@ -28,7 +29,6 @@ import RecentRail from "@/screens/home/rail/recent-rail"
 import { Blocks, Steps } from "./guide-blocks"
 import GuideFaq from "./guide-faq"
 import { GUIDE_ICONS } from "./guide-icons"
-import { Row } from "@/components/pouf/layout"
 
 const FAQ_ID = "faq"
 
@@ -141,12 +141,8 @@ export default async function GuidePage({ locale, slug }: Props) {
       <div className="mt-7 flex flex-col gap-6">
         <Card tint="lost" className="lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
           <CardHeader>
-            <CardTitle level={2}>
-              {texts.checkNowTitle}
-            </CardTitle>
-            <CardDescription>
-              {texts.checkNowText}
-            </CardDescription>
+            <CardTitle level={2}>{texts.checkNowTitle}</CardTitle>
+            <CardDescription>{texts.checkNowText}</CardDescription>
           </CardHeader>
           <Row gap={3}>
             <LinkButton

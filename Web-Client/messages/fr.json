@@ -3,8 +3,9 @@
     "name": "DeRechi",
     "alternateNames": ["Де речі", "derechi.site"],
     "homeTitle": "DeRechi · Objets perdus et trouvés",
+    "homeDescription": "Papiers, portefeuille ou clés perdus ? Vérifiez si quelqu’un les a déjà trouvés. C’est le vôtre ? Nous transmettons votre numéro à qui l’a trouvé.",
     "titleTemplate": "{page} · DeRechi",
-    "description": "Objets perdus et trouvés de votre ville. Une annonce en une minute, sans compte."
+    "description": "Objets perdus et trouvés avec photo et lieu. Cherchez le vôtre parmi les trouvailles ou aidez à rendre celui d’un autre."
   },
   "common": {
     "close": "Fermer",
@@ -127,6 +128,8 @@
     "foundTitle": "Objets trouvés",
     "lostDescription": "Annonces de personnes qui ont perdu quelque chose. Si vous avez trouvé l’un de ces objets, signalez-le : on vous attend.",
     "foundDescription": "Des objets ramassés que l’on souhaite rendre. Retrouvez le vôtre puis prenez contact.",
+    "lostMetaDescription": "Annonces d’objets perdus : papiers, clés, portefeuilles, téléphones, animaux. L’un d’eux est chez vous ? Prévenez le propriétaire : certains offrent une récompense.",
+    "foundMetaDescription": "Objets trouvés avec photo et lieu : papiers, clés, portefeuilles, téléphones. C’est le vôtre ? Laissez vos coordonnées, on les transmet à qui l’a trouvé.",
     "search": "Recherche",
     "searchHint": "Recherche dans le titre de l’annonce",
     "category": "Catégorie",
@@ -549,7 +552,7 @@
   },
   "cityPage": {
     "title": "Objets trouvés {in}",
-    "description": "Objets perdus et trouvés {in} : annonces récentes avec photo et lieu. Publiez la vôtre en une minute, sans compte.",
+    "description": "Objets perdus et trouvés {in} : annonces récentes avec photo et lieu. Le vôtre n’y est pas ? Voici où demander aussi : transports, gare, police.",
     "heroTitle": "Perdu {in} ? Quelqu’un l’a peut-être trouvé",
     "heroText": "Objets trouvés {in} : décrivez votre perte ou parcourez ce qui a été rapporté près de chez vous.",
     "found": "Trouvé {in}",

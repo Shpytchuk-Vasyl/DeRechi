@@ -3,8 +3,9 @@
     "name": "DeRechi",
     "alternateNames": ["Де речі", "derechi.site"],
     "homeTitle": "DeRechi · Fundsachen und Verlustmeldungen",
+    "homeDescription": "Dokumente, Geldbörse oder Schlüssel verloren? Sieh nach, ob sie schon jemand gefunden hat. Erkannt? Dann geben wir deine Nummer an den Finder weiter.",
     "titleTemplate": "{page} · DeRechi",
-    "description": "Fundsachen und Verlustmeldungen für deine Stadt. In einer Minute aufgegeben, ohne Konto."
+    "description": "Verlorene und gefundene Sachen mit Foto und Ort. Such deine unter den Fundsachen oder hilf, eine fremde zurückzugeben."
   },
   "common": {
     "close": "Schließen",
@@ -127,6 +128,8 @@
     "foundTitle": "Gefundene Sachen",
     "lostDescription": "Meldungen von Menschen, die etwas verloren haben. Wenn du eine davon gefunden hast, melde dich, es wird darauf gewartet.",
     "foundDescription": "Sachen, die jemand aufgehoben hat und zurückgeben möchte. Such deine heraus und nimm Kontakt auf.",
+    "lostMetaDescription": "Verlustmeldungen: Dokumente, Schlüssel, Geldbörsen, Handys, Haustiere. Etwas davon gefunden? Gib dem Besitzer Bescheid, manche bieten Finderlohn.",
+    "foundMetaDescription": "Fundsachen mit Foto, Ort und Datum: Dokumente, Schlüssel, Geldbörsen, Handys. Deine dabei? Hinterlass Kontaktdaten, wir leiten sie an den Finder weiter.",
     "search": "Suche",
     "searchHint": "Sucht im Titel der Meldung",
     "category": "Kategorie",
@@ -549,7 +552,7 @@
   },
   "cityPage": {
     "title": "Fundbüro {in}",
-    "description": "Verlorene und gefundene Sachen {in}: aktuelle Meldungen mit Foto und Ort. In einer Minute aufgegeben, ohne Konto.",
+    "description": "Verlorenes und Gefundenes {in}: aktuelle Meldungen mit Foto und Ort. Deine Sache fehlt? Hier steht, wo du noch fragen kannst: Verkehr, Bahn, Polizei.",
     "heroTitle": "Verloren {in}? Vielleicht hat es schon jemand gefunden",
     "heroText": "Fundbüro {in}: Beschreibe deinen Verlust oder sieh durch, was in der Nähe abgegeben wurde.",
     "found": "Gefunden {in}",

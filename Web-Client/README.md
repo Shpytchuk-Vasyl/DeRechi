@@ -315,6 +315,14 @@ Notice pages are the exception to `hreflang`: the notice text is the same in eve
 the `ITEM_LOCALE` (`uk`) copy is indexed. Each copy keeps a self `canonical` and no `hreflang`, the
 other four answer `noindex, follow`, and the sitemap lists notices by their `/uk/` URL alone.
 
+A meta description is written for the results page, not reused from the visible text: the home page
+has `app.homeDescription`, the lists `list.lostMetaDescription` and `list.foundMetaDescription`
+(the header lines under their `<h1>` are separate keys), a city page `cityPage.description`. Keep
+them under about 155 characters with the longest city in `{in}`, since Google cuts the rest. When
+Google finds a description thin it builds a snippet from the page instead, so the list filters and
+the counter row carry `data-nosnippet`: before that the found list came up as "… Пошук. Пошук.
+Категорія Усі категорії.".
+
 Each notice has its own `opengraph-image.tsx` (`src/screens/found_lost/item-og-image.tsx`): photo,
 a lost/found plaque in the kind's colour (pink/mint, as on the list headers), the reward when there
 is one, title, the short place with its city (`noticePlace`, the same as in the `<title>`) and date.

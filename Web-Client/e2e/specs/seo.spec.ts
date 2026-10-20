@@ -1,4 +1,5 @@
 import { expect, test } from "../fixtures/base"
+import { Filters } from "../fixtures/pages"
 import { LOCALES } from "../support/data"
 import { env } from "../support/env"
 import { expectAlternates, GLOBAL_NOINDEX, robotsMeta } from "../support/seo"
@@ -31,6 +32,27 @@ test.describe("SEO", () => {
     expect(response?.headers().link ?? "").not.toMatch(/hreflang/i)
 
     await expect(robotsMeta(page)).toHaveAttribute("content", GLOBAL_NOINDEX)
+  })
+
+  test("list: filters and the counter row stay out of search snippets", async ({ page, go, t }) => {
+    await go("/found")
+    await expect(new Filters(page, t).searchBox()).toBeVisible()
+
+    const snippetText = await page.getByRole("main").evaluate((main) => {
+      const copy = main.cloneNode(true) as HTMLElement
+      for (const hidden of copy.querySelectorAll("[data-nosnippet]")) hidden.remove()
+      return copy.textContent ?? ""
+    })
+
+    expect(snippetText).toContain(t("list.foundTitle"))
+    for (const key of [
+      "list.search",
+      "list.category",
+      "list.allCategories",
+      "list.sort",
+    ] as const) {
+      expect(snippetText, key).not.toContain(t(key))
+    }
   })
 
   test("robots.txt is served and disallows everything", async ({ request }) => {

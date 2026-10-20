@@ -2,7 +2,7 @@ import { ArrowRight, BookOpen } from "lucide-react"
 import type { Metadata } from "next"
 import { getTranslations } from "next-intl/server"
 import { PageHeader } from "@/components/layout/page-header"
-import { Card } from "@/components/pouf/card"
+import { Card, CardHeader } from "@/components/pouf/card"
 import { Blob } from "@/components/pouf/media"
 import { Heading, Text } from "@/components/pouf/text"
 import { GUIDE_SLUGS, guideTexts } from "@/content/guides"
@@ -42,10 +42,12 @@ export default async function GuideIndexPage({ locale }: { locale: string }) {
             <li key={slug}>
               <Link href={paths.guide(slug)} className="block h-full no-underline">
                 <Card motion="lift" className="h-full">
-                  <Blob icon={icon} tone={tone} size="sm" />
-                  <Heading level={2} className="whitespace-normal text-lg">
-                    {doc.title}
-                  </Heading>
+                  <CardHeader>
+                    <Blob icon={icon} tone={tone} size="sm" />
+                    <Heading level={2} className="whitespace-normal text-lg">
+                      {doc.title}
+                    </Heading>
+                  </CardHeader>
                   <Text muted className="leading-relaxed">
                     {doc.description}
                   </Text>

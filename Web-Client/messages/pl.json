@@ -3,8 +3,9 @@
     "name": "DeRechi",
     "alternateNames": ["Де речі", "derechi.site"],
     "homeTitle": "DeRechi · Rzeczy zgubione i znalezione",
+    "homeDescription": "Zgubione dokumenty, portfel albo klucze? Sprawdź, czy ktoś już je znalazł. Rozpoznajesz swoją rzecz? Przekażemy Twój numer osobie, która ją podniosła.",
     "titleTemplate": "{page} · DeRechi",
-    "description": "Ogłoszenia o rzeczach zgubionych i znalezionych. Dodasz w minutę, bez konta."
+    "description": "Rzeczy zgubione i znalezione ze zdjęciem i miejscem. Szukaj swojej wśród znalezisk albo pomóż oddać cudzą."
   },
   "common": {
     "close": "Zamknij",
@@ -127,6 +128,8 @@
     "foundTitle": "Rzeczy znalezione",
     "lostDescription": "Ogłoszenia osób, które coś zgubiły. Jeśli któraś z tych rzeczy jest u Ciebie, odezwij się, właściciel czeka.",
     "foundDescription": "Rzeczy, które ktoś podniósł i chce oddać. Znajdź swoją i nawiąż kontakt.",
+    "lostMetaDescription": "Ogłoszenia o zgubionych rzeczach: dokumenty, klucze, portfele, telefony, zwierzęta. Któraś jest u Ciebie? Daj znać właścicielowi: niektórzy oferują nagrodę.",
+    "foundMetaDescription": "Rzeczy znalezione ze zdjęciem, miejscem i datą: dokumenty, klucze, portfele, telefony. Widzisz swoją? Zostaw kontakt, a przekażemy go znalazcy.",
     "search": "Szukaj",
     "searchHint": "Dopasowuje tytuł ogłoszenia",
     "category": "Kategoria",
@@ -549,7 +552,7 @@
   },
   "cityPage": {
     "title": "Biuro rzeczy znalezionych {in}",
-    "description": "Rzeczy zgubione i znalezione {in}: świeże ogłoszenia ze zdjęciem i miejscem. Dodaj swoje w minutę, bez konta.",
+    "description": "Rzeczy zgubione i znalezione {in}: ogłoszenia ze zdjęciem i miejscem. Nie ma Twojej? Podpowiemy, gdzie jeszcze pytać: komunikacja, dworzec, policja.",
     "heroTitle": "Zgubione {in}? Ktoś mógł to znaleźć",
     "heroText": "Biuro rzeczy znalezionych {in}: opisz swoją zgubę albo przejrzyj znaleziska z okolicy.",
     "found": "Znalezione {in}",

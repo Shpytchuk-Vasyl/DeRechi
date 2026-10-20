@@ -19,16 +19,18 @@ export async function generateMetadata({
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: "app" })
   const title = t("homeTitle")
+  const description = t("homeDescription")
 
   return {
     title: { absolute: title },
+    description,
     alternates: pageAlternates(locale, ""),
     openGraph: {
       type: "website",
       siteName: t("name"),
       locale,
       title,
-      description: t("description"),
+      description,
     },
   }
 }

@@ -3,8 +3,9 @@
     "name": "DeRechi",
     "alternateNames": ["Де речі", "derechi.site"],
     "homeTitle": "DeRechi · Lost and found",
+    "homeDescription": "Lost your documents, wallet or keys? Check whether someone has already found them. Recognise yours? We pass your number to the person who picked it up.",
     "titleTemplate": "{page} · DeRechi",
-    "description": "Lost and found notices for your city. Post in a minute, no account needed."
+    "description": "Lost and found notices with a photo and a place. Look for yours among the finds, or help return someone else's."
   },
   "common": {
     "close": "Close",
@@ -127,6 +128,8 @@
     "foundTitle": "Found items",
     "lostDescription": "Notices from people who lost something. If you found one of these, say so, the owner is waiting.",
     "foundDescription": "Things people picked up and want to return. Look for yours, then get in touch.",
+    "lostMetaDescription": "Notices about lost items: documents, keys, wallets, phones, pets. Found something like that? Let the owner know: some of them offer a reward.",
+    "foundMetaDescription": "Found items with a photo, place and date: documents, keys, wallets, phones. Spotted yours? Leave your contacts and we'll pass them to the finder.",
     "search": "Search",
     "searchHint": "Matches the title of a notice",
     "category": "Category",
@@ -549,7 +552,7 @@
   },
   "cityPage": {
     "title": "Lost and found {in}",
-    "description": "Lost and found items {in}: fresh notices with a photo and a place. Post yours in a minute, no account needed.",
+    "description": "Lost and found items {in}: fresh notices with a photo and a place. Yours isn't there? We show where else to ask: transport, railway, police.",
     "heroTitle": "Lost it {in}? Someone may have found it",
     "heroText": "Lost and found {in}: describe what you lost, or look through what has been handed in nearby.",
     "found": "Found {in}",
