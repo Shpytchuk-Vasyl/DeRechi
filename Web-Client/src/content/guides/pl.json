@@ -3,12 +3,12 @@
   "contents": "Na tej stronie",
   "readingTime": "{minutes} min czytania",
   "checked": "Zaktualizowano {date}",
-  "checkNowTitle": "Sprawdź, czy twoja rzecz już się znalazła",
-  "checkNowText": "Ludzie, którzy coś znajdują, publikują to tutaj i w lokalnych grupach. Przejrzyj znalezione rzeczy i opublikuj własne ogłoszenie: temu, kto znajdzie twoją rzecz, łatwiej będzie cię odnaleźć.",
+  "checkNowTitle": "Sprawdź, czy Twoja rzecz już się znalazła",
+  "checkNowText": "Ludzie, którzy coś znajdują, publikują to tutaj i w lokalnych grupach w mediach społecznościowych. Przejrzyj znalezione rzeczy i opublikuj własne ogłoszenie: temu, kto znajdzie Twoją rzecz, łatwiej będzie Cię odnaleźć.",
   "ctaLost": "Zgłoś zgubę",
   "faqTitle": "Częste pytania",
   "relatedTitle": "Inne poradniki",
-  "cityNote": "Gdzie zgłosić się w twoim mieście – służby, biura rzeczy znalezionych, przewoźnicy – zebraliśmy na stronie miasta.",
+  "cityNote": "Gdzie zgłosić się w Twoim mieście – służby, biura rzeczy znalezionych, przewoźnicy – zebraliśmy na stronie miasta.",
   "cityLink": "Wybierz miasto",
   "index": {
     "title": "Poradniki: co robić, gdy coś zgubisz",
@@ -26,7 +26,7 @@
       "linkFound": "Znalezione dokumenty? Gdzie je oddać",
       "ctaFound": "Znalezione dokumenty",
       "railTitle": "Znalezione dokumenty na DeRechi",
-      "railEmpty": "Na razie nie ma ogłoszeń o znalezionych dokumentach. Opublikuj swoje: temu, kto je znajdzie, łatwiej będzie cię odnaleźć.",
+      "railEmpty": "Na razie nie ma ogłoszeń o znalezionych dokumentach. Opublikuj swoje: temu, kto je znajdzie, łatwiej będzie Cię odnaleźć.",
       "sections": [
         {
           "id": "first-hour",
@@ -38,11 +38,11 @@
             },
             {
               "title": "Jeśli dokumenty skradziono, powiadom policję",
-              "text": "Zgłoszenie dokumentuje datę i okoliczności. Jeśli ktoś spróbuje użyć dokumentu, masz dowód, że wtedy nie było go już w twoich rękach."
+              "text": "Zgłoszenie dokumentuje datę i okoliczności. Jeśli ktoś spróbuje użyć dokumentu, masz dowód, że wtedy nie było go już w Twoich rękach."
             },
             {
               "title": "Wróć po swoich śladach",
-              "text": "Torba, kieszenie, samochód, wczorajsze ubranie. Zadzwoń do miejsc z twojej trasy: do kawiarni, taksówki, na dworzec, do sklepu. Większość zgubionych rzeczy odnajduje się właśnie tam w pierwszych godzinach."
+              "text": "Torba, kieszenie, samochód, wczorajsze ubranie. Zadzwoń do miejsc z Twojej trasy: do kawiarni, taksówki, na dworzec, do sklepu. Im szybciej zadzwonisz, tym większa szansa, że dokumenty wciąż tam są."
             },
             {
               "title": "Sprawdź, czy dokumentu już nie znaleziono",
@@ -56,14 +56,14 @@
           "body": [
             "Dokument najczęściej wraca tą samą drogą, którą się zgubił: ktoś go podnosi i oddaje tam, gdzie znalazł, albo na najbliższy komisariat.",
             [
-              "Lokal lub środek transportu z twojej trasy: obsługa, kierowca, biuro rzeczy znalezionych przewoźnika.",
+              "Lokal lub środek transportu z Twojej trasy: obsługa, kierowca, biuro rzeczy znalezionych przewoźnika.",
               "Komisariat lub biuro rzeczy znalezionych w pobliżu miejsca zguby: tam najczęściej trafiają znalezione dokumenty.",
               "Twoja skrzynka na listy: znalazca często wrzuca dokument do ulicznej skrzynki pocztowej, a poczta dostarcza go na adres podany w dokumencie.",
-              "Lokalne grupy i DeRechi: szukaj po rodzaju dokumentu i nazwisku."
+              "Lokalne grupy i DeRechi: szukaj po rodzaju dokumentu, imieniu i nazwisku."
             ],
             {
               "tone": "tip",
-              "text": "Sprawdzaj przez kilka dni z rzędu: znaleziony dokument często trafia na policję lub do twojej skrzynki nie od razu, tylko po dwóch-trzech dniach."
+              "text": "Sprawdzaj przez kilka dni z rzędu: znaleziony dokument często trafia na policję lub do Twojej skrzynki nie od razu, tylko po dwóch-trzech dniach."
             }
           ]
         },
@@ -84,7 +84,7 @@
           "body": [
             [
               "Nie płać „za zwrot” z góry i nie wysyłaj kodów z SMS: żeby otrzymać pieniądze, kody nie są potrzebne.",
-              "Nie wysyłaj zdjęć innych swoich dokumentów „na potwierdzenie”. Kto naprawdę znalazł twój dokument, i tak widzi, czyj jest.",
+              "Nie wysyłaj zdjęć innych swoich dokumentów „na potwierdzenie”. Kto naprawdę znalazł Twój dokument, i tak widzi, czyj jest.",
               "Spotykaj się w dzień, w ludnym miejscu, nie w domu.",
               "Jeśli dokument jest „zakładnikiem” i ktoś żąda pieniędzy, zgłoś się na policję."
             ]
@@ -100,11 +100,11 @@
             },
             {
               "title": "Nie fotografuj i nie publikuj stron z danymi",
-              "text": "Na zdjęcie dokumentu wyłudza się kredyty. W ogłoszeniu wystarczy rodzaj dokumentu, imię właściciela i miejsce znalezienia."
+              "text": "Na zdjęcie dokumentu wyłudza się kredyty. W ogłoszeniu wystarczy rodzaj dokumentu, imię i nazwisko właściciela oraz miejsce znalezienia."
             },
             {
               "title": "Opublikuj ogłoszenie na DeRechi",
-              "text": "Właściciel już szuka i przegląda znalezione rzeczy w mieście. Ogłoszenie zajmuje minutę, a twoich kontaktów nie pokazujemy w całości."
+              "text": "Właściciel już szuka i przegląda znalezione rzeczy w mieście. Do ogłoszenia wystarczy zdjęcie okładki, miejsce i Twój telefon, a kontakty są na stronie widoczne tylko częściowo."
             }
           ]
         }
@@ -112,15 +112,15 @@
       "faq": [
         {
           "q": "Czy muszę iść na policję, jeśli dokument po prostu się zgubił?",
-          "a": "Do odtworzenia zwykle nie, chyba że został skradziony. Ale zgłoszenie dokumentuje datę zguby, więc jeśli ktoś spróbuje użyć dokumentu, masz dowód, że wtedy nie było go już w twoich rękach."
+          "a": "Do odtworzenia zwykle nie, chyba że został skradziony. Ale zgłoszenie dokumentuje datę zguby, więc jeśli ktoś spróbuje użyć dokumentu, masz dowód, że wtedy nie było go już w Twoich rękach."
         },
         {
           "q": "Ktoś znalazł mój dokument i prosi o nagrodę. Czy to normalne?",
-          "a": "Podziękować można, a w wielu krajach prawo daje znalazcy prawo do nagrody. Ale nie płać z góry i nie podawaj kodów z SMS: rozlicz się przy spotkaniu, gdy dokument jest już w twoich rękach."
+          "a": "Podziękować można, a w wielu krajach prawo daje znalazcy prawo do nagrody. Ale nie płać z góry i nie podawaj kodów z SMS: rozlicz się przy spotkaniu, gdy dokument jest już w Twoich rękach."
         },
         {
           "q": "Czy mogę opublikować zdjęcie znalezionego paszportu, żeby właściciel go rozpoznał?",
-          "a": "Nie. Na zdjęcie dokumentu wyłudza się kredyty i włamuje na konta. Wystarczy napisać rodzaj dokumentu, imię i miejsce znalezienia: właściciel i tak go rozpozna."
+          "a": "Nie. Na zdjęcie dokumentu wyłudza się kredyty i włamuje na konta. Wystarczy napisać rodzaj dokumentu, imię i nazwisko właściciela oraz miejsce znalezienia: właściciel i tak go rozpozna."
         }
       ]
     },
@@ -133,7 +133,7 @@
       "linkFound": "Znalezione klucze? Jak oddać je właścicielowi",
       "ctaFound": "Znalezione klucze",
       "railTitle": "Znalezione klucze na DeRechi",
-      "railEmpty": "Na razie nie ma ogłoszeń o znalezionych kluczach. Opublikuj swoje: temu, kto je znajdzie, łatwiej będzie cię odnaleźć.",
+      "railEmpty": "Na razie nie ma ogłoszeń o znalezionych kluczach. Opublikuj swoje: temu, kto je znajdzie, łatwiej będzie Cię odnaleźć.",
       "sections": [
         {
           "id": "first-hour",
@@ -148,7 +148,7 @@
               "text": "Kieszenie, torba, zamek w drzwiach, samochód, ławka przy klatce. Klucze najczęściej wypadają tam, gdzie wyjmuje się telefon lub portfel."
             },
             {
-              "title": "Zapytaj w miejscach z twojej trasy",
+              "title": "Zapytaj w miejscach z Twojej trasy",
               "text": "Ochrona, obsługa, kierowca, sąsiedzi. Znalezione klucze zwykle zostawia się na ladzie albo wiesza przy drzwiach."
             },
             {
@@ -164,7 +164,7 @@
             [
               "Przy ostatnio otwieranych drzwiach: mieszkanie, auto, biuro.",
               "W kieszeniach kurtki i w podszewce torby.",
-              "Na ladach recepcji i w biurach rzeczy znalezionych miejsc z twojej trasy.",
+              "Na ladach recepcji i w biurach rzeczy znalezionych miejsc z Twojej trasy.",
               "W grupach bloku, dzielnicy i miasta: znalezione klucze publikuje się tam bardzo często."
             ],
             {
@@ -177,9 +177,9 @@
           "id": "secure",
           "heading": "Czy wymieniać zamek",
           "body": [
-            "Jeśli na kluczach nie było niczego z adresem i nie zginęły razem z dokumentami, ryzyko jest małe: po samym kluczu praktycznie nie da się znaleźć twoich drzwi. Jeśli adres był albo klucze zginęły razem z portfelem czy paszportem, wymień wkładkę zamka od razu.",
+            "Jeśli na kluczach nie było niczego z adresem i nie zginęły razem z dokumentami, ryzyko jest małe: po samym kluczu praktycznie nie da się znaleźć Twoich drzwi. Jeśli adres był albo klucze zginęły razem z portfelem czy paszportem, wymień wkładkę zamka od razu.",
             [
-              "Kluczyki do auta: jeśli masz zapasowe, poproś w serwisie o usunięcie zgubionego kluczyka z pamięci auta, żeby nie dało się nim uruchomić samochodu. Do tego czasu przeparkuj auto z dala od miejsca zguby: jedno naciśnięcie pilota pokazuje, który samochód jest twój.",
+              "Kluczyki do auta: jeśli masz zapasowe, poproś w serwisie o usunięcie zgubionego kluczyka z pamięci auta, żeby nie dało się nim uruchomić samochodu. Do tego czasu przeparkuj auto z dala od miejsca zguby: jedno naciśnięcie pilota pokazuje, który samochód jest Twój.",
               "Klucze do biura lub klatki z domofonem: powiadom administratora, żeby unieważnił stary klucz.",
               "Karty elektroniczne: dezaktywuj u wydawcy."
             ]
@@ -211,7 +211,7 @@
         },
         {
           "q": "Ile czekać, zanim wymienię zamek?",
-          "a": "Jeśli da się ustalić adres, nie czekaj wcale. Jeśli nie, daj sobie kilka dni na poszukiwania: większość kluczy odnajduje się w pierwszych dniach."
+          "a": "Jeśli da się ustalić adres, nie czekaj wcale. Jeśli nie, daj sobie kilka dni: obejdź miejsca z Twojej trasy i przejrzyj ogłoszenia o znalezionych rzeczach."
         }
       ]
     },
@@ -224,7 +224,7 @@
       "linkFound": "Znaleziony portfel? Jak oddać go właścicielowi",
       "ctaFound": "Znalezione portfele",
       "railTitle": "Znalezione portfele na DeRechi",
-      "railEmpty": "Na razie nie ma ogłoszeń o znalezionych portfelach. Opublikuj swoje: temu, kto go znajdzie, łatwiej będzie cię odnaleźć.",
+      "railEmpty": "Na razie nie ma ogłoszeń o znalezionych portfelach. Opublikuj swoje: temu, kto go znajdzie, łatwiej będzie Cię odnaleźć.",
       "sections": [
         {
           "id": "first-hour",
@@ -256,7 +256,7 @@
             [
               "Miejsce ostatniej płatności: lokal lub środek transportu.",
               "Komisariat w pobliżu miejsca zguby.",
-              "Twoja skrzynka na listy: dokumenty ze znalezionego portfela często trafiają do ulicznej skrzynki pocztowej, a poczta dostarcza je na twój adres.",
+              "Twoja skrzynka na listy: dokumenty ze znalezionego portfela często trafiają do ulicznej skrzynki pocztowej, a poczta dostarcza je na Twój adres.",
               "Lokalne grupy i DeRechi: szukaj po kolorze i zawartości."
             ],
             {
@@ -319,7 +319,7 @@
       "linkFound": "Znaleziony telefon? Jak oddać go właścicielowi",
       "ctaFound": "Znaleziona elektronika",
       "railTitle": "Znaleziona elektronika na DeRechi",
-      "railEmpty": "Na razie nie ma ogłoszeń o znalezionej elektronice. Opublikuj swoje: temu, kto ją znajdzie, łatwiej będzie cię odnaleźć.",
+      "railEmpty": "Na razie nie ma ogłoszeń o znalezionej elektronice. Opublikuj swoje: temu, kto ją znajdzie, łatwiej będzie Cię odnaleźć.",
       "sections": [
         {
           "id": "first-hour",
@@ -355,7 +355,7 @@
             ],
             {
               "tone": "tip",
-              "text": "Umieść na ekranie blokady wiadomość z innym numerem do kontaktu. Ten, kto znajdzie telefon, nie będzie musiał zgadywać, jak cię znaleźć."
+              "text": "Umieść na ekranie blokady wiadomość z innym numerem do kontaktu. Ten, kto znajdzie telefon, nie będzie musiał zgadywać, jak Cię znaleźć."
             }
           ]
         },
@@ -363,10 +363,10 @@
           "id": "protect",
           "heading": "Jeśli telefon nie wraca",
           "body": [
-            "Jeśli telefon nie był zablokowany kodem albo został skradziony, hasła do poczty, banku i komunikatorów zmień od razu. W pozostałych przypadkach zrób to po dniu lub dwóch bez śladu urządzenia: wyloguj się ze wszystkich sesji na każdym urządzeniu i w razie potrzeby wymaż dane zdalnie (po wymazaniu telefonu zwykle nie da się już śledzić). Jeśli telefon skradziono, zgłoś to na policji, podając IMEI (jest na pudełku, na paragonie i na liście urządzeń twojego konta Google lub Apple): potrzebuje go też ubezpieczyciel.",
+            "Jeśli telefon nie był zablokowany kodem albo został skradziony, hasła do poczty, banku i komunikatorów zmień od razu. W pozostałych przypadkach zrób to po dniu lub dwóch bez śladu urządzenia: wyloguj się ze wszystkich sesji na każdym urządzeniu i w razie potrzeby wymaż dane zdalnie (po wymazaniu telefonu zwykle nie da się już śledzić). Jeśli telefon skradziono, zgłoś to na policji, podając IMEI (jest na pudełku, na paragonie i na liście urządzeń Twojego konta Google lub Apple): potrzebuje go też ubezpieczyciel.",
             {
               "tone": "warning",
-              "text": "Wiadomość „twój iPhone został znaleziony, kliknij link, aby zobaczyć lokalizację” to oszustwo wymierzone w twoje hasło do Apple ID lub Google. Lokalizację sprawdzaj tylko w oficjalnej aplikacji."
+              "text": "Wiadomość „Twój iPhone został znaleziony, kliknij link, aby zobaczyć lokalizację” to oszustwo wymierzone w Twoje hasło do Apple ID lub Google. Lokalizację sprawdzaj tylko w oficjalnej aplikacji."
             }
           ]
         },
@@ -396,11 +396,11 @@
         },
         {
           "q": "Co ze słuchawkami, zegarkiem lub laptopem?",
-          "a": "Ta sama kolejność: usługa lokalizacji producenta, lokal i transport, ogłoszenie na DeRechi. Laptop dodatkowo zablokuj i zmień hasła, bo są na nim otwarte twoje konta."
+          "a": "Ta sama kolejność: usługa lokalizacji producenta, lokal i transport, ogłoszenie na DeRechi. Laptop dodatkowo zablokuj i zmień hasła, bo są na nim otwarte Twoje konta."
         },
         {
           "q": "Znalazca prosi o pieniądze za zwrot. Płacić?",
-          "a": "Podziękowanie po zwrocie to twój wybór. Płacenie z góry lub klikanie linków „na potwierdzenie” nie jest tego warte: tak zabiera się i pieniądze, i dostęp do konta."
+          "a": "Podziękowanie po zwrocie to Twój wybór. Płacenie z góry lub klikanie linków „na potwierdzenie” nie jest tego warte: tak zabiera się i pieniądze, i dostęp do konta."
         }
       ]
     },
@@ -413,7 +413,7 @@
       "linkFound": "Znalezione zwierzę? Jak znaleźć jego właściciela",
       "ctaFound": "Znalezione zwierzęta",
       "railTitle": "Znalezione zwierzęta na DeRechi",
-      "railEmpty": "Na razie nie ma ogłoszeń o znalezionych zwierzętach. Opublikuj swoje: temu, kto je znajdzie, łatwiej będzie cię odnaleźć.",
+      "railEmpty": "Na razie nie ma ogłoszeń o znalezionych zwierzętach. Opublikuj swoje: temu, kto je znajdzie, łatwiej będzie Cię odnaleźć.",
       "sections": [
         {
           "id": "first-hour",
@@ -433,7 +433,7 @@
             },
             {
               "title": "Rozwieś ulotki",
-              "text": "Klatki, przystanki, sklepy, lecznice weterynaryjne w promieniu kilometra. Nie musisz niczego projektować: na stronie swojego ogłoszenia na DeRechi naciśnij „Obrazek z QR”, a gotowy plakat ze zdjęciem, imieniem i kodem QR do ogłoszenia można od razu wydrukować. Kto zobaczy zwierzę, zeskanuje kod i skontaktuje się z tobą."
+              "text": "Klatki, przystanki, sklepy, lecznice weterynaryjne w promieniu kilometra. Nie musisz niczego projektować: na stronie swojego ogłoszenia na DeRechi naciśnij „Obrazek z QR”, a gotowy plakat ze zdjęciem, imieniem i kodem QR do ogłoszenia można od razu wydrukować. Kto zobaczy zwierzę, zeskanuje kod i skontaktuje się z Tobą."
             }
           ]
         },
@@ -444,12 +444,12 @@
             [
               "Lecznice weterynaryjne w pobliżu: tam przynosi się znalezione zwierzęta, zwłaszcza ranne.",
               "Schroniska i służby odławiania: zapytaj i zostaw zdjęcie z kontaktem.",
-              "Grupy dzielnicy i miasta o zwierzętach: tam najpewniej ktoś zobaczy twoje zwierzę.",
+              "Grupy dzielnicy i miasta o zwierzętach: tam najpewniej ktoś zobaczy Twoje zwierzę.",
               "Jeśli jest chip, powiadom rejestr, w którym jest zapisany, i lecznicę, która go wszczepiła."
             ],
             {
               "tone": "tip",
-              "text": "Wieczorem i o świcie, gdy jest cicho, kot najczęściej się odzywa. Zostaw przy klatce transporter lub pudełko z twoją rzeczą: znajomy zapach pomaga wrócić."
+              "text": "Wieczorem i o świcie, gdy jest cicho, kot najczęściej się odzywa. Zostaw przy klatce transporter lub pudełko z Twoją rzeczą: znajomy zapach pomaga wrócić."
             }
           ]
         },
@@ -457,7 +457,7 @@
           "id": "scams",
           "heading": "Jak nie dać się oszukać",
           "body": [
-            "Po ogłoszeniu mogą napisać do ciebie „znaleźliśmy, przelej za dostawę” albo „wyślij kod, żeby potwierdzić numer”. Prawdziwy znalazca wyśle zdjęcie zwierzęcia teraz, a nie „po opłacie”.",
+            "Po ogłoszeniu mogą napisać do Ciebie „znaleźliśmy, przelej za dostawę” albo „wyślij kod, żeby potwierdzić numer”. Prawdziwy znalazca wyśle zdjęcie zwierzęcia teraz, a nie „po opłacie”.",
             [
               "Proś o świeże zdjęcie lub nagranie i dopytuj o cechy, których nie ma w ogłoszeniu.",
               "Nie płać z góry i nie klikaj linków „na potwierdzenie”.",
@@ -487,7 +487,7 @@
       "faq": [
         {
           "q": "Ile jest czasu, żeby znaleźć kota lub psa?",
-          "a": "Większość wraca w ciągu trzech dni, ale zdarza się i po tygodniach: często zwierzę cały ten czas mieszka obok. Nie przerywaj poszukiwań i aktualizuj ogłoszenie."
+          "a": "Nie ma sztywnego terminu: zwierzęta wracają nawet po tygodniach, często cały ten czas mieszkając obok. Nie przerywaj poszukiwań i aktualizuj ogłoszenie."
         },
         {
           "q": "Czy od razu jechać do schroniska?",

@@ -73,7 +73,7 @@
         "heading": "8. Änderung und Löschung von Anzeigen",
         "body": [
           "Anzeigen selbst zu ändern ist derzeit nicht möglich: Für Korrekturen schreiben Sie an {email}.",
-          "Nach einer Antwort senden wir dem Verfasser und der antwortenden Person eine Erinnerung mit einem Link, über den sich die Anzeige schließen lässt, sobald der Gegenstand zurück ist. Bestätigt niemand die Rückgabe, wird die Anzeige eine Woche nach der letzten Antwort archiviert. Sie können eine Anzeige auch mit einer E-Mail an {email} schließen lassen.",
+          "Nach einer Antwort senden wir dem Verfasser und der antwortenden Person eine Erinnerung mit einem Link, über den sich die Anzeige schließen lässt, sobald der Gegenstand zurück ist. Bestätigt niemand die Rückgabe, wird die Anzeige eine Woche nach der letzten Antwort archiviert. Unabhängig von Antworten wird eine Anzeige 30 Tage nach dem darin angegebenen Datum archiviert. Sie können eine Anzeige auch mit einer E-Mail an {email} schließen lassen.",
           "Wir können eine Anzeige, die gegen diese Bedingungen oder gegen das Gesetz verstößt, ohne Vorankündigung entfernen oder persönliche Daten daraus löschen. Verstöße in fremden Anzeigen melden Sie ebenfalls an {email}."
         ]
       },
@@ -163,7 +163,9 @@
           [
             "Google Maps Platform: Karte, Adressvorschläge und Ermittlung der Adresse anhand von Koordinaten im Anzeigenformular; der Text, den Sie in das Ortsfeld eingeben, und die Koordinaten werden an Google übermittelt;",
             "Vercel BotID: Prüfung, dass das Formular von einem Menschen und nicht von einem Bot gesendet wird;",
+            "Vercel Web Analytics und Speed Insights: Besuchs- und Ladezeitstatistiken ohne Cookies; Vercel erhält die Seitenadresse, die verweisende Seite, Ihr Land, Ihren Browser und Ihren Gerätetyp;",
             "Tally (tally.so): das Feedback-Formular; alles, was Sie dort eingeben, wird bei Tally gespeichert. Das Skript von Tally wird erst geladen, wenn Sie das Formular öffnen;",
+            "Backblaze B2: Speicherung der Fotos aus Anzeigen; die Fotos werden direkt aus Ihrem Browser dorthin hochgeladen;",
             "Brevo: Versand von E-Mails über Antworten auf Ihre Anzeigen und von Erinnerungen; Brevo erhält die E-Mail-Adresse des Empfängers und den Text der E-Mail einschließlich der Kontaktdaten, die wir weitergeben;",
             "SMS-fly: Versand derselben Nachrichten per SMS; SMS-fly erhält die Telefonnummer des Empfängers und den Text der Nachricht."
           ],
@@ -178,6 +180,7 @@
             "das Cookie DERECHI_LOCALE: speichert die gewählte Sprache für ein Jahr;",
             "das Cookie DERECHI_COUNTRY: speichert Ihr Land für ein Jahr, damit Währung und Rechtstexte passen;",
             "die Cookies DERECHI_CLAIM_*: speichern für 30 Tage, dass Sie auf eine Anzeige geantwortet haben, und die Nummer dieser Antwort, damit die Website Ihnen das Formular nicht erneut anbietet;",
+            "der Sitzungsspeicher Ihres Browsers: bewahrt, solange der Tab geöffnet ist, einen Entwurf des Anzeigenformulars samt eingegebenen Kontaktdaten auf, damit er sich innerhalb von 5 Minuten nach einem Neuladen der Seite wiederherstellen lässt; beim Schließen des Tabs verschwindet er und wird nirgendwohin übertragen;",
             "der lokale Speicher Ihres Browsers: speichert, welche Hinweise auf der Website Sie schon gesehen haben, und den Spielstand mit dem Maskottchen; personenbezogene Daten enthält er nicht."
           ],
           "Analyse- oder Werbe-Cookies gibt es auf der Website nicht."
@@ -186,7 +189,7 @@
       {
         "heading": "8. Wie lange Daten gespeichert werden",
         "body": [
-          "Eine Anzeige wird gespeichert, bis sie von der Veröffentlichung genommen wird. Danach wird sie ins Archiv verschoben und auf der Website nicht mehr angezeigt. Im Archiv wird die Anzeige ein Jahr lang aufbewahrt und danach zusammen mit den Kontaktdaten des Verfassers gelöscht.",
+          "Eine Anzeige wird gespeichert, bis sie von der Veröffentlichung genommen wird, höchstens aber 30 Tage nach dem darin angegebenen Datum. Danach wird sie ins Archiv verschoben und auf der Website nicht mehr angezeigt. Im Archiv wird die Anzeige ein Jahr lang aufbewahrt und danach zusammen mit den Kontaktdaten des Verfassers gelöscht.",
           "Kontaktdaten, die als Antwort auf eine Anzeige gesendet wurden, werden ein Jahr ab der Antwort gespeichert, egal ob die Anzeige noch veröffentlicht oder schon archiviert ist; danach werden sie gelöscht. Eine Anzeige mit Antworten wird geschlossen, sobald eine Seite die Rückgabe bestätigt, oder etwa eine Woche nach der letzten Antwort.",
           "Feedback zur Website wird bei Tally höchstens ein Jahr gespeichert und danach von uns gelöscht."
         ]

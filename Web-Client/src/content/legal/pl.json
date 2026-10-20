@@ -73,7 +73,7 @@
         "heading": "8. Zmiana i usuwanie ogłoszeń",
         "body": [
           "Na razie nie możesz samodzielnie zmienić ogłoszenia: w sprawie poprawek napisz na {email}.",
-          "Po odpowiedzi na ogłoszenie wysyłamy autorowi i osobie, która odpowiedziała, przypomnienie z linkiem do zamknięcia ogłoszenia, gdy rzecz wróci do właściciela. Jeśli nikt nie potwierdzi zwrotu, ogłoszenie trafia do archiwum tydzień po ostatniej odpowiedzi. Ogłoszenie możesz też zamknąć, pisząc na {email}.",
+          "Po odpowiedzi na ogłoszenie wysyłamy autorowi i osobie, która odpowiedziała, przypomnienie z linkiem do zamknięcia ogłoszenia, gdy rzecz wróci do właściciela. Jeśli nikt nie potwierdzi zwrotu, ogłoszenie trafia do archiwum tydzień po ostatniej odpowiedzi. Niezależnie od odpowiedzi ogłoszenie trafia do archiwum 30 dni po podanej w nim dacie. Ogłoszenie możesz też zamknąć, pisząc na {email}.",
           "Możemy bez uprzedzenia zdjąć ogłoszenie, które narusza ten regulamin lub prawo, albo usunąć z niego dane osobowe. O naruszeniach w cudzym ogłoszeniu także pisz na {email}."
         ]
       },
@@ -113,8 +113,8 @@
         "body": [
           "Gdy publikujesz ogłoszenie:",
           [
-            "opis rzeczy: nazwę, opis, kategorię, datę, zdjęcie oraz nagrodę, jeśli ją podałeś;",
-            "miejsce: nazwę i współrzędne punktu, który wybrałeś lub który został ustalony na podstawie geolokalizacji;",
+            "opis rzeczy: nazwę, opis, kategorię, datę, zdjęcie oraz nagrodę, jeśli została podana;",
+            "miejsce: nazwę i współrzędne punktu wskazanego w formularzu lub ustalonego na podstawie geolokalizacji;",
             "dane kontaktowe: numer telefonu, adres e-mail oraz zaznaczone przez Ciebie komunikatory."
           ],
           "Gdy odpowiadasz na cudze ogłoszenie:",
@@ -123,7 +123,7 @@
           ],
           "Gdy wysyłasz opinię o stronie:",
           [
-            "treść opinii, jej temat, ocenę lub zrzut ekranu, jeśli je dodałeś, adres e-mail, jeśli zostawiłeś go do odpowiedzi, a także stronę, z której otworzyłeś formularz."
+            "treść opinii, jej temat, ocenę lub zrzut ekranu, jeśli zostały dodane, adres e-mail, jeśli został podany do odpowiedzi, a także stronę, z której otwarto formularz."
           ],
           "Nie mamy kont ani haseł, więc nie przechowujemy o Tobie żadnych innych danych.",
           "Nie umieszczaj w ogłoszeniu informacji o zdrowiu, wyznaniu, danych biometrycznych ani innych danych wrażliwych, ani o sobie, ani o innych.",
@@ -163,7 +163,9 @@
           [
             "Google Maps Platform: mapa, podpowiedzi adresów i ustalanie adresu na podstawie współrzędnych w formularzu ogłoszenia; tekst, który wpisujesz w pole miejsca, oraz współrzędne są przekazywane Google;",
             "Vercel BotID: sprawdzenie, czy formularz wysyła człowiek, a nie bot;",
+            "Vercel Web Analytics i Speed Insights: statystyki odwiedzin i szybkości stron bez plików cookie; Vercel otrzymuje adres odwiedzanej strony, adres strony, z której nastąpiło przejście, kraj, przeglądarkę i typ urządzenia;",
             "Tally (tally.so): formularz opinii o stronie; wszystko, co w nim wpiszesz, jest przechowywane przez Tally. Skrypt Tally ładuje się dopiero wtedy, gdy otworzysz formularz;",
+            "Backblaze B2: przechowywanie zdjęć z ogłoszeń; zdjęcia trafiają tam bezpośrednio z przeglądarki;",
             "Brevo: wysyłanie e-maili o odpowiedziach na Twoje ogłoszenia oraz przypomnień; Brevo otrzymuje adres e-mail odbiorcy i treść wiadomości wraz z przekazywanymi przez nas danymi kontaktowymi;",
             "SMS-fly: wysyłanie tych samych wiadomości SMS-em; SMS-fly otrzymuje numer telefonu odbiorcy i treść wiadomości."
           ],
@@ -178,7 +180,8 @@
             "cookie DERECHI_LOCALE: zapamiętuje wybrany język na rok;",
             "cookie DERECHI_COUNTRY: zapamiętuje Twój kraj na rok, żeby pokazywać właściwą walutę i dokumenty prawne;",
             "cookie DERECHI_CLAIM_*: przez 30 dni pamiętają, że ogłoszenie ma już Twoją odpowiedź, oraz numer tej odpowiedzi, aby strona nie proponowała Ci formularza ponownie;",
-            "pamięć lokalna przeglądarki: zapamiętuje, które podpowiedzi na stronie już widziałeś, oraz wynik gry z maskotką; nie ma w niej danych osobowych."
+            "pamięć sesji przeglądarki: dopóki karta jest otwarta, przechowuje szkic formularza ogłoszenia wraz z wpisanymi danymi kontaktowymi, aby można go było przywrócić w ciągu 5 minut po odświeżeniu strony; po zamknięciu karty znika i nie jest nigdzie przesyłany;",
+            "pamięć lokalna przeglądarki: zapamiętuje, które podpowiedzi na stronie zostały już wyświetlone, oraz wynik gry z maskotką; nie ma w niej danych osobowych."
           ],
           "Na stronie nie ma analitycznych ani reklamowych plików cookie."
         ]
@@ -186,7 +189,7 @@
       {
         "heading": "8. Jak długo przechowujemy dane",
         "body": [
-          "Ogłoszenie jest przechowywane, dopóki nie zostanie zdjęte z publikacji. Następnie trafia do archiwum i nie jest już wyświetlane na stronie. W archiwum ogłoszenie jest przechowywane przez rok, po czym usuwamy je wraz z danymi kontaktowymi autora.",
+          "Ogłoszenie jest przechowywane, dopóki nie zostanie zdjęte z publikacji, ale nie dłużej niż 30 dni od podanej w nim daty. Następnie trafia do archiwum i nie jest już wyświetlane na stronie. W archiwum ogłoszenie jest przechowywane przez rok, po czym usuwamy je wraz z danymi kontaktowymi autora.",
           "Dane kontaktowe wysłane w odpowiedzi na ogłoszenie przechowujemy przez rok od odpowiedzi, niezależnie od tego, czy ogłoszenie jest nadal opublikowane, czy już zarchiwizowane; potem je usuwamy. Ogłoszenie z odpowiedziami zostaje zamknięte, gdy jedna ze stron potwierdzi zwrot rzeczy, albo około tygodnia po ostatniej odpowiedzi.",
           "Opinie o stronie przechowujemy w Tally nie dłużej niż rok, po czym je usuwamy."
         ]

@@ -4,7 +4,7 @@
   "readingTime": "{minutes} min read",
   "checked": "Updated {date}",
   "checkNowTitle": "Check whether your item has already been found",
-  "checkNowText": "People who find things post them here and in local groups. Look through the finds and post your own notice: whoever finds your item will find you more easily.",
+  "checkNowText": "People who find things post them here and in local social media groups. Look through the finds and post your own notice: whoever finds your item will find you more easily.",
   "ctaLost": "Report the loss",
   "faqTitle": "Frequently asked questions",
   "relatedTitle": "Other guides",
@@ -42,7 +42,7 @@
             },
             {
               "title": "Retrace your steps",
-              "text": "Bag, pockets, car, yesterday's clothes. Call the places you have been: the café, the taxi, the station, the shop. Most lost things turn up there within the first hours."
+              "text": "Bag, pockets, car, yesterday's clothes. Call the places you have been: the café, the taxi, the station, the shop. The sooner you call, the better the chance the documents are still there."
             },
             {
               "title": "Check whether the document has already been found",
@@ -59,7 +59,7 @@
               "The venue or the transport you used: the manager, the driver, the carrier's lost property office.",
               "The police station or lost property office near the place of loss: that is where found documents are usually taken.",
               "Your letterbox: finders often drop documents into the nearest post box, and the postal service delivers them to the address shown in the document.",
-              "Local groups and DeRechi: search by the kind of document and the surname."
+              "Local groups and DeRechi: search by the kind of document, the first name and the surname."
             ],
             {
               "tone": "tip",
@@ -100,11 +100,11 @@
             },
             {
               "title": "Do not photograph or post the pages with personal data",
-              "text": "Photos of documents are used to take out loans. A notice needs only the kind of document, the owner's name and where you found it."
+              "text": "Photos of documents are used to take out loans. A notice needs only the kind of document, the owner's first name and surname, and where you found it."
             },
             {
               "title": "Post a notice on DeRechi",
-              "text": "The owner is already searching through the finds in town. A notice takes a minute, and we never show your contact details in full."
+              "text": "The owner is already searching through the finds in town. A notice needs only a photo of the cover, the place and your phone number, and the site shows your contact details only in part."
             }
           ]
         }
@@ -120,7 +120,7 @@
         },
         {
           "q": "Can I post a photo of a passport I found so the owner recognises it?",
-          "a": "No. Photos of documents are used to take out loans and break into accounts. The kind of document, the name and where you found it are enough: the owner will recognise it anyway."
+          "a": "No. Photos of documents are used to take out loans and break into accounts. The kind of document, the owner's first name and surname, and where you found it are enough: the owner will recognise it anyway."
         }
       ]
     },
@@ -211,7 +211,7 @@
         },
         {
           "q": "How long should I wait before changing the lock?",
-          "a": "If the address can be worked out, do not wait at all. If not, give yourself a few days to search: most keys turn up within the first days."
+          "a": "If the address can be worked out, do not wait at all. If not, give yourself a few days: go back to the places you have been and check the found notices."
         }
       ]
     },
@@ -487,7 +487,7 @@
       "faq": [
         {
           "q": "How long is there to find a cat or a dog?",
-          "a": "Most come back within the first three days, but some after weeks: often the animal has been living nearby the whole time. Keep searching and keep the notice updated."
+          "a": "There is no fixed limit: animals come back even after weeks, often having lived nearby the whole time. Keep searching and keep the notice updated."
         },
         {
           "q": "Should I go to the shelter straight away?",

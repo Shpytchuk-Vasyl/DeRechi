@@ -317,8 +317,9 @@ other four answer `noindex, follow`, and the sitemap lists notices by their `/uk
 
 A meta description is written for the results page, not reused from the visible text: the home page
 has `app.homeDescription`, the lists `list.lostMetaDescription` and `list.foundMetaDescription`
-(the header lines under their `<h1>` are separate keys), a city page `cityPage.description`, the
-privacy page `privacy.metaDescription` in `src/content/legal/*.json` (one text for every country:
+(the header lines under their `<h1>` are separate keys), the report pages `form.metaDescriptionLost`
+and `form.metaDescriptionFound` (`form.pageDescription` is the line under their `<h1>`), a city page
+`cityPage.description`, the privacy page `privacy.metaDescription` in `src/content/legal/*.json` (one text for every country:
 Google crawls without the cookie and from abroad, so it only ever sees the fallback jurisdiction). Keep
 them under about 155 characters with the longest city in `{in}`, since Google cuts the rest. When
 Google finds a description thin it builds a snippet from the page instead, so the list filters and

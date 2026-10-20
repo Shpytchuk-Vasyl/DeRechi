@@ -4,7 +4,7 @@
   "readingTime": "{minutes} Min. Lesezeit",
   "checked": "Aktualisiert am {date}",
   "checkNowTitle": "Prüfe, ob deine Sache schon gefunden wurde",
-  "checkNowText": "Wer etwas findet, veröffentlicht es hier und in lokalen Gruppen. Sieh die Funde durch und veröffentliche deine eigene Anzeige: Wer deine Sache findet, findet dich dann leichter.",
+  "checkNowText": "Wer etwas findet, veröffentlicht es hier und in lokalen Gruppen in sozialen Netzwerken. Sieh die Funde durch und veröffentliche deine eigene Anzeige: Wer deine Sache findet, findet dich dann leichter.",
   "ctaLost": "Verlust melden",
   "faqTitle": "Häufige Fragen",
   "relatedTitle": "Weitere Ratgeber",
@@ -42,7 +42,7 @@
             },
             {
               "title": "Geh deinen Weg zurück",
-              "text": "Tasche, Jackentaschen, Auto, die Kleidung von gestern. Rufe dort an, wo du warst: Café, Taxi, Bahnhof, Laden. Die meisten verlorenen Sachen tauchen in den ersten Stunden genau dort auf."
+              "text": "Tasche, Jackentaschen, Auto, die Kleidung von gestern. Rufe dort an, wo du warst: Café, Taxi, Bahnhof, Laden. Je früher du anrufst, desto größer die Chance, dass die Dokumente noch dort sind."
             },
             {
               "title": "Prüfe, ob das Dokument schon gefunden wurde",
@@ -59,7 +59,7 @@
               "Das Lokal oder das Verkehrsmittel, das du genutzt hast: Personal, Fahrer, Fundbüro des Verkehrsbetriebs.",
               "Die Polizeidienststelle oder das Fundbüro nahe dem Verlustort: Dorthin bringt man gefundene Dokumente meist.",
               "Dein Briefkasten: Finder werfen Dokumente oft in den nächsten Postbriefkasten, und die Post stellt sie an die im Dokument eingetragene Adresse zu.",
-              "Lokale Gruppen und DeRechi: Suche nach Art des Dokuments und Nachnamen."
+              "Lokale Gruppen und DeRechi: Suche nach Art des Dokuments, Vor- und Nachnamen."
             ],
             {
               "tone": "tip",
@@ -100,11 +100,11 @@
             },
             {
               "title": "Fotografiere und veröffentliche keine Seiten mit Daten",
-              "text": "Mit Fotos von Dokumenten werden Kredite erschlichen. In der Anzeige reichen Art des Dokuments, Name des Besitzers und Fundort."
+              "text": "Mit Fotos von Dokumenten werden Kredite erschlichen. In der Anzeige reichen Art des Dokuments, Vor- und Nachname des Besitzers und Fundort."
             },
             {
               "title": "Veröffentliche eine Anzeige auf DeRechi",
-              "text": "Der Besitzer sucht schon und sieht die Funde in der Stadt durch. Die Anzeige dauert eine Minute, und deine Kontaktdaten zeigen wir nie vollständig."
+              "text": "Der Besitzer sucht schon und sieht die Funde in der Stadt durch. Für die Anzeige reichen ein Foto des Umschlags, der Fundort und deine Telefonnummer, und deine Kontaktdaten sind auf der Website nur teilweise zu sehen."
             }
           ]
         }
@@ -120,7 +120,7 @@
         },
         {
           "q": "Darf ich ein Foto des gefundenen Passes veröffentlichen, damit der Besitzer ihn erkennt?",
-          "a": "Nein. Mit Fotos von Dokumenten werden Kredite erschlichen und Konten gehackt. Art des Dokuments, Name und Fundort reichen: Der Besitzer erkennt es auch so."
+          "a": "Nein. Mit Fotos von Dokumenten werden Kredite erschlichen und Konten gehackt. Art des Dokuments, Vor- und Nachname des Besitzers und Fundort reichen: Der Besitzer erkennt es auch so."
         }
       ]
     },
@@ -211,7 +211,7 @@
         },
         {
           "q": "Wie lange warten, bevor ich das Schloss wechsle?",
-          "a": "Lässt sich die Adresse erschließen, gar nicht. Wenn nicht, gib dir ein paar Tage zum Suchen: Die meisten Schlüssel tauchen in den ersten Tagen auf."
+          "a": "Lässt sich die Adresse erschließen, gar nicht. Wenn nicht, gib dir ein paar Tage: Geh die Orte ab, an denen du warst, und sieh die Fundmeldungen durch."
         }
       ]
     },
@@ -487,7 +487,7 @@
       "faq": [
         {
           "q": "Wie viel Zeit bleibt, um Katze oder Hund zu finden?",
-          "a": "Die meisten kommen in den ersten drei Tagen zurück, manche erst nach Wochen: Oft hat das Tier die ganze Zeit in der Nähe gelebt. Suche weiter und halte die Anzeige aktuell."
+          "a": "Eine feste Frist gibt es nicht: Tiere kommen auch nach Wochen zurück und haben oft die ganze Zeit in der Nähe gelebt. Suche weiter und halte die Anzeige aktuell."
         },
         {
           "q": "Soll ich sofort zum Tierheim fahren?",

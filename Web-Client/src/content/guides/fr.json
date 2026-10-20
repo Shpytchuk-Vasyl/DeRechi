@@ -4,7 +4,7 @@
   "readingTime": "{minutes} min de lecture",
   "checked": "Mis à jour le {date}",
   "checkNowTitle": "Vérifiez si votre objet a déjà été trouvé",
-  "checkNowText": "Les personnes qui trouvent quelque chose le publient ici et dans les groupes locaux. Parcourez les objets trouvés et publiez votre propre annonce : la personne qui trouvera votre objet vous retrouvera plus facilement.",
+  "checkNowText": "Les personnes qui trouvent quelque chose le publient ici et dans les groupes locaux sur les réseaux sociaux. Parcourez les objets trouvés et publiez votre propre annonce : la personne qui trouvera votre objet vous retrouvera plus facilement.",
   "ctaLost": "Signaler la perte",
   "faqTitle": "Questions fréquentes",
   "relatedTitle": "Autres guides",
@@ -42,7 +42,7 @@
             },
             {
               "title": "Refaites votre trajet",
-              "text": "Sac, poches, voiture, vêtements d’hier. Appelez les endroits de votre trajet : café, taxi, gare, magasin. La plupart des objets perdus y réapparaissent dans les premières heures."
+              "text": "Sac, poches, voiture, vêtements d’hier. Appelez les endroits de votre trajet : café, taxi, gare, magasin. Plus vous appelez tôt, plus il y a de chances que les documents y soient encore."
             },
             {
               "title": "Vérifiez si le document a déjà été trouvé",
@@ -59,7 +59,7 @@
               "L’établissement ou le transport que vous avez utilisé : le responsable, le chauffeur, le bureau des objets trouvés du transporteur.",
               "Le commissariat ou le bureau des objets trouvés près du lieu de la perte : c’est là qu’on apporte le plus souvent les documents trouvés.",
               "Votre boîte aux lettres : la personne qui trouve des documents les glisse souvent dans une boîte postale, et la poste les livre à l’adresse figurant sur le document.",
-              "Les groupes locaux et DeRechi : cherchez par type de document et par nom."
+              "Les groupes locaux et DeRechi : cherchez par type de document, prénom et nom."
             ],
             {
               "tone": "tip",
@@ -100,11 +100,11 @@
             },
             {
               "title": "Ne photographiez pas et ne publiez pas les pages avec les données",
-              "text": "Les photos de documents servent à contracter des crédits. Dans l’annonce, le type de document, le prénom du propriétaire et le lieu suffisent."
+              "text": "Les photos de documents servent à contracter des crédits. Dans l’annonce, le type de document, le prénom et le nom du propriétaire et le lieu suffisent."
             },
             {
               "title": "Publiez une annonce sur DeRechi",
-              "text": "Le propriétaire cherche déjà et parcourt les objets trouvés en ville. L’annonce prend une minute, et nous n’affichons jamais vos contacts en entier."
+              "text": "Le propriétaire cherche déjà et parcourt les objets trouvés en ville. Pour l’annonce, il suffit d’une photo de la couverture, du lieu et de votre numéro, et le site n’affiche vos contacts qu’en partie."
             }
           ]
         }
@@ -120,7 +120,7 @@
         },
         {
           "q": "Puis-je publier la photo d’un passeport trouvé pour que le propriétaire le reconnaisse ?",
-          "a": "Non. Les photos de documents servent à contracter des crédits et à pirater des comptes. Le type de document, le prénom et le lieu suffisent : le propriétaire le reconnaîtra de toute façon."
+          "a": "Non. Les photos de documents servent à contracter des crédits et à pirater des comptes. Le type de document, le prénom et le nom du propriétaire et le lieu suffisent : le propriétaire le reconnaîtra de toute façon."
         }
       ]
     },
@@ -211,7 +211,7 @@
         },
         {
           "q": "Combien de temps attendre avant de changer la serrure ?",
-          "a": "Si l’adresse peut être devinée, n’attendez pas du tout. Sinon, accordez-vous quelques jours de recherche : la plupart des clés réapparaissent dans les premiers jours."
+          "a": "Si l’adresse peut être devinée, n’attendez pas du tout. Sinon, accordez-vous quelques jours : refaites votre trajet et consultez les annonces d’objets trouvés."
         }
       ]
     },
@@ -487,7 +487,7 @@
       "faq": [
         {
           "q": "Combien de temps a-t-on pour retrouver un chat ou un chien ?",
-          "a": "La plupart reviennent dans les trois premiers jours, mais certains après des semaines : souvent l’animal a vécu tout ce temps à proximité. Continuez à chercher et tenez l’annonce à jour."
+          "a": "Il n’y a pas de délai fixe : des animaux reviennent même après des semaines, et souvent ils ont vécu tout ce temps à proximité. Continuez à chercher et tenez l’annonce à jour."
         },
         {
           "q": "Faut-il aller tout de suite au refuge ?",

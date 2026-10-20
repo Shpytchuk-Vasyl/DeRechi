@@ -73,7 +73,7 @@
         "heading": "8. Modification et suppression des annonces",
         "body": [
           "Il n’est pas encore possible de modifier une annonce soi-même : pour la corriger, écrivez à {email}.",
-          "Après une réponse, nous envoyons à l’auteur et à la personne qui a répondu un rappel avec un lien permettant de fermer l’annonce une fois l’objet restitué. Si personne ne confirme la restitution, l’annonce est archivée une semaine après la dernière réponse. Vous pouvez aussi fermer une annonce en écrivant à {email}.",
+          "Après une réponse, nous envoyons à l’auteur et à la personne qui a répondu un rappel avec un lien permettant de fermer l’annonce une fois l’objet restitué. Si personne ne confirme la restitution, l’annonce est archivée une semaine après la dernière réponse. Qu’il y ait des réponses ou non, une annonce est archivée 30 jours après la date qui y figure. Vous pouvez aussi fermer une annonce en écrivant à {email}.",
           "Nous pouvons, sans préavis, retirer une annonce qui enfreint ces conditions ou la loi, ou en supprimer les données personnelles. Pour signaler une infraction dans l’annonce de quelqu’un d’autre, écrivez également à {email}."
         ]
       },
@@ -163,7 +163,9 @@
           [
             "Google Maps Platform : carte, suggestions d’adresses et détermination de l’adresse à partir des coordonnées dans le formulaire d’annonce ; le texte que vous saisissez dans le champ du lieu et les coordonnées sont transmis à Google ;",
             "Vercel BotID : vérification que le formulaire est envoyé par un humain et non par un robot ;",
+            "Vercel Web Analytics et Speed Insights : statistiques de visites et de vitesse des pages, sans cookies ; Vercel reçoit l’adresse de la page, la page d’où vous venez, votre pays, votre navigateur et votre type d’appareil ;",
             "Tally (tally.so) : le formulaire d’avis sur le site ; tout ce que vous y saisissez est conservé par Tally. Le script de Tally ne se charge que lorsque vous ouvrez le formulaire ;",
+            "Backblaze B2 : stockage des photos des annonces ; les photos y sont envoyées directement depuis votre navigateur ;",
             "Brevo : envoi des e-mails concernant les réponses à vos annonces et des rappels ; Brevo reçoit l’adresse e-mail du destinataire et le texte du message, y compris les coordonnées que nous transmettons ;",
             "SMS-fly : envoi des mêmes messages par SMS ; SMS-fly reçoit le numéro de téléphone du destinataire et le texte du message."
           ],
@@ -178,6 +180,7 @@
             "le cookie DERECHI_LOCALE : il mémorise la langue choisie pendant un an ;",
             "le cookie DERECHI_COUNTRY : il mémorise votre pays pendant un an, pour afficher la bonne devise et les bons textes juridiques ;",
             "les cookies DERECHI_CLAIM_* : ils mémorisent pendant 30 jours que vous avez répondu à une annonce, ainsi que le numéro de cette réponse, pour que le site ne vous propose pas le formulaire une seconde fois ;",
+            "le stockage de session du navigateur : tant que l’onglet est ouvert, il conserve un brouillon du formulaire d’annonce, coordonnées saisies comprises, pour pouvoir le restaurer dans les 5 minutes qui suivent un rechargement de la page ; il disparaît à la fermeture de l’onglet et n’est envoyé nulle part ;",
             "le stockage local de votre navigateur : il mémorise les astuces du site que vous avez déjà vues et le score du jeu avec la mascotte ; il ne contient aucune donnée personnelle."
           ],
           "Il n’y a sur le site aucun cookie d’analyse ni de publicité."
@@ -186,7 +189,7 @@
       {
         "heading": "8. Durée de conservation des données",
         "body": [
-          "Une annonce est conservée jusqu’à ce qu’elle soit retirée de la publication. Elle est ensuite déplacée dans les archives et n’est plus affichée sur le site. Elle est conservée dans les archives pendant un an, puis supprimée avec les coordonnées de son auteur.",
+          "Une annonce est conservée jusqu’à ce qu’elle soit retirée de la publication, et au plus 30 jours après la date qui y figure. Elle est ensuite déplacée dans les archives et n’est plus affichée sur le site. Elle est conservée dans les archives pendant un an, puis supprimée avec les coordonnées de son auteur.",
           "Les coordonnées envoyées en réponse à une annonce sont conservées un an à compter de la réponse, que l’annonce soit encore publiée ou déjà archivée ; elles sont ensuite supprimées. Une annonce ayant reçu des réponses est fermée lorsque l’une des parties confirme la restitution de l’objet, ou environ une semaine après la dernière réponse.",
           "Les avis sur le site sont conservés chez Tally un an au plus, puis nous les supprimons."
         ]

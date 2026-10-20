@@ -73,7 +73,7 @@
         "heading": "8. Changing and removing notices",
         "body": [
           "You can't edit a notice yourself yet: to correct it, write to {email}.",
-          "After someone responds, we send the author and the respondent a reminder with a link to close the notice once the item is back. If nobody confirms the return, the notice is archived a week after the last response. You can also close a notice by writing to {email}.",
+          "After someone responds, we send the author and the respondent a reminder with a link to close the notice once the item is back. If nobody confirms the return, the notice is archived a week after the last response. Whatever the responses, a notice is archived 30 days after the date given in it. You can also close a notice by writing to {email}.",
           "We may remove a notice that breaks these terms or the law, or strip personal data from it, without warning. To report a breach in someone else's notice, also write to {email}."
         ]
       },
@@ -163,7 +163,9 @@
           [
             "Google Maps Platform: the map, address suggestions and looking up an address from coordinates in the notice form; what you type into the place field, and the coordinates, are sent to Google;",
             "Vercel BotID: checks that the form is sent by a person, not a bot;",
+            "Vercel Web Analytics and Speed Insights: visit and page speed statistics without cookies; Vercel receives the page address, where you came from, your country, browser and device type;",
             "Tally (tally.so): the feedback form; everything you enter in it is stored by Tally. Tally's script loads only when you open the form;",
+            "Backblaze B2: storing notice photos; photos are uploaded there directly from your browser;",
             "Brevo: sending emails about responses to your notices and reminders; Brevo receives the recipient's email address and the text of the email, including the contacts we pass on;",
             "SMS-fly: sending the same messages by SMS; SMS-fly receives the recipient's phone number and the text of the message."
           ],
@@ -178,6 +180,7 @@
             "the DERECHI_LOCALE cookie: remembers your language for a year;",
             "the DERECHI_COUNTRY cookie: remembers your country for a year, to show the right currency and legal texts;",
             "DERECHI_CLAIM_* cookies: remember for 30 days that you have responded to a notice, together with that response's number, so the site doesn't offer you the form again;",
+            "your browser's session storage: while the tab is open, keeps a draft of the notice form, including the contacts you entered, so it can be restored within 5 minutes of a page reload; it disappears when you close the tab and is never sent anywhere;",
             "your browser's local storage: remembers which site tips you have already seen and the score of the mascot game; it holds no personal data."
           ],
           "There are no analytics or advertising cookies on the site."
@@ -186,7 +189,7 @@
       {
         "heading": "8. How long we keep data",
         "body": [
-          "A notice is kept until it is taken down. After that it moves to an archive and is no longer shown on the site. It is kept in the archive for one year and then deleted together with the author's contacts.",
+          "A notice is kept until it is taken down, and no longer than 30 days after the date given in it. After that it moves to an archive and is no longer shown on the site. It is kept in the archive for one year and then deleted together with the author's contacts.",
           "Contacts sent in response to a notice are kept for one year from the response, whether the notice is still published or archived; after that they are deleted. A notice with responses is closed when either side confirms that the item is back, or about a week after the last response.",
           "Feedback about the site is kept in Tally for no longer than one year, after which we delete it."
         ]

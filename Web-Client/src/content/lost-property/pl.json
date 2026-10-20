@@ -28,7 +28,7 @@
           "link": "Punkt 82 Zasad, uchwała Gabinetu Ministrów nr 176"
         },
         "finder": {
-          "title": "Znalazłeś cudzą rzecz",
+          "title": "Masz cudzą rzecz",
           "text": "Jeśli właściciela nie widać, prawo nakazuje zgłosić znalezisko policji lub radzie miasta. Rzecz znalezioną w pojeździe lub w budynku oddaje się kierowcy, ochronie lub administracji.",
           "link": "Artykuł 337 Kodeksu cywilnego"
         }
@@ -85,10 +85,10 @@
     },
     "vinnytsia-transport": {
       "name": "Winnickie przedsiębiorstwo transportowe",
-      "text": "Kierowcy przekazują rzeczy znalezione w tramwajach dyspozytorom, więc pytaj w dyspozytorni tego środka transportu, którym jechałeś."
+      "text": "Kierowcy przekazują rzeczy znalezione w tramwajach dyspozytorom, więc pytaj w dyspozytorni tego środka transportu, w którym zostawiono rzecz."
     },
     "lutsk-transport": {
-      "name": "Łuckie przedsiębiorstwo trolejbusowe",
+      "name": "Łuckie Przedsiębiorstwo Transportu Elektrycznego",
       "text": "Kierowcy przekazują rzeczy znalezione w trolejbusach do kasy lub dyspozytorni. Dzwoń do punktu dyspozytorskiego."
     },
     "lutsk-department": {
