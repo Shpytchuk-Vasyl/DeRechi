@@ -14,10 +14,10 @@ export function MascotRoamer() {
   const t = useTranslations("game")
   const router = useRouter()
   const reduceMotion = useReducedMotion()
-  const { visit, hide } = useRoaming(!reduceMotion)
+  const { visit, startle } = useRoaming(!reduceMotion)
 
   function catchHim() {
-    hide()
+    startle()
     const { count, prize } = recordMascotCatch(CATCHES)
     if (prize) {
       router.push(paths.prize)
@@ -29,6 +29,7 @@ export function MascotRoamer() {
   if (!visit) return null
 
   const out = visit.phase === "out"
+  const caught = visit.phase === "caught"
 
   return (
     <div
@@ -43,10 +44,15 @@ export function MascotRoamer() {
         className={cx(
           "znaida-roam pointer-events-auto absolute inset-x-0 top-0.5 cursor-pointer border-none bg-transparent p-0",
           `znaida-roam-${visit.side}`,
-          out && "znaida-roam-out znaida-alive",
+          (out || caught) && "znaida-roam-out znaida-alive",
         )}
       >
-        <Znaida look={visit.look} className="h-auto w-full" aria-hidden />
+        <Znaida
+          look={visit.look}
+          mood={caught ? "surprised" : "happy"}
+          className="h-auto w-full"
+          aria-hidden
+        />
       </button>
     </div>
   )
@@ -58,19 +64,20 @@ type Visit = {
   side: Side
   x: number
   y: number
-  phase: "hidden" | "out" | "in"
+  phase: "hidden" | "out" | "caught" | "in"
   look: Look
 }
 
 const SIZE = 120
 const SLIDE_MS = 600
 const LIVE_MS = 2600
+const STARTLE_MS = 500
 const GLANCES: Look[] = ["left", "right", "center", "left"]
 const GLANCE_MS = 550
 
 function useRoaming(enabled: boolean) {
   const [visit, setVisit] = useState<Visit | null>(null)
-  const hideRef = useRef<() => void>(() => {})
+  const startleRef = useRef<() => void>(() => {})
 
   useEffect(() => {
     if (!enabled) return
@@ -82,12 +89,19 @@ function useRoaming(enabled: boolean) {
 
     function hide() {
       timers.clear()
-      hideRef.current = () => {}
+      startleRef.current = () => {}
       patch({ phase: "in" })
       timers.after(SLIDE_MS, () => {
         setVisit(null)
         timers.after(rand(4000, 9000), tick)
       })
+    }
+
+    function startle() {
+      timers.clear()
+      startleRef.current = () => {}
+      patch({ phase: "caught", look: "center" })
+      timers.after(STARTLE_MS, hide)
     }
 
     function appear(perch: Perch) {
@@ -98,7 +112,7 @@ function useRoaming(enabled: boolean) {
         timers.after(SLIDE_MS + 300 + index * GLANCE_MS, () => patch({ look }))
       })
       timers.after(SLIDE_MS + LIVE_MS, hide)
-      hideRef.current = hide
+      startleRef.current = startle
     }
 
     function tick() {
@@ -111,7 +125,7 @@ function useRoaming(enabled: boolean) {
     return timers.clear
   }, [enabled])
 
-  return { visit, hide: () => hideRef.current() }
+  return { visit, startle: () => startleRef.current() }
 }
 
 type Perch = { spot: Element; side: Side; x: number; y: number }

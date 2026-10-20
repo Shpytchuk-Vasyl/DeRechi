@@ -18,7 +18,19 @@ function placeParts(place: string): string[] {
 }
 
 export function tidyPlace(place: string): string {
-  return placeParts(place).join(", ")
+  const parts = placeParts(place)
+  const named = parts.filter((part) => !HOUSE_NUMBER.test(part))
+  return distinct(named.length > 0 ? named : parts).join(", ")
+}
+
+function distinct(parts: string[]): string[] {
+  const seen = new Set<string>()
+  return parts.filter((part) => {
+    const key = part.toLocaleLowerCase()
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
 }
 
 export function shortPlace(place: string): string {

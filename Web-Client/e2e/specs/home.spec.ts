@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test"
 import { expect, test } from "../fixtures/base"
-import { Filters, ReportForm, RouteDialog } from "../fixtures/pages"
+import { Filters, ReportForm, RouteDialog, Toasts } from "../fixtures/pages"
 import {
   BENEFIT_NUMBERS,
   type BenefitNumber,
@@ -247,6 +247,37 @@ test.describe("mascot", () => {
 
     await page.clock.runFor(20_000)
 
+    await expect(home.mascot()).toHaveCount(0)
+  })
+
+  test("with motion a caught mascot counts the catch and slips away", async ({
+    page,
+    go,
+    t,
+    flags,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "no-preference" })
+    await page.clock.install()
+    await go("/")
+    const home = new HomePage(page, t)
+    await expect(home.heroHeading()).toBeVisible()
+    await home.benefits().evaluate((section) => {
+      const top = section.getBoundingClientRect().top + window.scrollY - window.innerHeight / 2
+      window.scrollTo({ top, behavior: "instant" })
+    })
+    await pauseClock(page)
+
+    await expect(async () => {
+      await page.clock.runFor(1_000)
+      await expect(home.mascot()).toBeEnabled({ timeout: 100 })
+    }).toPass({ intervals: [100], timeout: 20_000 })
+    await home.mascot().click()
+
+    const toasts = new Toasts(page, t, flags)
+    await expect(toasts.byText(t("game.caught", { count: 1, total: 5 }))).toBeVisible()
+    await expect(home.mascot()).toBeDisabled()
+
+    await page.clock.runFor(1_500)
     await expect(home.mascot()).toHaveCount(0)
   })
 })

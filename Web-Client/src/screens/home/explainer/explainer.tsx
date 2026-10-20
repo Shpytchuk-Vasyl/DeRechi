@@ -1,4 +1,4 @@
-import { EyeOff, Gift, MessageSquare, Search, Timer } from "lucide-react"
+import { Camera, EyeOff, Gift, MessageSquare, Search } from "lucide-react"
 import { getTranslations } from "next-intl/server"
 import type { ReactElement } from "react"
 import type { ItemKind } from "@/api/items"
@@ -18,7 +18,7 @@ const SIDES: Record<
     title: "foundTitle",
     text: "foundText",
     points: [
-      { key: "foundPoint1", icon: <Timer /> },
+      { key: "foundPoint1", icon: <Camera /> },
       { key: "foundPoint2", icon: <EyeOff /> },
       { key: "foundPoint3", icon: <MessageSquare /> },
     ],

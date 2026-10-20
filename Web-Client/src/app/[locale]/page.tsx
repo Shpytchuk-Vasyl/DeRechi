@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { getLocale, getTranslations } from "next-intl/server"
-import { MascotRoamer } from "@/components/mascot/mascot-roamer"
+import { LazyMascotRoamer } from "@/components/mascot/lazy-mascot-roamer"
 import { jsonLd, pageAlternates, websiteJsonLd } from "@/lib/seo"
 import Benefits from "@/screens/home/benefits/benefits"
 import CityMap from "@/screens/home/city-map/city-map"
@@ -45,7 +45,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <MascotRoamer />
+      <LazyMascotRoamer />
 
       <div className="flex flex-col gap-6">
         <Hero data-mascot-spot />

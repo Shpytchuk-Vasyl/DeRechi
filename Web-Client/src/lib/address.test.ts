@@ -36,7 +36,18 @@ describe("tidyPlace", () => {
     expect(tidyPlace(SCHOOL)).toBe(
       "Тернопільська загальноосвітня школа І-III ступенів № 11, вулиця Генерала Мирона Тарнавського",
     )
-    expect(tidyPlace(" вулиця Наукова ,, 5 ")).toBe("вулиця Наукова, 5")
+    expect(tidyPlace(" вулиця Наукова ,, Львів ")).toBe("вулиця Наукова, Львів")
+  })
+
+  it("drops house numbers and repeated parts", () => {
+    expect(tidyPlace("Школа №1, Корецька ЗШ І-ІІІ ст. №1, 60, 60, Корець")).toBe(
+      "Школа №1, Корецька ЗШ І-ІІІ ст. №1, Корець",
+    )
+    expect(tidyPlace("вулиця Наукова, 5а, Львів, львів")).toBe("вулиця Наукова, Львів")
+  })
+
+  it("keeps a place that is only a number", () => {
+    expect(tidyPlace("17")).toBe("17")
   })
 
   it("keeps a clean place as it is", () => {

@@ -2,12 +2,13 @@
 
 import { cx } from "class-variance-authority"
 import { useEffect, useState } from "react"
-import { type Look, Znaida } from "@/components/mascot/znaida"
+import { type Look, type Mood, Znaida } from "@/components/mascot/znaida"
 import { Button } from "@/components/pouf/Button"
 import { Card } from "@/components/pouf/card"
 import { Heading, Text } from "@/components/pouf/text"
 
 const LOOKS: Look[] = ["left", "center", "right"]
+const MOODS: Mood[] = ["happy", "surprised", "sleepy", "sad"]
 const SIDES = ["top", "left", "right"] as const
 type Side = (typeof SIDES)[number]
 
@@ -22,6 +23,7 @@ export function ZnaidaLab() {
 
 function FaceBench() {
   const [look, setLook] = useState<Look>("center")
+  const [mood, setMood] = useState<Mood>("happy")
   const [auto, setAuto] = useState(true)
   const [alive, setAlive] = useState(true)
   const [size, setSize] = useState(320)
@@ -38,8 +40,24 @@ function FaceBench() {
         <Heading level={2}>Обличчя</Heading>
         <div className="grid place-items-center rounded-control bg-bg py-8">
           <div className={cx(alive && "znaida-alive")} style={{ width: size }}>
-            <Znaida look={look} className="h-auto w-full" />
+            <Znaida look={look} mood={mood} className="h-auto w-full" />
           </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <Text size="sm" muted>
+            Настрій:
+          </Text>
+          {MOODS.map((it) => (
+            <Button
+              key={it}
+              size="sm"
+              variant={mood === it ? "solid" : "quiet"}
+              onClick={() => setMood(it)}
+            >
+              {it}
+            </Button>
+          ))}
         </div>
 
         <div className="flex flex-wrap items-center gap-2">

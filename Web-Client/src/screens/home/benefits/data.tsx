@@ -1,6 +1,6 @@
 import {
   ArrowRight,
-  CalendarClock,
+  BotOff,
   EyeOff,
   KeyRound,
   Mail,
@@ -23,7 +23,7 @@ export async function getBenefits(): Promise<Benefit[]> {
   const claims: (Pick<Benefit, "icon" | "tone" | "panel"> & { number: number })[] = [
     { number: 1, icon: <Send />, tone: "mint", panel: <DirectContactPanel /> },
     { number: 2, icon: <EyeOff />, tone: "pink", panel: <HiddenContactsPanel /> },
-    { number: 3, icon: <CalendarClock />, tone: "yellow", panel: <WeeklyLimitPanel /> },
+    { number: 3, icon: <BotOff />, tone: "yellow", panel: <SpamProofPanel /> },
     {
       number: 4,
       icon: <ShieldCheck />,
@@ -93,11 +93,14 @@ function HiddenContactsPanel() {
   )
 }
 
-function WeeklyLimitPanel() {
+function SpamProofPanel() {
   return (
     <div className="flex items-center gap-3 font-black text-ink">
-      <CalendarClock className="size-12" aria-hidden />
-      <span className="text-6xl tracking-tight">1×</span>
+      <BotOff className="size-12 flex-none" aria-hidden />
+      <span className="cushion-field flex items-center gap-2 rounded-pill bg-bg px-4 py-2.5">
+        <Mail className="size-4" aria-hidden />
+        <span className="tabular-nums">o*****a@gmail.com</span>
+      </span>
     </div>
   )
 }

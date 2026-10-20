@@ -1,4 +1,4 @@
-import { Archive, CalendarClock, EyeOff, KeyRound, MailCheck, ShieldCheck } from "lucide-react"
+import { Archive, BotOff, EyeOff, KeyRound, MailCheck, ShieldCheck } from "lucide-react"
 import { getTranslations } from "next-intl/server"
 import type { ReactElement } from "react"
 import { PageHeader } from "@/components/layout/page-header"
@@ -13,7 +13,7 @@ type Point = { key: string; icon: ReactElement; tone: Tone }
 const PROTECT: Point[] = [
   { key: "contacts", icon: <EyeOff />, tone: "pink" },
   { key: "replies", icon: <MailCheck />, tone: "blue" },
-  { key: "limit", icon: <CalendarClock />, tone: "yellow" },
+  { key: "limit", icon: <BotOff />, tone: "yellow" },
   { key: "accounts", icon: <KeyRound />, tone: "orange" },
   { key: "moderation", icon: <ShieldCheck />, tone: "purple" },
   { key: "retention", icon: <Archive />, tone: "mint" },
