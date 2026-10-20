@@ -94,7 +94,10 @@ How search engines see the site; the details are in the "Search" section of `Web
   the Pouf press (2px down, its own shadow halved, back on the pop curve) and the focus. Wheel,
   touch, a key or a click stop the flight; reduced motion jumps at once. The flag that marks an
   arrival lives in memory and only a click sets it, so a new tab, a reload and back/forward keep
-  the browser's own jump.
+  the browser's own jump. A guide's contents ("На цій сторінці") use the same flight within the
+  page through `SectionLink`, from where the reader is, with `pushState` for the hash. The press
+  only plays on a surface with a shadow (a clay card), so the guide's plain sections just get the
+  focus.
 - **Share cards.** Every notice page has its own `opengraph-image` (1200×630: photo, title, place,
   date), drawn with Nunito loaded from Google Fonts; the other pages share one card per locale.
 

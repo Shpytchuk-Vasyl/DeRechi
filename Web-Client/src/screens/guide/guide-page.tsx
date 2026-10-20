@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { getFormatter, getTranslations } from "next-intl/server"
 import { cloneElement } from "react"
 import { fetchCategories } from "@/api/items"
+import { SectionLink } from "@/components/effects/section-link"
 import { PageHeader } from "@/components/layout/page-header"
 import { PageMeta } from "@/components/layout/page-meta"
 import { Breadcrumb } from "@/components/pouf/breadcrumb"
@@ -105,6 +106,7 @@ export default async function GuidePage({ locale, slug }: Props) {
               key={section.id}
               id={section.id}
               aria-labelledby={`${section.id}-heading`}
+              tabIndex={-1}
               className="flex scroll-mt-6 flex-col gap-4"
             >
               <Heading level={2} id={`${section.id}-heading`} className="whitespace-normal">
@@ -118,6 +120,7 @@ export default async function GuidePage({ locale, slug }: Props) {
           <section
             id={FAQ_ID}
             aria-labelledby={`${FAQ_ID}-heading`}
+            tabIndex={-1}
             className="flex scroll-mt-6 flex-col gap-4"
           >
             <Heading level={2} id={`${FAQ_ID}-heading`}>
@@ -195,9 +198,9 @@ function Contents({ items }: { items: { id: string; label: string }[] }) {
     <ol className="flex flex-col gap-2 pt-3">
       {items.map((item) => (
         <li key={item.id}>
-          <a href={`#${item.id}`} className="text-muted text-sm hover:text-ink">
+          <SectionLink section={item.id} className="text-muted text-sm hover:text-ink">
             {item.label}
-          </a>
+          </SectionLink>
         </li>
       ))}
     </ol>

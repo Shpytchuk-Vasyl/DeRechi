@@ -1,3 +1,5 @@
+import type { MouseEvent } from "react"
+
 export type Arrival = {
   landed: Promise<boolean>
   cancel: () => void
@@ -29,6 +31,25 @@ export function pendingArrival() {
 
 export function clearArrival() {
   pending = null
+}
+
+export function isPlainClick(event: MouseEvent) {
+  return (
+    !event.defaultPrevented &&
+    event.button === 0 &&
+    !event.metaKey &&
+    !event.ctrlKey &&
+    !event.shiftKey &&
+    !event.altKey
+  )
+}
+
+export function flyTo(target: HTMLElement): Arrival {
+  const arrival = arrive(target)
+  arrival.landed.then((landed) => {
+    if (landed) target.focus({ preventScroll: true })
+  })
+  return arrival
 }
 
 export function arrive(target: HTMLElement): Arrival {
@@ -92,6 +113,7 @@ function glide(from: number, to: () => number, duration: number, signal: AbortSi
 
 function press(card: HTMLElement) {
   const rest = getComputedStyle(card).boxShadow
+  if (rest === "none") return Promise.resolve()
   const pressed = rest.replace(/(-?\d*\.?\d+)px/g, (_, value) => `${Number(value) / 2}px`)
   return card
     .animate(

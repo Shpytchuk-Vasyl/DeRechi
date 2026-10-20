@@ -2,7 +2,7 @@
 
 import type { ComponentProps, MouseEvent } from "react"
 import { Link } from "@/i18n/navigation"
-import { requestArrival, sectionOf } from "./arrival"
+import { isPlainClick, requestArrival, sectionOf } from "./arrival"
 
 type Props = Omit<ComponentProps<typeof Link>, "href"> & { href: string }
 
@@ -16,15 +16,4 @@ export function ArrivalLink({ href, onClick, ...props }: Props) {
   }
 
   return <Link href={href} scroll={false} onClick={handleClick} {...props} />
-}
-
-function isPlainClick(event: MouseEvent) {
-  return (
-    !event.defaultPrevented &&
-    event.button === 0 &&
-    !event.metaKey &&
-    !event.ctrlKey &&
-    !event.shiftKey &&
-    !event.altKey
-  )
 }

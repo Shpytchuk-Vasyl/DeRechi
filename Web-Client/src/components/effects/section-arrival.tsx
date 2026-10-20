@@ -1,7 +1,7 @@
 "use client"
 
 import { useLayoutEffect } from "react"
-import { arrive, clearArrival, pendingArrival } from "./arrival"
+import { clearArrival, flyTo, pendingArrival } from "./arrival"
 
 export function SectionArrival() {
   useLayoutEffect(() => {
@@ -15,11 +15,8 @@ export function SectionArrival() {
       return
     }
 
-    const arrival = arrive(target)
-    arrival.landed.then((landed) => {
-      clearArrival()
-      if (landed) target.focus({ preventScroll: true })
-    })
+    const arrival = flyTo(target)
+    arrival.landed.then(clearArrival)
     return arrival.cancel
   }, [])
 
