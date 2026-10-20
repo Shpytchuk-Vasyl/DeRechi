@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { getTranslations } from "next-intl/server"
 import { cityHasNotices } from "@/api/cities"
+import { SectionArrival } from "@/components/effects/section-arrival"
 import { MascotRoamer } from "@/components/mascot/mascot-roamer"
 import { paths } from "@/i18n/paths"
 import { cityArea, cityBySlug } from "@/lib/cities"
@@ -81,6 +82,8 @@ export default async function CityPage({ locale, slug }: { locale: string; slug:
 
         <ClosingCall />
       </div>
+
+      <SectionArrival />
 
       <script
         type="application/ld+json"

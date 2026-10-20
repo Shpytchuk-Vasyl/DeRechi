@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: kind === "lost" ? t("pageTitleLost") : t("pageTitleFound"),
-    description: t("pageDescription"),
+    description: kind === "lost" ? t("metaDescriptionLost") : t("metaDescriptionFound"),
     alternates: pageAlternates(locale, paths.report(kind)),
   }
 }

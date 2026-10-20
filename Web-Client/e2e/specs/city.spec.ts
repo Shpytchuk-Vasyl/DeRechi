@@ -75,6 +75,35 @@ test.describe("city pages", () => {
     ).toBeVisible()
   })
 
+  test("a city on a guide's map opens the city page at where to turn there", async ({
+    page,
+    go,
+    t,
+  }) => {
+    await go("/guide/documents")
+    await page.getByRole("link", { name: t("city.kyiv.name"), exact: true }).click()
+
+    await expect(page).toHaveURL(/\/kyiv#lost-property$/)
+    const section = page.locator("#lost-property")
+    await expect(section).toBeFocused()
+    await expect(section).toBeInViewport()
+  })
+
+  test("with reduced motion a city on a guide's map still lands on where to turn there", async ({
+    page,
+    go,
+    t,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" })
+    await go("/guide/documents")
+    await page.getByRole("link", { name: t("city.kyiv.name"), exact: true }).click()
+
+    await expect(page).toHaveURL(/\/kyiv#lost-property$/)
+    const section = page.locator("#lost-property")
+    await expect(section).toBeFocused()
+    await expect(section).toBeInViewport()
+  })
+
   test("the city link in a notice dialog closes the dialog and opens the city", async ({
     page,
     go,
@@ -110,5 +139,20 @@ test.describe("city picker on a phone", { tag: "@mobile-only" }, () => {
     await page.getByRole("option", { name: t("city.odesa.name"), exact: true }).click()
 
     await expect(page).toHaveURL(/\/odesa$/)
+  })
+
+  test("choosing a city under a guide's map opens it at where to turn there", async ({
+    page,
+    go,
+    t,
+  }) => {
+    await go("/guide/documents")
+    await page.getByRole("combobox", { name: t("home.citiesPick") }).click()
+    await page.getByRole("option", { name: t("city.odesa.name"), exact: true }).click()
+
+    await expect(page).toHaveURL(/\/odesa#lost-property$/)
+    const section = page.locator("#lost-property")
+    await expect(section).toBeFocused()
+    await expect(section).toBeInViewport()
   })
 })

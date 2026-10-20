@@ -1,9 +1,9 @@
 import { cx } from "class-variance-authority"
 import { MapPin } from "lucide-react"
 import { getLocale, getTranslations } from "next-intl/server"
+import { ArrivalLink } from "@/components/effects/arrival-link"
 import { Stack } from "@/components/pouf/layout"
 import { Heading, Text } from "@/components/pouf/text"
-import { Link } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
 import { CITIES, type City } from "@/lib/cities"
 import CityPicker from "./city-picker"
@@ -86,7 +86,7 @@ export default async function CityMap({ description, hash = "" }: Props) {
                 className="absolute focus-within:z-10 hover:z-10"
                 style={position(city)}
               >
-                <Link
+                <ArrivalLink
                   href={`${paths.city(city.slug)}${hash}`}
                   className="group absolute -translate-x-1/2 -translate-y-full px-0.5 pt-0.5 no-underline lg:px-1 lg:pt-1"
                 >
@@ -104,7 +104,7 @@ export default async function CityMap({ description, hash = "" }: Props) {
                   >
                     {city.name}
                   </span>
-                </Link>
+                </ArrivalLink>
               </li>
             ))}
           </ul>

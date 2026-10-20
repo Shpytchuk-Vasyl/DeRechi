@@ -42,6 +42,7 @@ const KEY_PAGES: KeyPage[] = [
     path: "/report/lost",
     status: 200,
     title: (t) => t("app.titleTemplate", { page: t("form.pageTitleLost") }),
+    description: (t) => t("form.metaDescriptionLost"),
   },
   {
     path: "/safety",

@@ -40,7 +40,12 @@ export default async function LostProperty({ locale, slug, countryCode, where }:
   const date = format.dateTime(new Date(checked), { dateStyle: "long" })
 
   return (
-    <Card id="lost-property" aria-labelledby="lost-property-title">
+    <Card
+      id="lost-property"
+      aria-labelledby="lost-property-title"
+      tabIndex={-1}
+      className="scroll-mt-6"
+    >
       <CardHeader>
         <CardTitle id="lost-property-title" level={2}>
           {fill(texts.title, { in: where })}

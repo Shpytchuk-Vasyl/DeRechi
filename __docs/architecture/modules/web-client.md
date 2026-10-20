@@ -87,6 +87,14 @@ How search engines see the site; the details are in the "Search" section of `Web
   The home page links the cities from a static map of Ukraine (Natural Earth outline in Ukraine's
   point of view, Crimea included), a notice page links the city its coordinates fall into, and that city is added after the place in the
   notice's `<title>` ("Привокзальний ринок, Львів"). A city without live notices answers `noindex` and is left out of the sitemap.
+- **Arriving at a city section.** A guide's city map (and the picker under it) links to
+  `/{city}#lost-property`. A plain click goes through `ArrivalLink` (`src/components/effects/`):
+  Next does not scroll (`scroll={false}`), and `SectionArrival` on the city page starts at the top
+  and scrolls down to the section (easeOutQuint, 1.2–1.8 s by distance). On landing the card gets
+  the Pouf press (2px down, its own shadow halved, back on the pop curve) and the focus. Wheel,
+  touch, a key or a click stop the flight; reduced motion jumps at once. The flag that marks an
+  arrival lives in memory and only a click sets it, so a new tab, a reload and back/forward keep
+  the browser's own jump.
 - **Share cards.** Every notice page has its own `opengraph-image` (1200×630: photo, title, place,
   date), drawn with Nunito loaded from Google Fonts; the other pages share one card per locale.
 
