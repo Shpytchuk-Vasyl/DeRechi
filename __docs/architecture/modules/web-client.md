@@ -76,7 +76,8 @@ How search engines see the site; the details are in the "Search" section of `Web
   `publisher` with the logo and `sameAs` the Telegram channel (`t.me/derechi_ua`): if the channel
   moves, update `src/app/[locale]/page.tsx`.
 - **Snippets.** The home, list and city pages have meta descriptions of their own
-  (`app.homeDescription`, `list.*MetaDescription`, `cityPage.description`), not the visible
+  (`app.homeDescription`, `list.*MetaDescription`, `cityPage.description`, and
+  `privacy.metaDescription` in the legal texts, the same for every country), not the visible
   header text, and the list filters are marked `data-nosnippet` so their labels never end up
   in a search result.
 - **City pages.** `/{locale}/{city}` for Kyiv and the regional centres (`src/lib/cities.ts`, a centre

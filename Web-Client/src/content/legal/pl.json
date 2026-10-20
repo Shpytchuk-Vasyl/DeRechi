@@ -100,6 +100,7 @@
   "privacy": {
     "title": "Polityka prywatności",
     "summary": "Jakie dane zbiera DeRechi, w jakim celu, kto je widzi i jak możesz nimi zarządzać. {dataLaw}",
+    "metaDescription": "Jak DeRechi przetwarza dane osobowe: jakie dane zbiera i w jakim celu, kto ma do nich dostęp, jak długo je przechowuje i jak skorzystać ze swoich praw.",
     "sections": [
       {
         "heading": "1. Kto przetwarza dane",

@@ -100,6 +100,7 @@
   "privacy": {
     "title": "Privacy policy",
     "summary": "What data DeRechi collects, why, who can see it and how you control it. {dataLaw}",
+    "metaDescription": "How DeRechi processes personal data: what is collected and why, who has access to it, how long it is kept and how to exercise your rights.",
     "sections": [
       {
         "heading": "1. Who processes the data",

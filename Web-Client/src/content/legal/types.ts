@@ -11,6 +11,7 @@ export type LegalSection = {
 export type LegalDoc = {
   title: string
   summary: string
+  metaDescription?: string
   sections: LegalSection[]
 }
 

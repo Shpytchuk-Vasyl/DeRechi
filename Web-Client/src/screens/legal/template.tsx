@@ -33,7 +33,7 @@ export function generateMetadataFromTemplate(
 
   return {
     title: doc.title,
-    description: fill(doc.summary, slots),
+    description: fill(doc.metaDescription ?? doc.summary, slots),
     alternates: pageAlternates(locale, paths[kind]),
   }
 }
