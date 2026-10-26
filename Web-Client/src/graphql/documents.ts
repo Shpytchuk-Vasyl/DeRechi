@@ -9,6 +9,7 @@ export const LostItemsQuery = graphql(`
           id
           title
           description
+          language
           date
           compensation {
             amount
@@ -45,6 +46,7 @@ export const FoundItemsQuery = graphql(`
           id
           title
           description
+          language
           date
           compensation {
             amount
@@ -78,6 +80,7 @@ export const LostItemQuery = graphql(`
       id
       title
       description
+      language
       date
       compensation {
         amount
@@ -110,6 +113,7 @@ export const FoundItemQuery = graphql(`
       id
       title
       description
+      language
       date
       compensation {
         amount

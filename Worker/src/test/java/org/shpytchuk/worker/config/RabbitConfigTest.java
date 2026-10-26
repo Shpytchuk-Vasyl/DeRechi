@@ -36,6 +36,7 @@ class RabbitConfigTest {
             assertThat(created.getDate()).isEqualTo(LocalDate.of(2026, 9, 10));
             assertThat(created.getCategory()).isEqualTo(2L);
             assertThat(created.getTitle()).isEqualTo("Wallet");
+            assertThat(created.getLanguage()).as("an event published before the language was stored").isNull();
         });
     }
 
@@ -44,11 +45,13 @@ class RabbitConfigTest {
         Object event = converter.fromMessage(message("ITEM_CREATED",
                 "{\"id\":7,\"date\":\"2026-09-10\",\"category\":2,\"categoryKey\":\"WALLET\",\"lat\":49.84,"
                         + "\"lon\":24.03,\"placeName\":\"Rynok Square\",\"title\":\"Wallet\",\"description\":\"Brown\","
-                        + "\"compensation\":500,\"currency\":\"UAH\",\"image\":\"items/2026/09/a.jpg\"}"));
+                        + "\"language\":\"en\",\"compensation\":500,\"currency\":\"UAH\","
+                        + "\"image\":\"items/2026/09/a.jpg\"}"));
 
         assertThat(event).isInstanceOfSatisfying(ItemCreatedEvent.class, created -> {
             assertThat(created.getId()).isEqualTo(7L);
             assertThat(created.getDescription()).isEqualTo("Brown");
+            assertThat(created.getLanguage()).isEqualTo("en");
         });
     }
 
@@ -57,7 +60,7 @@ class RabbitConfigTest {
         Object event = converter.fromMessage(message("ITEM_UPDATED",
                 "{\"id\":7,\"date\":\"2026-09-10\",\"category\":2,\"categoryKey\":\"WALLET\",\"lat\":49.84,"
                         + "\"lon\":24.03,\"placeName\":\"Rynok Square\",\"title\":\"Wallet\",\"description\":\"Brown\","
-                        + "\"image\":\"items/2026/09/a.jpg\",\"origin\":\"admin\"}"));
+                        + "\"language\":\"en\",\"image\":\"items/2026/09/a.jpg\",\"origin\":\"admin\"}"));
 
         assertThat(event).isInstanceOfSatisfying(ItemUpdatedEvent.class, updated -> {
             assertThat(updated.getId()).isEqualTo(7L);
@@ -65,6 +68,7 @@ class RabbitConfigTest {
             assertThat(updated.getLat()).isEqualTo(49.84);
             assertThat(updated.getTitle()).isEqualTo("Wallet");
             assertThat(updated.getDescription()).isEqualTo("Brown");
+            assertThat(updated.getLanguage()).isEqualTo("en");
         });
     }
 

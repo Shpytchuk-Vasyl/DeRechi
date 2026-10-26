@@ -6,6 +6,7 @@ public record ItemDto(
         Long id,
         String title,
         String description,
+        String language,
         LocalDate date,
         MoneyDto compensation,
         String image,

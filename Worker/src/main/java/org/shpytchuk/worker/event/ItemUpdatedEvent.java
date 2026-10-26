@@ -19,4 +19,5 @@ public class ItemUpdatedEvent implements ItemData {
     private Double lon;
     private String title;
     private String description;
+    private String language;
 }

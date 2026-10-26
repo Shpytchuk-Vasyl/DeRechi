@@ -17,4 +17,6 @@ public interface ItemData {
     String getTitle();
 
     String getDescription();
+
+    String getLanguage();
 }

@@ -22,6 +22,7 @@ public final class ItemMapper {
                 item.getId(),
                 item.getTitle(),
                 item.getDescription(),
+                item.getLanguage(),
                 item.getDate(),
                 toMoney(item),
                 item.getImage(),

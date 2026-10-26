@@ -15,6 +15,7 @@ import org.shpytchuk.clientapi.entity.detail.Place;
 import org.shpytchuk.clientapi.entity.thing.Thing;
 import org.shpytchuk.clientapi.entity.thing.ThingCategory;
 import org.shpytchuk.clientapi.exeption.NotFoundException;
+import org.shpytchuk.clientapi.language.LanguageResolver;
 import org.shpytchuk.clientapi.mapper.ContactInfoMapper;
 import org.shpytchuk.clientapi.mapper.ItemMapper;
 import org.shpytchuk.clientapi.repository.detail.ContactInfoRepository;
@@ -41,6 +42,7 @@ public abstract class ItemService<T extends Thing> {
     private final PlaceRepository placeRepository;
     private final ContactInfoRepository contactInfoRepository;
     private final CountriesProperties countries;
+    private final LanguageResolver languages;
     private final Supplier<T> factory;
     private final boolean imageRequired;
     private final ItemKind kind;
@@ -99,6 +101,7 @@ public abstract class ItemService<T extends Thing> {
         placeRepository.save(place);
 
         buildItemFromInput(input, item, info, category, place, currency);
+        item.setLanguage(languages.resolve(input.title(), input.description()).isoCode());
     }
 
     private static <T extends Thing> void buildItemFromInput(ItemInput input, T item, ContactInfo info, ThingCategory category, Place place, String currency) {

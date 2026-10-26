@@ -18,6 +18,7 @@ public class ItemCreatedEvent {
     public String placeName;
     public String title;
     public String description;
+    public String language;
     public Integer compensation;
     public String currency;
     public String image;
@@ -33,6 +34,7 @@ public class ItemCreatedEvent {
         this.placeName = dto.place().name();
         this.title = dto.title();
         this.description = dto.description();
+        this.language = dto.language();
         MoneyDto money = dto.compensation();
         this.compensation = money == null ? null : money.amount();
         this.currency = money == null ? null : money.currency();

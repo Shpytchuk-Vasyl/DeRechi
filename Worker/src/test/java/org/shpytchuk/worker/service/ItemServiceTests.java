@@ -8,7 +8,6 @@ import org.shpytchuk.worker.entity.detail.Place;
 import org.shpytchuk.worker.entity.lost.LostItem;
 import org.shpytchuk.worker.entity.thing.ThingCategory;
 import org.shpytchuk.worker.event.ItemCreatedEvent;
-import org.shpytchuk.worker.language.LanguageResolver;
 import org.shpytchuk.worker.repository.AbstractRepositoryTests;
 import org.shpytchuk.worker.support.Fixtures;
 import org.springframework.test.context.TestPropertySource;
@@ -26,15 +25,13 @@ class ItemServiceTests extends AbstractRepositoryTests {
     private static final double LAT = 49.8419;
     private static final double LON = 24.0315;
 
-    private static final LanguageResolver LANGUAGES = new LanguageResolver();
-
     private ItemService<LostItem> service;
     private ThingCategory wallets;
     private Place rynok;
 
     @BeforeEach
     void setUp() {
-        service = new ItemService<>(entityManager.getEntityManager(), LostItem.class, LANGUAGES);
+        service = new ItemService<>(entityManager.getEntityManager(), LostItem.class);
         wallets = category("WALLET");
         rynok = place("ChIJrynok", LAT, LON);
     }
@@ -61,7 +58,7 @@ class ItemServiceTests extends AbstractRepositoryTests {
         LostItem byDescription = lost("Purse", "black leather, two zips");
         LostItem byWholeTitle = lost("Black leather wallet", null);
 
-        List<MatchCandidate> found = service.findMostSuitable(event("Black leather wallet"));
+        List<MatchCandidate> found = service.findMostSuitable(event("en", "Black leather wallet"));
 
         assertThat(found).extracting(MatchCandidate::id).containsExactly(byWholeTitle.getId(), byDescription.getId());
         for (MatchCandidate candidate : found) {
@@ -86,7 +83,7 @@ class ItemServiceTests extends AbstractRepositoryTests {
         lost("Знайдено леокарт десь біля форуму", null);
         lost("Знайдено студентський квиток, Марія", null);
 
-        assertThat(service.findMostSuitable(event("паспорт Аля Марія")))
+        assertThat(service.findMostSuitable(event("uk", "паспорт Аля Марія")))
                 .extracting(MatchCandidate::id).containsExactly(passport.getId());
     }
 
@@ -94,14 +91,14 @@ class ItemServiceTests extends AbstractRepositoryTests {
     void aTypoLeavesOnlyOneSharedWord() {
         lost("Знайдено паспорт на ім'я Марія", null);
 
-        assertThat(service.findMostSuitable(event("паспотр Аля Марія"))).isEmpty();
+        assertThat(service.findMostSuitable(event("uk", "паспотр Аля Марія"))).isEmpty();
     }
 
     @Test
     void aOneWordTitleNeedsOneSharedWord() {
         LostItem phone = lost("Знайдено телефон Samsung", null);
 
-        assertThat(service.findMostSuitable(event("Телефон")))
+        assertThat(service.findMostSuitable(event("uk", "Телефон")))
                 .extracting(MatchCandidate::id).containsExactly(phone.getId());
     }
 
@@ -109,7 +106,7 @@ class ItemServiceTests extends AbstractRepositoryTests {
     void aRepeatedWordCountsOnce() {
         lost("Чорний пес", null);
 
-        assertThat(service.findMostSuitable(event("Чорний телефон, чорний чохол"))).isEmpty();
+        assertThat(service.findMostSuitable(event("uk", "Чорний телефон, чорний чохол"))).isEmpty();
     }
 
     @Test
@@ -117,18 +114,18 @@ class ItemServiceTests extends AbstractRepositoryTests {
         LostItem firstNameOnly = lost("Знайдено Леокарту на ім'я Максим Петренко", null);
         LostItem fullName = lost("Знайдено Леокарту на ім'я Столяр Максим", null);
 
-        List<MatchCandidate> found = service.findMostSuitable(event("Загублено Леокарту Столяр Максим"));
+        List<MatchCandidate> found = service.findMostSuitable(event("uk", "Загублено Леокарту Столяр Максим"));
 
         assertThat(found).extracting(MatchCandidate::id).containsExactly(fullName.getId(), firstNameOnly.getId());
         assertThat(found.get(0).rank()).isGreaterThan(found.get(1).rank());
     }
 
     @Test
-    void ranksAUkrainianTitleWithTheUkrainianConfiguration() {
+    void ranksAUkrainianItemWithTheUkrainianConfiguration() {
         LostItem umbrella = lost("Парасолька", null);
         LostItem wallet = lost("Чорний шкіряний гаманець", null);
 
-        List<MatchCandidate> found = service.findMostSuitable(event("Чорний шкіряний гаманець"));
+        List<MatchCandidate> found = service.findMostSuitable(event("uk", "Чорний шкіряний гаманець"));
 
         assertThat(found).extracting(MatchCandidate::id).containsExactly(wallet.getId()).doesNotContain(umbrella.getId());
         assertThat(found.getFirst().rank())
@@ -137,17 +134,33 @@ class ItemServiceTests extends AbstractRepositoryTests {
     }
 
     @Test
-    void ranksAPolishTitleWithThePolishConfiguration() {
+    void ranksAPolishItemWithThePolishConfiguration() {
         LostItem umbrella = lost("Parasolka", null);
         LostItem wallet = lost("Czarny skórzany portfel z dokumentami", null);
 
-        List<MatchCandidate> found = service.findMostSuitable(event("Czarny skórzany portfel z dokumentami"));
+        List<MatchCandidate> found = service.findMostSuitable(event("pl", "Czarny skórzany portfel z dokumentami"));
 
         assertThat(found).extracting(MatchCandidate::id).containsExactly(wallet.getId()).doesNotContain(umbrella.getId());
         assertThat(found.getFirst().rank())
                 .isCloseTo(rank("polish", wallet.getId(), "czarny | skórzany | portfel | z | dokumentami"),
                         within(1e-6))
                 .isPositive();
+    }
+
+    @Test
+    void stemsTheWordsInTheLanguageOfTheNewItem() {
+        LostItem wallet = lost("Wallet", null);
+
+        assertThat(service.findMostSuitable(event("en", "Wallets")))
+                .extracting(MatchCandidate::id).containsExactly(wallet.getId());
+    }
+
+    @Test
+    void comparesWholeWordsWhenTheLanguageOfTheNewItemIsUnknown() {
+        lost("Wallet", null);
+
+        assertThat(service.findMostSuitable(event("Wallets"))).isEmpty();
+        assertThat(service.findMostSuitable(event("pt", "Wallets"))).isEmpty();
     }
 
     @Test
@@ -163,8 +176,8 @@ class ItemServiceTests extends AbstractRepositoryTests {
     void findsACandidateByTheWordsOfTheDescription() {
         LostItem wallet = lost("Black leather wallet", null);
 
-        assertThat(service.findMostSuitable(event("Purse", null))).isEmpty();
-        assertThat(service.findMostSuitable(event("Purse", "black leather, two zips")))
+        assertThat(service.findMostSuitable(event("en", "Purse", null))).isEmpty();
+        assertThat(service.findMostSuitable(event("en", "Purse", "black leather, two zips")))
                 .extracting(MatchCandidate::id).containsExactly(wallet.getId());
     }
 
@@ -173,7 +186,7 @@ class ItemServiceTests extends AbstractRepositoryTests {
         LostItem titleOnly = lost("Purse with zips", null);
         LostItem titleAndDescription = lost("Purse", "black leather, two zips");
 
-        List<MatchCandidate> found = service.findMostSuitable(event("Purse", "black leather, two zips"));
+        List<MatchCandidate> found = service.findMostSuitable(event("en", "Purse", "black leather, two zips"));
 
         assertThat(found).extracting(MatchCandidate::id)
                 .containsExactly(titleAndDescription.getId(), titleOnly.getId());
@@ -186,7 +199,7 @@ class ItemServiceTests extends AbstractRepositoryTests {
     void searchesByTheDescriptionWhenTheTitleIsBlank() {
         LostItem wallet = lost("Black leather wallet", null);
 
-        assertThat(service.findMostSuitable(event("  ", "black leather")))
+        assertThat(service.findMostSuitable(event("en", "  ", "black leather")))
                 .extracting(MatchCandidate::id).containsExactly(wallet.getId());
     }
 
@@ -224,8 +237,14 @@ class ItemServiceTests extends AbstractRepositoryTests {
         return Fixtures.created(1000L, title, DATE, wallets.getId(), LAT, LON);
     }
 
-    private ItemCreatedEvent event(String title, String description) {
+    private ItemCreatedEvent event(String language, String title) {
         ItemCreatedEvent event = event(title);
+        event.setLanguage(language);
+        return event;
+    }
+
+    private ItemCreatedEvent event(String language, String title, String description) {
+        ItemCreatedEvent event = event(language, title);
         event.setDescription(description);
         return event;
     }

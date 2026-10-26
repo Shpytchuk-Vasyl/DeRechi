@@ -1,4 +1,4 @@
-package org.shpytchuk.worker.language;
+package org.shpytchuk.adminapi.language;
 
 import com.google.common.base.Optional;
 import com.optimaize.langdetect.LanguageDetector;
@@ -13,13 +13,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class LanguageResolver {
-
-    private static final List<String> DETECT_ONLY_CODES = List.of();
 
     private final LanguageDetector detector;
     private final TextObjectFactory textObjectFactory;
@@ -31,8 +30,12 @@ public class LanguageResolver {
         this.textObjectFactory = CommonTextObjectFactories.forDetectingShortCleanText();
     }
 
-    public SearchLanguage resolve(String text) {
-        if (!StringUtils.hasText(text)) {
+    public SearchLanguage resolve(String... texts) {
+        String text = Stream.of(texts)
+                .filter(StringUtils::hasText)
+                .map(String::strip)
+                .collect(Collectors.joining(" "));
+        if (text.isEmpty()) {
             return SearchLanguage.SIMPLE;
         }
 
@@ -43,11 +46,11 @@ public class LanguageResolver {
     }
 
     private static List<LanguageProfile> readProfiles() {
-        List<String> codes = new ArrayList<>(SearchLanguage.isoCodes());
-        codes.addAll(DETECT_ONLY_CODES);
-
+        List<LdLocale> locales = SearchLanguage.detectable().stream()
+                .map(language -> LdLocale.fromString(language.isoCode()))
+                .toList();
         try {
-            return new LanguageProfileReader().readBuiltIn(codes.stream().map(LdLocale::fromString).toList());
+            return new LanguageProfileReader().readBuiltIn(locales);
         } catch (IOException e) {
             throw new IllegalStateException("Can't read language profile", e);
         }

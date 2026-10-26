@@ -61,6 +61,10 @@
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-spatial</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.optimaize.languagedetector</groupId>
+            <artifactId>language-detector</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>

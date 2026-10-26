@@ -43,6 +43,10 @@ public class Thing {
     @Column(nullable = false, length = 3)
     private String currency;
 
+    @Size(min = 2, max = 2)
+    @Column(length = 2)
+    private String language;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(nullable = false)
     private ContactInfo info;

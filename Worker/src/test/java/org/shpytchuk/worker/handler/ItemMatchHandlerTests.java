@@ -9,7 +9,6 @@ import org.shpytchuk.worker.entity.lost.LostItem;
 import org.shpytchuk.worker.entity.thing.ThingCategory;
 import org.shpytchuk.worker.event.ItemCreatedEvent;
 import org.shpytchuk.worker.event.ItemUpdatedEvent;
-import org.shpytchuk.worker.language.LanguageResolver;
 import org.shpytchuk.worker.repository.AbstractRepositoryTests;
 import org.shpytchuk.worker.service.ItemKinds;
 import org.shpytchuk.worker.support.Fixtures;
@@ -26,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Both handler beans on the real schema: the query, the rank, the {@code INSERT ... unnest} into similar_item and,
  * for an edited notice, the delete of the candidates nobody was notified about.
  */
-@Import({ItemSearchConfig.class, ItemKinds.class, LanguageResolver.class})
+@Import({ItemSearchConfig.class, ItemKinds.class})
 class ItemMatchHandlerTests extends AbstractRepositoryTests {
 
     private static final LocalDate DATE = LocalDate.of(2026, 9, 10);

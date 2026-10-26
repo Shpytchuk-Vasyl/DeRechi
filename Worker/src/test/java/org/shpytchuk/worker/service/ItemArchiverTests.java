@@ -55,6 +55,7 @@ class ItemArchiverTests extends AbstractRepositoryTests {
     @Test
     void movesALostItemIntoHistoryWithItsClaimsAndDropsItsMatches() {
         LostItem lost = item(new LostItem(), "Black wallet", "with a photo inside", DATE, wallets, rynok);
+        lost.setLanguage("en");
         LostItem untouched = item(new LostItem(), "Keys", null, DATE, wallets, rynok);
         FoundItem candidate = item(new FoundItem(), "Wallet", null, DATE, wallets, rynok);
         match(candidate, lost);
@@ -70,6 +71,7 @@ class ItemArchiverTests extends AbstractRepositoryTests {
         assertThat(history).containsEntry("title", "Black wallet")
                 .containsEntry("description", "with a photo inside")
                 .containsEntry("currency", "UAH")
+                .containsEntry("language", "en")
                 .containsEntry("info_id", lost.getInfo().getId())
                 .containsEntry("archived_at", Timestamp.from(NOW));
 

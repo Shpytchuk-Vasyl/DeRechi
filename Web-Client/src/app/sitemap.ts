@@ -8,7 +8,7 @@ import { CACHE } from "@/lib/cache"
 import { CITIES } from "@/lib/cities"
 import { toIsoDate } from "@/lib/intl/dates"
 import { ITEM_KINDS, type ItemKind, isItemKind } from "@/lib/kinds"
-import { absoluteUrl, ITEM_LOCALE, isStale, sitemapIds } from "@/lib/seo"
+import { absoluteUrl, isStale, itemLocale, sitemapIds } from "@/lib/seo"
 
 export const revalidate = 3600
 
@@ -112,7 +112,7 @@ async function itemEntries(kind: ItemKind, back: number): Promise<MetadataRoute.
     .filter((item) => !isStale(item.date))
     .slice(0, MAX_URLS)
     .map((item) => ({
-      url: absoluteUrl(ITEM_LOCALE, paths.item(kind, item.id)),
+      url: absoluteUrl(itemLocale(item.language), paths.item(kind, item.id)),
       // The notice's own date: there is no "updated at" in the API yet (see README).
       lastModified: item.date,
       priority: 0.6,

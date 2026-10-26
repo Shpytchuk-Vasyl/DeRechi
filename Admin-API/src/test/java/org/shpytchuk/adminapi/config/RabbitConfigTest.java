@@ -48,13 +48,15 @@ class RabbitConfigTest {
     @Test
     void labelsAnUpdatedItemWithItsTypeId() {
         Message message = converter.toMessage(new ItemUpdatedEvent(7L, LocalDate.of(2026, 9, 10), 2L, "WALLET",
-                49.84, 24.03, "Rynok Square", "Wallet", "Brown", null, "UAH", null, "admin"), new MessageProperties());
+                49.84, 24.03, "Rynok Square", "Wallet", "Brown", "en", null, "UAH", null, "admin"),
+                new MessageProperties());
 
         assertThat(message.getMessageProperties().getHeaders()).containsEntry("__TypeId__", "ITEM_UPDATED");
         assertThat(body(message))
                 .contains("\"id\":7")
                 .contains("\"categoryKey\":\"WALLET\"")
                 .contains("\"title\":\"Wallet\"")
+                .contains("\"language\":\"en\"")
                 .contains("\"origin\":\"admin\"");
     }
 

@@ -13,6 +13,7 @@ import org.shpytchuk.adminapi.entity.thing.Thing;
 import org.shpytchuk.adminapi.entity.thing.ThingCategory;
 import org.shpytchuk.adminapi.exception.NotFoundException;
 import org.shpytchuk.adminapi.form.ItemForm;
+import org.shpytchuk.adminapi.language.LanguageResolver;
 import org.shpytchuk.adminapi.repository.detail.PlaceRepository;
 import org.shpytchuk.adminapi.repository.thing.ThingCategoryRepository;
 import org.springframework.stereotype.Component;
@@ -31,6 +32,7 @@ public class ItemFormApplier {
     private final ThingCategoryRepository categoryRepository;
     private final PlaceRepository placeRepository;
     private final CountriesProperties countries;
+    private final LanguageResolver languages;
 
     public void apply(ItemForm form, Thing item, ContactInfo info) {
         ThingCategory category = categoryRepository.findById(form.getCategoryId())
@@ -46,6 +48,7 @@ public class ItemFormApplier {
 
         item.setTitle(form.getTitle());
         item.setDescription(StringUtils.hasText(form.getDescription()) ? form.getDescription() : null);
+        item.setLanguage(languages.resolve(item.getTitle(), item.getDescription()).isoCode());
         item.setImage(StringUtils.hasText(form.getImage()) ? form.getImage() : null);
         item.setDate(form.getDate());
         item.setCompensation(form.getRewardKind() == null

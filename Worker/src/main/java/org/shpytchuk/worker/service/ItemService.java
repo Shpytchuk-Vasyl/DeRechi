@@ -7,7 +7,6 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Root;
 import lombok.AllArgsConstructor;
 import org.shpytchuk.worker.entity.thing.Thing;
-import org.shpytchuk.worker.language.LanguageResolver;
 import org.shpytchuk.worker.language.SearchLanguage;
 import org.shpytchuk.worker.specification.ThingSpecifications;
 import org.springframework.util.StringUtils;
@@ -23,11 +22,10 @@ public class ItemService<T extends Thing> {
 
     private final EntityManager entityManager;
     private final Class<T> type;
-    private final LanguageResolver languageResolver;
 
     public List<MatchCandidate> findMostSuitable(ItemData event) {
         String text = searchText(event);
-        SearchLanguage language = languageResolver.resolve(text);
+        SearchLanguage language = SearchLanguage.fromIsoCode(event.getLanguage());
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<MatchCandidate> query = cb.createQuery(MatchCandidate.class);
         Root<T> root = query.from(type);

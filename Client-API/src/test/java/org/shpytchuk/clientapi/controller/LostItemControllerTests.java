@@ -105,6 +105,21 @@ class LostItemControllerTests extends AbstractGraphQlTests {
     }
 
     @Test
+    void tellsTheLanguageTheNoticeIsWrittenIn() {
+        Map<String, Object> input = input("Загубила чорний шкіряний гаманець", wallet.getId());
+        input.put("description", "з посвідченням біля вокзалу");
+        Long id = tester.document(CREATE)
+                .variable("input", input)
+                .execute()
+                .path("createLostItem.id").entity(Long.class).get();
+
+        tester.document("query Read($id: ID!) { lostItem(id: $id) { language } }")
+                .variable("id", id)
+                .execute()
+                .path("lostItem.language").entity(String.class).isEqualTo("uk");
+    }
+
+    @Test
     void returnsNullForAnUnknownId() {
         tester.document("{ lostItem(id: -1) { id } }")
                 .execute()

@@ -43,6 +43,9 @@ public abstract class Thing {
     @Column(nullable = false, length = 3)
     private String currency;
 
+    @Column(length = 2)
+    private String language;
+
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private ContactInfo info;

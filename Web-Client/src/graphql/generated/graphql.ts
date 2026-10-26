@@ -88,7 +88,7 @@ export type LostItemsQueryVariables = Exact<{
 }>;
 
 
-export type LostItemsQuery = { lostItems: { edges: Array<{ cursor: string, node: { id: string, title: string, description: string | null, date: string, image: string | null, compensation: { amount: number, currency: string } | null, category: { id: string, key: string }, place: { id: string, name: string, lat: number | null, lon: number | null, countryCode: string } } }>, pageInfo: { hasNextPage: boolean, endCursor: string | null } } };
+export type LostItemsQuery = { lostItems: { edges: Array<{ cursor: string, node: { id: string, title: string, description: string | null, language: string | null, date: string, image: string | null, compensation: { amount: number, currency: string } | null, category: { id: string, key: string }, place: { id: string, name: string, lat: number | null, lon: number | null, countryCode: string } } }>, pageInfo: { hasNextPage: boolean, endCursor: string | null } } };
 
 export type FoundItemsQueryVariables = Exact<{
   filter?: ItemFilterInput | null | undefined;
@@ -98,21 +98,21 @@ export type FoundItemsQueryVariables = Exact<{
 }>;
 
 
-export type FoundItemsQuery = { foundItems: { edges: Array<{ cursor: string, node: { id: string, title: string, description: string | null, date: string, image: string, compensation: { amount: number, currency: string } | null, category: { id: string, key: string }, place: { id: string, name: string, lat: number | null, lon: number | null, countryCode: string } } }>, pageInfo: { hasNextPage: boolean, endCursor: string | null } } };
+export type FoundItemsQuery = { foundItems: { edges: Array<{ cursor: string, node: { id: string, title: string, description: string | null, language: string | null, date: string, image: string, compensation: { amount: number, currency: string } | null, category: { id: string, key: string }, place: { id: string, name: string, lat: number | null, lon: number | null, countryCode: string } } }>, pageInfo: { hasNextPage: boolean, endCursor: string | null } } };
 
 export type LostItemQueryVariables = Exact<{
   id: string | number;
 }>;
 
 
-export type LostItemQuery = { lostItem: { id: string, title: string, description: string | null, date: string, image: string | null, compensation: { amount: number, currency: string } | null, category: { id: string, key: string }, place: { id: string, name: string, lat: number | null, lon: number | null, countryCode: string }, contact: { id: string, phone: string | null, email: string | null } } | null };
+export type LostItemQuery = { lostItem: { id: string, title: string, description: string | null, language: string | null, date: string, image: string | null, compensation: { amount: number, currency: string } | null, category: { id: string, key: string }, place: { id: string, name: string, lat: number | null, lon: number | null, countryCode: string }, contact: { id: string, phone: string | null, email: string | null } } | null };
 
 export type FoundItemQueryVariables = Exact<{
   id: string | number;
 }>;
 
 
-export type FoundItemQuery = { foundItem: { id: string, title: string, description: string | null, date: string, image: string, compensation: { amount: number, currency: string } | null, category: { id: string, key: string }, place: { id: string, name: string, lat: number | null, lon: number | null, countryCode: string }, contact: { id: string, phone: string | null, email: string | null } } | null };
+export type FoundItemQuery = { foundItem: { id: string, title: string, description: string | null, language: string | null, date: string, image: string, compensation: { amount: number, currency: string } | null, category: { id: string, key: string }, place: { id: string, name: string, lat: number | null, lon: number | null, countryCode: string }, contact: { id: string, phone: string | null, email: string | null } } | null };
 
 export type CategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -202,6 +202,7 @@ export const LostItemsDocument = new TypedDocumentString(`
         id
         title
         description
+        language
         date
         compensation {
           amount
@@ -237,6 +238,7 @@ export const FoundItemsDocument = new TypedDocumentString(`
         id
         title
         description
+        language
         date
         compensation {
           amount
@@ -269,6 +271,7 @@ export const LostItemDocument = new TypedDocumentString(`
     id
     title
     description
+    language
     date
     compensation {
       amount
@@ -300,6 +303,7 @@ export const FoundItemDocument = new TypedDocumentString(`
     id
     title
     description
+    language
     date
     compensation {
       amount

@@ -19,6 +19,7 @@ export type ItemSummary = {
   id: string
   title: string
   description?: string | null
+  language?: string | null
   date: string
   compensation?: Money | null
   image?: string | null

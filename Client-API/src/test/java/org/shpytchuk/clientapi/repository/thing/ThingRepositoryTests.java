@@ -147,12 +147,24 @@ class ThingRepositoryTests extends AbstractRepositoryTests {
     }
 
     @Test
-    void searchFilterStemsWordsOfOtherSupportedLanguages() {
-        persistLost("Black wallet", SEPTEMBER_1, wallet, rynok);
-        persistLost("Car keys", SEPTEMBER_1, keys, rynok);
+    void searchFilterStemsTheWordsByTheLanguageOfTheItem() {
+        persistLost("Black wallet", SEPTEMBER_1, wallet, rynok).setLanguage("en");
+        persistLost("Schwarze Geldbörse", SEPTEMBER_1, wallet, rynok).setLanguage("de");
+        persistLost("Car keys", SEPTEMBER_1, keys, rynok).setLanguage("en");
         entityManager.flush();
 
         assertThat(titlesMatching(searching("wallets"))).containsExactly("Black wallet");
+        assertThat(titlesMatching(searching("Geldbörsen"))).containsExactly("Schwarze Geldbörse");
+    }
+
+    @Test
+    void searchFilterDoesNotStemTheWordsByAnotherLanguage() {
+        persistLost("Black wallet", SEPTEMBER_1, wallet, rynok).setLanguage("uk");
+        persistLost("Brown wallet", SEPTEMBER_1, wallet, rynok);
+        entityManager.flush();
+
+        assertThat(titlesMatching(searching("wallets"))).isEmpty();
+        assertThat(titlesMatching(searching("wallet"))).containsExactlyInAnyOrder("Black wallet", "Brown wallet");
     }
 
     @Test

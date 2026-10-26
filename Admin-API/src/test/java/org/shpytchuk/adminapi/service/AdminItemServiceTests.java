@@ -20,6 +20,7 @@ import org.shpytchuk.adminapi.event.ItemUpdatedEvent;
 import org.shpytchuk.adminapi.exception.NotFoundException;
 import org.shpytchuk.adminapi.form.ItemFilter;
 import org.shpytchuk.adminapi.form.ItemForm;
+import org.shpytchuk.adminapi.language.LanguageResolver;
 import org.shpytchuk.adminapi.mapper.ItemFormApplier;
 import org.shpytchuk.adminapi.repository.AbstractRepositoryTests;
 import org.shpytchuk.adminapi.service.found.FoundItemAdminService;
@@ -49,7 +50,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 @Import({LostItemAdminService.class, FoundItemAdminService.class, LostItemHistoryAdminService.class,
-        ItemFormApplier.class, CountriesConfig.class, AdminItemServiceTests.Properties.class})
+        ItemFormApplier.class, LanguageResolver.class, CountriesConfig.class, AdminItemServiceTests.Properties.class})
 class AdminItemServiceTests extends AbstractRepositoryTests {
 
     private static final Instant NOW = Instant.parse("2026-10-01T12:00:00Z");
@@ -185,6 +186,55 @@ class AdminItemServiceTests extends AbstractRepositoryTests {
                         ItemUpdatedEvent::lat, ItemUpdatedEvent::lon, ItemUpdatedEvent::currency, ItemUpdatedEvent::origin)
                 .containsExactly(id, "Чорний гаманець", keys.getId(), "KEYS", "Площа Ринок", 49.8419, 24.0315, "UAH",
                         "admin");
+    }
+
+    @Test
+    void detectsTheLanguageOfTheTitleAndTheDescription() {
+        ItemForm form = Fixtures.form("Гаманець", wallets.getId(), "ChIJrynok", "UA");
+        form.setDescription("Чорний шкіряний, з посвідченням водія, загубила біля вокзалу");
+        Long id = lostItems.create(form).getId();
+        entityManager.flush();
+        entityManager.clear();
+
+        assertThat(entityManager.find(LostItem.class, id).getLanguage()).isEqualTo("uk");
+    }
+
+    @Test
+    void detectsTheLanguageAgainWhenTheTextIsEdited() {
+        Long id = lostItems.create(Fixtures.form("Загубила чорний шкіряний гаманець з посвідченням біля вокзалу",
+                wallets.getId(), "ChIJrynok", "UA")).getId();
+        entityManager.flush();
+        entityManager.clear();
+
+        ItemForm form = lostItems.form(id);
+        form.setTitle("Zgubiłam czarny skórzany portfel z prawem jazdy przy dworcu");
+        lostItems.update(id, form);
+        entityManager.flush();
+        entityManager.clear();
+
+        assertThat(entityManager.find(LostItem.class, id).getLanguage()).isEqualTo("pl");
+        ArgumentCaptor<ItemUpdatedEvent> event = ArgumentCaptor.forClass(ItemUpdatedEvent.class);
+        verify(publisher).publish(eq("notice.status.exchange"), eq("notice.lost.updated"), event.capture());
+        assertThat(event.getValue().language()).isEqualTo("pl");
+    }
+
+    @Test
+    void detectsTheLanguageOfAnArchivedNoticeToo() {
+        Long id = lostHistory.create(Fixtures.form("Zgubiłam czarny skórzany portfel z prawem jazdy przy dworcu",
+                wallets.getId(), "ChIJrynok", "UA")).getId();
+        entityManager.flush();
+        entityManager.clear();
+
+        assertThat(entityManager.find(LostItemHistory.class, id).getLanguage()).isEqualTo("pl");
+    }
+
+    @Test
+    void storesNoLanguageWhenTheTextHasNothingToDetect() {
+        Long id = lostItems.create(Fixtures.form("12345", wallets.getId(), "ChIJrynok", "UA")).getId();
+        entityManager.flush();
+        entityManager.clear();
+
+        assertThat(entityManager.find(LostItem.class, id).getLanguage()).isNull();
     }
 
     @Test

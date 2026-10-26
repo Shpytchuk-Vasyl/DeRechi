@@ -1,6 +1,5 @@
 package org.shpytchuk.clientapi.specification;
 
-import jakarta.persistence.criteria.Predicate;
 import org.hibernate.query.criteria.HibernateCriteriaBuilder;
 import org.shpytchuk.clientapi.config.FullTextFunctionContributor;
 import org.shpytchuk.clientapi.entity.thing.Thing;
@@ -34,9 +33,8 @@ public final class ThingSpecifications {
         if (!StringUtils.hasText(search))
             return null;
 
-        return (root, query, cb) -> cb.or(FullTextFunctionContributor.SEARCH_CONFIGS.stream()
-                .map(config -> cb.isTrue(cb.function(FullTextFunctionContributor.matchesWordsFunction(config), Boolean.class,
-                        root.get("title"), root.get("description"), ((HibernateCriteriaBuilder) cb).value(search))))
-                .toArray(Predicate[]::new));
+        return (root, query, cb) -> cb.isTrue(cb.function(FullTextFunctionContributor.MATCHES_WORDS_FUNCTION, Boolean.class,
+                root.get("language"), root.get("title"), root.get("description"),
+                ((HibernateCriteriaBuilder) cb).value(search)));
     }
 }

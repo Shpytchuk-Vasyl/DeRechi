@@ -8,8 +8,8 @@ import java.time.LocalDate;
 
 @EventType("ITEM_CREATED")
 public record ItemCreatedEvent(Long id, LocalDate date, Long category, String categoryKey, Double lat, Double lon,
-                               String placeName, String title, String description, Integer compensation,
-                               String currency, String image, String origin) {
+                               String placeName, String title, String description, String language,
+                               Integer compensation, String currency, String image, String origin) {
 
     private static final String ORIGIN = "admin";
 
@@ -18,7 +18,8 @@ public record ItemCreatedEvent(Long id, LocalDate date, Long category, String ca
         Point point = place.getCoordinate();
         return new ItemCreatedEvent(item.getId(), item.getDate(), item.getCategory().getId(),
                 item.getCategory().getKey(), point.getY(), point.getX(), place.getName(), item.getTitle(),
-                item.getDescription(), item.getCompensation(), item.getCurrency(), item.getImage(), ORIGIN);
+                item.getDescription(), item.getLanguage(), item.getCompensation(), item.getCurrency(), item.getImage(),
+                ORIGIN);
     }
 
     @Override

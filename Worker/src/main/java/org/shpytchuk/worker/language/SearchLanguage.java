@@ -1,7 +1,6 @@
 package org.shpytchuk.worker.language;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 public enum SearchLanguage {
@@ -43,13 +42,6 @@ public enum SearchLanguage {
 
     public String sharesWordsFunction() {
         return SHARES_WORDS_FUNCTION_PREFIX + regconfig;
-    }
-
-    public static List<String> isoCodes() {
-        return Arrays.stream(values())
-                .map(language -> language.isoCode)
-                .filter(Objects::nonNull)
-                .toList();
     }
 
     public static SearchLanguage fromIsoCode(String isoCode) {

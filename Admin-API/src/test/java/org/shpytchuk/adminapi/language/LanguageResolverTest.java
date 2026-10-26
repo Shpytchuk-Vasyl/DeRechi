@@ -1,5 +1,6 @@
-package org.shpytchuk.worker.language;
+package org.shpytchuk.adminapi.language;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -22,14 +23,33 @@ class LanguageResolverTest {
             "Portafoglio nero di pelle perso vicino alla stazione con la patente, ITALIAN",
             "Zgubiłam czarny skórzany portfel z prawem jazdy przy dworcu, POLISH"
     })
-    void picksTheFullTextConfigurationOfTheTitleLanguage(String title, SearchLanguage expected) {
-        assertThat(RESOLVER.resolve(title)).isEqualTo(expected);
+    void detectsTheLanguageTheTextIsWrittenIn(String text, SearchLanguage expected) {
+        assertThat(RESOLVER.resolve(text)).isEqualTo(expected);
+    }
+
+    @Test
+    void readsTheTitleAndTheDescriptionTogether() {
+        assertThat(RESOLVER.resolve("Гаманець", "Чорний шкіряний, з посвідченням водія, загубила біля вокзалу"))
+                .isEqualTo(SearchLanguage.UKRAINIAN);
+    }
+
+    @Test
+    void skipsAMissingDescription() {
+        assertThat(RESOLVER.resolve("Zgubiłam czarny skórzany portfel z prawem jazdy przy dworcu", null))
+                .isEqualTo(SearchLanguage.POLISH);
     }
 
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {"   ", "12345", "!!!"})
-    void fallsBackToSimpleWhenThereIsNothingToDetect(String title) {
-        assertThat(RESOLVER.resolve(title)).isEqualTo(SearchLanguage.SIMPLE);
+    void fallsBackToSimpleWhenThereIsNothingToDetect(String text) {
+        assertThat(RESOLVER.resolve(text, text)).isEqualTo(SearchLanguage.SIMPLE);
+    }
+
+    @Test
+    void simpleHasNoIsoCodeToStore() {
+        assertThat(SearchLanguage.SIMPLE.isoCode()).isNull();
+        assertThat(SearchLanguage.fromIsoCode(null)).isEqualTo(SearchLanguage.SIMPLE);
+        assertThat(SearchLanguage.fromIsoCode("pt")).isEqualTo(SearchLanguage.SIMPLE);
     }
 }

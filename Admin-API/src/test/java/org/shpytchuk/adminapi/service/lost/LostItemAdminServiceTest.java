@@ -19,6 +19,7 @@ import org.shpytchuk.adminapi.event.ItemDeletedEvent;
 import org.shpytchuk.adminapi.event.ItemUpdatedEvent;
 import org.shpytchuk.adminapi.exception.NotFoundException;
 import org.shpytchuk.adminapi.form.ItemForm;
+import org.shpytchuk.adminapi.language.LanguageResolver;
 import org.shpytchuk.adminapi.mapper.ItemFormApplier;
 import org.shpytchuk.adminapi.repository.detail.ContactInfoRepository;
 import org.shpytchuk.adminapi.repository.detail.PlaceRepository;
@@ -54,6 +55,7 @@ import static org.mockito.Mockito.when;
 class LostItemAdminServiceTest {
 
     private static final Instant CREATED = Instant.parse("2026-09-01T10:00:00Z");
+    private static final LanguageResolver LANGUAGES = new LanguageResolver();
 
     private LostItemRepository repository;
     private ContactInfoRepository contactInfoRepository;
@@ -76,7 +78,7 @@ class LostItemAdminServiceTest {
         rabbitTemplate = mock(RabbitTemplate.class);
         publisher = mock(AfterCommitPublisher.class);
         ItemFormApplier applier = new ItemFormApplier(categoryRepository, placeRepository,
-                new CountriesProperties(List.of("UA", "PL"), "UA"));
+                new CountriesProperties(List.of("UA", "PL"), "UA"), LANGUAGES);
         service = new LostItemAdminService(repository, claimRepository, contactInfoRepository, applier,
                 similarItemRepository, rabbitTemplate, new ArchiveProperties("notice.action.exchange"),
                 new NoticeStatusProperties("notice.status.exchange"), publisher);
@@ -115,6 +117,22 @@ class LostItemAdminServiceTest {
                         ItemCreatedEvent::categoryKey, ItemCreatedEvent::lat, ItemCreatedEvent::lon,
                         ItemCreatedEvent::placeName, ItemCreatedEvent::title, ItemCreatedEvent::origin)
                 .containsExactly(7L, 1L, "KEYS", 52.2, 21.0, "Park", "Рюкзак", "admin");
+    }
+
+    @Test
+    void createAnnouncesTheLanguageTheNoticeIsWrittenIn() {
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(new ThingCategory()));
+        when(placeRepository.save(any())).thenAnswer(call -> call.getArgument(0));
+        when(repository.save(any())).thenAnswer(call -> call.getArgument(0));
+        ItemForm form = form("owner@example.com");
+        form.setTitle("Zgubiłam czarny skórzany portfel z prawem jazdy przy dworcu");
+
+        LostItem item = service.create(form);
+
+        ArgumentCaptor<ItemCreatedEvent> event = ArgumentCaptor.forClass(ItemCreatedEvent.class);
+        verify(publisher).publish(eq("notice.status.exchange"), eq("notice.lost.created"), event.capture());
+        assertThat(item.getLanguage()).isEqualTo("pl");
+        assertThat(event.getValue().language()).isEqualTo("pl");
     }
 
     @Test
@@ -248,7 +266,7 @@ class LostItemAdminServiceTest {
         LostItemHistoryAdminService archive = new LostItemHistoryAdminService(
                 historyRepository, claimRepository, contactInfoRepository,
                 new ItemFormApplier(mock(ThingCategoryRepository.class), mock(PlaceRepository.class),
-                        new CountriesProperties(List.of("UA"), "UA")));
+                        new CountriesProperties(List.of("UA"), "UA"), LANGUAGES));
 
         Map<Long, List<ClaimView>> claims = archive.claims(List.of(500L));
 

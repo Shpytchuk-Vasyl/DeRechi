@@ -26,6 +26,7 @@ class ItemMapperTest {
 
         assertThat(dto.title()).isEqualTo("Ключі");
         assertThat(dto.description()).isEqualTo("Звʼязка з брелоком");
+        assertThat(dto.language()).isEqualTo("uk");
         assertThat(dto.date()).isEqualTo(LocalDate.of(2026, 9, 1));
         assertThat(dto.compensation().amount()).isEqualTo(500);
         assertThat(dto.compensation().currency()).isEqualTo("UAH");
@@ -86,6 +87,14 @@ class ItemMapperTest {
     }
 
     @Test
+    void leavesTheLanguageNullWhenItWasNotDetected() {
+        LostItem item = item(point(49.8419, 24.0315));
+        item.setLanguage(null);
+
+        assertThat(ItemMapper.toDto(item).language()).isNull();
+    }
+
+    @Test
     void toleratesPlaceWithoutCoordinate() {
         ItemDto dto = ItemMapper.toDto(item(null));
 
@@ -117,6 +126,7 @@ class ItemMapperTest {
         item.setId(1L);
         item.setTitle("Ключі");
         item.setDescription("Звʼязка з брелоком");
+        item.setLanguage("uk");
         item.setDate(LocalDate.of(2026, 9, 1));
         item.setCompensation(500);
         item.setCurrency("UAH");

@@ -12,6 +12,7 @@ import org.shpytchuk.clientapi.entity.detail.Place;
 import org.shpytchuk.clientapi.entity.thing.ThingCategory;
 import org.shpytchuk.clientapi.exeption.NotFoundException;
 import org.shpytchuk.clientapi.input.*;
+import org.shpytchuk.clientapi.language.LanguageResolver;
 import org.shpytchuk.clientapi.repository.detail.ContactInfoRepository;
 import org.shpytchuk.clientapi.repository.detail.PlaceRepository;
 import org.shpytchuk.clientapi.repository.found.FoundItemRepository;
@@ -40,7 +41,7 @@ import static org.shpytchuk.clientapi.support.Fixtures.*;
 
 @DataJpaTest(properties = "spring.jpa.hibernate.ddl-auto=validate")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import({LostItemService.class, FoundItemService.class, ReferenceService.class})
+@Import({LostItemService.class, FoundItemService.class, ReferenceService.class, LanguageResolver.class})
 @EnableConfigurationProperties(CountriesProperties.class)
 class ItemServiceTests extends AbstractPostgresTests {
 
@@ -135,6 +136,36 @@ class ItemServiceTests extends AbstractPostgresTests {
 
             assertThat(lostItemRepository.findWithDetailsById(dto.id()).orElseThrow().getImage())
                     .isNull();
+        }
+    }
+
+    @Nested
+    class Language {
+
+        @Test
+        void storesTheLanguageOfTheTitleAndTheDescription() {
+            ItemDto dto = lostService.create(written("Загубила чорний шкіряний гаманець", "з посвідченням біля вокзалу"));
+            entityManager.flush();
+            entityManager.clear();
+
+            assertThat(lostItemRepository.findById(dto.id()).orElseThrow().getLanguage()).isEqualTo("uk");
+            assertThat(dto.language()).isEqualTo("uk");
+        }
+
+        @Test
+        void storesALanguageTheSiteHasNoLocaleFor() {
+            ItemDto dto = lostService.create(written("Потерял чёрный кожаный кошелёк", "с правами возле вокзала"));
+
+            assertThat(dto.language()).isEqualTo("ru");
+        }
+
+        @Test
+        void leavesTheLanguageEmptyWhenTheTextHasNothingToDetect() {
+            ItemDto dto = lostService.create(written("12345", null));
+            entityManager.flush();
+            entityManager.clear();
+
+            assertThat(lostItemRepository.findById(dto.id()).orElseThrow().getLanguage()).isNull();
         }
     }
 
@@ -273,6 +304,18 @@ class ItemServiceTests extends AbstractPostgresTests {
 
     private ItemInput input(MoneyInput compensation, String countryCode) {
         return input("keys.png", documents.getId(), compensation, countryCode);
+    }
+
+    private ItemInput written(String title, String description) {
+        return new ItemInput(
+                title,
+                description,
+                SEPTEMBER_1,
+                null,
+                null,
+                documents.getId(),
+                new PlaceInput("ChIJplaceId", "Площа Ринок", 49.8419, 24.0315, "UA"),
+                new ItemContactInfoInput("+380671234567", "finder@example.com", List.of(), null, null));
     }
 
     private static ItemInput input(String image, Long categoryId) {

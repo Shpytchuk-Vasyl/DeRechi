@@ -10,6 +10,7 @@ public final class ItemMapper {
     public static <T extends Thing> T copy(Thing from, T to) {
         to.setTitle(from.getTitle());
         to.setDescription(from.getDescription());
+        to.setLanguage(from.getLanguage());
         to.setImage(from.getImage());
         to.setDate(from.getDate());
         to.setCompensation(from.getCompensation());

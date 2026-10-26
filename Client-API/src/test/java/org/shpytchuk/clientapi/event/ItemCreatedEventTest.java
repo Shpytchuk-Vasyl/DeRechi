@@ -11,7 +11,8 @@ class ItemCreatedEventTest {
 
     @Test
     void flattensDtoIntoTheEventPayload() {
-        ItemDto dto = new ItemDto(1L, "Ключі", "опис", LocalDate.of(2026, 9, 1), new MoneyDto(500, "UAH"), "keys.png",
+        ItemDto dto = new ItemDto(1L, "Ключі", "опис", "uk", LocalDate.of(2026, 9, 1), new MoneyDto(500, "UAH"),
+                "keys.png",
                 new CategoryDto(2L, "keys"),
                 new PlaceDto("ChIJplaceId", "Площа Ринок", 49.8419, 24.0315, "UA"),
                 new ContactInfoDto(4L, "+380671234567", "finder@example.com"));
@@ -27,6 +28,7 @@ class ItemCreatedEventTest {
         assertThat(event.categoryKey).isEqualTo("keys");
         assertThat(event.placeName).isEqualTo("Площа Ринок");
         assertThat(event.description).isEqualTo("опис");
+        assertThat(event.language).isEqualTo("uk");
         assertThat(event.compensation).isEqualTo(500);
         assertThat(event.currency).isEqualTo("UAH");
         assertThat(event.image).isEqualTo("keys.png");

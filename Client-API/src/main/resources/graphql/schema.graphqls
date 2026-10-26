@@ -77,6 +77,8 @@ type LostItem {
     id: ID!
     title: String!
     description: String
+    "ISO 639-1 code of the language the title and description are written in; null when it could not be detected"
+    language: String
     date: Date!
     "Reward for return"
     compensation: Money
@@ -91,6 +93,7 @@ type FoundItem {
     id: ID!
     title: String!
     description: String
+    language: String
     date: Date!
     compensation: Money
     image: String!
