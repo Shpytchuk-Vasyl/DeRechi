@@ -13,6 +13,7 @@
   },
   "nav": {
     "home": "Accueil",
+    "myCity": "Ma ville",
     "lost": "Perdus",
     "found": "Trouvés",
     "reportFound": "Signaler une trouvaille",
@@ -160,7 +161,18 @@
     "nearbyLocating": "Localisation en cours…",
     "nearbyDenied": "Sans votre position, nous ne pouvons pas afficher les objets trouvés près de vous. Vous pouvez l’autoriser dans les paramètres du site : l’icône à gauche de l’adresse dans le navigateur.",
     "nearbyUnavailable": "Impossible de déterminer où vous êtes pour le moment. Réessayez dans un instant.",
-    "nearbyDismiss": "Fermer"
+    "nearbyDismiss": "Fermer",
+    "cityHint": {
+      "label": "Un conseil de Znaida",
+      "titleCity": "Vous cherchez {in} ?",
+      "titleNear": "Vous cherchez près de chez vous ?",
+      "textCityFound": "Voici les objets trouvés de tout le pays. Je peux n’afficher que ceux {in}, ou ceux près de vous.",
+      "textCityLost": "Voici les objets perdus de tout le pays. Je peux n’afficher que ceux {in}, ou ceux près de vous.",
+      "textNearFound": "Voici les objets trouvés de tout le pays. Activez « Près de moi » et je n’afficherai que ce qui a été trouvé près de vous.",
+      "textNearLost": "Voici les objets perdus de tout le pays. Activez « Près de moi » et je n’afficherai que ce qui a été perdu près de vous.",
+      "goFound": "Objets trouvés {in}",
+      "goLost": "Objets perdus {in}"
+    }
   },
   "sort": {
     "DATE_DESC": "Plus récents d’abord",

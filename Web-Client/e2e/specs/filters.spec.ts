@@ -2,12 +2,8 @@ import { expect, test } from "../fixtures/base"
 import { Filters } from "../fixtures/pages"
 import { expectListQuery, ListPage } from "../fixtures/pages/list-page"
 import type { ItemSort } from "../support/api"
-import { kyivDate, shiftDay } from "../support/data"
+import { kyivDate, roundedCoordinate as rounded, shiftDay } from "../support/data"
 import { member, type SharedItem } from "../support/shared"
-
-function rounded(value: number): string {
-  return String(Math.round(value * 1000) / 1000)
-}
 
 test.describe("category", () => {
   test("a category keeps one of two items and shows as selected", {

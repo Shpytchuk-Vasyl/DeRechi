@@ -153,8 +153,9 @@
       {
         "heading": "5. Geolokalisierung",
         "body": [
-          "Auf der Seite der gefundenen Gegenstände und im Anzeigenformular kann die Website Zugriff auf Ihren Standort anfordern. Sie können dies ablehnen: Alles funktioniert auch ohne.",
-          "Für die Umkreissuche werden die Koordinaten auf etwa 100 m gerundet und nur für diese Suche in der Adresse der Seite übermittelt; wir speichern sie nicht. Im Anzeigenformular werden die Koordinaten zum Ort der Anzeige und zusammen mit ihr veröffentlicht."
+          "Auf den Seiten der gefundenen und verlorenen Gegenstände und im Anzeigenformular kann die Website Zugriff auf Ihren Standort anfordern. Sie können dies ablehnen: Alles funktioniert auch ohne.",
+          "Für die Umkreissuche werden die Koordinaten auf etwa 100 m gerundet und nur für diese Suche in der Adresse der Seite übermittelt; wir speichern sie nicht. Im Anzeigenformular werden die Koordinaten zum Ort der Anzeige und zusammen mit ihr veröffentlicht.",
+          "Auf den Seiten der gefundenen und verlorenen Gegenstände ermitteln wir außerdem anhand der IP-Adresse, die unser Hoster Vercel sieht, ungefähr Ihre Stadt, um Ihnen Anzeigen aus dieser Stadt vorzuschlagen. Die Stadt wird nirgends gespeichert, und eine IP-Adresse verrät den Ort nur ungefähr, daher ist dies nur ein Vorschlag."
         ]
       },
       {

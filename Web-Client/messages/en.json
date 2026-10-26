@@ -13,6 +13,7 @@
   },
   "nav": {
     "home": "Home",
+    "myCity": "My city",
     "lost": "Lost",
     "found": "Found",
     "reportFound": "Report a find",
@@ -160,7 +161,18 @@
     "nearbyLocating": "Finding you…",
     "nearbyDenied": "Without your location we can't show what was found near you. You can allow it in the site settings: the icon to the left of the address in your browser.",
     "nearbyUnavailable": "We couldn't tell where you are right now. Try again in a little while.",
-    "nearbyDismiss": "Close"
+    "nearbyDismiss": "Close",
+    "cityHint": {
+      "label": "A tip from Znaida",
+      "titleCity": "Looking {in}?",
+      "titleNear": "Looking nearby?",
+      "textCityFound": "These are finds from the whole country. I can show only those {in}, or the ones near you.",
+      "textCityLost": "These are losses from the whole country. I can show only those {in}, or the ones near you.",
+      "textNearFound": "These are finds from the whole country. Turn on “Near me” and I'll show only what was found near you.",
+      "textNearLost": "These are losses from the whole country. Turn on “Near me” and I'll show only what was lost near you.",
+      "goFound": "Finds {in}",
+      "goLost": "Losses {in}"
+    }
   },
   "sort": {
     "DATE_DESC": "Newest first",

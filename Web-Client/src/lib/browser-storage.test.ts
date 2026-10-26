@@ -3,9 +3,11 @@ import {
   clearReportDraft,
   forgetJustPublished,
   hasSeenTour,
+  isCityHintPaused,
   isJustPublished,
   loadReportDraft,
   markJustPublished,
+  pauseCityHint,
   recordMascotCatch,
   rememberTour,
   saveReportDraft,
@@ -119,6 +121,24 @@ describe("mascot catches", () => {
   })
 })
 
+describe("city hint", () => {
+  const week = 7 * 24 * 60 * 60_000
+
+  it("shows to a new viewer and rests for a week once closed", () => {
+    expect(isCityHintPaused(0)).toBe(false)
+    pauseCityHint(1_000)
+
+    expect(isCityHintPaused(1_000 + week - 1)).toBe(true)
+    expect(isCityHintPaused(1_000 + week)).toBe(false)
+  })
+
+  it("shows again when the stored time is not a number", () => {
+    local.setItem("derechi.city-hint", "yesterday")
+
+    expect(isCityHintPaused()).toBe(false)
+  })
+})
+
 describe("without storage", () => {
   it("works, a little worse, when the storage throws", () => {
     vi.stubGlobal("window", { localStorage: blocked(), sessionStorage: blocked() })
@@ -129,6 +149,8 @@ describe("without storage", () => {
     expect(isJustPublished("lost", "7")).toBe(false)
     expect(hasSeenTour("home")).toBe(true)
     expect(recordMascotCatch(5)).toEqual({ count: 0, prize: false })
+    expect(isCityHintPaused()).toBe(true)
+    expect(() => pauseCityHint()).not.toThrow()
   })
 
   it("works the same where there is no window at all", () => {

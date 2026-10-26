@@ -1,7 +1,7 @@
 "use client"
 
 import { cx } from "class-variance-authority"
-import { House, PackageCheck, PackageSearch, Plus } from "lucide-react"
+import { House, PackageCheck, PackageSearch, Plus, School } from "lucide-react"
 import { useTranslations } from "next-intl"
 import type { ReactElement } from "react"
 import { navLinks } from "@/components/layout/nav-links"
@@ -27,8 +27,12 @@ export function MobileNav() {
   const inFound = under(paths.list("found")) || cityKind === "found"
   const reportKind = inFound ? "found" : "lost"
 
+  const home: Tab = links.city
+    ? { href: links.city, label: t("myCity"), icon: <School />, active: pathname === links.city }
+    : { href: paths.home, label: t("home"), icon: <House />, active: pathname === paths.home }
+
   const tabs: Tab[] = [
-    { href: links.home, label: t("home"), icon: <House />, active: pathname === links.home },
+    home,
     {
       href: links.lost,
       label: t("lost"),

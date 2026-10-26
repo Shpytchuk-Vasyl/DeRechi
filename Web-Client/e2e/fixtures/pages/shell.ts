@@ -10,7 +10,7 @@ export const LANGUAGE_NAMES: Record<Locale, string> = {
   fr: "Français",
 }
 
-export type BottomTab = "home" | "lost" | "found"
+export type BottomTab = "home" | "myCity" | "lost" | "found"
 export type FooterGroup = "footerNotices" | "footerGuides" | "footerDocuments"
 export type FooterLink = "lost" | "found" | "terms" | "privacy" | "safety"
 
@@ -30,6 +30,10 @@ export class Shell {
 
   listLink(kind: ItemKind): Locator {
     return this.nav().getByRole("link", { name: this.t(`nav.${kind}`), exact: true })
+  }
+
+  myCityLink(): Locator {
+    return this.nav().getByRole("link", { name: this.t("nav.myCity"), exact: true })
   }
 
   header(): Locator {
@@ -97,9 +101,7 @@ export class Shell {
   }
 
   bottomNav(): Locator {
-    return this.menu().filter({
-      has: this.page.getByRole("link", { name: this.t("nav.home"), exact: true }),
-    })
+    return this.menu().and(this.page.locator("nav:not(header nav)"))
   }
 
   bottomTab(tab: BottomTab): Locator {

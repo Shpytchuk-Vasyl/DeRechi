@@ -13,6 +13,7 @@
   },
   "nav": {
     "home": "Startseite",
+    "myCity": "Meine Stadt",
     "lost": "Verloren",
     "found": "Gefunden",
     "reportFound": "Fund melden",
@@ -160,7 +161,18 @@
     "nearbyLocating": "Standort wird ermittelt…",
     "nearbyDenied": "Ohne deinen Standort können wir nicht zeigen, was in deiner Nähe gefunden wurde. Du kannst ihn in den Website-Einstellungen freigeben: das Symbol links neben der Adresse im Browser.",
     "nearbyUnavailable": "Dein Standort ließ sich gerade nicht ermitteln. Versuch es gleich noch einmal.",
-    "nearbyDismiss": "Schließen"
+    "nearbyDismiss": "Schließen",
+    "cityHint": {
+      "label": "Ein Tipp von Znaida",
+      "titleCity": "Suchst du {in}?",
+      "titleNear": "Suchst du in der Nähe?",
+      "textCityFound": "Hier sind Fundsachen aus dem ganzen Land. Ich kann dir nur die {in} zeigen oder die in deiner Nähe.",
+      "textCityLost": "Hier sind Verlustmeldungen aus dem ganzen Land. Ich kann dir nur die {in} zeigen oder die in deiner Nähe.",
+      "textNearFound": "Hier sind Fundsachen aus dem ganzen Land. Schalte „In meiner Nähe“ ein, dann zeige ich nur, was in deiner Nähe gefunden wurde.",
+      "textNearLost": "Hier sind Verlustmeldungen aus dem ganzen Land. Schalte „In meiner Nähe“ ein, dann zeige ich nur, was in deiner Nähe verloren wurde.",
+      "goFound": "Fundsachen {in}",
+      "goLost": "Verlustmeldungen {in}"
+    }
   },
   "sort": {
     "DATE_DESC": "Neueste zuerst",

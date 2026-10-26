@@ -89,7 +89,11 @@ How search engines see the site; the details are in the "Search" section of `Web
   coordinates travel in the URL. A city's list without notices of its kind is `noindex` and out of
   the sitemap. "Near me" by geolocation stays in the query (`?lat=&lon=`) of the general lists.
   On a city page and its lists the menu (header and bottom bar) leads to the city's lists and
-  "Home" to the city page; the brand in the header always leads to the site's home.
+  "My city" to the city page: an extra link in the header, in place of "Home" in the bottom bar;
+  the brand in the header always leads to the site's home. On the general lists Znaida, after a
+  short scroll, offers the list of the city Vercel guesses from the IP address
+  (`x-vercel-ip-latitude`/`-longitude` through `nearestCity`, a suggestion only, never stored)
+  and "Near me"; closed, she rests for a week.
   The home page links the cities from a static map of Ukraine (Natural Earth outline in Ukraine's
   point of view, Crimea included), a notice page links the city its coordinates fall into, and that city is added after the place in the
   notice's `<title>` ("Привокзальний ринок, Львів"). A city without live notices answers `noindex` and is left out of the sitemap.

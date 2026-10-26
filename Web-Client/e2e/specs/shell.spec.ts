@@ -36,7 +36,7 @@ test.describe("menu navigation", () => {
     await expect(page).toHaveURL(homeUrl(appLocale))
   })
 
-  test("in a city Lost and Found lead to the city's lists, the brand still to the site's home", {
+  test("in a city My city leads to the city page, Lost and Found to its lists, the brand still to the site's home", {
     tag: "@responsive",
   }, async ({ page, go, t, shared, appLocale }) => {
     const shell = new Shell(page, t)
@@ -44,6 +44,7 @@ test.describe("menu navigation", () => {
     for (const path of ["/lviv", "/lviv/lost", "/lviv/found"]) {
       await test.step(path, async () => {
         await go(path)
+        await expect(shell.myCityLink()).toHaveAttribute("href", `/${appLocale}/lviv`)
         for (const kind of KINDS) {
           await expect(shell.listLink(kind)).toHaveAttribute("href", `/${appLocale}/lviv/${kind}`)
         }
@@ -53,16 +54,20 @@ test.describe("menu navigation", () => {
 
     await shell.listLink("lost").click()
     await expect(page).toHaveURL(new RegExp(`/${appLocale}/lviv/lost$`))
+    await shell.myCityLink().click()
+    await expect(page).toHaveURL(new RegExp(`/${appLocale}/lviv$`))
     await shell.brand().click()
     await expect(page).toHaveURL(homeUrl(appLocale))
+    await expect(shell.myCityLink()).toHaveCount(0)
 
     await go(shared.items.lostFull.path)
+    await expect(shell.myCityLink()).toHaveCount(0)
     for (const kind of KINDS) {
       await expect(shell.listLink(kind)).toHaveAttribute("href", `/${appLocale}/${kind}`)
     }
   })
 
-  test("below 768 px: bottom tabs with aria-current and a FAB of the list's kind replace the header nav", {
+  test("below 768 px: bottom tabs with aria-current and a FAB of the list's kind replace the header nav, My city replaces Home in a city", {
     tag: "@mobile-only",
   }, async ({ page, go, t, shared, appLocale }) => {
     const shell = new Shell(page, t)
@@ -72,7 +77,7 @@ test.describe("menu navigation", () => {
       { path: "/found", active: "found", fab: "found" },
       { path: shared.items.lostFull.path, active: "lost", fab: "lost" },
       { path: shared.items.foundPhoto.path, active: "found", fab: "found" },
-      { path: "/lviv", active: "home", fab: null },
+      { path: "/lviv", active: "myCity", fab: null },
       { path: "/lviv/lost", active: "lost", fab: "lost" },
       { path: "/lviv/found", active: "found", fab: "found" },
     ]
@@ -83,7 +88,10 @@ test.describe("menu navigation", () => {
         await expect(shell.headerNav()).toBeHidden()
         for (const kind of KINDS) await expect(shell.headerReport(kind)).toBeHidden()
         await expect(shell.bottomNav()).toBeVisible()
-        for (const tab of ["home", "lost", "found"] as const) {
+        const inCity = stop.path.startsWith("/lviv")
+        await expect(shell.bottomTab(inCity ? "home" : "myCity")).toHaveCount(0)
+        const tabs: BottomTab[] = [inCity ? "myCity" : "home", "lost", "found"]
+        for (const tab of tabs) {
           const link = shell.bottomTab(tab)
           await expect(link).toBeVisible()
           if (tab === stop.active) await expect(link).toHaveAttribute("aria-current", "page")
@@ -113,7 +121,7 @@ test.describe("menu navigation", () => {
     await expect(page).toHaveURL(homeUrl(appLocale))
 
     await go("/lviv/found")
-    await shell.bottomTab("home").click()
+    await shell.bottomTab("myCity").click()
     await expect(page).toHaveURL(new RegExp(`/${appLocale}/lviv$`))
   })
 

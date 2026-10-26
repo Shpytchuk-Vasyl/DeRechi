@@ -7,6 +7,8 @@ export const LOCALE_COOKIE = "DERECHI_LOCALE"
 
 export const COUNTRY_COOKIE = "DERECHI_COUNTRY"
 export const GEO_COUNTRY_HEADER = "x-vercel-ip-country"
+export const GEO_LATITUDE_HEADER = "x-vercel-ip-latitude"
+export const GEO_LONGITUDE_HEADER = "x-vercel-ip-longitude"
 
 export const DEFAULT_LOCALE: Locale = "en"
 

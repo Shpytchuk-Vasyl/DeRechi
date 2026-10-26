@@ -112,3 +112,18 @@ export function recordMascotCatch(catches: number): { count: number; prize: bool
   write("local", CAUGHT_KEY, String(count >= catches ? 0 : count))
   return { count, prize: count >= catches }
 }
+
+const CITY_HINT_KEY = "derechi.city-hint"
+
+const CITY_HINT_PAUSE_MS = 7 * 24 * 60 * 60_000
+
+export function isCityHintPaused(now = Date.now()): boolean {
+  const stored = read("local", CITY_HINT_KEY)
+  if (stored === undefined) return true
+  const closedAt = Number(stored)
+  return stored !== null && Number.isFinite(closedAt) && now - closedAt < CITY_HINT_PAUSE_MS
+}
+
+export function pauseCityHint(now = Date.now()): void {
+  write("local", CITY_HINT_KEY, String(now))
+}

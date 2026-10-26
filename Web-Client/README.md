@@ -403,9 +403,24 @@ The filters stay in the city (they keep the pathname), "Near me" is hidden, the 
 of its kind answers `noindex, follow` and stays out of `pages.xml`, and the city page itself is
 listed while either kind has notices. On the city page and its lists the menu keeps to the city:
 `navLinks` (`src/components/layout/nav-links.ts`) points the header's Lost and Found and the bottom
-bar's tabs at `/{city}/lost` and `/{city}/found`, and Home at `/{city}`. The city comes from the
+bar's tabs at `/{city}/lost` and `/{city}/found`, and adds "My city" (`nav.myCity`) at `/{city}`:
+the header shows it before Lost, the bottom bar puts it in place of Home, with the `School` icon
+instead of `House`. The city comes from the
 address alone (`cityInPath`), so a notice page or the report form shows the general menu, and the
-brand in the header always leads to `/`. Its JSON-LD is the home page's `WebSite` plus a `CollectionPage`
+brand in the header always leads to `/`.
+
+On the general `/lost` and `/found` (no city in the path, "Near me" off) Znaida offers a narrower
+list once the visitor has scrolled 240 px (`src/screens/found_lost/city-hint.tsx`). The city is
+Vercel's guess from the IP address: `requestCity()` (`src/lib/geo.server.ts`) reads
+`x-vercel-ip-latitude`/`-longitude` and keeps it only if `nearestCity` puts it inside a city's
+radius. With a city she offers its list and "Near me", without one only "Near me", which runs the
+same `useNearMe` as the switch. An IP address is often wrong on mobile networks (the operator's
+gateway) and behind a VPN, so the city is only a suggestion and is never stored. Closing her, or
+taking either offer, rests her for a week (`pauseCityHint`, `derechi.city-hint` in `localStorage`);
+without storage she stays away. Locally and in e2e there are no such headers, so there is no city:
+the e2e spec sets them with `setExtraHTTPHeaders`, as the country test does.
+
+Its JSON-LD is the home page's `WebSite` plus a `CollectionPage`
 about the `City`, with a search around it and the breadcrumbs (`cityPageJsonLd` in `src/lib/seo.ts`).
 Only the registry's slugs exist (`dynamicParams = false`), any other single segment is still a 404.
 A city without live notices answers `noindex, follow` and stays out of `pages.xml` (`cityHasNotices`

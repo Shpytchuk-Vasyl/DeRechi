@@ -13,6 +13,7 @@
   },
   "nav": {
     "home": "Strona główna",
+    "myCity": "Moje miasto",
     "lost": "Zgubione",
     "found": "Znalezione",
     "reportFound": "Zgłoś znalezisko",
@@ -160,7 +161,18 @@
     "nearbyLocating": "Ustalamy, gdzie jesteś…",
     "nearbyDenied": "Bez dostępu do lokalizacji nie pokażemy rzeczy znalezionych w pobliżu. Możesz na to zezwolić w ustawieniach witryny: ikona po lewej stronie adresu w przeglądarce.",
     "nearbyUnavailable": "Nie udało się ustalić, gdzie teraz jesteś. Spróbuj ponownie za chwilę.",
-    "nearbyDismiss": "Zamknij"
+    "nearbyDismiss": "Zamknij",
+    "cityHint": {
+      "label": "Podpowiedź Znajdy",
+      "titleCity": "Szukasz {in}?",
+      "titleNear": "Szukasz w pobliżu?",
+      "textCityFound": "Tu są znaleziska z całego kraju. Mogę pokazać tylko te {in} albo te w pobliżu Ciebie.",
+      "textCityLost": "Tu są zguby z całego kraju. Mogę pokazać tylko te {in} albo te w pobliżu Ciebie.",
+      "textNearFound": "Tu są znaleziska z całego kraju. Włącz „W pobliżu”, a pokażę tylko to, co znaleziono w pobliżu Ciebie.",
+      "textNearLost": "Tu są zguby z całego kraju. Włącz „W pobliżu”, a pokażę tylko to, co zgubiono w pobliżu Ciebie.",
+      "goFound": "Znaleziska {in}",
+      "goLost": "Zguby {in}"
+    }
   },
   "sort": {
     "DATE_DESC": "Najpierw nowe",

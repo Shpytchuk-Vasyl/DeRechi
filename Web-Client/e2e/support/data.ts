@@ -75,6 +75,10 @@ export function daysBetween(from: string, to: string): number {
   return Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000)
 }
 
+export function roundedCoordinate(value: number): string {
+  return String(Math.round(value * 1000) / 1000)
+}
+
 export type City = "lviv" | "kyiv" | "warsaw"
 
 export const CITIES: Record<

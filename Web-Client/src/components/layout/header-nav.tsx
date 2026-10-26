@@ -13,6 +13,11 @@ export function HeaderNav() {
 
   return (
     <nav className="hidden items-center md:flex" aria-label={t("menu")}>
+      {links.city ? (
+        <Link href={links.city} className={LINK}>
+          {t("myCity")}
+        </Link>
+      ) : null}
       <Link href={links.lost} className={LINK}>
         {t("lost")}
       </Link>

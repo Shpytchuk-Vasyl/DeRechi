@@ -153,8 +153,9 @@
       {
         "heading": "5. Geolokalizacja",
         "body": [
-          "Na stronie znalezionych rzeczy i w formularzu ogłoszenia strona może poprosić o dostęp do Twojej geolokalizacji. Możesz odmówić: wszystko będzie działać także bez niej.",
-          "Przy wyszukiwaniu w pobliżu współrzędne są zaokrąglane do około 100 m i przekazywane w adresie strony wyłącznie na potrzeby tego wyszukiwania; nie przechowujemy ich. W formularzu ogłoszenia współrzędne stają się miejscem ogłoszenia i są publikowane razem z nim."
+          "Na stronach rzeczy znalezionych i zgubionych oraz w formularzu ogłoszenia strona może poprosić o dostęp do Twojej geolokalizacji. Możesz odmówić: wszystko będzie działać także bez niej.",
+          "Przy wyszukiwaniu w pobliżu współrzędne są zaokrąglane do około 100 m i przekazywane w adresie strony wyłącznie na potrzeby tego wyszukiwania; nie przechowujemy ich. W formularzu ogłoszenia współrzędne stają się miejscem ogłoszenia i są publikowane razem z nim.",
+          "Na stronach rzeczy znalezionych i zgubionych w przybliżeniu ustalamy też Twoje miasto na podstawie adresu IP, który widzi nasz hosting Vercel, aby zaproponować ogłoszenia z tego miasta. Miasto nie jest nigdzie przechowywane, a adres IP wskazuje miejsce tylko w przybliżeniu, więc to jedynie podpowiedź."
         ]
       },
       {

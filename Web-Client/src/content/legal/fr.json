@@ -153,8 +153,9 @@
       {
         "heading": "5. Géolocalisation",
         "body": [
-          "Sur la page des objets trouvés et dans le formulaire d’annonce, le site peut vous demander l’accès à votre géolocalisation. Vous pouvez refuser : tout fonctionnera aussi sans elle.",
-          "Pour la recherche à proximité, les coordonnées sont arrondies à environ 100 m et transmises dans l’adresse de la page uniquement pour cette recherche ; nous ne les conservons pas. Dans le formulaire d’annonce, les coordonnées deviennent le lieu de l’annonce et sont publiées avec celle-ci."
+          "Sur les pages des objets trouvés et perdus et dans le formulaire d’annonce, le site peut vous demander l’accès à votre géolocalisation. Vous pouvez refuser : tout fonctionnera aussi sans elle.",
+          "Pour la recherche à proximité, les coordonnées sont arrondies à environ 100 m et transmises dans l’adresse de la page uniquement pour cette recherche ; nous ne les conservons pas. Dans le formulaire d’annonce, les coordonnées deviennent le lieu de l’annonce et sont publiées avec celle-ci.",
+          "Sur les pages des objets trouvés et perdus, nous déterminons aussi approximativement votre ville à partir de l’adresse IP que voit notre hébergeur Vercel, afin de vous proposer les annonces de cette ville. Cette ville n’est conservée nulle part, et une adresse IP n’indique le lieu qu’approximativement : ce n’est qu’une suggestion."
         ]
       },
       {

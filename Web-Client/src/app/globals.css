@@ -395,6 +395,13 @@
   }
 }
 
+@keyframes city-hint-in {
+  from {
+    opacity: 0;
+    translate: 0 16px;
+  }
+}
+
 /* Peeking out: turned ±90° the paws grip a side edge; each side slides along its own axis. */
 .znaida-roam {
   transition: translate 1s cubic-bezier(0.22, 1, 0.36, 1);

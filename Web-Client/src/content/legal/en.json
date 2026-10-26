@@ -153,8 +153,9 @@
       {
         "heading": "5. Location",
         "body": [
-          "On the found items page and in the notice form the site may ask for your location. You can refuse: everything works without it.",
-          "For the nearby search, the coordinates are rounded to about 100 m and passed in the page address for that search only; we don't store them. In the notice form, the coordinates become the notice's place and are published with it."
+          "On the found and lost items pages and in the notice form the site may ask for your location. You can refuse: everything works without it.",
+          "For the nearby search, the coordinates are rounded to about 100 m and passed in the page address for that search only; we don't store them. In the notice form, the coordinates become the notice's place and are published with it.",
+          "On the found and lost items pages we also roughly work out your city from the IP address our host Vercel sees, to suggest that city's notices. The city is not stored anywhere, and an IP address points to a place only roughly, so this is just a suggestion."
         ]
       },
       {
