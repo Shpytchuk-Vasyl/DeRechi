@@ -1,17 +1,14 @@
 import "server-only"
-import { GraphQLRequestError, graphqlRequest } from "@/graphql/client"
-import {
-  CategoriesQuery,
-  FoundItemQuery,
-  FoundItemsQuery,
-  LostItemQuery,
-  LostItemsQuery,
-} from "@/graphql/documents"
+import { ITEM_OPS } from "@/api/item-ops"
+import { graphqlRequest } from "@/graphql/client"
+import { CategoriesQuery } from "@/graphql/documents"
+import { requestFailure } from "@/graphql/failure"
 import type { ItemFilterInput, ItemSort } from "@/graphql/generated/graphql"
 import { CACHE, type CachePolicy } from "@/lib/cache"
 import type { Money } from "@/lib/intl/country"
+import type { ItemKind } from "@/lib/kinds"
 
-export type ItemKind = "lost" | "found"
+export type { ItemKind } from "@/lib/kinds"
 
 export type Category = {
   id: string
@@ -59,17 +56,15 @@ export async function fetchItems(
   query: ItemQuery = {},
   cache: CachePolicy = CACHE.items(kind),
 ): Promise<ItemPage> {
-  const variables = {
-    filter: query.filter ?? null,
-    sort: query.sort ?? "DATE_DESC",
-    first: query.first ?? PAGE_SIZE,
-    after: query.after ?? null,
-  }
-
-  const connection =
-    kind === "lost"
-      ? (await graphqlRequest(LostItemsQuery, variables, cache)).lostItems
-      : (await graphqlRequest(FoundItemsQuery, variables, cache)).foundItems
+  const connection = await ITEM_OPS[kind].list(
+    {
+      filter: query.filter ?? null,
+      sort: query.sort ?? "DATE_DESC",
+      first: query.first ?? PAGE_SIZE,
+      after: query.after ?? null,
+    },
+    cache,
+  )
 
   return {
     items: connection.edges.map((edge) => edge.node),
@@ -79,17 +74,10 @@ export async function fetchItems(
 }
 
 export async function fetchItem(kind: ItemKind, id: string): Promise<ItemDetail | null> {
-  const options = CACHE.item(kind, id)
-
   try {
-    const item =
-      kind === "lost"
-        ? (await graphqlRequest(LostItemQuery, { id }, options)).lostItem
-        : (await graphqlRequest(FoundItemQuery, { id }, options)).foundItem
-
-    return item ?? null
+    return await ITEM_OPS[kind].one(id, CACHE.item(kind, id))
   } catch (error) {
-    if (error instanceof GraphQLRequestError && error.isNotFound) {
+    if (requestFailure(error) === "notFound") {
       return null
     }
     throw error

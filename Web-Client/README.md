@@ -37,13 +37,29 @@ bucket), which is why that origin is in `next.config.ts`'s `remotePatterns`. The
 Spring for GraphQL registers at runtime and therefore keeps out of the schema file. No
 running server is needed, so a schema change shows up as a diff here.
 
+## Lost and found
+
+What differs between the two kinds of notice is looked up, not branched on:
+
+- `src/lib/kinds.ts`: `ITEM_KINDS`, the `ItemKind` type derived from it and the `isItemKind`
+  guard for a kind that comes from a URL or a server action's arguments.
+- `src/components/items/kind-meta.ts`: `KIND_META`, the tone, tint, icon, the other kind and the
+  message key of every kind-specific text, grouped by the bundle namespace it lives in
+  (`t(KIND_META[kind].list.title)` with the `list` translator). The keys are whole literals,
+  never built from the kind, so searching for a key finds where it is used.
+- `src/api/item-ops.ts`: `ITEM_OPS`, the GraphQL calls per kind (`list`, `one`, `create`,
+  `claim`). The schema has a query and a mutation per kind; nothing outside this file needs to know.
+
+Rules that differ by kind (a found notice needs a photo, a new find refreshes `stats`) stay in
+the code that enforces them.
+
 ## Caching
 
 Every GraphQL read in `src/api/` is a `fetch` cached by Next, and all the numbers live in
 `src/lib/cache.ts`:
 
 - `CACHE_TTL`: four tiers, `minute` (lists, place suggestions), `fiveMinutes` (home page
-  `stats`), `hour` (one notice, categories, countries, the sitemap) and `day` (OG fonts).
+  `stats`), `hour` (one notice, the sitemap) and `day` (categories, countries, OG fonts).
   Pick the tier by how stale the data may get, not per call site.
 - `CACHE_TAG` and `CACHE`: the tag and the policy (`{ revalidate, tags }`) of each read,
   passed straight to `graphqlRequest`.
@@ -88,6 +104,10 @@ Vitest, and the screens are checked by hand in `pnpm dev`.
 
 ## Errors
 
+`graphqlRequest` logs nothing itself: the variables carry claimants' phones and emails. Its errors
+name the operation (`ClaimLostItem: ...`), and `requestFailure` (`src/graphql/failure.ts`) turns one
+into the reason a server action returns (`notFound`, `disposableEmail`, `failed`).
+
 Server errors (server components, server actions, route handlers, the proxy) are logged by
 `onRequestError` in `src/instrumentation.ts` as one JSON line each (`"event":"request_error"`, the
 message, digest, stack, method, path without the query string, route), so the hosting's log view
@@ -118,7 +138,7 @@ Country is a second axis next to the language. The locale lives in the URL and
 reads Polish copy, sees euro rewards and the German terms.
 
 The list of supported countries, and with it the reward currencies, comes from
-`Client-API`'s `countries` query (`fetchCountries`, cached an hour; during an outage it falls
+`Client-API`'s `countries` query (`fetchCountries`, cached a day; during an outage it falls
 back to the API's default country so the layout still renders) and is hardcoded nowhere
 here; country names come from `Intl.DisplayNames`, so a new country needs no message key.
 `CountryProvider` in the locale layout hands the list to the client together with the viewer's

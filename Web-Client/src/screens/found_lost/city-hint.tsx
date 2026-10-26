@@ -4,6 +4,7 @@ import { cx } from "class-variance-authority"
 import { X } from "lucide-react"
 import { useTranslations } from "next-intl"
 import type { ItemKind } from "@/api/items"
+import { KIND_META } from "@/components/items/kind-meta"
 import { ROAM_SIZE, useRoaming } from "@/components/mascot/mascot-roamer"
 import { Znaida } from "@/components/mascot/znaida"
 import { Button, buttonClasses } from "@/components/pouf/Button"
@@ -15,7 +16,7 @@ import { NearbyProblem } from "@/screens/found_lost/nearby-switch"
 import { useNearMe } from "@/screens/found_lost/use-near-me"
 
 const BUBBLE_WIDTH = 320
-const BUBBLE_ROOM = 170
+const BUBBLE_ROOM = 260
 const GUTTER = 16
 const HEAD_TOP = 40
 const TAIL_WIDTH = 28
@@ -47,7 +48,7 @@ export default function CityHint({ kind, city }: { kind: ItemKind; city?: string
   const center = visit.x + ROAM_SIZE / 2
   const bubbleX = Math.min(Math.max(center - width / 2, GUTTER), window.innerWidth - GUTTER - width)
   const tailX = Math.min(Math.max(center - bubbleX, TAIL_INSET), width - TAIL_INSET)
-  const found = kind === "found"
+  const { cityHint, tone } = KIND_META[kind]
   const where = city ? tc(`${city}.in`) : undefined
 
   return (
@@ -58,7 +59,7 @@ export default function CityHint({ kind, city }: { kind: ItemKind; city?: string
     >
       <div
         className={cx(
-          "absolute transition-[opacity,scale] duration-300 ease-[cubic-bezier(0.2,0.9,0.3,1.2)] [--bubble:color-mix(in_srgb,var(--purple)_16%,var(--surface))] [filter:drop-shadow(0_12px_20px_rgba(58,46,92,0.18))] motion-reduce:transition-none",
+          "absolute transition-[opacity,scale] duration-300 ease-[cubic-bezier(0.2,0.9,0.3,1.2)] [--bubble:color-mix(in_srgb,var(--purple)_16%,var(--surface))] motion-reduce:transition-none",
           out ? "scale-100 opacity-100 delay-300" : "pointer-events-none scale-90 opacity-0",
         )}
         style={{
@@ -73,9 +74,7 @@ export default function CityHint({ kind, city }: { kind: ItemKind; city?: string
             {where ? t("titleCity", { in: where }) : t("titleNear")}
           </p>
           <Text size="sm" muted>
-            {where
-              ? t(found ? "textCityFound" : "textCityLost", { in: where })
-              : t(found ? "textNearFound" : "textNearLost")}
+            {where ? t(cityHint.textCity, { in: where }) : t(cityHint.textNear)}
           </Text>
 
           <div className="flex flex-wrap gap-2">
@@ -83,12 +82,9 @@ export default function CityHint({ kind, city }: { kind: ItemKind; city?: string
               <Link
                 href={paths.cityList(city, kind)}
                 onClick={() => pauseCityHint()}
-                className={cx(
-                  buttonClasses({ size: "sm", tone: found ? "up" : "down" }),
-                  "no-underline",
-                )}
+                className={cx(buttonClasses({ size: "sm", tone }), "no-underline")}
               >
-                {t(found ? "goFound" : "goLost", { in: where })}
+                {t(cityHint.go, { in: where })}
               </Link>
             ) : null}
             <Button

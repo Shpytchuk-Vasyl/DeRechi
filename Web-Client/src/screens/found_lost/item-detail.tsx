@@ -4,6 +4,7 @@ import { notFound } from "next/navigation"
 import { getFormatter, getLocale, getTranslations } from "next-intl/server"
 import { fetchItem, type ItemDetail, type ItemKind } from "@/api/items"
 import { ItemPhoto } from "@/components/items/item-photo"
+import { KIND_META } from "@/components/items/kind-meta"
 import { Stack } from "@/components/pouf/layout"
 import { Badge } from "@/components/pouf/media"
 import { Skeleton, Skeletons } from "@/components/pouf/skeleton"
@@ -47,13 +48,14 @@ export default async function ItemDetailPage({ kind, id, compact = false }: Prop
   const place = noticePlace(item.place.name, city ? tcity(`${city.slug}.name`) : undefined)
   const guideSlug = guideByCategory(item.category.key)
   const guide = guideSlug ? guideTexts(locale).guides[guideSlug] : undefined
+  const messages = KIND_META[kind].item
 
   return (
     <>
       {compact ? null : (
         <nav className="text-muted-foreground text-sm">
           <Link href={paths.list(kind)} className="hover:text-foreground">
-            {kind === "lost" ? t("lost") : t("found")}
+            {t(messages.list)}
           </Link>
           <span aria-hidden> · </span>
           <span>{item.title}</span>
@@ -110,16 +112,14 @@ export default async function ItemDetailPage({ kind, id, compact = false }: Prop
               kind={kind}
               id={item.id}
               title={item.title}
-              text={t(`shareText.${kind}`, { title: item.title, place })}
+              text={t(messages.shareText, { title: item.title, place })}
               url={absoluteUrl(locale, paths.item(kind, item.id))}
               image={`/${locale}${paths.card(kind, item.id)}`}
             />
           </div>
 
           <dl className="mt-6 grid grid-cols-[90px_1fr] gap-x-4 gap-y-3 text-base">
-            <dt className="text-muted-foreground">
-              {kind === "lost" ? t("lostOn") : t("foundOn")}
-            </dt>
+            <dt className="text-muted-foreground">{t(messages.date)}</dt>
             <dd className="font-medium">
               {formatNoticeDate(format, fromIsoDate(item.date) ?? new Date(item.date))}
             </dd>
@@ -186,7 +186,7 @@ export default async function ItemDetailPage({ kind, id, compact = false }: Prop
               itemJsonLd(item),
               breadcrumbsJsonLd(locale, kind, item, {
                 home: tn("home"),
-                list: kind === "lost" ? t("lost") : t("found"),
+                list: t(messages.list),
               }),
             ]),
           }}

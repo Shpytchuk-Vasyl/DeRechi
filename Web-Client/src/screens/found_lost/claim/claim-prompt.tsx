@@ -3,6 +3,7 @@ import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { claimNotice } from "@/app/actions/claim"
+import { KIND_META } from "@/components/items/kind-meta"
 import { Button } from "@/components/pouf/Button"
 import { Heading, Text } from "@/components/pouf/text"
 import { useSmsOutageNotice } from "@/hooks/use-sms-outage-notice"
@@ -24,6 +25,7 @@ export default function ClaimPrompt({ onSent, onUnreachable }: Props) {
   const [open, setOpen] = useState(false)
   const [failure, setFailure] = useState<string | null>(null)
   const warnSmsOutage = useSmsOutageNotice()
+  const meta = KIND_META[kind]
 
   const form = useForm<ClaimFormValues>({
     resolver: zodResolver(claimFormSchema),
@@ -51,10 +53,10 @@ export default function ClaimPrompt({ onSent, onUnreachable }: Props) {
   return (
     <>
       <Heading level={3} className="whitespace-normal text-base">
-        {kind === "lost" ? t("didYouFind", { category }) : t("isItYours", { category })}
+        {t(meta.item.claimQuestion, { category })}
       </Heading>
       <Text muted className="mt-1.5 block leading-relaxed">
-        {kind === "lost" ? t("didYouFindText") : t("isItYoursText")}
+        {t(meta.item.claimText)}
       </Text>
 
       {open ? (
@@ -69,7 +71,7 @@ export default function ClaimPrompt({ onSent, onUnreachable }: Props) {
             warnSmsOutage()
           }}
         >
-          {kind === "lost" ? tc("sendFound", { category }) : tc("sendMine", { category })}
+          {tc(meta.claim.send, { category })}
         </Button>
       )}
     </>

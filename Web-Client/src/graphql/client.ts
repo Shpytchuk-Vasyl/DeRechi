@@ -33,33 +33,40 @@ export async function graphqlRequest<TResult, TVariables>(
   variables: TVariables,
   options: RequestOptions = {},
 ): Promise<TResult> {
+  const query = document.toString()
+  const operation = operationName(query)
   const response = await fetch(serverEnv.GRAPHQL_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Accept: "application/graphql-response+json, application/json",
     },
-    body: JSON.stringify({ query: document.toString(), variables }),
+    body: JSON.stringify({ query, variables }),
     ...("cache" in options
       ? { cache: options.cache }
       : { next: { revalidate: options.revalidate, tags: options.tags } }),
   })
 
   if (!response.ok) {
-    throw new GraphQLRequestError(`GraphQL request failed with ${response.status}`, [])
+    throw new GraphQLRequestError(`${operation} failed with ${response.status}`, [])
   }
 
   const body = (await response.json()) as { data?: TResult; errors?: GraphQLError[] }
 
-  console.log("GraphQL Request:", document.toString().slice(0, 100), variables, body)
-
   if (body.errors?.length) {
-    throw new GraphQLRequestError(body.errors.map((error) => error.message).join("; "), body.errors)
+    throw new GraphQLRequestError(
+      `${operation}: ${body.errors.map((error) => error.message).join("; ")}`,
+      body.errors,
+    )
   }
 
   if (!body.data) {
-    throw new GraphQLRequestError("GraphQL response carried no data", [])
+    throw new GraphQLRequestError(`${operation} carried no data`, [])
   }
 
   return body.data
+}
+
+function operationName(query: string): string {
+  return /\b(?:query|mutation)\s+(\w+)/.exec(query)?.[1] ?? "GraphQL request"
 }

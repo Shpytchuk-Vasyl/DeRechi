@@ -13,6 +13,7 @@ import { useEffect, useId, useRef, useState } from "react"
 import type { ItemKind } from "@/api/items"
 import { searchPlaces } from "@/app/actions/places"
 import { useCountry } from "@/components/country/country-provider"
+import { KIND_META } from "@/components/items/kind-meta"
 import { Field, inputClasses } from "@/components/pouf/Input"
 import { addressWithoutCountry } from "@/lib/address"
 import { clientEnv } from "@/lib/env/client"
@@ -184,11 +185,7 @@ function Autocomplete({
   }
 
   return (
-    <Field
-      label={t("place")}
-      hint={t(kind === "lost" ? "placeHintLost" : "placeHintFound")}
-      error={error}
-    >
+    <Field label={t("place")} hint={t(KIND_META[kind].form.placeHint)} error={error}>
       {(id, describedBy) => (
         <>
           <div className="relative">

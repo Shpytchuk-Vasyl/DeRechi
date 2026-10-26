@@ -5,6 +5,7 @@ import { Controller, useFormContext, useWatch } from "react-hook-form"
 import type { Category, ItemKind } from "@/api/items"
 import { DatePicker } from "@/components/form/date-picker"
 import { ImageUpload } from "@/components/items/image-upload"
+import { KIND_META } from "@/components/items/kind-meta"
 import { ErrorNote } from "@/components/pouf/feedback"
 import { Field, Label } from "@/components/pouf/Input"
 import { Stack } from "@/components/pouf/layout"
@@ -23,6 +24,7 @@ type Props = {
 export default function StepWhereWhen({ kind, categories, maxUploadBytes, photo }: Props) {
   const t = useTranslations("form")
   const message = useFieldMessage(ERROR_KEYS)
+  const messages = KIND_META[kind].form
   const {
     control,
     trigger,
@@ -38,7 +40,7 @@ export default function StepWhereWhen({ kind, categories, maxUploadBytes, photo 
   return (
     <>
       <Stack gap={2}>
-        <Label htmlFor="image-upload">{kind === "found" ? t("photoRequired") : t("photo")}</Label>
+        <Label htmlFor="image-upload">{t(messages.photo)}</Label>
         <ImageUpload
           file={photo.file}
           onFileChange={photo.change}
@@ -55,10 +57,7 @@ export default function StepWhereWhen({ kind, categories, maxUploadBytes, photo 
         control={control}
         name="date"
         render={({ field, fieldState }) => (
-          <Field
-            label={kind === "lost" ? t("dateLost") : t("dateFound")}
-            error={message(fieldState.error?.message)}
-          >
+          <Field label={t(messages.date)} error={message(fieldState.error?.message)}>
             {(id) => (
               <DatePicker
                 id={id}

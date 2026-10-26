@@ -1,5 +1,6 @@
 import { CircleCheck } from "lucide-react"
 import { useTranslations } from "next-intl"
+import { KIND_META } from "@/components/items/kind-meta"
 import { Blob } from "@/components/pouf/media"
 import { Heading, Text } from "@/components/pouf/text"
 import { useClaimItem } from "./claim-item"
@@ -20,7 +21,7 @@ export default function ClaimDone({ repeated }: Props) {
           {tc("doneTitle")}
         </Heading>
         <Text muted className="mt-1 block leading-relaxed">
-          {repeated ? tc("repeated") : kind === "lost" ? tc("doneOwner") : tc("doneFinder")}
+          {tc(repeated ? "repeated" : KIND_META[kind].claim.done)}
         </Text>
       </div>
     </div>

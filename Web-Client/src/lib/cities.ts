@@ -1,4 +1,4 @@
-import type { ItemKind } from "@/api/items"
+import { type ItemKind, isItemKind } from "@/lib/kinds"
 
 export type City = {
   slug: string
@@ -43,7 +43,7 @@ function cityPath(pathname: string): { slug: string; kind?: ItemKind } | undefin
   const [empty, slug, kind, ...rest] = pathname.split("/")
   if (empty !== "" || rest.length > 0 || !slug || !cityBySlug(slug)) return undefined
   if (kind === undefined) return { slug }
-  return kind === "lost" || kind === "found" ? { slug, kind } : undefined
+  return isItemKind(kind) ? { slug, kind } : undefined
 }
 
 export function cityInPath(pathname: string): string | undefined {

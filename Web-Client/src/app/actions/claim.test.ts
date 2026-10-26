@@ -39,6 +39,7 @@ vi.mock("@/graphql/client", () => ({
 vi.mock("@/lib/bot-check", () => ({ passesBotCheck: mocks.passesBotCheck }))
 vi.mock("next/cache", () => ({ updateTag: mocks.updateTag }))
 vi.mock("next/headers", () => ({ cookies: async () => ({ set: mocks.setCookie }) }))
+vi.mock("server-only", () => ({}))
 
 const { claimNotice, confirmReturn } = await import("./claim")
 

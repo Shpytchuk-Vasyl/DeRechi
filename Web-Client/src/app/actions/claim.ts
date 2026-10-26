@@ -1,16 +1,14 @@
 "use server"
 
 import { cookies } from "next/headers"
-import type { ItemKind } from "@/api/items"
+import { ITEM_OPS } from "@/api/item-ops"
 import { GraphQLRequestError, graphqlRequest } from "@/graphql/client"
-import {
-  ClaimFoundItemMutation,
-  ClaimLostItemMutation,
-  ConfirmReturnMutation,
-} from "@/graphql/documents"
+import { ConfirmReturnMutation } from "@/graphql/documents"
+import { requestFailure } from "@/graphql/failure"
 import { passesBotCheck } from "@/lib/bot-check"
 import { CACHE_TAG, invalidate, NO_STORE } from "@/lib/cache"
 import { CLAIM_COOKIE_MAX_AGE, claimCookieName } from "@/lib/claim-cookie"
+import { ITEM_KINDS, type ItemKind, isItemKind } from "@/lib/kinds"
 import { type UnreachableAuthor, unreachableAuthor } from "@/lib/unreachable-author"
 import { claimSchema, toContactInput } from "@/schema/claim-schema"
 
@@ -21,8 +19,6 @@ export type ClaimResult =
 
 export type ConfirmResult = { ok: true } | { ok: false; reason: "notFound" | "failed" }
 
-const KINDS: readonly ItemKind[] = ["lost", "found"]
-
 const ITEM_ID = /^[\w-]{1,64}$/
 
 export async function claimNotice(
@@ -32,7 +28,7 @@ export async function claimNotice(
 ): Promise<ClaimResult> {
   try {
     const parsed = claimSchema.safeParse(values)
-    if (!isItem(kind, id) || !parsed.success) {
+    if (!isItemKind(kind) || !isItemId(id) || !parsed.success) {
       return { ok: false, reason: "validation" }
     }
 
@@ -40,12 +36,7 @@ export async function claimNotice(
       return { ok: false, reason: "captcha" }
     }
 
-    const variables = { id, contact: toContactInput(parsed.data) }
-
-    const claim =
-      kind === "lost"
-        ? (await graphqlRequest(ClaimLostItemMutation, variables, NO_STORE)).claimLostItem
-        : (await graphqlRequest(ClaimFoundItemMutation, variables, NO_STORE)).claimFoundItem
+    const claim = await ITEM_OPS[kind].claim(id, toContactInput(parsed.data))
 
     const store = await cookies()
     store.set(claimCookieName(kind, id), claim.id, {
@@ -56,12 +47,12 @@ export async function claimNotice(
     })
     return { ok: true, repeated: claim.repeated, claimId: claim.id }
   } catch (error) {
-    if (error instanceof GraphQLRequestError && error.isNotFound) {
+    const failure = requestFailure(error)
+    if (failure === "notFound") {
       invalidate(CACHE_TAG.item(kind, id), CACHE_TAG.items(kind))
-      return { ok: false, reason: "notFound" }
     }
-    if (error instanceof GraphQLRequestError && error.isDisposableEmail) {
-      return { ok: false, reason: "disposableEmail" }
+    if (failure !== "failed") {
+      return { ok: false, reason: failure }
     }
     const author = error instanceof GraphQLRequestError ? unreachableAuthor(error.errors) : null
     if (author) {
@@ -80,17 +71,17 @@ export async function confirmReturn(token: string): Promise<ConfirmResult> {
   try {
     await graphqlRequest(ConfirmReturnMutation, { token }, NO_STORE)
   } catch (error) {
-    if (error instanceof GraphQLRequestError && error.isNotFound) {
+    if (requestFailure(error) === "notFound") {
       return { ok: false, reason: "notFound" }
     }
     console.error("Confirming the return failed", error)
     return { ok: false, reason: "failed" }
   }
 
-  invalidate(...KINDS.map(CACHE_TAG.items))
+  invalidate(...ITEM_KINDS.map(CACHE_TAG.items))
   return { ok: true }
 }
 
-function isItem(kind: unknown, id: unknown): boolean {
-  return KINDS.includes(kind as ItemKind) && typeof id === "string" && ITEM_ID.test(id)
+function isItemId(id: unknown): id is string {
+  return typeof id === "string" && ITEM_ID.test(id)
 }

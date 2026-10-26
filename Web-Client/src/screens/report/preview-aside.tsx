@@ -5,6 +5,7 @@ import { useFormContext, useWatch } from "react-hook-form"
 import type { Category, ItemKind } from "@/api/items"
 import { useCountry } from "@/components/country/country-provider"
 import { CategoryArt } from "@/components/items/category-art"
+import { KIND_META } from "@/components/items/kind-meta"
 import { NoticeCard } from "@/components/items/item-card"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/pouf/card"
 import { Heading } from "@/components/pouf/text"
@@ -69,9 +70,9 @@ export default function PreviewAside({ kind, categories, photoUrl }: Props) {
           </CardHeader>
           <CardContent>
             <ul className="m-0 list-disc pl-5 text-muted-foreground text-sm leading-relaxed">
-              <li>{t(`${kind}Tip1`)}</li>
-              <li>{t(`${kind}Tip2`)}</li>
-              <li>{t(`${kind}Tip3`)}</li>
+              {KIND_META[kind].form.tips.map((tip) => (
+                <li key={tip}>{t(tip)}</li>
+              ))}
             </ul>
           </CardContent>
         </Card>

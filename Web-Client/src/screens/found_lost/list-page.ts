@@ -9,6 +9,7 @@ import {
   type ItemKind,
   type ItemPage,
 } from "@/api/items"
+import { KIND_META } from "@/components/items/kind-meta"
 import { paths } from "@/i18n/paths"
 import { cityBySlug } from "@/lib/cities"
 import { type ItemSearch, parseItemSearch, type RawSearchParams, toFilter } from "@/lib/item-search"
@@ -83,16 +84,12 @@ export async function listMetadata(
 
   const base = city ? paths.cityList(city.slug, kind) : paths.list(kind)
   const path = after ? `${base}?after=${encodeURIComponent(after)}` : base
-  const lost = kind === "lost"
+  const { list } = KIND_META[kind]
   const where = city ? tc(`${city.slug}.in`) : undefined
 
   return {
-    title: where
-      ? t(lost ? "lostTitleIn" : "foundTitleIn", { in: where })
-      : t(lost ? "lostTitle" : "foundTitle"),
-    description: where
-      ? t(lost ? "lostMetaDescriptionIn" : "foundMetaDescriptionIn", { in: where })
-      : t(lost ? "lostMetaDescription" : "foundMetaDescription"),
+    title: where ? t(list.titleIn, { in: where }) : t(list.title),
+    description: where ? t(list.metaDescriptionIn, { in: where }) : t(list.metaDescription),
     alternates: pageAlternates(locale, path),
     pagination: nextQuery ? { next: `/${locale}${base}?${nextQuery}` } : undefined,
     ...(hasNotices ? {} : { robots: { index: false, follow: true } }),

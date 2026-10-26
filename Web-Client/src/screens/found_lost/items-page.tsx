@@ -49,7 +49,7 @@ export default async function ItemsPage({ kind, searchParams, city }: Props) {
         )}
       </div>
 
-      {hinted ? <LazyCityHint kind={kind} city={suggested?.slug} /> : null}
+      {hinted && page.items.length !== 0 ? <LazyCityHint kind={kind} city={suggested?.slug} /> : null}
     </>
   )
 }

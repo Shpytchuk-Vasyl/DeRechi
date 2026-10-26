@@ -4,6 +4,7 @@ import { createElement } from "react"
 import sharp from "sharp"
 import { fetchItem, type ItemKind } from "@/api/items"
 import { type ArtTone, categoryArt } from "@/components/items/category-art"
+import { KIND_META } from "@/components/items/kind-meta"
 import { paths } from "@/i18n/paths"
 import { locales } from "@/i18n/routing"
 import { CACHE_TTL } from "@/lib/cache"
@@ -145,7 +146,7 @@ async function loadNotice(kind: ItemKind, locale: string, id: string): Promise<N
   return {
     kind,
     category: item.category.key,
-    label: t(kind).toLocaleUpperCase(locale),
+    label: t(KIND_META[kind].item.list).toLocaleUpperCase(locale),
     title: clip(item.title, TITLE_MAX),
     details: [
       noticePlace(item.place.name, city ? tcity(`${city.slug}.name`) : undefined),

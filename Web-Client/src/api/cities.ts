@@ -1,14 +1,13 @@
 import "server-only"
-import { fetchItems, type ItemKind } from "@/api/items"
+import { fetchItems } from "@/api/items"
 import { type City, cityArea } from "@/lib/cities"
-
-const KINDS: ItemKind[] = ["lost", "found"]
+import { ITEM_KINDS, type ItemKind } from "@/lib/kinds"
 
 export async function cityHasNotices(city: City, kind?: ItemKind): Promise<boolean> {
   const filter = { near: cityArea(city) }
   try {
     const pages = await Promise.all(
-      (kind ? [kind] : KINDS).map((it) => fetchItems(it, { filter, first: 1 })),
+      (kind ? [kind] : ITEM_KINDS).map((it) => fetchItems(it, { filter, first: 1 })),
     )
     return pages.some((page) => page.items.length > 0)
   } catch (error) {

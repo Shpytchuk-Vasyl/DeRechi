@@ -1,5 +1,5 @@
 import { updateTag } from "next/cache"
-import type { ItemKind } from "@/api/items"
+import type { ItemKind } from "@/lib/kinds"
 
 export const CACHE_TTL = {
   minute: 60,

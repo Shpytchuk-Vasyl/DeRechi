@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server"
 import { ErrorBoundary } from "react-error-boundary"
 import { fetchItems, type ItemKind } from "@/api/items"
 import { ItemCard } from "@/components/items/item-card"
+import { KIND_META } from "@/components/items/kind-meta"
 import { ErrorNote } from "@/components/pouf/feedback"
 import { Row, Spacer, Stack } from "@/components/pouf/layout"
 import { Heading, Text } from "@/components/pouf/text"
@@ -21,6 +22,7 @@ type Props = {
 
 export default async function RecentRail({ kind, near, categoryId, title, seeAll, empty }: Props) {
   const t = await getTranslations("home")
+  const messages = KIND_META[kind].home
   const headingId = `recent-${kind}-heading`
 
   return (
@@ -28,18 +30,16 @@ export default async function RecentRail({ kind, near, categoryId, title, seeAll
       <section aria-labelledby={headingId}>
         <Row gap={3} align="center">
           <Heading level={2} id={headingId}>
-            {title ?? t(kind === "found" ? "recentFound" : "recentLost")}
+            {title ?? t(messages.recent)}
           </Heading>
           <Spacer />
           <SeeAllLink kind={kind} pathname={seeAll?.pathname} query={seeAll?.query}>
-            {seeAll?.label ?? t(kind === "found" ? "seeAllFound" : "seeAllLost")}
+            {seeAll?.label ?? t(messages.seeAll)}
           </SeeAllLink>
         </Row>
         <ErrorBoundary
           fallback={
-            <ErrorNote className="self-center!">
-              {t(kind === "found" ? "recentFoundError" : "recentLostError")}
-            </ErrorNote>
+            <ErrorNote className="self-center!">{t(messages.recentError)}</ErrorNote>
           }
         >
           <RailItems kind={kind} near={near} categoryId={categoryId} empty={empty} />

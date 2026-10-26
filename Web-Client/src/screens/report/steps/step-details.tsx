@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl"
 import { Controller, useFormContext } from "react-hook-form"
 import type { Category, ItemKind } from "@/api/items"
+import { KIND_META } from "@/components/items/kind-meta"
 import { Select } from "@/components/pouf/controls"
 import { Field, Input, Textarea } from "@/components/pouf/Input"
 import { useFieldMessage } from "@/hooks/use-field-message"
@@ -18,6 +19,7 @@ export default function StepDetails({
   const t = useTranslations("form")
   const tc = useTranslations("category")
   const message = useFieldMessage(ERROR_KEYS)
+  const messages = KIND_META[kind].form
   const { control, trigger } = useFormContext<ReportDraft>()
 
   return (
@@ -26,10 +28,7 @@ export default function StepDetails({
         control={control}
         name="title"
         render={({ field, fieldState }) => (
-          <Field
-            label={kind === "lost" ? t("titleLost") : t("titleFound")}
-            error={message(fieldState.error?.message)}
-          >
+          <Field label={t(messages.title)} error={message(fieldState.error?.message)}>
             {(id, describedBy) => (
               <Input
                 ref={field.ref}
@@ -77,7 +76,7 @@ export default function StepDetails({
         render={({ field, fieldState }) => (
           <Field
             label={t("description")}
-            hint={`${t(kind === "lost" ? "descriptionHintLost" : "descriptionHintFound")}. ${(field.value ?? "").length} / ${MAX_DESCRIPTION}`}
+            hint={`${t(messages.descriptionHint)}. ${(field.value ?? "").length} / ${MAX_DESCRIPTION}`}
             error={message(fieldState.error?.message)}
           >
             {(id, describedBy) => (

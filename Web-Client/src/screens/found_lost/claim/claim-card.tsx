@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl"
 import { useMemo, useState } from "react"
 import type { ItemKind } from "@/api/items"
+import { KIND_META } from "@/components/items/kind-meta"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/pouf/card"
 import { Link } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
@@ -31,14 +32,12 @@ export default function ClaimCard({ kind, id, countryCode, category, contact }: 
     () => ({ kind, itemId: id, countryCode, category }),
     [kind, id, countryCode, category],
   )
-  const otherKind: ItemKind = kind === "lost" ? "found" : "lost"
+  const meta = KIND_META[kind]
 
   return (
     <Card className="mt-7">
       <CardHeader>
-        <CardTitle className="text-lg">
-          {kind === "lost" ? t("contactTitle") : t("contactFinderTitle")}
-        </CardTitle>
+        <CardTitle className="text-lg">{t(meta.item.contactTitle)}</CardTitle>
       </CardHeader>
       <CardContent>
         <dl className="grid grid-cols-[90px_1fr] gap-x-3.5 gap-y-2.5">
@@ -63,8 +62,8 @@ export default function ClaimCard({ kind, id, countryCode, category, contact }: 
 
         <p className="mt-5 text-muted-foreground text-sm">
           {tc("orPost")}{" "}
-          <Link href={paths.report(otherKind)} prefetch={false} className="font-bold underline">
-            {otherKind === "lost" ? tn("reportLost") : tn("reportFound")}
+          <Link href={paths.report(meta.other)} prefetch={false} className="font-bold underline">
+            {tn(KIND_META[meta.other].nav.report)}
           </Link>
         </p>
       </CardContent>

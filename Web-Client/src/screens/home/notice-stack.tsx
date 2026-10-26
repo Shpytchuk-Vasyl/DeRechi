@@ -1,8 +1,9 @@
 import { cx } from "class-variance-authority"
-import { CalendarDays, Check, MapPin, Sparkles } from "lucide-react"
+import { CalendarDays, Check, type LucideIcon, MapPin, Sparkles } from "lucide-react"
 import { getFormatter, getTranslations } from "next-intl/server"
 import type { ItemKind } from "@/api/items"
 import { CategoryArt } from "@/components/items/category-art"
+import { KIND_META } from "@/components/items/kind-meta"
 import { MetaRow } from "@/components/items/meta-row"
 import { Card } from "@/components/pouf/card"
 import { Stack } from "@/components/pouf/layout"
@@ -31,6 +32,11 @@ const SAMPLES: Record<ItemKind, [Sample, Sample, Sample]> = {
 
 const REWARD: Record<ItemKind, number> = { found: 500, lost: 1000 }
 
+const STAMP: Record<ItemKind, { Icon: LucideIcon; label: string }> = {
+  found: { Icon: Check, label: "home.sample.returned" },
+  lost: { Icon: Sparkles, label: "home.sample.new" },
+}
+
 const MOVE = "transition-[rotate,translate] ease-out motion-reduce:transition-none"
 const SLOTS = [
   "left-[2%] top-10 w-[50%] -rotate-6 group-hover:-translate-x-3 group-hover:-rotate-9",
@@ -42,6 +48,7 @@ export default async function NoticeStack({ kind }: { kind: ItemKind }) {
   const t = await getTranslations()
   const format = await getFormatter()
   const now = Date.now()
+  const stamp = STAMP[kind]
 
   return (
     <div className="relative mx-auto h-80 w-full max-w-md" aria-hidden>
@@ -63,9 +70,9 @@ export default async function NoticeStack({ kind }: { kind: ItemKind }) {
           "group-hover:-translate-y-1",
         )}
       >
-        <Badge tone={kind === "found" ? "up" : "down"}>
-          {kind === "found" ? <Check className="size-3.5" /> : <Sparkles className="size-3.5" />}
-          {kind === "found" ? t("home.sample.returned") : t("home.sample.new")}
+        <Badge tone={KIND_META[kind].tone}>
+          <stamp.Icon className="size-3.5" />
+          {t(stamp.label)}
         </Badge>
       </span>
       <span

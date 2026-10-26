@@ -1,13 +1,14 @@
 import type { MetadataRoute } from "next"
 import { cityHasNotices } from "@/api/cities"
-import { fetchItems, type ItemKind } from "@/api/items"
+import { fetchItems } from "@/api/items"
 import { GUIDE_SLUGS } from "@/content/guides"
 import { paths } from "@/i18n/paths"
 import { routing } from "@/i18n/routing"
 import { CACHE } from "@/lib/cache"
 import { CITIES } from "@/lib/cities"
 import { toIsoDate } from "@/lib/intl/dates"
-import { absoluteUrl, ITEM_LOCALE, isStale, SITEMAP_KINDS as KINDS, sitemapIds } from "@/lib/seo"
+import { ITEM_KINDS, type ItemKind, isItemKind } from "@/lib/kinds"
+import { absoluteUrl, ITEM_LOCALE, isStale, sitemapIds } from "@/lib/seo"
 
 export const revalidate = 3600
 
@@ -68,7 +69,7 @@ async function pageEntries(): Promise<MetadataRoute.Sitemap> {
     CITIES.map(async (city) => {
       const withNotices = (
         await Promise.all(
-          KINDS.map(async (kind) => ((await cityHasNotices(city, kind)) ? kind : null)),
+          ITEM_KINDS.map(async (kind) => ((await cityHasNotices(city, kind)) ? kind : null)),
         )
       ).filter((kind) => kind !== null)
       if (withNotices.length === 0) return []
@@ -129,10 +130,10 @@ export default async function sitemap({
   }
 
   const [kind, back] = chunk.split("-")
-  if (!KINDS.includes(kind as ItemKind) || !/^\d+$/.test(back ?? "")) {
+  if (!isItemKind(kind) || !/^\d+$/.test(back ?? "")) {
     return []
   }
 
-  const entries = await itemEntries(kind as ItemKind, Number(back))
-  return entries.length > 0 ? entries : [pageEntry(paths.list(kind as ItemKind))]
+  const entries = await itemEntries(kind, Number(back))
+  return entries.length > 0 ? entries : [pageEntry(paths.list(kind))]
 }

@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl"
 import type { ItemKind } from "@/api/items"
+import { KIND_META } from "@/components/items/kind-meta"
 import { LinkButton } from "@/components/pouf/link-button"
 import { usePathname } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
@@ -21,7 +22,7 @@ export function ReportButton() {
 
   return (
     <LinkButton href={paths.report(kind)} prefetch={false}>
-      {kind === "found" ? t("reportFound") : t("reportLost")}
+      {t(KIND_META[kind].nav.report)}
     </LinkButton>
   )
 }

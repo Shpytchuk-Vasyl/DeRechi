@@ -1,6 +1,6 @@
-import { PackageCheck, PackageSearch } from "lucide-react"
 import { getTranslations } from "next-intl/server"
 import type { ItemKind } from "@/api/items"
+import { KIND_META } from "@/components/items/kind-meta"
 import { Card } from "@/components/pouf/card"
 import { Empty } from "@/components/pouf/feedback"
 import { Row } from "@/components/pouf/layout"
@@ -33,29 +33,16 @@ export default async function ItemsEmpty({ kind, search }: Props) {
     )
   }
 
-  const other: ItemKind = kind === "found" ? "lost" : "found"
+  const { list, Icon, other } = KIND_META[kind]
 
   return (
     <Card>
-      <Empty
-        icon={
-          kind === "found" ? (
-            <PackageCheck className="size-5" />
-          ) : (
-            <PackageSearch className="size-5" />
-          )
-        }
-        title={t(kind === "found" ? "emptyFound" : "emptyLost")}
-      >
-        {t(kind === "found" ? "emptyFoundHint" : "emptyLostHint")}
+      <Empty icon={<Icon className="size-5" />} title={t(list.empty)}>
+        {t(list.emptyHint)}
       </Empty>
       <Row justify="center">
-        <LinkButton
-          href={paths.report(other)}
-          tone={other === "found" ? "up" : "down"}
-          prefetch={false}
-        >
-          {tn(other === "found" ? "reportFound" : "reportLost")}
+        <LinkButton href={paths.report(other)} tone={KIND_META[other].tone} prefetch={false}>
+          {tn(KIND_META[other].nav.report)}
         </LinkButton>
       </Row>
     </Card>

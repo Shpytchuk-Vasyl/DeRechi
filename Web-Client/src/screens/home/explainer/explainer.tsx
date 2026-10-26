@@ -2,6 +2,7 @@ import { Camera, EyeOff, Gift, MessageSquare, Search } from "lucide-react"
 import { getTranslations } from "next-intl/server"
 import type { ReactElement } from "react"
 import type { ItemKind } from "@/api/items"
+import { KIND_META } from "@/components/items/kind-meta"
 import { Card } from "@/components/pouf/card"
 import { Stack } from "@/components/pouf/layout"
 import { LinkButton } from "@/components/pouf/link-button"
@@ -12,11 +13,17 @@ import ExplainerPoint from "./explainer-point"
 
 const SIDES: Record<
   ItemKind,
-  { title: string; text: string; points: { key: string; icon: ReactElement }[] }
+  {
+    title: string
+    text: string
+    stack: string
+    points: { key: string; icon: ReactElement }[]
+  }
 > = {
   found: {
     title: "foundTitle",
     text: "foundText",
+    stack: "hidden lg:block",
     points: [
       { key: "foundPoint1", icon: <Camera /> },
       { key: "foundPoint2", icon: <EyeOff /> },
@@ -26,6 +33,7 @@ const SIDES: Record<
   lost: {
     title: "lostTitle",
     text: "lostText",
+    stack: "hidden lg:order-2 lg:block",
     points: [
       { key: "lostPoint1", icon: <Search /> },
       { key: "lostPoint2", icon: <Gift /> },
@@ -38,10 +46,11 @@ export default async function HomeExplainer({ kind }: { kind: ItemKind }) {
   const t = await getTranslations("home")
   const tn = await getTranslations("nav")
   const side = SIDES[kind]
+  const meta = KIND_META[kind]
 
   return (
     <Card tint={kind} className="group grid items-center gap-8 lg:grid-cols-2" data-mascot-spot>
-      <div className={kind === "lost" ? "hidden lg:order-2 lg:block" : "hidden lg:block"}>
+      <div className={side.stack}>
         <NoticeStack kind={kind} />
       </div>
       <Stack gap={4}>
@@ -55,13 +64,8 @@ export default async function HomeExplainer({ kind }: { kind: ItemKind }) {
           ))}
         </Stack>
         <div className="text-center">
-          <LinkButton
-            href={paths.report(kind)}
-            tone={kind === "found" ? "up" : "down"}
-            size="lg"
-            prefetch={false}
-          >
-            {tn(kind === "found" ? "reportFound" : "reportLost")}
+          <LinkButton href={paths.report(kind)} tone={meta.tone} size="lg" prefetch={false}>
+            {tn(meta.nav.report)}
           </LinkButton>
         </div>
       </Stack>

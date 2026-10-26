@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
-import type { ItemKind } from "@/api/items"
 import { paths } from "@/i18n/paths"
 import { defaultLocale, locales } from "@/i18n/routing"
 import { clientEnv } from "@/lib/env/client"
+import { ITEM_KINDS } from "@/lib/kinds"
 
 export const SITE_URL = clientEnv.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "")
 
@@ -128,14 +128,12 @@ export function cityPageJsonLd(
   ]
 }
 
-export const SITEMAP_KINDS: ItemKind[] = ["lost", "found"]
-
 const SITEMAP_MONTHS_BACK = Math.ceil(STALE_AFTER_DAYS / 30) + 1
 
 export function sitemapIds(): { id: string }[] {
   const months = Array.from({ length: SITEMAP_MONTHS_BACK }, (_, index) => index)
   return [
     { id: "pages" },
-    ...SITEMAP_KINDS.flatMap((kind) => months.map((back) => ({ id: `${kind}-${back}` }))),
+    ...ITEM_KINDS.flatMap((kind) => months.map((back) => ({ id: `${kind}-${back}` }))),
   ]
 }

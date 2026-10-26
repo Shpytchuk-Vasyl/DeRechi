@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@/graphql/client", () => ({ graphqlRequest: mocks.graphqlRequest }))
 vi.mock("@/lib/bot-check", () => ({ passesBotCheck: mocks.passesBotCheck }))
 vi.mock("next/cache", () => ({ updateTag: mocks.updateTag }))
+vi.mock("server-only", () => ({}))
 
 const { createNotice } = await import("./report")
 
@@ -28,7 +29,7 @@ const notice = {
 
 beforeEach(() => {
   vi.clearAllMocks()
-  vi.spyOn(console, "log").mockImplementation(() => {})
+  vi.spyOn(console, "error").mockImplementation(() => {})
   mocks.passesBotCheck.mockResolvedValue(true)
 })
 

@@ -4,6 +4,7 @@ import { Check, Megaphone, QrCode, Share2, X } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useCallback, useEffect, useRef, useState } from "react"
 import type { ItemKind } from "@/api/items"
+import { KIND_META } from "@/components/items/kind-meta"
 import { Button, IconButton } from "@/components/pouf/Button"
 import { Card } from "@/components/pouf/card"
 import { Blob } from "@/components/pouf/media"
@@ -51,13 +52,13 @@ export default function ShareActions({ kind, id, image, ...payload }: Props) {
   return (
     <Card tint={kind} size="sm" className="mt-2 basis-full">
       <div className="flex items-start gap-3.5">
-        <Blob icon={<Megaphone />} tone={kind === "lost" ? "pink" : "mint"} size="sm" />
+        <Blob icon={<Megaphone />} tone={KIND_META[kind].tint} size="sm" />
         <div className="min-w-0 flex-1">
           <Heading level={2} className="whitespace-normal text-base">
             {t("publishedTitle")}
           </Heading>
           <Text muted className="mt-1 block leading-relaxed">
-            {t(`publishedText.${kind}`)}
+            {t(KIND_META[kind].item.publishedText)}
           </Text>
           <div className="mt-3.5 flex flex-wrap gap-2">{buttons}</div>
         </div>
