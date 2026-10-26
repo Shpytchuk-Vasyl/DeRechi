@@ -2,7 +2,7 @@ import { itemOgImage } from "@/screens/found_lost/item-og-image"
 
 export const alt = "DeRechi"
 export const size = { width: 1200, height: 630 }
-export const contentType = "image/png"
+export const contentType = "image/jpeg"
 
 type Props = { params: Promise<{ locale: string; id: string }> }
 

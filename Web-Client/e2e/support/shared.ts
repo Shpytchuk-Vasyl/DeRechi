@@ -64,6 +64,12 @@ export type SharedData = {
   groups: Record<SharedGroup, SharedItem[]>
 }
 
+export function member(shared: SharedData, group: SharedGroup, key: string): SharedItem {
+  const item = shared.groups[group].find((it) => it.key === key)
+  if (!item) throw new Error(`e2e: the shared group ${group} has no item ${key}`)
+  return item
+}
+
 export function isoWeek(day: string): { year: number; week: number } {
   const [y, m, d] = day.split("-").map(Number)
   const date = new Date(Date.UTC(y, m - 1, d))

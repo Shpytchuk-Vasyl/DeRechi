@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { getTranslations } from "next-intl/server"
 import { cache } from "react"
+import { cityHasNotices } from "@/api/cities"
 import {
   type Category,
   fetchCategories,
@@ -8,6 +9,8 @@ import {
   type ItemKind,
   type ItemPage,
 } from "@/api/items"
+import { paths } from "@/i18n/paths"
+import { cityBySlug } from "@/lib/cities"
 import { type ItemSearch, parseItemSearch, type RawSearchParams, toFilter } from "@/lib/item-search"
 import { pageAlternates } from "@/lib/seo"
 
@@ -34,9 +37,9 @@ function nextQuery(raw: RawSearchParams, after: string): string {
   return query.toString()
 }
 
-const load = cache(async (kind: ItemKind, rawJson: string): Promise<ListPage> => {
+const load = cache(async (kind: ItemKind, rawJson: string, city?: string): Promise<ListPage> => {
   const raw = JSON.parse(rawJson) as RawSearchParams
-  const search = parseItemSearch(raw)
+  const search = parseItemSearch(raw, city)
   const after = single(raw.after)
   const categories = await fetchCategories()
   const page = await fetchItems(kind, {
@@ -54,26 +57,44 @@ const load = cache(async (kind: ItemKind, rawJson: string): Promise<ListPage> =>
   }
 })
 
-export function loadListPage(kind: ItemKind, raw: RawSearchParams): Promise<ListPage> {
-  return load(kind, JSON.stringify(raw))
+export function loadListPage(
+  kind: ItemKind,
+  raw: RawSearchParams,
+  city?: string,
+): Promise<ListPage> {
+  return load(kind, JSON.stringify(raw), city)
 }
 
 export async function listMetadata(
   kind: ItemKind,
   locale: string,
   raw: RawSearchParams,
+  slug?: string,
 ): Promise<Metadata> {
-  const [t, { after, nextQuery }] = await Promise.all([
+  const city = slug ? cityBySlug(slug) : undefined
+  if (slug && !city) return {}
+
+  const [t, tc, { after, nextQuery }, hasNotices] = await Promise.all([
     getTranslations({ locale, namespace: "list" }),
-    loadListPage(kind, raw),
+    getTranslations({ locale, namespace: "city" }),
+    loadListPage(kind, raw, city?.slug),
+    city ? cityHasNotices(city, kind) : true,
   ])
 
-  const path = after ? `/${kind}?after=${encodeURIComponent(after)}` : `/${kind}`
+  const base = city ? paths.cityList(city.slug, kind) : paths.list(kind)
+  const path = after ? `${base}?after=${encodeURIComponent(after)}` : base
+  const lost = kind === "lost"
+  const where = city ? tc(`${city.slug}.in`) : undefined
 
   return {
-    title: kind === "lost" ? t("lostTitle") : t("foundTitle"),
-    description: kind === "lost" ? t("lostMetaDescription") : t("foundMetaDescription"),
+    title: where
+      ? t(lost ? "lostTitleIn" : "foundTitleIn", { in: where })
+      : t(lost ? "lostTitle" : "foundTitle"),
+    description: where
+      ? t(lost ? "lostMetaDescriptionIn" : "foundMetaDescriptionIn", { in: where })
+      : t(lost ? "lostMetaDescription" : "foundMetaDescription"),
     alternates: pageAlternates(locale, path),
-    pagination: nextQuery ? { next: `/${locale}/${kind}?${nextQuery}` } : undefined,
+    pagination: nextQuery ? { next: `/${locale}${base}?${nextQuery}` } : undefined,
+    ...(hasNotices ? {} : { robots: { index: false, follow: true } }),
   }
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import type { ItemKind } from "@/api/items"
+import { paths } from "@/i18n/paths"
 import { defaultLocale, locales } from "@/i18n/routing"
 import { clientEnv } from "@/lib/env/client"
 
@@ -114,7 +115,7 @@ export function cityPageJsonLd(
         geo: { "@type": "GeoCoordinates", latitude: city.lat, longitude: city.lon },
       },
       potentialAction: searchAction(
-        `${absoluteUrl(locale, "/found")}?lat=${city.lat}&lon=${city.lon}&search={search_term_string}`,
+        `${absoluteUrl(locale, paths.cityList(city.slug, "found"))}?search={search_term_string}`,
       ),
       breadcrumb: {
         "@type": "BreadcrumbList",

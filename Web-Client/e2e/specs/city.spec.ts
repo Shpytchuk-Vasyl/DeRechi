@@ -1,8 +1,10 @@
 import { expect, test } from "../fixtures/base"
-import { ItemCard, RouteDialog } from "../fixtures/pages"
+import { Filters, ItemCard, RouteDialog } from "../fixtures/pages"
 import { HomePage } from "../fixtures/pages/home-page"
+import { expectListQuery, ListPage } from "../fixtures/pages/list-page"
 import { env } from "../support/env"
 import { readJsonLd } from "../support/seo"
+import { member } from "../support/shared"
 
 test.describe("city pages", () => {
   test("a city page names its city and shows found and lost notices near it", async ({
@@ -25,17 +27,67 @@ test.describe("city pages", () => {
     await expect(new ItemCard(page, t).all().first()).toBeVisible()
   })
 
-  test("the search on a city page looks around the city", async ({ page, go, t, appLocale }) => {
+  test("the search on a city page opens the city's found list", async ({
+    page,
+    go,
+    t,
+    appLocale,
+  }) => {
     await go("/lviv")
     const box = new HomePage(page, t).searchBox()
 
     await box.fill(t("category.KEYS"))
     await box.press("Enter")
 
-    await expect(page).toHaveURL(new RegExp(`/${appLocale}/found\\?`))
-    const params = new URL(page.url()).searchParams
-    expect(params.get("search")).toBe(t("category.KEYS"))
-    expect([params.get("lat"), params.get("lon")]).toEqual(["49.8397", "24.0297"])
+    await expectListQuery(page, `/${appLocale}/lviv/found`, { search: t("category.KEYS") })
+  })
+
+  test("See all on a city page opens the city's own lists", async ({ page, go, t, appLocale }) => {
+    const where = t("city.lviv.in")
+    for (const kind of ["found", "lost"] as const) {
+      await go("/lviv")
+      await page
+        .getByRole("link", {
+          name: t(kind === "found" ? "cityPage.seeAllFound" : "cityPage.seeAllLost"),
+        })
+        .click()
+
+      await expectListQuery(page, `/${appLocale}/lviv/${kind}`, {})
+      await expect(
+        page.getByRole("heading", {
+          level: 1,
+          name: t(kind === "found" ? "list.foundTitleIn" : "list.lostTitleIn", { in: where }),
+        }),
+      ).toBeVisible()
+    }
+  })
+
+  test("a city's found list keeps the city's notices and has no Near me switch", async ({
+    page,
+    go,
+    t,
+    shared,
+  }) => {
+    const list = new ListPage(page, t, "found")
+    await go(`/lviv/found?search=${shared.search.near}`)
+
+    await expect(list.cards.byTitle(member(shared, "near", "lviv").title)).toBeVisible()
+    await expect(list.cards.byTitle(member(shared, "near", "kyiv").title)).toHaveCount(0)
+    await expect(list.nearbySwitch()).toHaveCount(0)
+  })
+
+  test("filters on a city's list stay in the city", async ({ page, go, t, shared, appLocale }) => {
+    const search = shared.search.near
+    const filters = new Filters(page, t)
+    await go(`/lviv/found?search=${search}`)
+
+    await filters.category("WALLET")
+    await filters.apply()
+
+    await expectListQuery(page, `/${appLocale}/lviv/found`, { search, category: "WALLET" })
+    await expect(
+      new ListPage(page, t, "found").cards.byTitle(member(shared, "near", "lviv").title),
+    ).toBeVisible()
   })
 
   test("a city page has the site's WebSite and a CollectionPage about the city", async ({
@@ -57,9 +109,14 @@ test.describe("city pages", () => {
     })
   })
 
-  test("a slug outside the city list answers 404", async ({ request, appLocale }) => {
-    const response = await request.get(new URL(`/${appLocale}/warsaw`, env.baseURL).toString())
-    expect(response.status()).toBe(404)
+  test("a slug outside the city list answers 404, and so do its lists", async ({
+    request,
+    appLocale,
+  }) => {
+    for (const path of ["/warsaw", "/warsaw/found", "/warsaw/lost"]) {
+      const response = await request.get(new URL(`/${appLocale}${path}`, env.baseURL).toString())
+      expect(response.status(), path).toBe(404)
+    }
   })
 
   test("a city on the home map opens its page", async ({ page, go, t }) => {

@@ -3,13 +3,7 @@ import { Filters } from "../fixtures/pages"
 import { expectListQuery, ListPage } from "../fixtures/pages/list-page"
 import type { ItemSort } from "../support/api"
 import { kyivDate, shiftDay } from "../support/data"
-import type { SharedData, SharedGroup, SharedItem } from "../support/shared"
-
-function member(shared: SharedData, group: SharedGroup, key: string): SharedItem {
-  const item = shared.groups[group].find((it) => it.key === key)
-  if (!item) throw new Error(`e2e: the shared group ${group} has no item ${key}`)
-  return item
-}
+import { member, type SharedItem } from "../support/shared"
 
 test.describe("category", () => {
   test("a category keeps one of two items and shows as selected", {

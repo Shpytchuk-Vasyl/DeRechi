@@ -15,7 +15,7 @@ type Props = {
   near?: NearInput
   categoryId?: string
   title?: string
-  seeAll?: { label: string; query: Record<string, string> }
+  seeAll?: { label: string; pathname?: string; query?: Record<string, string> }
   empty?: string
 }
 
@@ -31,7 +31,7 @@ export default async function RecentRail({ kind, near, categoryId, title, seeAll
             {title ?? t(kind === "found" ? "recentFound" : "recentLost")}
           </Heading>
           <Spacer />
-          <SeeAllLink kind={kind} query={seeAll?.query}>
+          <SeeAllLink kind={kind} pathname={seeAll?.pathname} query={seeAll?.query}>
             {seeAll?.label ?? t(kind === "found" ? "seeAllFound" : "seeAllLost")}
           </SeeAllLink>
         </Row>

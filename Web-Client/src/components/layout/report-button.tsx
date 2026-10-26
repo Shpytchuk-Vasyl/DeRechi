@@ -1,27 +1,27 @@
 "use client"
 
 import { useTranslations } from "next-intl"
+import type { ItemKind } from "@/api/items"
 import { LinkButton } from "@/components/pouf/link-button"
 import { usePathname } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
+import { cityListKind } from "@/lib/cities"
+
+function listKind(pathname: string): ItemKind | undefined {
+  if (pathname === paths.list("found")) return "found"
+  if (pathname === paths.list("lost")) return "lost"
+  return cityListKind(pathname)
+}
 
 export function ReportButton() {
   const t = useTranslations("nav")
-  const pathname = usePathname()
+  const kind = listKind(usePathname())
 
-  if (pathname === paths.list("found")) {
-    return (
-      <LinkButton href={paths.report("found")} prefetch={false}>
-        {t("reportFound")}
-      </LinkButton>
-    )
-  }
-  if (pathname === paths.list("lost")) {
-    return (
-      <LinkButton href={paths.report("lost")} prefetch={false}>
-        {t("reportLost")}
-      </LinkButton>
-    )
-  }
-  return null
+  if (!kind) return null
+
+  return (
+    <LinkButton href={paths.report(kind)} prefetch={false}>
+      {kind === "found" ? t("reportFound") : t("reportLost")}
+    </LinkButton>
+  )
 }

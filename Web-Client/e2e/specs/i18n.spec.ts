@@ -63,6 +63,14 @@ const KEY_PAGES: KeyPage[] = [
     description: (t) => t("cityPage.description", { in: t("city.lviv.in") }),
     alternates: true,
   },
+  {
+    path: "/lviv/found",
+    status: 200,
+    title: (t) =>
+      t("app.titleTemplate", { page: t("list.foundTitleIn", { in: t("city.lviv.in") }) }),
+    description: (t) => t("list.foundMetaDescriptionIn", { in: t("city.lviv.in") }),
+    alternates: true,
+  },
   { path: "/nope-e2e", status: 404, title: (t) => t("app.name") },
 ]
 

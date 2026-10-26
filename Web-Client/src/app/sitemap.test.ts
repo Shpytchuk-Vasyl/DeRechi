@@ -46,4 +46,23 @@ describe("sitemap", () => {
     expect(urls).toContain("https://derechi.example/en/lviv")
     expect(urls).not.toContain("https://derechi.example/en/kyiv")
   })
+
+  it("lists a city's list only for the kind it has notices of", async () => {
+    fetchItems.mockImplementation(
+      async (kind: string, query?: { filter?: { near?: { lat: number } } }) => ({
+        items:
+          kind === "found" && query?.filter?.near?.lat === 49.8397
+            ? [{ id: "1", date: today }]
+            : [],
+        hasNextPage: false,
+      }),
+    )
+
+    const urls = (await sitemap({ id: Promise.resolve("pages") })).map((entry) => entry.url)
+
+    expect(urls).toContain("https://derechi.example/en/lviv")
+    expect(urls).toContain("https://derechi.example/en/lviv/found")
+    expect(urls).not.toContain("https://derechi.example/en/lviv/lost")
+    expect(urls).not.toContain("https://derechi.example/en/kyiv/found")
+  })
 })

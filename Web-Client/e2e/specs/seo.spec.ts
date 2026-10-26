@@ -112,7 +112,7 @@ test.describe("SEO", () => {
 
 test.describe("item pages", () => {
   for (const key of ["foundPhoto", "lostNoPhoto"] as const) {
-    test(`${key}: og:image is a 1200×630 PNG of the notice`, async ({
+    test(`${key}: og:image is a cacheable 1200×630 JPEG of the notice`, async ({
       page,
       go,
       request,
@@ -134,7 +134,8 @@ test.describe("item pages", () => {
       const url = new URL((await image.getAttribute("content")) ?? "")
       const response = await request.get(new URL(url.pathname + url.search, env.baseURL).toString())
       expect(response.status()).toBe(200)
-      expect(response.headers()["content-type"]).toBe("image/png")
+      expect(response.headers()["content-type"]).toBe("image/jpeg")
+      expect(response.headers()["cache-control"]).toContain("max-age=3600")
     })
   }
 })

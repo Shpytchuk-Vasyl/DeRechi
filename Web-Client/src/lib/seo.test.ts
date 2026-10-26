@@ -78,8 +78,7 @@ describe("seo", () => {
       about: { "@type": "City", name: "Львів", geo: { latitude: 49.8397, longitude: 24.0297 } },
       potentialAction: {
         target: {
-          urlTemplate:
-            "https://derechi.example/uk/found?lat=49.8397&lon=24.0297&search={search_term_string}",
+          urlTemplate: "https://derechi.example/uk/lviv/found?search={search_term_string}",
         },
       },
       breadcrumb: {

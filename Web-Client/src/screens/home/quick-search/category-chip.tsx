@@ -4,14 +4,17 @@ import { Badge } from "@/components/pouf/media"
 import { Link } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
 
-type Props = { category: string; label: string; near?: Record<string, string> }
+type Props = { category: string; label: string; city?: string }
 
-export default function CategoryChip({ category, label, near }: Props) {
+export default function CategoryChip({ category, label, city }: Props) {
   const { icon, tone } = categoryArt(category)
 
   return (
     <Link
-      href={{ pathname: paths.list("found"), query: { category, ...near } }}
+      href={{
+        pathname: city ? paths.cityList(city, "found") : paths.list("found"),
+        query: { category },
+      }}
       className="group inline-flex no-underline"
     >
       <Badge tone={tone} className="gap-0 group-hover:gap-1.5 group-focus-visible:gap-1.5">

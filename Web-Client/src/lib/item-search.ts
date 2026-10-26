@@ -1,5 +1,6 @@
 import type { Category } from "@/api/items"
-import type { ItemFilterInput, ItemSort } from "@/graphql/generated/graphql"
+import type { ItemFilterInput, ItemSort, NearInput } from "@/graphql/generated/graphql"
+import { cityArea, cityBySlug } from "@/lib/cities"
 import { ISO_DATE_PATTERN } from "@/lib/intl/dates"
 
 export const SORTS: ItemSort[] = ["DATE_DESC", "DATE_ASC", "TITLE_ASC", "TITLE_DESC"]
@@ -18,6 +19,7 @@ export type ItemSearch = {
   dateFrom?: string
   dateTo?: string
   near?: Coordinates
+  city?: string
   sort: ItemSort
 }
 
@@ -41,7 +43,7 @@ function coordinate(value: string | string[] | undefined, limit: number): number
   return Number.isFinite(parsed) && Math.abs(parsed) <= limit ? parsed : undefined
 }
 
-export function parseItemSearch(raw: RawSearchParams): ItemSearch {
+export function parseItemSearch(raw: RawSearchParams, city?: string): ItemSearch {
   const sort = single(raw.sort)
   const lat = coordinate(raw.lat, 90)
   const lon = coordinate(raw.lon, 180)
@@ -51,7 +53,8 @@ export function parseItemSearch(raw: RawSearchParams): ItemSearch {
     category: single(raw.category),
     dateFrom: date(raw.dateFrom),
     dateTo: date(raw.dateTo),
-    near: lat !== undefined && lon !== undefined ? { lat, lon } : undefined,
+    near: !city && lat !== undefined && lon !== undefined ? { lat, lon } : undefined,
+    city,
     sort: SORTS.includes(sort as ItemSort) ? (sort as ItemSort) : "DATE_DESC",
   }
 }
@@ -64,8 +67,14 @@ export function toFilter(search: ItemSearch, categories: Category[]): ItemFilter
     categoryId: category?.id ?? null,
     dateFrom: search.dateFrom ?? null,
     dateTo: search.dateTo ?? null,
-    near: search.near ? { ...search.near, radiusKm: NEAR_RADIUS_KM } : null,
+    near: nearFilter(search),
   }
+}
+
+function nearFilter(search: ItemSearch): NearInput | null {
+  const city = search.city ? cityBySlug(search.city) : undefined
+  if (city) return cityArea(city)
+  return search.near ? { ...search.near, radiusKm: NEAR_RADIUS_KM } : null
 }
 
 export function hasActiveFilters(search: ItemSearch): boolean {

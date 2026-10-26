@@ -1,3 +1,5 @@
+import type { ItemKind } from "@/api/items"
+
 export type City = {
   slug: string
   countryCode: string
@@ -35,6 +37,12 @@ const EARTH_RADIUS_KM = 6371
 
 export function cityBySlug(slug: string): City | undefined {
   return CITIES.find((city) => city.slug === slug)
+}
+
+export function cityListKind(pathname: string): ItemKind | undefined {
+  const [empty, slug, kind, ...rest] = pathname.split("/")
+  if (empty !== "" || rest.length > 0 || !slug || !cityBySlug(slug)) return undefined
+  return kind === "lost" || kind === "found" ? kind : undefined
 }
 
 export function nearestCity(lat: number, lon: number): City | undefined {

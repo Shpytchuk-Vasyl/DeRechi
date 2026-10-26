@@ -3,12 +3,13 @@
 import { useReducedMotion } from "framer-motion"
 import { useTranslations } from "next-intl"
 import { type ReactNode, useId, useMemo, useRef, useState } from "react"
+import type { ItemKind } from "@/api/items"
 import { Input } from "@/components/pouf/Input"
 import { useTypewriter } from "@/hooks/use-typewriter"
 import { useRouter } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
 
-export default function HeroSearch({ near }: { near?: Record<string, string> }) {
+export default function HeroSearch({ city }: { city?: string }) {
   const t = useTranslations("home")
   const router = useRouter()
   const reduceMotion = useReducedMotion()
@@ -29,11 +30,8 @@ export default function HeroSearch({ near }: { near?: Record<string, string> }) 
   function submit(event: React.SubmitEvent) {
     event.preventDefault()
     const search = query.trim()
-    router.push(
-      search
-        ? { pathname: paths.list("found"), query: { search, ...near } }
-        : { pathname: paths.list("lost"), query: near },
-    )
+    const list = (kind: ItemKind) => (city ? paths.cityList(city, kind) : paths.list(kind))
+    router.push(search ? { pathname: list("found"), query: { search } } : list("lost"))
   }
 
   const kbd = (chunks: ReactNode) => (

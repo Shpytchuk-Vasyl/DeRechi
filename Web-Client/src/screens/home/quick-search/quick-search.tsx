@@ -7,9 +7,9 @@ import CategoryChip from "./category-chip"
 
 const POPULAR = ["DOCUMENTS", "KEYS", "WALLET", "BAGS"]
 
-type Props = React.ComponentProps<typeof Card> & { near?: Record<string, string> }
+type Props = React.ComponentProps<typeof Card> & { city?: string }
 
-export default async function HomeQuickSearch({ near, ...props }: Props) {
+export default async function HomeQuickSearch({ city, ...props }: Props) {
   const t = await getTranslations("home")
   const tc = await getTranslations("category")
 
@@ -20,13 +20,13 @@ export default async function HomeQuickSearch({ near, ...props }: Props) {
       </CardHeader>
       <CardContent>
         <Stack gap={4}>
-          <HeroSearch near={near} />
+          <HeroSearch city={city} />
           <Row gap={2} align="center" wrap>
             <Text size="sm" muted>
               {t("searchQuick")}
             </Text>
             {POPULAR.map((key) => (
-              <CategoryChip key={key} category={key} label={tc(key)} near={near} />
+              <CategoryChip key={key} category={key} label={tc(key)} city={city} />
             ))}
           </Row>
         </Stack>

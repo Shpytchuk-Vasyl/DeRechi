@@ -25,7 +25,9 @@ export default async function ItemsEmpty({ kind, search }: Props) {
           {t("emptyHint")}
         </Empty>
         <Row justify="center">
-          <LinkButton href={paths.list(kind)}>{t("emptyAction")}</LinkButton>
+          <LinkButton href={search.city ? paths.cityList(search.city, kind) : paths.list(kind)}>
+            {t("emptyAction")}
+          </LinkButton>
         </Row>
       </Card>
     )

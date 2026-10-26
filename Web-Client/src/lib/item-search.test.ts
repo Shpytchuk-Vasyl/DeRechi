@@ -79,6 +79,17 @@ describe("toFilter", () => {
       near: { lat: 49.8, lon: 24, radiusKm: 10 },
     })
   })
+
+  it("searches a city's own area and ignores coordinates in the query", () => {
+    const search = parseItemSearch({ lat: "50.45", lon: "30.52" }, "lviv")
+
+    expect(search.near).toBeUndefined()
+    expect(toFilter(search, categories).near).toEqual({ lat: 49.8397, lon: 24.0297, radiusKm: 12 })
+  })
+
+  it("drops the area of a city that is not in the list", () => {
+    expect(toFilter(parseItemSearch({}, "warsaw"), categories).near).toBeNull()
+  })
 })
 
 describe("toQuery", () => {

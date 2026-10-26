@@ -98,7 +98,7 @@ test.describe("menu navigation", () => {
 })
 
 test.describe("header report button", () => {
-  test("shows only on /lost and /found, of the list's kind", async ({
+  test("shows only on the lists, a city's included, of the list's kind", async ({
     page,
     go,
     t,
@@ -109,13 +109,18 @@ test.describe("header report button", () => {
 
     for (const kind of KINDS) {
       const other: ItemKind = kind === "lost" ? "found" : "lost"
-      await go(`/${kind}`)
-      await expect(shell.headerReport(kind)).toBeVisible()
-      await expect(shell.headerReport(kind)).toHaveAttribute("href", `/${appLocale}/report/${kind}`)
-      await expect(shell.headerReport(other)).toHaveCount(0)
+      for (const path of [`/${kind}`, `/lviv/${kind}`]) {
+        await go(path)
+        await expect(shell.headerReport(kind)).toBeVisible()
+        await expect(shell.headerReport(kind)).toHaveAttribute(
+          "href",
+          `/${appLocale}/report/${kind}`,
+        )
+        await expect(shell.headerReport(other)).toHaveCount(0)
+      }
     }
 
-    for (const path of ["/", shared.items.lostFull.path, "/report/lost"]) {
+    for (const path of ["/", "/lviv", shared.items.lostFull.path, "/report/lost"]) {
       await go(path)
       await expect(page.getByRole("main")).toBeVisible()
       for (const kind of KINDS) await expect(shell.headerReport(kind)).toHaveCount(0)

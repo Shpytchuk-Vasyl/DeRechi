@@ -12,11 +12,12 @@ import NearbySwitch from "@/screens/found_lost/nearby-switch"
 type Props = {
   kind: ItemKind
   searchParams: RawSearchParams
+  city?: string
 }
 
-export default async function ItemsPage({ kind, searchParams }: Props) {
+export default async function ItemsPage({ kind, searchParams, city }: Props) {
   const t = await getTranslations("list")
-  const { search, categories, page, after } = await loadListPage(kind, searchParams)
+  const { search, categories, page, after } = await loadListPage(kind, searchParams, city)
 
   return (
     <>
@@ -26,7 +27,7 @@ export default async function ItemsPage({ kind, searchParams }: Props) {
         <Text size="sm" muted className="flex-1">
           {page.items.length > 0 ? t("showingSome", { shown: page.items.length }) : null}
         </Text>
-        {kind === "found" ? <NearbySwitch active={Boolean(search.near)} /> : null}
+        {!city ? <NearbySwitch active={Boolean(search.near)} /> : null}
 
         <ItemSortSelect value={search.sort} />
       </div>

@@ -1,10 +1,12 @@
 import { ImageResponse } from "next/og"
 import { getFormatter, getTranslations } from "next-intl/server"
 import { createElement } from "react"
+import sharp from "sharp"
 import { fetchItem, type ItemKind } from "@/api/items"
 import { type ArtTone, categoryArt } from "@/components/items/category-art"
 import { paths } from "@/i18n/paths"
 import { locales } from "@/i18n/routing"
+import { CACHE_TTL } from "@/lib/cache"
 import { cityOf } from "@/lib/cities"
 import { absoluteFileUrl } from "@/lib/env/client"
 import { formatMoney } from "@/lib/intl/money"
@@ -23,6 +25,8 @@ const CARD_ART_ICON = 160
 const ART_TONE_SHARE = 0.6
 const TITLE_MAX = 110
 const PHOTO_TYPES = /^image\/(jpeg|png)$/
+const JPEG_QUALITY = 80
+const IMAGE_CACHE = `public, max-age=${CACHE_TTL.hour}`
 
 const TONES: Record<ArtTone, string> = {
   pink: "#ffb3d1",
@@ -62,11 +66,7 @@ type Notice = {
   photo: string | null
 }
 
-export async function itemOgImage(
-  kind: ItemKind,
-  locale: string,
-  id: string,
-): Promise<ImageResponse> {
+export async function itemOgImage(kind: ItemKind, locale: string, id: string): Promise<Response> {
   const [notice, app, t] = await Promise.all([
     loadNotice(kind, locale, id),
     getTranslations({ locale, namespace: "app" }),
@@ -81,9 +81,11 @@ export async function itemOgImage(
     [title, frame.brand, notice?.label ?? "", notice?.reward ?? "", noPhoto].join(""),
   )
 
-  return new ImageResponse(
-    <OgCard notice={notice} title={title} details={details} frame={frame} noPhoto={noPhoto} />,
-    { width: WIDTH, height: HEIGHT, fonts },
+  return jpeg(
+    new ImageResponse(
+      <OgCard notice={notice} title={title} details={details} frame={frame} noPhoto={noPhoto} />,
+      { width: WIDTH, height: HEIGHT, fonts },
+    ),
   )
 }
 
@@ -119,7 +121,7 @@ export async function itemCardImage(kind: ItemKind, locale: string, id: string):
       width: CARD,
       height: CARD,
       fonts,
-      headers: { "cache-control": "public, max-age=3600", "x-robots-tag": "noindex" },
+      headers: { "cache-control": IMAGE_CACHE, "x-robots-tag": "noindex" },
     },
   )
 }
@@ -483,6 +485,14 @@ function mix(color: string, base: string, share: number): string {
         Number.parseInt(base.slice(at, at + 2), 16) * (1 - share),
     )
   return `#${[1, 3, 5].map((at) => channel(at).toString(16).padStart(2, "0")).join("")}`
+}
+
+async function jpeg(image: ImageResponse): Promise<Response> {
+  const png = Buffer.from(await image.arrayBuffer())
+  const body = await sharp(png).jpeg({ quality: JPEG_QUALITY, mozjpeg: true }).toBuffer()
+  return new Response(new Uint8Array(body), {
+    headers: { "content-type": "image/jpeg", "cache-control": IMAGE_CACHE },
+  })
 }
 
 async function imageDataUrl(url: string): Promise<string | null> {

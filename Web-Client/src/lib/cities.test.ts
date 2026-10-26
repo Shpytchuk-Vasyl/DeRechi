@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import en from "../../messages/en.json"
-import { CITIES, cityBySlug, nearestCity, withCity } from "./cities"
+import { CITIES, cityBySlug, cityListKind, nearestCity, withCity } from "./cities"
 
 describe("cities", () => {
   it("has a name for every city in the bundles", () => {
@@ -44,5 +44,14 @@ describe("cities", () => {
     for (const city of CITIES) {
       expect(nearestCity(city.lat, city.lon)?.slug, city.slug).toBe(city.slug)
     }
+  })
+
+  it("tells a city's list from other paths", () => {
+    expect(cityListKind("/lviv/found")).toBe("found")
+    expect(cityListKind("/kyiv/lost")).toBe("lost")
+    expect(cityListKind("/warsaw/found")).toBeUndefined()
+    expect(cityListKind("/lviv")).toBeUndefined()
+    expect(cityListKind("/found/87")).toBeUndefined()
+    expect(cityListKind("/lviv/found/87")).toBeUndefined()
   })
 })

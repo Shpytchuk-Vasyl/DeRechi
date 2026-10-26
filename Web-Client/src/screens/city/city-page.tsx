@@ -52,7 +52,6 @@ export default async function CityPage({ locale, slug }: { locale: string; slug:
   }
   const where = tc(`${slug}.in`)
   const area = cityArea(city)
-  const near = { lat: String(city.lat), lon: String(city.lon) }
 
   return (
     <>
@@ -61,20 +60,20 @@ export default async function CityPage({ locale, slug }: { locale: string; slug:
       <div className="flex flex-col gap-6">
         <Hero data-mascot-spot city={slug} />
 
-        <QuickSearch data-mascot-spot near={near} />
+        <QuickSearch data-mascot-spot city={slug} />
 
         <RecentRail
           kind="found"
           near={area}
           title={t("found", { in: where })}
-          seeAll={{ label: t("seeAllFound"), query: near }}
+          seeAll={{ label: t("seeAllFound"), pathname: paths.cityList(slug, "found") }}
           empty={t("empty")}
         />
         <RecentRail
           kind="lost"
           near={area}
           title={t("lost", { in: where })}
-          seeAll={{ label: t("seeAllLost"), query: near }}
+          seeAll={{ label: t("seeAllLost"), pathname: paths.cityList(slug, "lost") }}
           empty={t("empty")}
         />
 

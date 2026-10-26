@@ -84,6 +84,10 @@ How search engines see the site; the details are in the "Search" section of `Web
   and a radius each) lists the found and lost notices within the radius through the `near`
   filter, so the backend has no notion of a city. A city page is the home page without the map
   (its own file, so the two can diverge), with the hero, the search and the rails about the city.
+  Its lists are `/{locale}/{city}/found` and `/{locale}/{city}/lost`: the city is in the path, and
+  the server looks its centre and radius up in `src/lib/cities.ts` for the `near` filter, so no
+  coordinates travel in the URL. A city's list without notices of its kind is `noindex` and out of
+  the sitemap. "Near me" by geolocation stays in the query (`?lat=&lon=`) of the general lists.
   The home page links the cities from a static map of Ukraine (Natural Earth outline in Ukraine's
   point of view, Crimea included), a notice page links the city its coordinates fall into, and that city is added after the place in the
   notice's `<title>` ("Привокзальний ринок, Львів"). A city without live notices answers `noindex` and is left out of the sitemap.
@@ -100,6 +104,8 @@ How search engines see the site; the details are in the "Search" section of `Web
   focus.
 - **Share cards.** Every notice page has its own `opengraph-image` (1200×630: photo, title, place,
   date), drawn with Nunito loaded from Google Fonts; the other pages share one card per locale.
+  The notice card goes out as JPEG (the PNG from `ImageResponse` re-encoded with `sharp`), cached
+  for an hour: as PNG a card with a photo weighed ~600 KB, and every crawler hit was a new render.
 
 ## Feature flags
 

@@ -5,14 +5,15 @@ import { paths } from "@/i18n/paths"
 
 type Props = {
   kind: ItemKind
+  pathname?: string
   query?: Record<string, string>
   children: string
 }
 
-export default function SeeAllLink({ kind, query, children }: Props) {
+export default function SeeAllLink({ kind, pathname = paths.list(kind), query, children }: Props) {
   return (
     <Link
-      href={query ? { pathname: paths.list(kind), query } : paths.list(kind)}
+      href={query ? { pathname, query } : pathname}
       className="group inline-flex items-center font-extrabold no-underline ml-auto"
     >
       {children}

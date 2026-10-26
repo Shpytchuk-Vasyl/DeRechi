@@ -65,12 +65,21 @@ async function pageEntries(): Promise<MetadataRoute.Sitemap> {
   }))
 
   const cities = await Promise.all(
-    CITIES.map(async (city) =>
-      (await cityHasNotices(city)) ? pageEntry(paths.city(city.slug)) : null,
-    ),
+    CITIES.map(async (city) => {
+      const withNotices = (
+        await Promise.all(
+          KINDS.map(async (kind) => ((await cityHasNotices(city, kind)) ? kind : null)),
+        )
+      ).filter((kind) => kind !== null)
+      if (withNotices.length === 0) return []
+      return [
+        paths.city(city.slug),
+        ...withNotices.map((kind) => paths.cityList(city.slug, kind)),
+      ].map(pageEntry)
+    }),
   )
 
-  return [...pages, ...guides, ...documents, ...cities.filter((entry) => entry !== null)]
+  return [...pages, ...guides, ...documents, ...cities.flat()]
 }
 
 function monthWindow(back: number, now = new Date()): { dateFrom: string; dateTo: string } {

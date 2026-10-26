@@ -77,7 +77,8 @@ Vitest, colocated as `<name>.test.ts`, no browser and no running backend:
   `lib/intl/country.test.ts`, `lib/intl/dates.test.ts`, `lib/seo.test.ts`.
 - `app/sitemap.test.ts` with `@/api/items` mocked: a notice is listed once by its `/uk/` URL
   without `hreflang`, a month without notices lists the list page instead of an empty file, and a
-  city page is among the pages only while the city has notices.
+  city page is among the pages only while the city has notices, a city's list only for the kind
+  it has notices of.
 - `lib/cities.test.ts`: slug lookup, a place on a city's edge falls into it, the city areas do not
   overlap, and every city in the registry has a name in the bundles.
 - `lib/uploads/presign.test.ts` and `presign.integration.test.ts`, see "Uploads" below.
@@ -392,9 +393,15 @@ without a `<url>` ("Missing XML tag").
 page per city of `src/lib/cities.ts`: Kyiv and the regional centres not under occupation, each a
 centre and a radius. It is the home page's sections without the map, put together in its own file
 on purpose, so either page can diverge: the hero names the city ("Де речі у Львові?", the scene's
-badge), the search and the category chips add the city's `lat`/`lon`, and the rails list the newest
-found and lost notices within its radius (`near`), their "see all" opening the list around the
-centre with the list's own 10 km. Its JSON-LD is the home page's `WebSite` plus a `CollectionPage`
+badge), and the search, the category chips and the rails' "see all" open the city's own lists,
+`/{locale}/{city}/found` and `/{locale}/{city}/lost` (`src/app/[locale]/[city]/{found,lost}`). There
+the city is the path, not coordinates in the query: `parseItemSearch(raw, city)` keeps the slug,
+ignores `lat`/`lon`, and `toFilter` turns it into the city's centre and radius from
+`src/lib/cities.ts` (`cityArea`), also for "show more", whose server action looks the slug up again.
+The filters stay in the city (they keep the pathname), "Near me" is hidden, the title is
+`list.*TitleIn` and the description `list.*MetaDescriptionIn`. A city's list without live notices
+of its kind answers `noindex, follow` and stays out of `pages.xml`, and the city page itself is
+listed while either kind has notices. Its JSON-LD is the home page's `WebSite` plus a `CollectionPage`
 about the `City`, with a search around it and the breadcrumbs (`cityPageJsonLd` in `src/lib/seo.ts`).
 Only the registry's slugs exist (`dynamicParams = false`), any other single segment is still a 404.
 A city without live notices answers `noindex, follow` and stays out of `pages.xml` (`cityHasNotices`
