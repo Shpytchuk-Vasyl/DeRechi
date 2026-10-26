@@ -48,7 +48,9 @@ test.describe("city pages", () => {
       await go("/lviv")
       await page
         .getByRole("link", {
-          name: t(kind === "found" ? "cityPage.seeAllFound" : "cityPage.seeAllLost"),
+          name: t(kind === "found" ? "cityPage.seeAllFound" : "cityPage.seeAllLost", {
+            in: where,
+          }),
         })
         .click()
 

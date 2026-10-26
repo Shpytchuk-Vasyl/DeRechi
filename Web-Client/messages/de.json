@@ -563,8 +563,8 @@
     "heroText": "Fundbüro {in}: Beschreibe deinen Verlust oder sieh durch, was in der Nähe abgegeben wurde.",
     "found": "Gefunden {in}",
     "lost": "Verloren {in}",
-    "seeAllFound": "Alle Fundsachen in der Nähe",
-    "seeAllLost": "Alle Verlustmeldungen in der Nähe",
+    "seeAllFound": "Alle Fundsachen {in}",
+    "seeAllLost": "Alle Verlustmeldungen {in}",
     "empty": "Noch keine Meldungen."
   }
 }

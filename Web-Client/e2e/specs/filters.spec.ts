@@ -5,6 +5,10 @@ import type { ItemSort } from "../support/api"
 import { kyivDate, shiftDay } from "../support/data"
 import { member, type SharedItem } from "../support/shared"
 
+function rounded(value: number): string {
+  return String(Math.round(value * 1000) / 1000)
+}
+
 test.describe("category", () => {
   test("a category keeps one of two items and shows as selected", {
     tag: "@responsive",
@@ -197,8 +201,7 @@ test.describe("near me", () => {
     await expect(nearby).not.toBeChecked()
     await nearby.click()
 
-    const round = (value: number) => String(Math.round(value * 1000) / 1000)
-    await expectListQuery(page, path, { search, lat: round(here.lat), lon: round(here.lon) })
+    await expectListQuery(page, path, { search, lat: rounded(here.lat), lon: rounded(here.lon) })
     await expect(nearby).toBeChecked()
     await expect(list.cards.byTitle(lviv.title)).toBeVisible()
     await expect(list.cards.byTitle(kyiv.title)).toHaveCount(0)
@@ -229,11 +232,29 @@ test.describe("near me", () => {
     await expectListQuery(page, `/${appLocale}/found`, { search })
   })
 
-  test("lost lists have no Near me switch", async ({ page, go, t, shared }) => {
+  test("lost lists offer Near me too and keep a notice from where you are", async ({
+    page,
+    context,
+    go,
+    t,
+    shared,
+    appLocale,
+  }) => {
+    const search = shared.search.cnt1x
+    const here = shared.place
+    await context.grantPermissions(["geolocation"])
+    await context.setGeolocation({ latitude: here.lat, longitude: here.lon })
     const list = new ListPage(page, t, "lost")
 
-    await go(list.path({ search: shared.search.cnt1x }))
+    await go(list.path({ search }))
+    await list.nearbySwitch().click()
+
+    await expectListQuery(page, `/${appLocale}/lost`, {
+      search,
+      lat: rounded(here.lat),
+      lon: rounded(here.lon),
+    })
+    await expect(list.nearbySwitch()).toBeChecked()
     await expect(list.cards.all()).toHaveCount(shared.groups.cnt1x.length)
-    await expect(list.nearbySwitch()).toHaveCount(0)
   })
 })

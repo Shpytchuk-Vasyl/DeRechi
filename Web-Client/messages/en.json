@@ -563,8 +563,8 @@
     "heroText": "Lost and found {in}: describe what you lost, or look through what has been handed in nearby.",
     "found": "Found {in}",
     "lost": "Lost {in}",
-    "seeAllFound": "All found items nearby",
-    "seeAllLost": "All lost items nearby",
+    "seeAllFound": "All found items {in}",
+    "seeAllLost": "All lost items {in}",
     "empty": "No notices yet."
   }
 }

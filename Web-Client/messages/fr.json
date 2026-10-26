@@ -563,8 +563,8 @@
     "heroText": "Objets trouvés {in} : décrivez votre perte ou parcourez ce qui a été rapporté près de chez vous.",
     "found": "Trouvé {in}",
     "lost": "Perdu {in}",
-    "seeAllFound": "Tous les objets trouvés à proximité",
-    "seeAllLost": "Tous les objets perdus à proximité",
+    "seeAllFound": "Tous les objets trouvés {in}",
+    "seeAllLost": "Tous les objets perdus {in}",
     "empty": "Aucune annonce pour l'instant."
   }
 }

@@ -4,11 +4,13 @@ import { cx } from "class-variance-authority"
 import { House, PackageCheck, PackageSearch, Plus } from "lucide-react"
 import { useTranslations } from "next-intl"
 import type { ReactElement } from "react"
+import { navLinks } from "@/components/layout/nav-links"
 import { Link, usePathname } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
+import { cityListKind } from "@/lib/cities"
 
 type Tab = {
-  href: typeof paths.home | ReturnType<typeof paths.list>
+  href: string
   label: string
   icon: ReactElement
   active: boolean
@@ -17,29 +19,33 @@ type Tab = {
 export function MobileNav() {
   const t = useTranslations("nav")
   const pathname = usePathname()
+  const links = navLinks(pathname)
 
   const under = (prefix: string) => pathname === prefix || pathname.startsWith(`${prefix}/`)
-  const reportKind = under("/found") ? "found" : "lost"
+  const cityKind = cityListKind(pathname)
+  const inLost = under(paths.list("lost")) || cityKind === "lost"
+  const inFound = under(paths.list("found")) || cityKind === "found"
+  const reportKind = inFound ? "found" : "lost"
 
   const tabs: Tab[] = [
-    { href: paths.home, label: t("home"), icon: <House />, active: pathname === paths.home },
+    { href: links.home, label: t("home"), icon: <House />, active: pathname === links.home },
     {
-      href: paths.list("lost"),
+      href: links.lost,
       label: t("lost"),
       icon: <PackageSearch />,
-      active: under(paths.list("lost")),
+      active: inLost,
     },
     {
-      href: paths.list("found"),
+      href: links.found,
       label: t("found"),
       icon: <PackageCheck />,
-      active: under(paths.list("found")),
+      active: inFound,
     },
   ]
 
   return (
     <>
-      {under("/found") || under("/lost") ? (
+      {inFound || inLost ? (
         <Link
           href={paths.report(reportKind)}
           prefetch={false}

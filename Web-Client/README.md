@@ -401,7 +401,11 @@ ignores `lat`/`lon`, and `toFilter` turns it into the city's centre and radius f
 The filters stay in the city (they keep the pathname), "Near me" is hidden, the title is
 `list.*TitleIn` and the description `list.*MetaDescriptionIn`. A city's list without live notices
 of its kind answers `noindex, follow` and stays out of `pages.xml`, and the city page itself is
-listed while either kind has notices. Its JSON-LD is the home page's `WebSite` plus a `CollectionPage`
+listed while either kind has notices. On the city page and its lists the menu keeps to the city:
+`navLinks` (`src/components/layout/nav-links.ts`) points the header's Lost and Found and the bottom
+bar's tabs at `/{city}/lost` and `/{city}/found`, and Home at `/{city}`. The city comes from the
+address alone (`cityInPath`), so a notice page or the report form shows the general menu, and the
+brand in the header always leads to `/`. Its JSON-LD is the home page's `WebSite` plus a `CollectionPage`
 about the `City`, with a search around it and the breadcrumbs (`cityPageJsonLd` in `src/lib/seo.ts`).
 Only the registry's slugs exist (`dynamicParams = false`), any other single segment is still a 404.
 A city without live notices answers `noindex, follow` and stays out of `pages.xml` (`cityHasNotices`

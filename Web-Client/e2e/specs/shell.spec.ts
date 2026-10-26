@@ -36,6 +36,32 @@ test.describe("menu navigation", () => {
     await expect(page).toHaveURL(homeUrl(appLocale))
   })
 
+  test("in a city Lost and Found lead to the city's lists, the brand still to the site's home", {
+    tag: "@responsive",
+  }, async ({ page, go, t, shared, appLocale }) => {
+    const shell = new Shell(page, t)
+
+    for (const path of ["/lviv", "/lviv/lost", "/lviv/found"]) {
+      await test.step(path, async () => {
+        await go(path)
+        for (const kind of KINDS) {
+          await expect(shell.listLink(kind)).toHaveAttribute("href", `/${appLocale}/lviv/${kind}`)
+        }
+        await expect(shell.brand()).toHaveAttribute("href", homeUrl(appLocale))
+      })
+    }
+
+    await shell.listLink("lost").click()
+    await expect(page).toHaveURL(new RegExp(`/${appLocale}/lviv/lost$`))
+    await shell.brand().click()
+    await expect(page).toHaveURL(homeUrl(appLocale))
+
+    await go(shared.items.lostFull.path)
+    for (const kind of KINDS) {
+      await expect(shell.listLink(kind)).toHaveAttribute("href", `/${appLocale}/${kind}`)
+    }
+  })
+
   test("below 768 px: bottom tabs with aria-current and a FAB of the list's kind replace the header nav", {
     tag: "@mobile-only",
   }, async ({ page, go, t, shared, appLocale }) => {
@@ -46,6 +72,9 @@ test.describe("menu navigation", () => {
       { path: "/found", active: "found", fab: "found" },
       { path: shared.items.lostFull.path, active: "lost", fab: "lost" },
       { path: shared.items.foundPhoto.path, active: "found", fab: "found" },
+      { path: "/lviv", active: "home", fab: null },
+      { path: "/lviv/lost", active: "lost", fab: "lost" },
+      { path: "/lviv/found", active: "found", fab: "found" },
     ]
 
     for (const stop of stops) {
@@ -82,6 +111,10 @@ test.describe("menu navigation", () => {
     await expect(page).toHaveURL(listUrl(appLocale, "lost"))
     await shell.bottomTab("home").click()
     await expect(page).toHaveURL(homeUrl(appLocale))
+
+    await go("/lviv/found")
+    await shell.bottomTab("home").click()
+    await expect(page).toHaveURL(new RegExp(`/${appLocale}/lviv$`))
   })
 
   test("at 768 px the header nav and report button show, the bottom bar and the FAB do not", {

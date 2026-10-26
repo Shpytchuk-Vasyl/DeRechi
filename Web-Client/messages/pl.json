@@ -563,8 +563,8 @@
     "heroText": "Biuro rzeczy znalezionych {in}: opisz swoją zgubę albo przejrzyj znaleziska z okolicy.",
     "found": "Znalezione {in}",
     "lost": "Zgubione {in}",
-    "seeAllFound": "Wszystkie znalezione w pobliżu",
-    "seeAllLost": "Wszystkie zgubione w pobliżu",
+    "seeAllFound": "Wszystkie znalezione {in}",
+    "seeAllLost": "Wszystkie zgubione {in}",
     "empty": "Na razie brak ogłoszeń."
   }
 }

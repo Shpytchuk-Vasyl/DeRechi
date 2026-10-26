@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import en from "../../messages/en.json"
-import { CITIES, cityBySlug, cityListKind, nearestCity, withCity } from "./cities"
+import { CITIES, cityBySlug, cityInPath, cityListKind, nearestCity, withCity } from "./cities"
 
 describe("cities", () => {
   it("has a name for every city in the bundles", () => {
@@ -53,5 +53,15 @@ describe("cities", () => {
     expect(cityListKind("/lviv")).toBeUndefined()
     expect(cityListKind("/found/87")).toBeUndefined()
     expect(cityListKind("/lviv/found/87")).toBeUndefined()
+  })
+
+  it("finds the city of a city page and of its lists only", () => {
+    expect(cityInPath("/lviv")).toBe("lviv")
+    expect(cityInPath("/lviv/lost")).toBe("lviv")
+    expect(cityInPath("/kyiv/found")).toBe("kyiv")
+    expect(cityInPath("/")).toBeUndefined()
+    expect(cityInPath("/warsaw")).toBeUndefined()
+    expect(cityInPath("/found/87")).toBeUndefined()
+    expect(cityInPath("/guide/documents")).toBeUndefined()
   })
 })

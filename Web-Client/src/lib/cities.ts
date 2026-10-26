@@ -39,10 +39,19 @@ export function cityBySlug(slug: string): City | undefined {
   return CITIES.find((city) => city.slug === slug)
 }
 
-export function cityListKind(pathname: string): ItemKind | undefined {
+function cityPath(pathname: string): { slug: string; kind?: ItemKind } | undefined {
   const [empty, slug, kind, ...rest] = pathname.split("/")
   if (empty !== "" || rest.length > 0 || !slug || !cityBySlug(slug)) return undefined
-  return kind === "lost" || kind === "found" ? kind : undefined
+  if (kind === undefined) return { slug }
+  return kind === "lost" || kind === "found" ? { slug, kind } : undefined
+}
+
+export function cityInPath(pathname: string): string | undefined {
+  return cityPath(pathname)?.slug
+}
+
+export function cityListKind(pathname: string): ItemKind | undefined {
+  return cityPath(pathname)?.kind
 }
 
 export function nearestCity(lat: number, lon: number): City | undefined {

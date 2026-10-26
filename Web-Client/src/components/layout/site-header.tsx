@@ -1,15 +1,13 @@
-import { getTranslations } from "next-intl/server"
 import { BrandMark } from "@/components/layout/brand-mark"
 import { FeedbackButton } from "@/components/layout/feedback-button"
+import { HeaderNav } from "@/components/layout/header-nav"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 import { ReportButton } from "@/components/layout/report-button"
 import { Row, Spacer } from "@/components/pouf/layout"
 import { Link } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
 
-export async function SiteHeader() {
-  const t = await getTranslations("nav")
-
+export function SiteHeader() {
   return (
     <header className="cushion-card flex min-h-16 items-center gap-4 rounded-pill bg-surface pr-3 pb-2 pl-5">
       <Link href={paths.home} className="flex items-center gap-2 font-black text-xl no-underline">
@@ -17,20 +15,7 @@ export async function SiteHeader() {
         DeRechi
       </Link>
 
-      <nav className="hidden items-center md:flex" aria-label={t("menu")}>
-        <Link
-          href={paths.list("lost")}
-          className="inline-flex min-h-10 items-center rounded-pill px-3 font-extrabold no-underline hover:bg-bg"
-        >
-          {t("lost")}
-        </Link>
-        <Link
-          href={paths.list("found")}
-          className="inline-flex min-h-10 items-center rounded-pill px-3 font-extrabold no-underline hover:bg-bg"
-        >
-          {t("found")}
-        </Link>
-      </nav>
+      <HeaderNav />
 
       <Spacer />
 

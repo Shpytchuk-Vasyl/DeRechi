@@ -66,14 +66,20 @@ export default async function CityPage({ locale, slug }: { locale: string; slug:
           kind="found"
           near={area}
           title={t("found", { in: where })}
-          seeAll={{ label: t("seeAllFound"), pathname: paths.cityList(slug, "found") }}
+          seeAll={{
+            label: t("seeAllFound", { in: where }),
+            pathname: paths.cityList(slug, "found"),
+          }}
           empty={t("empty")}
         />
         <RecentRail
           kind="lost"
           near={area}
           title={t("lost", { in: where })}
-          seeAll={{ label: t("seeAllLost"), pathname: paths.cityList(slug, "lost") }}
+          seeAll={{
+            label: t("seeAllLost", { in: where }),
+            pathname: paths.cityList(slug, "lost"),
+          }}
           empty={t("empty")}
         />
 
