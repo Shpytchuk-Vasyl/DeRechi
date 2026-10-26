@@ -18,7 +18,7 @@ class ClaimNotificationIT extends StackIT {
 
         assertThat(claim.repeated()).isFalse();
         Mail mail = awaitOneMailTo(item.author().email());
-        assertThat(mail.subject()).isEqualTo("DeRechi: вашу річ знайдено");
+        assertThat(mail.subject()).isEqualTo("Вашу річ знайдено");
         assertThat(digits(mail.text())).contains(digits(claimant.phone()));
         assertThat(mail.text()).contains(claimant.email());
         assertThat(mailsTo(claimant.email())).isEmpty();
@@ -32,7 +32,7 @@ class ClaimNotificationIT extends StackIT {
         claim(item, claimant);
 
         Mail mail = awaitOneMailTo(item.author().email());
-        assertThat(mail.subject()).isEqualTo("DeRechi: знайдену вами річ шукає власник");
+        assertThat(mail.subject()).isEqualTo("Знайдену вами річ шукає власник");
         assertThat(digits(mail.text())).contains(digits(claimant.phone()));
     }
 

@@ -151,6 +151,14 @@ form uses, where `emailOptional` marks the email as optional for the notice's au
 the form is inline and not a nested dialog. Nothing the claimant types is shown anywhere;
 `Client-API` stores it and Worker mails and texts it to the notice's author.
 
+The card's question and button name the thing: `item.isItYours`, `item.didYouFind`,
+`claim.sendMine` and `claim.sendFound` are ICU `select`s on the category key ("Це ваші ключі?",
+"Улюбленець у мене, надіслати мої контакти"), with the generic "річ" as `other`, so a new
+category reads generic until it gets its branches. `ClaimCard` passes `category` down through
+`ClaimItemProvider`. Every other claim text avoids naming the thing ("тому, хто знайшов",
+"власнику") and takes no `{category}`; how to word a new category is in
+`__docs/extending/add-a-category.md`.
+
 `claimNotice(kind, id, values)` in `src/app/actions/claim.ts` validates with `claimSchema`,
 runs the same BotID check as `createNotice` (`src/lib/bot-check.ts`; the claim posts to the
 notice page, so `/*/lost/*` and `/*/found/*` are in `instrumentation-client.ts`'s `protect`
@@ -410,7 +418,12 @@ address alone (`cityInPath`), so a notice page or the report form shows the gene
 brand in the header always leads to `/`.
 
 On the general `/lost` and `/found` (no city in the path, "Near me" off) Znaida offers a narrower
-list once the visitor has scrolled 240 px (`src/screens/found_lost/city-hint.tsx`). The city is
+list (`src/screens/found_lost/city-hint.tsx`). She is the home page's roaming Znaida: the same
+`useRoaming` from `mascot-roamer.tsx`, told to peek only over the top of a spot (`topOnly`), to
+leave room for the bubble above her head (`headroom`) and to stay until she is closed (`stay`).
+The spots are the list's cards (`data-mascot-spot` in `ItemList`, which only the list pages use).
+`LazyCityHint` waits for a 240 px scroll and only then loads her with `next/dynamic`
+(`ssr: false`), so a paused hint or an unscrolled list costs no code. The city is
 Vercel's guess from the IP address: `requestCity()` (`src/lib/geo.server.ts`) reads
 `x-vercel-ip-latitude`/`-longitude` and keeps it only if `nearestCity` puts it inside a city's
 radius. With a city she offers its list and "Near me", without one only "Near me", which runs the

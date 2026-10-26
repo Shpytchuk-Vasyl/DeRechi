@@ -192,7 +192,7 @@
     "cardScan": "Scannez pour ouvrir l’annonce",
     "publishedTitle": "Votre annonce est publiée",
     "publishedText": {
-      "lost": "Partagez-la dans les groupes et discussions de votre quartier : plus elle est vue, plus il y a de chances que quelqu’un ait remarqué votre objet.",
+      "lost": "Partagez-la dans les groupes et discussions de votre quartier : plus elle est vue, plus il y a de chances que quelqu’un se manifeste.",
       "found": "Partagez-la dans les groupes et discussions de votre quartier : plus elle est vue, plus vite le propriétaire se manifestera."
     },
     "shareText": {
@@ -213,10 +213,10 @@
     "phone": "Téléphone",
     "email": "E-mail",
     "maskedNote": "Les contacts sont partiellement masqués pour éviter le spam. Pour joindre la personne qui a publié l’annonce, envoyez-lui vos coordonnées ci-dessous.",
-    "didYouFind": "Vous avez trouvé cet objet ?",
-    "didYouFindText": "Envoyez vos coordonnées : nous les transmettons à la personne qui l’a perdu, par e-mail et SMS. Elles ne sont jamais affichées publiquement.",
-    "isItYours": "C’est le vôtre ?",
-    "isItYoursText": "Envoyez vos coordonnées : nous les transmettons à la personne qui l’a trouvé, par e-mail et SMS. Elles ne sont jamais affichées publiquement.",
+    "didYouFind": "Vous avez trouvé {category, select, DOCUMENTS {ces documents} KEYS {ces clés} ELECTRONICS {cet appareil} WALLET {ce portefeuille} ANIMALS {cet animal} JEWELRY {ce bijou} CLOTHING {ce vêtement} BAGS {ce sac} other {cet objet}} ?",
+    "didYouFindText": "Envoyez vos coordonnées : nous les transmettons à l’auteur de l’annonce, par e-mail et SMS. Elles ne sont jamais affichées publiquement.",
+    "isItYours": "{category, select, DOCUMENTS {Ce sont vos documents} KEYS {Ce sont vos clés} ELECTRONICS {C’est votre appareil} WALLET {C’est votre portefeuille} ANIMALS {C’est votre animal} JEWELRY {C’est votre bijou} CLOTHING {C’est votre vêtement} BAGS {C’est votre sac} other {C’est le vôtre}} ?",
+    "isItYoursText": "Envoyez vos coordonnées : nous les transmettons à l’auteur de l’annonce, par e-mail et SMS. Elles ne sont jamais affichées publiquement.",
     "photoOf": "Photo : {title}",
     "openPhoto": "Ouvrir la photo en plein écran",
     "closePhoto": "Fermer",
@@ -225,16 +225,16 @@
     "metaSummary": "{category} · {place} · {date}"
   },
   "claim": {
-    "sendMine": "C’est à moi, envoyer mes coordonnées",
-    "sendFound": "Je l’ai trouvé, envoyer mes coordonnées",
+    "sendMine": "{category, select, ANIMALS {C’est mon animal} other {C’est à moi}}, envoyer mes coordonnées",
+    "sendFound": "{category, select, DOCUMENTS {Je les ai trouvés} KEYS {Je les ai trouvées} ANIMALS {L’animal est chez moi} other {Je l’ai trouvé}}, envoyer mes coordonnées",
     "submit": "Envoyer mes coordonnées",
     "submitting": "Envoi…",
     "cancel": "Annuler",
     "consent": "J’accepte les <terms>conditions d’utilisation</terms> et la <privacy>politique de confidentialité</privacy> et confirme que ces coordonnées sont bien les miennes.",
     "safetyNote": "Seul l’auteur de l’annonce recevra vos coordonnées. <link>Comment nous vous protégeons</link>",
     "doneTitle": "Coordonnées envoyées",
-    "doneFinder": "Nous avons transmis vos coordonnées à la personne qui l’a trouvé : elle peut maintenant vous contacter.",
-    "doneOwner": "Nous avons transmis vos coordonnées à la personne qui l’a perdu : elle peut maintenant vous contacter.",
+    "doneFinder": "Nous avons transmis vos coordonnées à l’auteur de l’annonce, qui peut maintenant vous contacter.",
+    "doneOwner": "Nous avons transmis vos coordonnées à l’auteur de l’annonce, qui peut maintenant vous contacter.",
     "repeated": "Vous avez déjà répondu à cette annonce : son auteur a vos coordonnées.",
     "orPost": "Ou publiez votre propre annonce :",
     "authorUnreachable": {
@@ -246,11 +246,11 @@
       "copyFailed": "Impossible de copier le pseudo"
     },
     "confirm": {
-      "title": "L’objet est-il revenu à son propriétaire ?",
+      "title": "Tout est-il revenu à son propriétaire ?",
       "text": "Confirmer ferme l’annonce pour tout le monde : elle disparaît du tableau et passe aux archives.",
       "button": "Oui, fermer l’annonce",
       "doneTitle": "Merci, l’annonce est fermée",
-      "doneText": "Elle n’apparaît plus sur le tableau. Nous sommes ravis que l’objet ait retrouvé son chemin.",
+      "doneText": "Elle n’apparaît plus sur le tableau. Nous sommes ravis que tout ait retrouvé son chemin.",
       "invalidTitle": "Ce lien n’est plus valide",
       "invalidText": "L’annonce est peut-être déjà fermée. Vous n’avez rien d’autre à faire.",
       "home": "Aller à l’accueil"

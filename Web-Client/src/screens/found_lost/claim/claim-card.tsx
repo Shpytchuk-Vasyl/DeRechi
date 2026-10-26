@@ -17,16 +17,20 @@ type Props = {
   kind: ItemKind
   id: string
   countryCode: string
+  category: string
   contact: { phone: string | null; email: string | null }
 }
 
-export default function ClaimCard({ kind, id, countryCode, contact }: Props) {
+export default function ClaimCard({ kind, id, countryCode, category, contact }: Props) {
   const t = useTranslations("item")
   const tc = useTranslations("claim")
   const tn = useTranslations("nav")
   const { sent, markSent } = useClaim(kind, id)
   const [unreachable, setUnreachable] = useState<UnreachableAuthor | null>(null)
-  const item = useMemo(() => ({ kind, itemId: id, countryCode }), [kind, id, countryCode])
+  const item = useMemo(
+    () => ({ kind, itemId: id, countryCode, category }),
+    [kind, id, countryCode, category],
+  )
   const otherKind: ItemKind = kind === "lost" ? "found" : "lost"
 
   return (

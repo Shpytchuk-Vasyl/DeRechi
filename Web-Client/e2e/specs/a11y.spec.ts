@@ -75,7 +75,7 @@ test.describe("accessibility", () => {
 
   test("claim form", async ({ page, t, go, shared, flags }, testInfo) => {
     await openDetails({ page, t, go, shared }, shared.items.claimLost)
-    await new ClaimCard(page, t, "lost").open()
+    await new ClaimCard(page, t, shared.items.claimLost).open()
     await new Toasts(page, t, flags).dismissSmsOutage()
     await expectAccessible(page, testInfo, "claim form")
   })

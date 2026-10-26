@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ChannelRouteTest {
 
     private static final NotificationRequestedEvent EVENT = new NotificationRequestedEvent(
-            "Знахідка", "Схоже, ми знайшли вашу річ", "DeRechi: вашу річ знайшли", "+380501234567",
+            "Знахідка", "Схоже, ми знайшли вашу річ", "Вашу річ знайшли", "+380501234567",
             "user@derechi.local", new SocialMediaEnum[0], "match:1:2");
 
     @Test
@@ -23,7 +23,7 @@ class ChannelRouteTest {
     @Test
     void emailCarriesTheFullMessageAndSmsTheShortOne() {
         assertThat(ChannelRoute.EMAIL.content(EVENT)).isEqualTo("Схоже, ми знайшли вашу річ");
-        assertThat(ChannelRoute.SMS.content(EVENT)).isEqualTo("DeRechi: вашу річ знайшли");
+        assertThat(ChannelRoute.SMS.content(EVENT)).isEqualTo("Вашу річ знайшли");
     }
 
     @Test

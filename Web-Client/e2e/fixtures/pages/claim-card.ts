@@ -1,17 +1,23 @@
 import { expect, type Locator, type Page } from "@playwright/test"
 import type { ContactInput } from "../../support/api"
-import type { ItemKind } from "../../support/data"
+import type { CategoryKey, CreatedItem, ItemKind } from "../../support/data"
 import type { Translator } from "../../support/i18n"
 
 export type FormMessenger = "TELEGRAM" | "VIBER" | "WHATSAPP"
 
 export class ClaimCard {
+  readonly kind: ItemKind
+  readonly category: CategoryKey
+
   constructor(
     readonly page: Page,
     readonly t: Translator,
-    readonly kind: ItemKind,
+    item: Pick<CreatedItem, "kind" | "category">,
     readonly root: Locator = page.getByRole("main"),
-  ) {}
+  ) {
+    this.kind = item.kind
+    this.category = item.category
+  }
 
   title(): Locator {
     return this.root.getByText(
@@ -20,9 +26,20 @@ export class ClaimCard {
     )
   }
 
+  prompt(): Locator {
+    return this.root.getByRole("heading", {
+      name: this.t(this.kind === "lost" ? "item.didYouFind" : "item.isItYours", {
+        category: this.category,
+      }),
+      exact: true,
+    })
+  }
+
   openButton(): Locator {
     return this.root.getByRole("button", {
-      name: this.t(this.kind === "lost" ? "claim.sendFound" : "claim.sendMine"),
+      name: this.t(this.kind === "lost" ? "claim.sendFound" : "claim.sendMine", {
+        category: this.category,
+      }),
       exact: true,
     })
   }

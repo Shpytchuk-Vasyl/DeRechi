@@ -84,12 +84,12 @@ class MatchNotificationServiceTest {
         assertThat(event.getValue().phone()).isEqualTo("+380671234567");
         assertThat(event.getValue().socialMedias()).as("ALL means email and SMS, no messenger").isEmpty();
         assertThat(event.getValue().deduplicationKey()).isEqualTo("match:1:2");
-        assertThat(event.getValue().subject()).isEqualTo("DeRechi: вашу річ знайшли");
+        assertThat(event.getValue().subject()).isEqualTo("Вашу річ знайшли");
         assertThat(event.getValue().message())
                 .contains("Загублений рюкзак", "Знайдений рюкзак", "Метро Хрещатик", "finder@example.com")
                 .doesNotContain("{0}", "notification.match.body");
         assertThat(event.getValue().smsMessage())
-                .isEqualTo("DeRechi: схоже, знайшли «Загублений рюкз...»: +380 50 987 6543")
+                .isEqualTo("Схоже, знайшли «Загублений рюкз...»: +380 50 987 6543")
                 .hasSizeLessThanOrEqualTo(70);
 
         assertThat(match.getNotifiedAt()).isNotNull();

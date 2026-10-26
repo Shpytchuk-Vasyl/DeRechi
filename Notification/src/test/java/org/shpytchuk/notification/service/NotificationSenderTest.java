@@ -50,13 +50,13 @@ class NotificationSenderTest {
     @Test
     void sendsTheShortTextBySmsAndTheFullOneByEmail() {
         sender.send(new NotificationRequestedEvent("Знахідка", "Схоже, ми знайшли вашу річ",
-                "DeRechi: вашу річ знайшли", "+380501234567", "user@derechi.local", new SocialMediaEnum[0], "match:1:2"));
+                "Вашу річ знайшли", "+380501234567", "user@derechi.local", new SocialMediaEnum[0], "match:1:2"));
 
         assertThat(hub.sent())
                 .extracting(SentNotification::channel, SentNotification::content)
                 .containsExactly(
                         tuple("email", "Схоже, ми знайшли вашу річ"),
-                        tuple("sms", "DeRechi: вашу річ знайшли"));
+                        tuple("sms", "Вашу річ знайшли"));
     }
 
     @Test

@@ -3,11 +3,11 @@ import type { ItemKind } from "@/api/items"
 import { Text } from "@/components/pouf/text"
 import { requestCity } from "@/lib/geo.server"
 import type { RawSearchParams } from "@/lib/item-search"
-import CityHint from "@/screens/found_lost/city-hint"
 import ItemFilters from "@/screens/found_lost/filters/item-filters"
 import ItemList from "@/screens/found_lost/item-list"
 import ItemSortSelect from "@/screens/found_lost/item-sort"
 import ItemsEmpty from "@/screens/found_lost/items-empty"
+import { LazyCityHint } from "@/screens/found_lost/lazy-city-hint"
 import { loadListPage } from "@/screens/found_lost/list-page"
 import NearbySwitch from "@/screens/found_lost/nearby-switch"
 
@@ -49,7 +49,7 @@ export default async function ItemsPage({ kind, searchParams, city }: Props) {
         )}
       </div>
 
-      {hinted ? <CityHint kind={kind} city={suggested?.slug} /> : null}
+      {hinted ? <LazyCityHint kind={kind} city={suggested?.slug} /> : null}
     </>
   )
 }

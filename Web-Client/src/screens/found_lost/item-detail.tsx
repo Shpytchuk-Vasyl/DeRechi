@@ -171,6 +171,7 @@ export default async function ItemDetailPage({ kind, id, compact = false }: Prop
             kind={kind}
             id={item.id}
             countryCode={item.place.countryCode}
+            category={item.category.key}
             contact={{ phone: item.contact.phone, email: item.contact.email }}
           />
         </div>

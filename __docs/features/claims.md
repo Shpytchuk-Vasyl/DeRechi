@@ -14,8 +14,11 @@ and a notice with claims that nobody confirms is archived a week after the last 
 On a notice page (`Web-Client`, `ClaimCard` in `src/screens/found_lost/claim-card.tsx`):
 
 1. The author's masked phone and email, as before.
-2. A button, "It's mine, send my contacts" on a found notice, "I found it, send my contacts" on a
-   lost one. It expands an inline form: phone, email, messengers, and a required consent checkbox
+2. A question and a button worded after the notice's category: "Are these your keys?" and
+   "They're mine, send my contacts" on a found notice, "Did you find this pet?" and "I found this
+   pet, send my contacts" on a lost one; a category without its own wording gets "Is this yours?" /
+   "Did you find this item?" (an ICU `select` on the key, see
+   [Add a category](../extending/add-a-category.md)). The button expands an inline form: phone, email, messengers, and a required consent checkbox
    linking to the terms and the privacy policy for the country of the notice's place. The form
    does not submit until the box is ticked; the checkbox is front-end only (see
    `Web-Client/README.md`), so Client-API gets no consent field.

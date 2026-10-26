@@ -24,7 +24,7 @@ test.describe("claim on a lost item", () => {
     const claimant = data.contact()
     await go(item.path)
 
-    const card = new ClaimCard(page, t, kind)
+    const card = new ClaimCard(page, t, item)
     await expect(card.title()).toBeVisible()
     await card.open()
     await expect(card.phone()).toBeFocused()
@@ -55,6 +55,34 @@ test.describe("claim on a lost item", () => {
   })
 })
 
+test.describe("claim wording", () => {
+  test("the question and the button name what the notice is about, on both kinds", async ({
+    page,
+    go,
+    t,
+    shared,
+  }) => {
+    const items = [
+      shared.items.lostFull,
+      shared.items.lostNoPhoto,
+      shared.items.lostNoReward,
+      shared.items.lostNegotiableReward,
+      shared.items.foundPhoto,
+      shared.items.foundBrokenPhoto,
+      shared.items.foundDocuments,
+    ]
+
+    for (const item of items) {
+      await test.step(`${item.kind} ${item.category}`, async () => {
+        await go(item.path)
+        const card = new ClaimCard(page, t, item)
+        await expect(card.prompt()).toBeVisible()
+        await expect(card.openButton()).toBeVisible()
+      })
+    }
+  })
+})
+
 test.describe("claim form validation", () => {
   test("phone, email and consent errors are alerts; legal links carry the item's country", async ({
     page,
@@ -70,7 +98,7 @@ test.describe("claim form validation", () => {
     await setCountry(context, "PL")
     await go(item.path)
 
-    const card = new ClaimCard(page, t, "lost")
+    const card = new ClaimCard(page, t, item)
     await card.open()
     await new Toasts(page, t, flags).dismissSmsOutage()
 
@@ -117,7 +145,7 @@ test.describe("disposable email", () => {
     const item = shared.items.claimLost
 
     await go(item.path)
-    const card = new ClaimCard(page, t, "lost")
+    const card = new ClaimCard(page, t, item)
     await card.open()
     await new Toasts(page, t, flags).dismissSmsOutage()
     await card.fill({
@@ -156,7 +184,7 @@ test.describe("author reachable only by a nickname", () => {
     const clipboardWrites = await recordClipboardWrites(page)
 
     await go(item.path)
-    const card = new ClaimCard(page, t, "lost")
+    const card = new ClaimCard(page, t, item)
     await card.open()
     await new Toasts(page, t, flags).dismissSmsOutage()
     await card.fill(data.contact())
@@ -209,7 +237,7 @@ test.describe("repeated claim", () => {
       },
     ]
 
-    const card = new ClaimCard(page, t, kind)
+    const card = new ClaimCard(page, t, item)
     for (const { name, contact } of cases) {
       await test.step(name, async () => {
         await context.clearCookies()

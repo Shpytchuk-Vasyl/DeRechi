@@ -45,7 +45,7 @@ class ClaimNotifierTest {
         notifier.notifyAuthor(ItemKind.LOST, claim);
 
         NotificationRequestedEvent event = published(ClaimNotifier.CREATED_ROUTING_KEY);
-        assertThat(event.subject()).isEqualTo("DeRechi: вашу річ знайдено");
+        assertThat(event.subject()).isEqualTo("Вашу річ знайдено");
         assertThat(event.message())
                 .startsWith("Вітаємо!\n\nЛюдина повідомляє, що знайшла вашу річ «Чорний рюкзак»")
                 .contains("Контакти:\n  Телефон: +380 50 987 6543\n  Пошта: finder@example.com\n"
@@ -53,7 +53,7 @@ class ClaimNotifierTest {
                         "Оголошення: http://localhost:3000/uk/lost/1")
                 .endsWith("\n\n– Команда DeRechi")
                 .doesNotContain("{0}", "{4}", "claim.lost.body");
-        assertThat(event.smsMessage()).isEqualTo("DeRechi: вашу річ «Чорний рюкзак» знайшли: +380 50 987 6543");
+        assertThat(event.smsMessage()).isEqualTo("Вашу річ «Чорний рюкзак» знайшли: +380 50 987 6543");
         assertThat(event.phone()).isEqualTo("+380671234567");
         assertThat(event.email()).isEqualTo("owner@example.com");
         assertThat(event.socialMedias()).isEmpty();
@@ -67,12 +67,12 @@ class ClaimNotifierTest {
         notifier.notifyAuthor(ItemKind.FOUND, claim);
 
         NotificationRequestedEvent event = published(ClaimNotifier.CREATED_ROUTING_KEY);
-        assertThat(event.subject()).isEqualTo("DeRechi: the owner of the item you found showed up");
+        assertThat(event.subject()).isEqualTo("The owner of the item you found showed up");
         assertThat(event.message())
                 .startsWith("Hello,\n\nSomeone says the item “Black backpack” you found is theirs")
                 .contains("  Messengers: none\n", "Notice: http://localhost:3000/en/found/2")
                 .endsWith("\n\n– The DeRechi team");
-        assertThat(event.smsMessage()).isEqualTo("DeRechi: owner of \"Black backpack\" responded: +1 212-555-0123");
+        assertThat(event.smsMessage()).isEqualTo("Owner of \"Black backpack\" responded: +1 212-555-0123");
         assertThat(event.phone()).isEqualTo("+16502530000");
         assertThat(event.deduplicationKey()).isEqualTo("claim:found:43");
     }
@@ -84,7 +84,7 @@ class ClaimNotifierTest {
         notifier.notifyAuthor(ItemKind.LOST, claim);
 
         NotificationRequestedEvent event = published(ClaimNotifier.CREATED_ROUTING_KEY);
-        assertThat(event.subject()).isEqualTo("DeRechi: someone found your item");
+        assertThat(event.subject()).isEqualTo("Someone found your item");
         assertThat(event.message())
                 .contains("  Phone: +380 50 987 6543\n", "Notice: http://localhost:3000/en/lost/1")
                 .doesNotContain("@owner", "https://t.me/owner");
@@ -181,10 +181,10 @@ class ClaimNotifierTest {
         notifier.remindAuthor(ItemKind.LOST, claim);
 
         NotificationRequestedEvent event = published(ClaimNotifier.REMINDER_ROUTING_KEY);
-        assertThat(event.subject()).isEqualTo("DeRechi: czy rzecz „Чорний рюкзак” wróciła do właściciela?");
+        assertThat(event.subject()).isEqualTo("Czy rzecz „Чорний рюкзак” wróciła do właściciela?");
         assertThat(event.message()).contains("http://localhost:3000/pl/claims/" + claim.getToken());
         assertThat(event.smsMessage()).isEqualTo(
-                "DeRechi: zwrócono \"Чорний рюкзак\"? Zamknij ogłoszenie: http://localhost:3000/pl/claims/" + claim.getToken());
+                "Zwrócono \"Чорний рюкзак\"? Zamknij ogłoszenie: http://localhost:3000/pl/claims/" + claim.getToken());
         assertThat(event.phone()).isEqualTo("+48512345678");
         assertThat(event.deduplicationKey()).isEqualTo("claim:lost:42:author-reminder");
     }
@@ -196,7 +196,7 @@ class ClaimNotifierTest {
         notifier.remindAuthor(ItemKind.FOUND, claim);
 
         NotificationRequestedEvent event = published(ClaimNotifier.REMINDER_ROUTING_KEY);
-        assertThat(event.subject()).isEqualTo("DeRechi: is “Black backpack” back with its owner?");
+        assertThat(event.subject()).isEqualTo("Is “Black backpack” back with its owner?");
         assertThat(event.message()).contains("http://localhost:3000/en/claims/" + claim.getToken());
         assertThat(event.phone()).isNull();
         assertThat(event.email()).isEqualTo("finder@example.com");
@@ -211,7 +211,7 @@ class ClaimNotifierTest {
         notifier.remindClaimant(ItemKind.LOST, claim);
 
         NotificationRequestedEvent event = published(ClaimNotifier.REMINDER_ROUTING_KEY);
-        assertThat(event.subject()).isEqualTo("DeRechi : l'objet « Чорний рюкзак » a-t-il été rendu ?");
+        assertThat(event.subject()).isEqualTo("L'objet « Чорний рюкзак » a-t-il été rendu ?");
         assertThat(event.message()).contains("http://localhost:3000/fr/claims/" + claim.getToken());
         assertThat(event.phone()).isEqualTo("+33123456789");
         assertThat(event.email()).isEqualTo("finder@example.com");
@@ -225,12 +225,12 @@ class ClaimNotifierTest {
         assertThat(notifier.sendAuthorContacts(ItemKind.LOST, claim)).isTrue();
 
         NotificationRequestedEvent event = published(ClaimNotifier.UNLOCKED_ROUTING_KEY);
-        assertThat(event.subject()).isEqualTo("DeRechi: номер автора оголошення «Чорний рюкзак»");
+        assertThat(event.subject()).isEqualTo("Номер автора оголошення «Чорний рюкзак»");
         assertThat(event.message())
                 .startsWith("Дякуємо, що підтримуєте DeRechi.")
                 .contains("«Чорний рюкзак»", "+48 512 345 678")
                 .doesNotContain("{0}", "{1}", "owner@example.com", "месенджери", "+380 50 987 6543", "finder@example.com");
-        assertThat(event.smsMessage()).isEqualTo("DeRechi: номер автора «Чорний рюкзак»: +48 512 345 678");
+        assertThat(event.smsMessage()).isEqualTo("Номер автора «Чорний рюкзак»: +48 512 345 678");
         assertThat(event.phone()).isEqualTo("+380509876543");
         assertThat(event.email()).isEqualTo("finder@example.com");
         assertThat(event.socialMedias()).isEmpty();
@@ -245,7 +245,7 @@ class ClaimNotifierTest {
         notifier.sendAuthorContacts(ItemKind.FOUND, claim);
 
         NotificationRequestedEvent event = published(ClaimNotifier.UNLOCKED_ROUTING_KEY);
-        assertThat(event.subject()).isEqualTo("DeRechi: the author's phone number for “Black backpack”");
+        assertThat(event.subject()).isEqualTo("The author's phone number for “Black backpack”");
         assertThat(event.message())
                 .startsWith("Thank you for supporting DeRechi. The phone number of the person behind the notice “Black backpack”: +380 67 123 4567")
                 .contains("never pay anything in advance")

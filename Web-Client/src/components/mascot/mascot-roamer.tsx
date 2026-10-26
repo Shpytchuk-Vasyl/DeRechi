@@ -34,7 +34,7 @@ export function MascotRoamer() {
   return (
     <div
       className="pointer-events-none absolute z-30 overflow-hidden"
-      style={{ left: visit.x, top: visit.y, width: SIZE, height: SIZE }}
+      style={{ left: visit.x, top: visit.y, width: ROAM_SIZE, height: ROAM_SIZE }}
     >
       <button
         type="button"
@@ -68,16 +68,22 @@ type Visit = {
   look: Look
 }
 
-const SIZE = 120
+type RoamOptions = { topOnly?: boolean; stay?: boolean; headroom?: number }
+
+export const ROAM_SIZE = 120
 const SLIDE_MS = 600
 const LIVE_MS = 2600
 const STARTLE_MS = 500
 const GLANCES: Look[] = ["left", "right", "center", "left"]
 const GLANCE_MS = 550
 
-function useRoaming(enabled: boolean) {
+export function useRoaming(
+  enabled: boolean,
+  { topOnly = false, stay = false, headroom = 0 }: RoamOptions = {},
+) {
   const [visit, setVisit] = useState<Visit | null>(null)
   const startleRef = useRef<() => void>(() => {})
+  const hideRef = useRef<() => void>(() => {})
 
   useEffect(() => {
     if (!enabled) return
@@ -90,10 +96,11 @@ function useRoaming(enabled: boolean) {
     function hide() {
       timers.clear()
       startleRef.current = () => {}
+      hideRef.current = () => {}
       patch({ phase: "in" })
       timers.after(SLIDE_MS, () => {
         setVisit(null)
-        timers.after(rand(4000, 9000), tick)
+        if (!stay) timers.after(rand(4000, 9000), tick)
       })
     }
 
@@ -111,28 +118,29 @@ function useRoaming(enabled: boolean) {
       GLANCES.forEach((look, index) => {
         timers.after(SLIDE_MS + 300 + index * GLANCE_MS, () => patch({ look }))
       })
-      timers.after(SLIDE_MS + LIVE_MS, hide)
+      if (!stay) timers.after(SLIDE_MS + LIVE_MS, hide)
       startleRef.current = startle
+      hideRef.current = hide
     }
 
     function tick() {
-      const perch = findPerch(lastSpot)
+      const perch = findPerch(lastSpot, topOnly, headroom)
       if (perch) appear(perch)
       else timers.after(3000, tick)
     }
 
     timers.after(rand(1500, 3000), tick)
     return timers.clear
-  }, [enabled])
+  }, [enabled, topOnly, stay, headroom])
 
-  return { visit, startle: () => startleRef.current() }
+  return { visit, startle: () => startleRef.current(), hide: () => hideRef.current() }
 }
 
 type Perch = { spot: Element; side: Side; x: number; y: number }
 
 const MARGIN = 80
 
-function findPerch(exclude: Element | null): Perch | null {
+function findPerch(exclude: Element | null, topOnly: boolean, headroom: number): Perch | null {
   const vh = window.innerHeight
   const vw = window.innerWidth
   const options: Perch[] = []
@@ -142,16 +150,17 @@ function findPerch(exclude: Element | null): Perch | null {
     const r = spot.getBoundingClientRect()
     if (r.bottom < 0 || r.top > vh) continue
 
-    if (r.top > MARGIN + SIZE && r.top < vh - MARGIN) {
+    if (r.top > MARGIN + ROAM_SIZE + headroom && r.top < vh - MARGIN) {
       const x = rand(r.left + r.width * 0.15, r.right - r.width * 0.15)
-      options.push({ spot, side: "top", x: x - SIZE / 2, y: r.top - SIZE })
+      options.push({ spot, side: "top", x: x - ROAM_SIZE / 2, y: r.top - ROAM_SIZE })
     }
 
     const y = rand(r.top + r.height * 0.2, r.bottom - r.height * 0.2)
-    if (y > MARGIN && y < vh - MARGIN) {
-      if (r.left > SIZE + 8) options.push({ spot, side: "left", x: r.left - SIZE, y: y - SIZE / 2 })
-      if (vw - r.right > SIZE + 8)
-        options.push({ spot, side: "right", x: r.right, y: y - SIZE / 2 })
+    if (!topOnly && y > MARGIN && y < vh - MARGIN) {
+      if (r.left > ROAM_SIZE + 8)
+        options.push({ spot, side: "left", x: r.left - ROAM_SIZE, y: y - ROAM_SIZE / 2 })
+      if (vw - r.right > ROAM_SIZE + 8)
+        options.push({ spot, side: "right", x: r.right, y: y - ROAM_SIZE / 2 })
     }
   }
 

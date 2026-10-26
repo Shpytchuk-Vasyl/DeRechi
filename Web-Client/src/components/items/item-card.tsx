@@ -71,7 +71,7 @@ export function NoticeCard({ title, place, date, compensation, media }: NoticeCa
   }
 
   return (
-    <Card variant="flush" motion="lift">
+    <Card variant="flush" motion="lift" data-mascot-spot="">
       <div className="relative aspect-4/3 overflow-hidden bg-bg">
         {media}
 

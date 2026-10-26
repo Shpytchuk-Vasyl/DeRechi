@@ -26,7 +26,7 @@ class RabbitConfigTest {
         properties.setContentType(MessageProperties.CONTENT_TYPE_JSON);
         properties.setHeader("__TypeId__", "NOTIFICATION");
         String json = """
-                {"subject":"Знахідка","message":"Схоже, ми знайшли вашу річ","smsMessage":"DeRechi: вашу річ знайшли",
+                {"subject":"Знахідка","message":"Схоже, ми знайшли вашу річ","smsMessage":"Вашу річ знайшли",
                  "phone":"+380501234567","email":"user@derechi.local","socialMedias":["TELEGRAM","VIBER"],
                  "deduplicationKey":"match:1:2"}
                 """;
@@ -34,7 +34,7 @@ class RabbitConfigTest {
         Object event = converter.fromMessage(new Message(json.getBytes(StandardCharsets.UTF_8), properties));
 
         assertThat(event).usingRecursiveComparison().isEqualTo(new NotificationRequestedEvent(
-                "Знахідка", "Схоже, ми знайшли вашу річ", "DeRechi: вашу річ знайшли", "+380501234567",
+                "Знахідка", "Схоже, ми знайшли вашу річ", "Вашу річ знайшли", "+380501234567",
                 "user@derechi.local", new SocialMediaEnum[]{SocialMediaEnum.TELEGRAM, SocialMediaEnum.VIBER}, "match:1:2"));
     }
 

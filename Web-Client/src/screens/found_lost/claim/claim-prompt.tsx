@@ -18,7 +18,7 @@ type Props = {
 }
 
 export default function ClaimPrompt({ onSent, onUnreachable }: Props) {
-  const { kind, itemId } = useClaimItem()
+  const { kind, itemId, category } = useClaimItem()
   const t = useTranslations("item")
   const tc = useTranslations("claim")
   const [open, setOpen] = useState(false)
@@ -51,7 +51,7 @@ export default function ClaimPrompt({ onSent, onUnreachable }: Props) {
   return (
     <>
       <Heading level={3} className="whitespace-normal text-base">
-        {kind === "lost" ? t("didYouFind") : t("isItYours")}
+        {kind === "lost" ? t("didYouFind", { category }) : t("isItYours", { category })}
       </Heading>
       <Text muted className="mt-1.5 block leading-relaxed">
         {kind === "lost" ? t("didYouFindText") : t("isItYoursText")}
@@ -69,7 +69,7 @@ export default function ClaimPrompt({ onSent, onUnreachable }: Props) {
             warnSmsOutage()
           }}
         >
-          {kind === "lost" ? tc("sendFound") : tc("sendMine")}
+          {kind === "lost" ? tc("sendFound", { category }) : tc("sendMine", { category })}
         </Button>
       )}
     </>

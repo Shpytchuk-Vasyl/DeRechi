@@ -91,7 +91,8 @@ How search engines see the site; the details are in the "Search" section of `Web
   On a city page and its lists the menu (header and bottom bar) leads to the city's lists and
   "My city" to the city page: an extra link in the header, in place of "Home" in the bottom bar;
   the brand in the header always leads to the site's home. On the general lists Znaida, after a
-  short scroll, offers the list of the city Vercel guesses from the IP address
+  short scroll, peeks over the top of a card the way she roams the home page (the same
+  `useRoaming`, loaded lazily), and from a speech bubble above her head offers the list of the city Vercel guesses from the IP address
   (`x-vercel-ip-latitude`/`-longitude` through `nearestCity`, a suggestion only, never stored)
   and "Near me"; closed, she rests for a week.
   The home page links the cities from a static map of Ukraine (Natural Earth outline in Ukraine's

@@ -5,6 +5,7 @@ export type ClaimItem = {
   kind: ItemKind
   itemId: string
   countryCode: string
+  category: string
 }
 
 const Context = createContext<ClaimItem | null>(null)

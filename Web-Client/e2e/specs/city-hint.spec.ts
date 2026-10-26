@@ -7,12 +7,23 @@ import { GEO_LATITUDE_HEADER, GEO_LONGITUDE_HEADER } from "../support/site"
 
 const WEEK_MS = 7 * 24 * 60 * 60_000
 
+const APPEARS = { timeout: 10_000 }
+
 function hint(page: Page, t: Translator): Locator {
   return page.getByRole("complementary", { name: t("list.cityHint.label"), exact: true })
 }
 
 async function scrollDown(page: Page): Promise<void> {
-  await page.evaluate(() => window.scrollBy(0, 600))
+  await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toBeVisible()
+  await page.evaluate(() => {
+    const vh = window.innerHeight
+    const tops = Array.from(
+      document.querySelectorAll("main a:has(h3)"),
+      (card) => card.getBoundingClientRect().top + window.scrollY,
+    )
+    const top = tops.find((it) => it - vh * 0.7 >= 300)
+    window.scrollTo(0, top === undefined ? 600 : top - vh * 0.7)
+  })
 }
 
 test.describe("Znaida's hint on the lists", () => {
@@ -34,7 +45,9 @@ test.describe("Znaida's hint on the lists", () => {
     await expect(hint(page, t)).toHaveCount(0)
     await scrollDown(page)
 
-    await expect(hint(page, t).getByText(t("list.cityHint.titleCity", { in: where }))).toBeVisible()
+    await expect(hint(page, t).getByText(t("list.cityHint.titleCity", { in: where }))).toBeVisible(
+      APPEARS,
+    )
     await hint(page, t)
       .getByRole("link", { name: t("list.cityHint.goFound", { in: where }), exact: true })
       .click()
@@ -56,7 +69,7 @@ test.describe("Znaida's hint on the lists", () => {
     await go("/lost")
     await scrollDown(page)
 
-    await expect(hint(page, t).getByText(t("list.cityHint.titleNear"))).toBeVisible()
+    await expect(hint(page, t).getByText(t("list.cityHint.titleNear"))).toBeVisible(APPEARS)
     await expect(hint(page, t).getByRole("link")).toHaveCount(0)
     await hint(page, t)
       .getByRole("button", { name: t("list.nearby"), exact: true })
@@ -72,6 +85,7 @@ test.describe("Znaida's hint on the lists", () => {
   test("a closed hint rests for a week", async ({ page, go, t }) => {
     await go("/found")
     await scrollDown(page)
+    await expect(hint(page, t)).toBeVisible(APPEARS)
     await hint(page, t)
       .getByRole("button", { name: t("common.close"), exact: true })
       .click()
@@ -79,7 +93,6 @@ test.describe("Znaida's hint on the lists", () => {
 
     await page.reload()
     await scrollDown(page)
-    await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toBeVisible()
     await expect(hint(page, t)).toHaveCount(0)
 
     await page.evaluate(
@@ -88,7 +101,7 @@ test.describe("Znaida's hint on the lists", () => {
     )
     await page.reload()
     await scrollDown(page)
-    await expect(hint(page, t)).toBeVisible()
+    await expect(hint(page, t)).toBeVisible(APPEARS)
   })
 
   test("there is no hint on a city's list or on a list already near you", async ({
@@ -100,7 +113,6 @@ test.describe("Znaida's hint on the lists", () => {
     for (const path of ["/lviv/found", `/found?lat=${shared.place.lat}&lon=${shared.place.lon}`]) {
       await go(path)
       await scrollDown(page)
-      await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toBeVisible()
       await expect(hint(page, t), path).toHaveCount(0)
     }
   })

@@ -72,7 +72,8 @@ one the id it had before `Worker` moved it into history, not the id of the histo
 
 `NotificationRequestedEvent` carries `subject`, `message` and `smsMessage` (both already
 localized by the producer; `smsMessage` is the short text for SMS, and `Notification` falls back to
-`message` when it is missing), `phone`, `email`, `socialMedias` and a `deduplicationKey`. Contacts the chosen
+`message` when it is missing; neither it nor `subject` starts with "DeRechi:", since the SMS
+alpha-name and the email `from-name` already say who writes), `phone`, `email`, `socialMedias` and a `deduplicationKey`. Contacts the chosen
 channel does not need are sent as `null`; see
 [../features/match-notifications.md](../features/match-notifications.md).
 

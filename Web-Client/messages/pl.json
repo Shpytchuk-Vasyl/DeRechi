@@ -192,7 +192,7 @@
     "cardScan": "Zeskanuj, aby otworzyć ogłoszenie",
     "publishedTitle": "Ogłoszenie opublikowane",
     "publishedText": {
-      "lost": "Udostępnij je w lokalnych grupach i czatach: im więcej osób je zobaczy, tym większa szansa, że ktoś zauważył Twoją rzecz.",
+      "lost": "Udostępnij je w lokalnych grupach i czatach: im więcej osób je zobaczy, tym większa szansa, że dotrze do znalazcy.",
       "found": "Udostępnij je w lokalnych grupach i czatach: im więcej osób je zobaczy, tym szybciej znajdzie się właściciel."
     },
     "shareText": {
@@ -213,9 +213,9 @@
     "phone": "Telefon",
     "email": "E-mail",
     "maskedNote": "Kontakty są częściowo ukryte, żeby chronić ludzi przed spamem. Aby skontaktować się z autorem ogłoszenia, wyślij swoje dane poniżej.",
-    "didYouFind": "Masz tę rzecz?",
+    "didYouFind": "{category, select, DOCUMENTS {Masz te dokumenty?} KEYS {Masz te klucze?} ELECTRONICS {Masz to urządzenie?} WALLET {Masz ten portfel?} ANIMALS {Masz tego zwierzaka?} JEWELRY {Masz tę biżuterię?} CLOTHING {Masz to ubranie?} BAGS {Masz tę torbę?} other {Masz tę rzecz?}}",
     "didYouFindText": "Wyślij swoje dane kontaktowe, a przekażemy je właścicielowi e-mailem i SMS-em. Nie pokazujemy ich publicznie.",
-    "isItYours": "To Twoja rzecz?",
+    "isItYours": "{category, select, DOCUMENTS {To Twoje dokumenty?} KEYS {To Twoje klucze?} ELECTRONICS {To Twoje urządzenie?} WALLET {To Twój portfel?} ANIMALS {To Twój zwierzak?} JEWELRY {To Twoja biżuteria?} CLOTHING {To Twoje ubranie?} BAGS {To Twoja torba?} other {To Twoja rzecz?}}",
     "isItYoursText": "Wyślij swoje dane kontaktowe, a przekażemy je znalazcy e-mailem i SMS-em. Nie pokazujemy ich publicznie.",
     "photoOf": "Zdjęcie: {title}",
     "openPhoto": "Otwórz zdjęcie na pełnym ekranie",
@@ -225,8 +225,8 @@
     "metaSummary": "{category} · {place} · {date}"
   },
   "claim": {
-    "sendMine": "To moje, wyślij moje dane",
-    "sendFound": "Mam tę rzecz, wyślij moje dane",
+    "sendMine": "{category, select, ANIMALS {To mój zwierzak} other {To moje}}, wyślij moje dane",
+    "sendFound": "Mam {category, select, DOCUMENTS {te dokumenty} KEYS {te klucze} ELECTRONICS {to urządzenie} WALLET {ten portfel} ANIMALS {tego zwierzaka} JEWELRY {tę biżuterię} CLOTHING {to ubranie} BAGS {tę torbę} other {tę rzecz}}, wyślij moje dane",
     "submit": "Wyślij moje dane",
     "submitting": "Wysyłanie…",
     "cancel": "Anuluj",
@@ -246,11 +246,11 @@
       "copyFailed": "Nie udało się skopiować nicku"
     },
     "confirm": {
-      "title": "Czy rzecz wróciła do właściciela?",
+      "title": "Czy wszystko wróciło do właściciela?",
       "text": "Potwierdzenie zamyka ogłoszenie dla wszystkich: zniknie z tablicy i trafi do archiwum.",
       "button": "Tak, zamknij ogłoszenie",
       "doneTitle": "Dziękujemy, ogłoszenie jest zamknięte",
-      "doneText": "Nie jest już widoczne na tablicy. Cieszymy się, że rzecz wróciła.",
+      "doneText": "Nie jest już widoczne na tablicy. Cieszymy się, że wszystko wróciło.",
       "invalidTitle": "Ten link jest już nieważny",
       "invalidText": "Ogłoszenie mogło już zostać zamknięte. Nic więcej nie trzeba robić.",
       "home": "Wróć na stronę główną"

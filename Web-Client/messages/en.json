@@ -192,7 +192,7 @@
     "cardScan": "Scan to open the notice",
     "publishedTitle": "Your notice is published",
     "publishedText": {
-      "lost": "Share it in local groups and chats: the more people see it, the better the chance someone noticed your item.",
+      "lost": "Share it in local groups and chats: the more people see it, the better the chance it reaches the finder.",
       "found": "Share it in local groups and chats: the more people see it, the sooner the owner turns up."
     },
     "shareText": {
@@ -213,9 +213,9 @@
     "phone": "Phone",
     "email": "Email",
     "maskedNote": "Contacts are partly hidden to keep people safe from spam. To reach the author, send them yours below.",
-    "didYouFind": "Did you find this item?",
+    "didYouFind": "{category, select, DOCUMENTS {Did you find these documents?} KEYS {Did you find these keys?} ELECTRONICS {Did you find this device?} WALLET {Did you find this wallet?} ANIMALS {Did you find this pet?} JEWELRY {Did you find this jewellery?} BAGS {Did you find this bag?} other {Did you find this item?}}",
     "didYouFindText": "Send your contacts and we'll pass them to the owner by email and SMS. They are never shown on the site.",
-    "isItYours": "Is this yours?",
+    "isItYours": "{category, select, DOCUMENTS {Are these your documents?} KEYS {Are these your keys?} ELECTRONICS {Is this your device?} WALLET {Is this your wallet?} ANIMALS {Is this your pet?} JEWELRY {Is this your jewellery?} BAGS {Is this your bag?} other {Is this yours?}}",
     "isItYoursText": "Send your contacts and we'll pass them to the finder by email and SMS. They are never shown on the site.",
     "photoOf": "Photo of {title}",
     "openPhoto": "Open the photo full screen",
@@ -225,8 +225,8 @@
     "metaSummary": "{category} · {place} · {date}"
   },
   "claim": {
-    "sendMine": "It's mine, send my contacts",
-    "sendFound": "I found it, send my contacts",
+    "sendMine": "{category, select, DOCUMENTS {They're mine} KEYS {They're mine} ANIMALS {It's my pet} other {It's mine}}, send my contacts",
+    "sendFound": "{category, select, DOCUMENTS {I found them} KEYS {I found them} ANIMALS {I found this pet} other {I found it}}, send my contacts",
     "submit": "Send my contacts",
     "submitting": "Sending…",
     "cancel": "Cancel",
@@ -246,11 +246,11 @@
       "copyFailed": "Couldn't copy the nickname"
     },
     "confirm": {
-      "title": "Is the item back with its owner?",
+      "title": "Is everything back with its owner?",
       "text": "Confirming closes the notice for everyone: it leaves the board and moves to the archive.",
       "button": "Yes, close the notice",
       "doneTitle": "Thanks, the notice is closed",
-      "doneText": "It no longer shows on the board. We're glad the item made it back.",
+      "doneText": "It no longer shows on the board. We're glad everything made it back.",
       "invalidTitle": "This link is no longer valid",
       "invalidText": "The notice may already be closed. There is nothing else to do.",
       "home": "Go to the home page"
