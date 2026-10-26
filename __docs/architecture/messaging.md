@@ -55,7 +55,7 @@ Prometheus metrics on 15692.
 | `NotificationRequestedEvent` | `NOTIFICATION` | `Worker`, `ClaimNotifier` | `notification.exchange`, `notification.claim.created`, `notification.claim.reminder`, `notification.claim.unlocked` | `Notification`, `NotificationRequestedListener` |
 
 `ItemCreatedEvent` carries what matching needs (`id`, `date`, `category` (id), `lat`, `lon`,
-`title`, `description`) and what a channel post needs, so `Ingest` does not read the notice tables:
+`title`, `description`, `language`) and what a channel post needs, so `Ingest` does not read the notice tables:
 `categoryKey`, `placeName`, `compensation`, `currency` and `image` (the storage key). `Worker`
 ignores the fields only `Ingest` uses; Jackson 3 skips unknown properties. The routing key
 says whether it was a lost or a found notice; the payload does not.

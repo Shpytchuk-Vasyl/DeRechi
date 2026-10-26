@@ -19,7 +19,7 @@ import { countryName } from "@/lib/intl/country"
 import { formatNoticeDate, fromIsoDate } from "@/lib/intl/dates"
 import { formatMoney } from "@/lib/intl/money"
 import { mapsUrl } from "@/lib/maps"
-import { absoluteUrl, ITEM_LOCALE, isStale, joinSentences, jsonLd, snippet } from "@/lib/seo"
+import { absoluteUrl, isStale, itemLocale, joinSentences, jsonLd, snippet } from "@/lib/seo"
 import ClaimCard from "@/screens/found_lost/claim/claim-card"
 import { noticePlace } from "@/screens/found_lost/notice-place"
 import PhotoViewer from "@/screens/found_lost/photo-viewer"
@@ -271,7 +271,7 @@ export async function itemMetadata(kind: ItemKind, locale: string, id: string): 
     date,
   })
   const description = snippet(item.description ? joinSentences(summary, item.description) : summary)
-  const indexed = locale === ITEM_LOCALE && !isStale(item.date)
+  const indexed = locale === itemLocale(item.language) && !isStale(item.date)
 
   return {
     title,

@@ -64,10 +64,12 @@ in `Web-Client/README.md`; the entry side is in [../file-storage.md](../file-sto
 
 How search engines see the site; the details are in the "Search" section of `Web-Client/README.md`.
 
-- **One language per notice.** A notice's text is the same in all five locales, so only its `/uk/`
-  page is indexed (`ITEM_LOCALE` in `src/lib/seo.ts`): it has a self `canonical` and no `hreflang`,
-  the other four answer `noindex, follow`, and the sitemap lists notices by `/uk/` URL alone. The
-  home, list and legal pages stay indexed in every locale with `hreflang`.
+- **One language per notice.** A notice's text is the same in all five locales, so only the page in
+  the notice's own language is indexed (`itemLocale(item.language)` in `src/lib/seo.ts`; `uk` when the
+  API detected no language or one that is not a site locale, see
+  [../../features/notices.md](../../features/notices.md#language)): it has a self `canonical` and no
+  `hreflang`, the other four answer `noindex, follow`, and the sitemap lists each notice by that URL
+  alone. The home, list and legal pages stay indexed in every locale with `hreflang`.
 - **Sitemap.** `robots.txt` lists `pages.xml` and one file per kind and calendar month
   (`lost-0`, `found-1`, …). A month without notices lists its kind's list page, because Search
   Console rejects a sitemap without a `<url>`.

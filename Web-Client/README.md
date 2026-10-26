@@ -91,8 +91,8 @@ Vitest, colocated as `<name>.test.ts`, no browser and no running backend:
   failures, which cache tags are revalidated, and `claimStatus` refusing a malformed id.
 - `lib/claim-cookie.test.ts`, `lib/item-search.test.ts` (query string to filter and back),
   `lib/intl/country.test.ts`, `lib/intl/dates.test.ts`, `lib/seo.test.ts`.
-- `app/sitemap.test.ts` with `@/api/items` mocked: a notice is listed once by its `/uk/` URL
-  without `hreflang`, a month without notices lists the list page instead of an empty file, and a
+- `app/sitemap.test.ts` with `@/api/items` mocked: a notice is listed once, by the URL in its own
+  language (`/uk/` when there is none) and without `hreflang`, a month without notices lists the list page instead of an empty file, and a
   city page is among the pages only while the city has notices, a city's list only for the kind
   it has notices of.
 - `lib/cities.test.ts`: slug lookup, a place on a city's edge falls into it, the city areas do not
@@ -341,8 +341,11 @@ JSON-LD goes into the page only through `jsonLd()` in `src/lib/seo.ts`: `JSON.st
 as is, so a notice titled `</script><script>…` would otherwise run as a script on its own page.
 
 Notice pages are the exception to `hreflang`: the notice text is the same in every locale, so only
-the `ITEM_LOCALE` (`uk`) copy is indexed. Each copy keeps a self `canonical` and no `hreflang`, the
-other four answer `noindex, follow`, and the sitemap lists notices by their `/uk/` URL alone.
+the copy in the notice's own language is indexed: `itemLocale(item.language)` in `src/lib/seo.ts`, where
+`language` is what `Client-API` detected from the text when the notice was written, and `uk`
+(`FALLBACK_ITEM_LOCALE`) when it was not detected or is not a site locale (`ru`, `es`, `it`). Each copy
+keeps a self `canonical` and no `hreflang`, the other four answer `noindex, follow`, and the sitemap
+lists every notice by that one URL.
 
 A meta description is written for the results page, not reused from the visible text: the home page
 has `app.homeDescription`, the lists `list.lostMetaDescription` and `list.foundMetaDescription`

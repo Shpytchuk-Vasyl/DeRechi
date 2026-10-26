@@ -15,13 +15,33 @@ const today = new Date().toISOString().slice(0, 10)
 describe("sitemap", () => {
   beforeEach(() => fetchItems.mockReset())
 
-  it("lists a notice once, by its Ukrainian page and without hreflang", async () => {
-    fetchItems.mockResolvedValue({ items: [{ id: "7", date: today }], hasNextPage: false })
+  it("lists a notice once, by the page in its own language and without hreflang", async () => {
+    fetchItems.mockResolvedValue({
+      items: [{ id: "7", date: today, language: "pl" }],
+      hasNextPage: false,
+    })
 
     const entries = await sitemap({ id: Promise.resolve("lost-0") })
 
     expect(entries).toEqual([
-      { url: "https://derechi.example/uk/lost/7", lastModified: today, priority: 0.6 },
+      { url: "https://derechi.example/pl/lost/7", lastModified: today, priority: 0.6 },
+    ])
+  })
+
+  it("lists a notice by its Ukrainian page when its language is not a site locale or unknown", async () => {
+    fetchItems.mockResolvedValue({
+      items: [
+        { id: "7", date: today, language: "ru" },
+        { id: "8", date: today, language: null },
+      ],
+      hasNextPage: false,
+    })
+
+    const entries = await sitemap({ id: Promise.resolve("lost-0") })
+
+    expect(entries.map((entry) => entry.url)).toEqual([
+      "https://derechi.example/uk/lost/7",
+      "https://derechi.example/uk/lost/8",
     ])
   })
 

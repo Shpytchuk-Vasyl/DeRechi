@@ -8,6 +8,7 @@ const {
   absoluteUrl,
   cityPageJsonLd,
   isStale,
+  itemLocale,
   joinSentences,
   jsonLd,
   pageAlternates,
@@ -39,6 +40,18 @@ describe("seo", () => {
 
     expect(isStale("2026-09-02T12:00:00Z", now)).toBe(false)
     expect(isStale("2026-09-01T12:00:00Z", now)).toBe(true)
+  })
+
+  it("indexes a notice in the language it is written in", () => {
+    expect(itemLocale("pl")).toBe("pl")
+    expect(itemLocale("de")).toBe("de")
+    expect(itemLocale("uk")).toBe("uk")
+  })
+
+  it("indexes a notice in Ukrainian when the site has no such language or none was detected", () => {
+    expect(itemLocale("ru")).toBe("uk")
+    expect(itemLocale(null)).toBe("uk")
+    expect(itemLocale(undefined)).toBe("uk")
   })
 
   it("keeps a short description as it is, with whitespace collapsed", () => {

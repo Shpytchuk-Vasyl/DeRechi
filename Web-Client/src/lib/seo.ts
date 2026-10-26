@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { paths } from "@/i18n/paths"
-import { defaultLocale, locales } from "@/i18n/routing"
+import { defaultLocale, type Locale, locales } from "@/i18n/routing"
 import { clientEnv } from "@/lib/env/client"
 import { ITEM_KINDS } from "@/lib/kinds"
 
@@ -10,9 +10,13 @@ export const INDEXABLE = !!process.env.VERCEL
 
 export const STALE_AFTER_DAYS = 30
 
-export const ITEM_LOCALE = "uk"
+export const FALLBACK_ITEM_LOCALE: Locale = "uk"
 
 const DESCRIPTION_LIMIT = 160
+
+export function itemLocale(language: string | null | undefined): Locale {
+  return locales.find((locale) => locale === language) ?? FALLBACK_ITEM_LOCALE
+}
 
 export function isStale(date: string, now = new Date()): boolean {
   const age = now.getTime() - new Date(date).getTime()

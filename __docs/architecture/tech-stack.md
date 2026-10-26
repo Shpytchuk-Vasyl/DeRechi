@@ -70,7 +70,7 @@ Gateway's server is WebFlux-based.
 | Thymeleaf, Bulma (CDN), htmx (CDN), Font Awesome | `Admin-API` | server-rendered admin UI with partial updates |
 | Caffeine | `Admin-API` | the `categories` cache |
 | libphonenumber | `Admin-API`, `Worker` | phone formatting in `Formats`; the recipient's language for claim messages (`PhoneLocales`) |
-| optimaize `language-detector` 0.6 | `Worker` | picks the PostgreSQL text search configuration from the title |
+| optimaize `language-detector` 0.6 | `Client-API`, `Admin-API` | detects the language of a notice's title and description when it is written; search, matching and SEO read the stored code |
 | ShedLock 7.10.1 (`shedlock-spring`, `shedlock-provider-jdbc-template`) | `Worker` | one instance at a time runs a scheduled job, through the `shedlock` table |
 | NotifyHub 1.1.0 (`notify-spring-boot-starter`, `notify-email`, `notify-telegram` managed) | `Notification` | one API over email / SMS / messengers |
 | Lombok | `Admin-API`, `Client-API`, `Worker` | entities and forms only; see [../conventions/java-code-style.md](../conventions/java-code-style.md) |

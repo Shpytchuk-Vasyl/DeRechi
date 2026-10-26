@@ -2,7 +2,7 @@ import { expect, test } from "../fixtures/base"
 import { Filters } from "../fixtures/pages"
 import { LOCALES } from "../support/data"
 import { env } from "../support/env"
-import { expectAlternates, GLOBAL_NOINDEX, robotsMeta } from "../support/seo"
+import { expectAlternates, expectItemIndexing, GLOBAL_NOINDEX, robotsMeta } from "../support/seo"
 import { siteUrl } from "../support/site"
 
 const KEY_PAGES = [
@@ -111,6 +111,19 @@ test.describe("SEO", () => {
 })
 
 test.describe("item pages", () => {
+  test("a notice written in Polish is indexed in Polish and not in Ukrainian", async ({
+    page,
+    shared,
+  }) => {
+    const item = shared.items.lostPolish
+    expect(item.language, "the language the API detected").toBe("pl")
+
+    for (const locale of ["pl", "uk"] as const) {
+      await page.goto(`/${locale}${item.path}`)
+      await expectItemIndexing(page, locale, item.path, item.language)
+    }
+  })
+
   for (const key of ["foundPhoto", "lostNoPhoto"] as const) {
     test(`${key}: og:image is a cacheable 1200×630 JPEG of the notice`, async ({
       page,

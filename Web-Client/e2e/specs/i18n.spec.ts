@@ -214,7 +214,7 @@ for (const locale of LOCALES) {
       for (const { key, currency, indexing } of FORMAT_ITEMS.filter((it) =>
         it.locales.includes(locale),
       )) {
-        test(`${key}: date, country and reward in the language's format${indexing ? ", canonical, indexed only in Ukrainian" : ""}`, async ({
+        test(`${key}: date, country and reward in the language's format${indexing ? ", canonical, indexed only in the notice's language" : ""}`, async ({
           page,
           go,
           t,
@@ -235,7 +235,7 @@ for (const locale of LOCALES) {
           const amount = await browserMoney(page, locale, reward, currency)
           await expect(detail.reward(amount)).toBeVisible()
 
-          if (indexing) await expectItemIndexing(page, locale, item.path)
+          if (indexing) await expectItemIndexing(page, locale, item.path, item.language)
         })
       }
     })

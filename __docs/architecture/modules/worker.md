@@ -10,7 +10,7 @@ has no HTTP API; the only endpoints are actuator's.
 | Consumes | one queue, `worker.queue`, bound to `notice.status.exchange` with `notice.*.created` and `notice.*.returned`, to `claims.exchange` with `claim.*.claimed` and `claim.*.paid`, and to `notice.action.exchange` with `notice.*.archive` |
 | Produces | `NotificationRequestedEvent` on `notification.exchange` (`notification.claim.*`); `ItemArchivedEvent` on `notice.status.exchange` (`notice.<kind>.archived`, after the commit of every archiving) |
 | Needs | PostgreSQL, RabbitMQ |
-| Stack | Spring AMQP, Spring Data JPA, Hibernate Spatial + JTS, optimaize `language-detector`, libphonenumber, ShedLock, Lombok |
+| Stack | Spring AMQP, Spring Data JPA, Hibernate Spatial + JTS, libphonenumber, ShedLock, Lombok |
 
 ## Flow
 
@@ -74,23 +74,22 @@ Candidates are found only for the notice that triggered the event. An older noti
 would match a new one is reached from the new one's side, so the pairing is symmetric in
 practice, but nothing re-scans history.
 
-## Language detection
+## Language
 
 PostgreSQL full-text search needs a configuration (`english`, `ukrainian`, ...) to stem
-words, and the title can be in any of the languages the site supports.
-`LanguageResolver` runs the optimaize detector over the title and maps the ISO code to a
-`SearchLanguage`:
+words. `Worker` does not detect it: `Client-API` and `Admin-API` store the language of a notice's
+text when it is written, and `ItemCreatedEvent`/`ItemUpdatedEvent` carry it as an ISO code
+(see [../../features/notices.md](../../features/notices.md#language)). `ItemService` maps it with
+`SearchLanguage.fromIsoCode`:
 
 | `SearchLanguage` | regconfig |
 |---|---|
 | `ENGLISH`, `GERMAN`, `FRENCH`, `SPANISH`, `ITALIAN`, `RUSSIAN` | the PostgreSQL built-ins |
 | `UKRAINIAN` | `ukrainian`, created by migration 001 from the hunspell dictionary baked into our PostgreSQL image |
 | `POLISH` | `polish`, created by migration 010 the same way, from the `pl_PL` hunspell dictionary (sjp.pl) |
-| `SIMPLE` | `simple`, the fallback for a blank text, an undetected language, or a detected language with no configuration |
+| `SIMPLE` | `simple`, for a notice whose language was not detected, a code with no configuration, or an event from before the field existed |
 
-The detector is loaded with profiles for every `SearchLanguage` plus `DETECT_ONLY_CODES`
-(empty today): a language can be detected without a configuration, so that its titles are
-not mistaken for a neighbour, and then falls through to `simple`. Adding a language is described in
+`ItemMapper.copy` carries `language` into the history row when `ItemArchiver` archives a notice. Adding a language is described in
 [../../extending/add-a-search-language.md](../../extending/add-a-search-language.md).
 
 `FullTextFunctionContributor` registers three HQL functions per `SearchLanguage`: `ts_rank_<config>`
@@ -205,7 +204,7 @@ SQL because this module's `Place` maps only the id and the coordinate):
 - `cron/ClaimFollowUpsTests`: purge and the reminder stamp against the real foreign keys;
 - `service/ItemArchiverTests`: history copy, claims re-pointed under the `CHECK`, matches dropped.
 
-Unit tests: `LanguageResolverTest`, `PhoneLocalesTest`, `ClaimNotifierTest` (mocked
+Unit tests: `PhoneLocalesTest`, `ClaimNotifierTest` (mocked
 `RabbitTemplate`, real bundles), `ClaimMessageTest` (routing, bundle and dedup keys, recipients),
 `RoutingKeyDispatcherTest` and `WorkerQueueListenerTest` (dispatch), `ItemMatchHandlerTest` (which column each kind takes, through
 the repository's real default methods), `KindOpsTest` and `ItemKindsTest`, `ClaimHandlersTest`

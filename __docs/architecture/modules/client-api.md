@@ -9,7 +9,7 @@ browse and post notices. It has no authentication today; the API entry (Caddy fo
 | Port | 8082; actuator on the management port 9082 |
 | Endpoint | `POST /graphql`; GraphiQL at `/graphiql` (enabled in `application.yaml`); the schema is printed at `/graphql/schema` |
 | Needs | PostgreSQL, RabbitMQ (to publish) |
-| Stack | Spring MVC + Spring for GraphQL, Spring Data JPA, Hibernate Spatial, AspectJ, Spring AMQP, Lombok |
+| Stack | Spring MVC + Spring for GraphQL, Spring Data JPA, Hibernate Spatial, AspectJ, Spring AMQP, optimaize `language-detector`, Lombok |
 
 ## Schema
 
@@ -46,10 +46,10 @@ a list that changes between pages can skip or repeat an item. Sorting is `ItemSo
 
 `ItemFilterInput` → `ThingSpecifications.byFilter` → `SpecificationBuilder`:
 `search` is a case-insensitive `LIKE` over `title`, `description` and `place.name` **or** a
-full-text match over `title` and `description` in any of five languages (`ukrainian`, `polish`,
-`german`, `french`, `english`), computed per row without an index;
+full-text match over `title` and `description` in the notice's own `language` (its configuration
+picked per row from `SearchLanguage`, `simple` when unknown), computed per row without an index;
 `categoryId`, `dateFrom`, `dateTo` are plain predicates; `near` becomes a `dwithin` call
-on `place.coordinate` with a radius in metres. `dwithin` and `matches_words_<config>` are custom HQL
+on `place.coordinate` with a radius in metres. `dwithin` and `matches_words` are custom HQL
 functions registered by `SpatialFunctionContributor` (`st_dwithin(?1, CAST(?2 AS geography), ?3)`)
 and `FullTextFunctionContributor`, both declared in
 `META-INF/services/org.hibernate.boot.model.FunctionContributor`. Details in
@@ -90,13 +90,15 @@ required and the `ItemKind` they pass to the constructor (`kind()`). `create` sa
 `ContactInfo` (built from the input by `ContactInfoMapper`, which also serves claims: a blank
 author email becomes `null`, a claimant's email is stored as the input normalised it), `Place`
 (keyed by Google place id, so a place is reused across notices) and the item in one
-transaction.
+transaction. Before the save `LanguageResolver` (`language/`) detects the language of the title
+and description and the item keeps its ISO code in `language` (`null` when nothing was detected),
+see [../../features/notices.md](../../features/notices.md#language).
 
 `ItemEventAspect` is an `@AfterReturning` advice on `ItemService+.create(..)` that publishes
 an `ItemCreatedEvent` to `notice.status.exchange` with `service.kind().noticeKey("created")`, that is
 `notice.lost.created` or `notice.found.created`; the advised service is bound with `target(service)`.
-The event carries what matching needs and what `Ingest` needs for a channel post (`categoryKey`,
-`placeName`, `description`, `compensation`, `currency`, `image`).
+The event carries what matching needs (including `language`) and what `Ingest` needs for a channel post
+(`categoryKey`, `placeName`, `description`, `compensation`, `currency`, `image`).
 See [../messaging.md](../messaging.md) for why it is an aspect.
 
 `FoundItemStatisticsService` (`service/found/`) answers `stats` with two counts:

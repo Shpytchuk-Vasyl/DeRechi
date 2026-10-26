@@ -4,7 +4,7 @@ Every new notice is compared in the background against notices of the opposite k
 
 ## Flow
 
-1. `Client-API` publishes `ItemCreatedEvent` (`id`, `date`, `category`, `lat`, `lon`, `title`, `description`, plus the fields `Ingest` needs for a channel post, which `Worker` ignores) to the `notice.status.exchange` exchange with key `notice.lost.created` or `notice.found.created`. `Admin-API` publishes the same event after the commit when a notice is created in the admin panel, so those notices are matched too.
+1. `Client-API` publishes `ItemCreatedEvent` (`id`, `date`, `category`, `lat`, `lon`, `title`, `description`, `language`, plus the fields `Ingest` needs for a channel post, which `Worker` ignores) to the `notice.status.exchange` exchange with key `notice.lost.created` or `notice.found.created`. `Admin-API` publishes the same event after the commit when a notice is created in the admin panel, so those notices are matched too.
 2. Worker's one queue, `worker.queue`, is bound with `notice.*.created` among others. `WorkerQueueListener.onItemCreated` dispatches by the routing key of the message (`RoutingKeyDispatcher`, used by every handler method of the listener) to the `ItemCreatedHandler` registered for it. An unknown key is rejected without requeue.
 3. `ItemMatchHandler<T>` is one class with two beans wired in `ItemSearchConfig`: `lostItemCreatedHandler` searches `found_item`, `foundItemCreatedHandler` searches `lost_item`. Each delegates to the `ItemService<T>` bean of the opposite kind and holds the `KindOps` of the kind that arrived.
 4. `ItemService.findMostSuitable` runs one query that returns the ids and ranks of the five best candidates (`MatchCandidate`).
@@ -26,9 +26,9 @@ All of them live in `ThingSpecifications.byFilter`:
 
 The rank that goes into `similar_item.match_order` is the one the query sorts by (`ThingSpecifications.matchRank`), read in the same statement. The search text is the event's title and description together; when both are blank nothing matches. A description makes more pairs reachable (a found "Purse" with "black leather" in its description meets a lost "Black leather wallet"), and the date, distance and category rules keep the extra words from pulling in unrelated notices.
 
-## Language detection
+## Language
 
-PostgreSQL full-text search needs a configuration (`regconfig`) to stem words. `LanguageResolver` detects the language of the event's title and description with the optimaize `language-detector` library and maps it to a `SearchLanguage`:
+PostgreSQL full-text search needs a configuration (`regconfig`) to stem words. `Worker` does not detect a language any more: the event carries the `language` the notice was stored with (detected from its text when it was written, see [Notices](notices.md#language)), and `SearchLanguage.fromIsoCode` turns it into a configuration:
 
 | `SearchLanguage` | ISO | regconfig |
 |---|---|---|
@@ -37,11 +37,12 @@ PostgreSQL full-text search needs a configuration (`regconfig`) to stem words. `
 | `FRENCH` | fr | `french` |
 | `SPANISH` | es | `spanish` |
 | `ITALIAN` | it | `italian` |
+| `RUSSIAN` | ru | `russian` |
 | `UKRAINIAN` | uk | `ukrainian` |
 | `POLISH` | pl | `polish` |
-| `SIMPLE` | none | `simple` |
+| `SIMPLE` | `null` or anything else | `simple` |
 
-`DETECT_ONLY_CODES` (empty today) is for a language the detector should know without a regconfig, so that its text is not misread as a neighbour; such a language resolves to `SIMPLE` (no stemming, exact tokens).
+Both the new notice's text and the candidates' are parsed in the new notice's language, so their words can be compared. `SIMPLE` (no stemming, exact tokens) covers a notice whose language was not detected and an event published before the field existed.
 
 `FullTextFunctionContributor` registers an HQL function `ts_rank_<regconfig>` for every enum value plus a generic `ts_rank_cfg` and the `dwithin` predicate. That is why adding a language is an enum change rather than SQL (see [Add a search language](../extending/add-a-search-language.md)).
 
@@ -54,7 +55,7 @@ The `ukrainian` and `polish` configurations are not built into PostgreSQL. `dock
 ## Known gaps and ideas
 
 - The radius, the date window and the page size are constants, not configuration.
-- Only the title is used for detection and ranking input; the candidate's description is part of the document but the event's description is not sent.
+- A candidate is parsed in the new notice's language, not its own: a Ukrainian lost notice and a Russian found one share only the words spelled the same in both, and stemming helps neither.
 - A notice created while `Worker` is down is matched when the service comes back (the queue is durable), but a notice whose publish failed in `Client-API` is never matched.
 - Matching runs at creation and after an edit in the admin panel. A lost notice posted before the matching found notice is still found, because the found notice triggers its own search in the other direction. An edit redoes only the edited notice's own candidate list: pairs where it is someone else's candidate are not recalculated.
 - The project README floats an idea of score thresholds (around 0.8 to notify an admin, above 0.9 to confirm with an external model before notifying the owner). Nothing of that is implemented.
@@ -67,4 +68,4 @@ The `ukrainian` and `polish` configurations are not built into PostgreSQL. `dock
 - `Worker/src/main/java/org/shpytchuk/worker/language/`
 - `Worker/src/main/java/org/shpytchuk/worker/config/FullTextFunctionContributor.java`
 - `DB-Postgres/changelog/changes/001-extentions-and-configuration.sql`, `004-similar_item.postgresql.sql`
-- Tests: `ItemServiceTests` and `ItemMatchHandlerTests` (Worker, on the Testcontainers database), `ItemMatchHandlerTest`, `KindOpsTest`, `LanguageResolverTest`, `WorkerQueueListenerTest`, `RoutingKeyDispatcherTest`, `RabbitConfigTest`; `MatchServiceTests` in Admin-API for the page that shows the result
+- Tests: `ItemServiceTests` and `ItemMatchHandlerTests` (Worker, on the Testcontainers database), `ItemMatchHandlerTest`, `KindOpsTest`, `WorkerQueueListenerTest`, `RoutingKeyDispatcherTest`, `RabbitConfigTest`; `MatchServiceTests` in Admin-API for the page that shows the result

@@ -38,6 +38,7 @@ export type Item = {
   id: string
   title: string
   description: string | null
+  language: string | null
   date: string
   compensation: { amount: number; currency: string } | null
   image: string | null
@@ -102,6 +103,7 @@ const ITEM_FIELDS = `
   id
   title
   description
+  language
   date
   compensation { amount currency }
   image
@@ -111,11 +113,14 @@ const ITEM_FIELDS = `
 
 const capitalised = (kind: ItemKind) => (kind === "lost" ? "Lost" : "Found")
 
-export async function createItem(kind: ItemKind, input: ItemInput): Promise<{ id: string }> {
+export async function createItem(
+  kind: ItemKind,
+  input: ItemInput,
+): Promise<{ id: string; language: string | null }> {
   const field = `create${capitalised(kind)}Item`
-  const data = await graphql<Record<string, { id: string }>>(
+  const data = await graphql<Record<string, { id: string; language: string | null }>>(
     field,
-    `mutation ($input: ItemInput!) { ${field}(input: $input) { id } }`,
+    `mutation ($input: ItemInput!) { ${field}(input: $input) { id language } }`,
     { input },
   )
   return data[field]

@@ -43,6 +43,7 @@ export type SharedItemKey =
   | "lostNoReward"
   | "lostNegotiableReward"
   | "foundDocuments"
+  | "lostPolish"
   | "claimLost"
   | "claimFound"
   | "claimNick"
@@ -50,6 +51,7 @@ export type SharedItemKey =
 export type SharedItem = CreatedItem & {
   group: SharedGroup
   key: string
+  language: string | null
 }
 
 export type SharedData = {
@@ -143,6 +145,11 @@ const DEFINITIONS: Definition[] = [
   def("view", "lostNoReward", "lost", { category: "ELECTRONICS" }),
   def("view", "lostNegotiableReward", "lost", { category: "ANIMALS", compensation: { amount: 0 } }),
   def("view", "foundDocuments", "found", { category: "DOCUMENTS" }),
+  def("view", "lostPolish", "lost", {
+    name: ITEM_NAMES.pl.WALLET,
+    description: DESCRIPTIONS.pl,
+    city: "warsaw",
+  }),
   ...numbered("cnt1x", "lost", 1),
   ...numbered("cnt3x", "found", 3),
   ...numbered("cnt5x", "lost", 5),
@@ -171,6 +178,7 @@ const NAMED: readonly SharedItemKey[] = [
   "lostNoReward",
   "lostNegotiableReward",
   "foundDocuments",
+  "lostPolish",
   "claimLost",
   "claimFound",
   "claimNick",
@@ -345,8 +353,11 @@ export async function seedShared(now = new Date()): Promise<SharedData> {
   for (const [index, definition] of DEFINITIONS.entries()) {
     const input = inputs[index]
     let id = matches[index]?.id
+    let language = matches[index]?.language ?? null
     if (!id) {
-      id = (await api.createItem(definition.kind, input)).id
+      const fresh = await api.createItem(definition.kind, input)
+      id = fresh.id
+      language = fresh.language
       created++
     }
     items.push({
@@ -358,6 +369,7 @@ export async function seedShared(now = new Date()): Promise<SharedData> {
       input,
       group: definition.group,
       key: definition.key,
+      language,
     })
   }
 

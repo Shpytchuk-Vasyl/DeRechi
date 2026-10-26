@@ -53,9 +53,28 @@ A viewer who recognises the item does not get them either: they send their own c
 
 Anything else falls through to the default `INTERNAL_ERROR`.
 
+## Language
+
+Every notice remembers the language its text is written in: `language VARCHAR(2)`, an ISO 639-1 code, on `lost_item`, `found_item` and both `*_history` tables (migration 016). It is detected from the text when the notice is written, never taken from the author's UI language: the site's default locale is `en`, a Ukrainian in Poland browses `/pl/`, the admin's UI is not the author's, and `Ingest` has no UI at all.
+
+- `Client-API`: `ItemService.create` runs `LanguageResolver` (the optimaize `language-detector`) over the title and the description together. `Ingest` posts through `createLostItem`/`createFoundItem`, so its notices get it the same way.
+- `Admin-API`: `ItemFormApplier` does the same on every create and every edit, of live and archived notices alike, so an edited text gets its language again.
+- The detector knows only the `SearchLanguage` languages: `en`, `de`, `fr`, `es`, `it`, `ru`, `uk`, `pl`. Three of them (`es`, `it`, `ru`) are not site locales and are stored as they are. Its confidence threshold is high, so a short title without a description ("Гаманець") often stays `null`.
+- Rows written before migration 016 got `uk`, what the site assumed for every notice until then; they leave for the archive within 30 days of their `date`.
+
+What reads it:
+
+| Where | What for |
+|---|---|
+| `Client-API` search | the notice's words and the query are stemmed in this language, `simple` when `null`, see [Search and filtering](search-and-filtering.md#full-text-search) |
+| `Worker` matching | `ItemCreatedEvent`/`ItemUpdatedEvent` carry it, and candidates are compared in the new notice's language, see [Automatic matching](automatic-matching.md#language) |
+| Web-Client SEO | the notice page is indexed in this language only (`uk` when it is `null` or not a site locale), and the sitemap lists it there, see [web-client.md](../architecture/modules/web-client.md) |
+
+GraphQL returns it as `language` on `LostItem` and `FoundItem`.
+
 ## What happens after a notice is created
 
-`ItemEventAspect` wraps every `ItemService.create(..)` with `@AfterReturning` and publishes an `ItemCreatedEvent` (`id`, `date`, `category`, `lat`, `lon`, `title`, and for the Telegram channel `categoryKey`, `placeName`, `description`, `compensation`, `currency`, `image`) to the `notice.status.exchange` exchange. The routing key is `notice.lost.created` or `notice.found.created`: the aspect binds the service that ran (`target(service)`) and asks its `kind()`, an `ItemKind`, for `noticeKey("created")`. `Worker` consumes it, see [Automatic matching](automatic-matching.md), and so does `Ingest`, which posts the notice to our Telegram channel, see [Telegram import](telegram-ingest.md#notices-from-the-site).
+`ItemEventAspect` wraps every `ItemService.create(..)` with `@AfterReturning` and publishes an `ItemCreatedEvent` (`id`, `date`, `category`, `lat`, `lon`, `title`, `language`, and for the Telegram channel `categoryKey`, `placeName`, `description`, `compensation`, `currency`, `image`) to the `notice.status.exchange` exchange. The routing key is `notice.lost.created` or `notice.found.created`: the aspect binds the service that ran (`target(service)`) and asks its `kind()`, an `ItemKind`, for `noticeKey("created")`. `Worker` consumes it, see [Automatic matching](automatic-matching.md), and so does `Ingest`, which posts the notice to our Telegram channel, see [Telegram import](telegram-ingest.md#notices-from-the-site).
 
 The aspect has `@Order(0)`, so it sits outside the transaction interceptor and fires only after the insert has committed; a failing `create` publishes nothing (`ItemEventAspectTest.doesNotPublishWhenCreateThrows`). The flip side: if RabbitMQ is unreachable at that moment the row is already committed but the publish throws and the mutation returns an error. There is no outbox, so such a notice simply never gets matched.
 
@@ -90,7 +109,9 @@ One row in `lost_item` or `found_item`, one `contact_info` row per notice, one `
 - `Client-API/src/main/java/org/shpytchuk/clientapi/service/ItemService.java`, `lost/LostItemService.java`, `found/FoundItemService.java`, `entity/ItemKind.java`, `mapper/ContactInfoMapper.java`
 - `Client-API/src/main/java/org/shpytchuk/clientapi/controller/LostItemController.java`, `FoundItemController.java`
 - `Client-API/src/main/java/org/shpytchuk/clientapi/util/ContactMasker.java`
+- `Client-API/src/main/java/org/shpytchuk/clientapi/language/`, `Admin-API/src/main/java/org/shpytchuk/adminapi/language/`, `Admin-API/src/main/java/org/shpytchuk/adminapi/mapper/ItemFormApplier.java`
+- `DB-Postgres/changelog/changes/016-thing-language.postgresql.sql`
 - `Client-API/src/main/java/org/shpytchuk/clientapi/controller/FoundItemStatisticsController.java`, `service/found/FoundItemStatisticsService.java`
-- Tests: `LostItemControllerTests`, `FoundItemControllerTests`, `ItemServiceTests`, `ItemEventAspectTest`, `ItemKindTest`, `ContactInfoMapperTest`, `ContactMaskerTest`, `WithinDaysLocalDateValidatorTest`, `FoundItemStatisticsControllerTests`, `FoundItemStatisticsServiceTest`
+- Tests: `LostItemControllerTests`, `FoundItemControllerTests`, `ItemServiceTests`, `LanguageResolverTest` (in `Client-API` and `Admin-API`), `AdminItemServiceTests`, `ItemEventAspectTest`, `ItemKindTest`, `ContactInfoMapperTest`, `ContactMaskerTest`, `WithinDaysLocalDateValidatorTest`, `FoundItemStatisticsControllerTests`, `FoundItemStatisticsServiceTest`
 
 Extending: [Add a GraphQL field](../extending/add-a-graphql-field.md), [Add a category](../extending/add-a-category.md), [Add a social network](../extending/add-a-social-network.md).
