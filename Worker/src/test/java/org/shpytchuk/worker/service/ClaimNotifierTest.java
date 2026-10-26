@@ -157,7 +157,7 @@ class ClaimNotifierTest {
         verify(rabbitTemplate, times(4)).convertAndSend(eq("notification.exchange"), any(String.class), events.capture());
         assertThat(events.getAllValues()).allSatisfy(event -> assertThat(event.smsMessage())
                 .as(event.smsMessage())
-                .startsWith("DeRechi")
+                .doesNotStartWith("DeRechi")
                 .doesNotContain("{", "@example.com")
                 .hasSizeLessThanOrEqualTo(event.deduplicationKey().endsWith("reminder") ? 134 : 70));
     }

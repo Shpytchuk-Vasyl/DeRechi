@@ -132,7 +132,7 @@ class MatchNotificationServiceTest {
                 .convertAndSend(eq("notification.exchange"), eq("notification.match.found"), events.capture());
         assertThat(events.getAllValues()).allSatisfy(event -> assertThat(event.smsMessage())
                 .as(event.smsMessage())
-                .startsWith("DeRechi")
+                .doesNotStartWith("DeRechi")
                 .contains("Чорний шкіряний...", "+380 50 987 6543")
                 .doesNotContain("{", "finder@example.com", "Метро Хрещатик")
                 .hasSizeLessThanOrEqualTo(70));
