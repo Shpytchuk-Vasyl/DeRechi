@@ -89,7 +89,7 @@ A notice lives 30 days from its `date`, the day the thing was lost or found, not
 | `returnedThisWeek` | rows in `found_item_history` by `archived_at` | the last 7 days, today included, from midnight UTC; a rolling window, so the figure does not drop to zero every Monday |
 | `foundToday` | rows in `found_item` by `date` | today in UTC |
 
-The Web-Client caches the answer for five minutes under the `stats` tag and drops the tag when a found notice is posted; it hides a figure that is zero.
+The Web-Client caches the answer for an hour under the `stats` tag and drops the tag when a found notice is posted; it hides a figure that is zero.
 
 ## Storage
 

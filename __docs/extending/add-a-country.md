@@ -52,7 +52,7 @@ No. The columns already accept any two- and three-letter codes.
 
 ## Web-Client impact
 
-The web client reads `countries` at run time (cached an hour), so the new country shows up in
+The web client reads `countries` at run time (cached a day), so the new country shows up in
 its currency select and Places restriction automatically; country names
 come from `Intl.DisplayNames`, so no message key is needed there either.
 

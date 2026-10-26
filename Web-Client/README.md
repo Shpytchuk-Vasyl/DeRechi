@@ -58,8 +58,8 @@ the code that enforces them.
 Every GraphQL read in `src/api/` is a `fetch` cached by Next, and all the numbers live in
 `src/lib/cache.ts`:
 
-- `CACHE_TTL`: four tiers, `minute` (lists, place suggestions), `fiveMinutes` (home page
-  `stats`), `hour` (one notice, the sitemap) and `day` (categories, countries, OG fonts).
+- `CACHE_TTL`: `minute` (lists, place suggestions), `hour` (home page `stats`, the sitemap),
+  `sixHours` (one notice) and `day` (categories, countries, OG fonts).
   Pick the tier by how stale the data may get, not per call site.
 - `CACHE_TAG` and `CACHE`: the tag and the policy (`{ revalidate, tags }`) of each read,
   passed straight to `graphqlRequest`.
@@ -200,7 +200,7 @@ page (`noindex`, disallowed in `robots.txt`) has one button that calls `confirmR
 the notice is then archived by Worker. An unknown or used-up token reads as "this
 link is no longer valid". The action revalidates both list tags, but not the notice's own
 detail tag: the token does not say which notice it closes, so that page stays cached until its
-hour runs out, and a claim sent from it in the meantime answers `notFound`, which revalidates
+six hours run out, and a claim sent from it in the meantime answers `notFound`, which revalidates
 that notice's tag.
 
 ### SMS outage notice

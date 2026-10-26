@@ -388,7 +388,7 @@ check details before meeting.
 - SMS is still not wired in `Notification` (no provider); authors get email only until it is.
 - Messengers are only listed as text in the message; nothing is sent through them.
 - The author cannot see the responses anywhere except the messages; there is no "my notice" page.
-- The web client's detail page is cached for an hour, so an archived notice can stay visible
+- The web client's detail page is cached for six hours, so an archived notice can stay visible
   for up to that long after a confirmation (`confirmReturn` revalidates the list tags).
 
 ## Where to look

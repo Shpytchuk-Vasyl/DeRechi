@@ -43,7 +43,7 @@ in `Web-Client/README.md`; the entry side is in [../file-storage.md](../file-sto
 - **New query**: every GraphQL read in `src/api/` takes its TTL and cache tag from
   `src/lib/cache.ts` (`CACHE`), and server actions drop tags through `invalidate` there.
   Pick a TTL tier by how stale the data may get and add a policy rather than a number at the
-  call site. `stats` is cached for five minutes and refreshed when a found notice is posted.
+  call site. `stats` is cached for an hour and refreshed when a found notice is posted.
 - **New country or currency**: the client reads `countries { code currency }` from the
   API; nothing is hard-coded on its side.
 - **Entry CORS or routes**: Caddy adds no CORS headers. The presigned upload is the only

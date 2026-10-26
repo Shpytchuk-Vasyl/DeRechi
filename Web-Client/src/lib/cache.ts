@@ -5,6 +5,7 @@ export const CACHE_TTL = {
   minute: 60,
   fiveMinutes: 300,
   hour: 3600,
+  sixHours: 21_600,
   day: 86_400,
 } as const
 
@@ -29,13 +30,13 @@ export const CACHE = {
     tags: [CACHE_TAG.items(kind)],
   }),
   item: (kind: ItemKind, id: string): CachePolicy => ({
-    revalidate: CACHE_TTL.hour,
+    revalidate: CACHE_TTL.sixHours,
     tags: [CACHE_TAG.item(kind, id)],
   }),
   places: (): CachePolicy => ({ revalidate: CACHE_TTL.minute, tags: [CACHE_TAG.places] }),
   categories: (): CachePolicy => ({ revalidate: CACHE_TTL.day, tags: [CACHE_TAG.categories] }),
   countries: (): CachePolicy => ({ revalidate: CACHE_TTL.day, tags: [CACHE_TAG.countries] }),
-  stats: (): CachePolicy => ({ revalidate: CACHE_TTL.fiveMinutes, tags: [CACHE_TAG.stats] }),
+  stats: (): CachePolicy => ({ revalidate: CACHE_TTL.hour, tags: [CACHE_TAG.stats] }),
 }
 
 export const NO_STORE = { cache: "no-store" } as const

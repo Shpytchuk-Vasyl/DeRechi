@@ -60,7 +60,7 @@ async function pageEntries(): Promise<MetadataRoute.Sitemap> {
 
   const documents: MetadataRoute.Sitemap = [paths.terms, paths.privacy].map((path) => ({
     url: absoluteUrl(routing.defaultLocale, path),
-    changeFrequency: "yearly",
+    changeFrequency: "monthly",
     priority: 0.2,
     alternates: alternates(path),
   }))
