@@ -1,7 +1,7 @@
 "use client"
 
 import { cx } from "class-variance-authority"
-import { House, Plus, School } from "lucide-react"
+import { House, Plus, Building2 } from "lucide-react"
 import { useTranslations } from "next-intl"
 import type { ReactElement } from "react"
 import { KIND_META } from "@/components/items/kind-meta"
@@ -29,7 +29,7 @@ export function MobileNav() {
   const reportKind = inFound ? "found" : "lost"
 
   const home: Tab = links.city
-    ? { href: links.city, label: t("myCity"), icon: <School />, active: pathname === links.city }
+    ? { href: links.city, label: t("myCity"), icon: <Building2 />, active: pathname === links.city }
     : { href: paths.home, label: t("home"), icon: <House />, active: pathname === paths.home }
 
   const tabs: Tab[] = [

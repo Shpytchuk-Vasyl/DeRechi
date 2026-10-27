@@ -435,7 +435,7 @@ of its kind answers `noindex, follow` and stays out of `pages.xml`, and the city
 listed while either kind has notices. On the city page and its lists the menu keeps to the city:
 `navLinks` (`src/components/layout/nav-links.ts`) points the header's Lost and Found and the bottom
 bar's tabs at `/{city}/lost` and `/{city}/found`, and adds "My city" (`nav.myCity`) at `/{city}`:
-the header shows it before Lost, the bottom bar puts it in place of Home, with the `School` icon
+the header shows it before Lost, the bottom bar puts it in place of Home, with the `Building2` icon
 instead of `House`. The city comes from the
 address alone (`cityInPath`), so a notice page or the report form shows the general menu, and the
 brand in the header always leads to `/`.
