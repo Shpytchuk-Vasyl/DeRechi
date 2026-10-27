@@ -54,7 +54,7 @@ export default function CityHint({ kind, city }: { kind: ItemKind; city?: string
   return (
     <aside
       aria-label={t("label")}
-      className="absolute z-20"
+      className="absolute z-40"
       style={{ left: visit.x, top: visit.y, width: ROAM_SIZE }}
     >
       <div

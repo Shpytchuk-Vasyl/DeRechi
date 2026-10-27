@@ -122,14 +122,14 @@ describe("mascot catches", () => {
 })
 
 describe("city hint", () => {
-  const week = 7 * 24 * 60 * 60_000
+  const hour = 60 * 60_000
 
-  it("shows to a new viewer and rests for a week once closed", () => {
+  it("shows to a new viewer and rests for an hour once closed", () => {
     expect(isCityHintPaused(0)).toBe(false)
     pauseCityHint(1_000)
 
-    expect(isCityHintPaused(1_000 + week - 1)).toBe(true)
-    expect(isCityHintPaused(1_000 + week)).toBe(false)
+    expect(isCityHintPaused(1_000 + hour - 1)).toBe(true)
+    expect(isCityHintPaused(1_000 + hour)).toBe(false)
   })
 
   it("shows again when the stored time is not a number", () => {

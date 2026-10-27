@@ -452,8 +452,10 @@ Vercel's guess from the IP address: `requestCity()` (`src/lib/geo.server.ts`) re
 radius. With a city she offers its list and "Near me", without one only "Near me", which runs the
 same `useNearMe` as the switch. An IP address is often wrong on mobile networks (the operator's
 gateway) and behind a VPN, so the city is only a suggestion and is never stored. Closing her, or
-taking either offer, rests her for a week (`pauseCityHint`, `derechi.city-hint` in `localStorage`);
-without storage she stays away. Locally and in e2e there are no such headers, so there is no city:
+taking either offer, rests her for an hour (`pauseCityHint`, `derechi.city-hint` in `localStorage`);
+without storage she stays away. She is `z-40`, above the sticky filters (`z-30`): she keeps the place
+where she appeared while the list scrolls, so her bubble slides up across the filters, and under
+them its buttons could not be pressed. Locally and in e2e there are no such headers, so there is no city:
 the e2e spec sets them with `setExtraHTTPHeaders`, as the country test does.
 
 Its JSON-LD is the home page's `WebSite` plus a `CollectionPage`

@@ -5,7 +5,7 @@ import { roundedCoordinate } from "../support/data"
 import type { Translator } from "../support/i18n"
 import { GEO_LATITUDE_HEADER, GEO_LONGITUDE_HEADER } from "../support/site"
 
-const WEEK_MS = 7 * 24 * 60 * 60_000
+const HOUR_MS = 60 * 60_000
 
 const APPEARS = { timeout: 10_000 }
 
@@ -82,7 +82,7 @@ test.describe("Znaida's hint on the lists", () => {
     await expect(hint(page, t)).toHaveCount(0)
   })
 
-  test("a closed hint rests for a week", async ({ page, go, t }) => {
+  test("a closed hint rests for an hour", async ({ page, go, t }) => {
     await go("/found")
     await scrollDown(page)
     await expect(hint(page, t)).toBeVisible(APPEARS)
@@ -97,11 +97,25 @@ test.describe("Znaida's hint on the lists", () => {
 
     await page.evaluate(
       (closedAt) => localStorage.setItem("derechi.city-hint", String(closedAt)),
-      Date.now() - WEEK_MS - 60_000,
+      Date.now() - HOUR_MS - 60_000,
     )
     await page.reload()
     await scrollDown(page)
     await expect(hint(page, t)).toBeVisible(APPEARS)
+  })
+
+  test("stays above the sticky filters when the list scrolls under it", async ({ page, go, t }) => {
+    await go("/found")
+    await scrollDown(page)
+    const close = hint(page, t).getByRole("button", { name: t("common.close"), exact: true })
+    await expect(close).toBeVisible(APPEARS)
+
+    const box = await close.boundingBox()
+    if (!box) throw new Error("e2e: the hint's close button has no box")
+    await page.evaluate((by) => window.scrollBy(0, by), box.y + box.height / 2 - 40)
+
+    await close.click()
+    await expect(hint(page, t)).toHaveCount(0)
   })
 
   test("there is no hint on a city's list or on a list already near you", async ({

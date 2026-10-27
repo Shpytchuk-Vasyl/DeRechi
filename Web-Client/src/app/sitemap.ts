@@ -32,7 +32,7 @@ function alternates(path: string) {
 function pageEntry(path: string): MetadataRoute.Sitemap[number] {
   return {
     url: absoluteUrl(routing.defaultLocale, path),
-    changeFrequency: path === "" ? "daily" : "hourly",
+    changeFrequency: "daily",
     priority: path === "" ? 1 : 0.8,
     alternates: alternates(path),
   }

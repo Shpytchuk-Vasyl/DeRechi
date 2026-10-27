@@ -115,7 +115,7 @@ export function recordMascotCatch(catches: number): { count: number; prize: bool
 
 const CITY_HINT_KEY = "derechi.city-hint"
 
-const CITY_HINT_PAUSE_MS = 7 * 24 * 60 * 60_000
+const CITY_HINT_PAUSE_MS = 60 * 60_000
 
 export function isCityHintPaused(now = Date.now()): boolean {
   const stored = read("local", CITY_HINT_KEY)
