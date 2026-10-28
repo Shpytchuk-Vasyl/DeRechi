@@ -65,8 +65,17 @@ docker compose up db-postgres
 # Чи видно Postgres з машини 2 (виконувати на машині 2; має надрукувати OK)
 timeout 3 bash -c '</dev/tcp/10.0.0.10/5432' && echo OK
 
-# Підключитися до бази з ПК (напр., з IDEA або локального Admin-API): тунель на localhost:5432
-ssh -N -L 5432:10.0.0.10:5432 derechi-api
+# Підключитися до бази з ПК (IDEA, pgAdmin, локальний Admin-API з POSTGRES_PORT=15432): тунель на localhost:15432.
+# Не 5432: його тримає локальний postgres з docker-compose.yml.
+ssh -N -L 15432:10.0.0.10:5432 derechi-api
+
+# pgAdmin з дев-compose (http://localhost:5050, профіль dev): Register → Server руками, не в servers.json
+# (він у git і читається лише при першому старті pgAdmin; пароль збережеться в локальному volume pgadmindata).
+#   Host:                host.docker.internal   (pgAdmin у контейнері: localhost там — сам контейнер)
+#   Port:                15432
+#   Maintenance DB:      derechi (або keycloak)
+#   Username / Password: POSTGRES_USER / POSTGRES_PASSWORD з env.prod, не дев-pgpass
+# Це власник бази з повними правами: схему руками не міняти, її веде лише DB-Postgres.
 
 
 # ===== Caddy (машина 1) =====

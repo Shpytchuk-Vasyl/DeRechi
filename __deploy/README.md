@@ -440,7 +440,7 @@ df -h / && docker system df
 База (машина 1):
 ```bash
 docker compose exec postgres sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"'
-ssh -N -L 5432:10.0.0.10:5432 derechi-api           # з ПК: прод-база на localhost:5432
+ssh -N -L 15432:10.0.0.10:5432 derechi-api          # з ПК: прод-база на localhost:15432 (pgAdmin — 4-other.sh)
 ```
 
 Відновлення бекапу (спробувати заздалегідь, не в день аварії): скачати файл з B2 →
