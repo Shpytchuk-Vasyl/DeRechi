@@ -60,6 +60,8 @@ docker compose --env-file env.prod  -f docker-compose.yml -f docker-compose.serv
 
 The `x-jvm` limits exist so the whole stack fits on a laptop. They are **not** production settings; a real deployment sets `JAVA_OPTS` per service from the outside.
 
+The production compose gives every service its own `<SERVICE>_JAVA_OPTS` and `<SERVICE>_MEMORY` instead of the shared `x-jvm` and `SERVICE_MEMORY`. The JVM ceiling (heap plus metaspace and native memory) plus about 100m must fit inside the container limit. The services pass an explicit `-XX:+UseG1GC`: below 1792m of memory the JVM picks SerialGC on its own. Keycloak is the exception and stays on SerialGC, with `-XX:-UseG1GC` first in its options, because `kc.sh` adds G1 itself and the later `-XX:+UseSerialGC` has to override it.
+
 ## Dependencies and health
 
 Only the containers something waits for declare a `healthcheck`: PostgreSQL, RabbitMQ, MinIO and Mailpit; see the next section. Services use `depends_on` with `condition: service_healthy` for PostgreSQL and Mailpit, `service_completed_successfully` for `db-postgres` (Client-API, Admin-API and Worker: the schema must be migrated before they query it; `db-postgres` itself waits for PostgreSQL to be healthy), for `rabbitmq-init` (the queues must exist before a listener starts; it waits for RabbitMQ to be healthy itself) and for `minio-init` (Admin-API needs the bucket to exist). No service waits for another Spring service.

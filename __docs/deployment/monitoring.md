@@ -1,6 +1,6 @@
 # Monitoring
 
-Prometheus scrapes everything, Alertmanager mails the alerts, Grafana shows the metrics. The setup is intentionally small: static targets, four alert rules, one provisioned datasource. The architectural overview is in [observability](../architecture/observability.md).
+Prometheus scrapes everything, Alertmanager mails the alerts, Grafana shows the metrics. The setup is intentionally small: static targets, five alert rules, one provisioned datasource. The architectural overview is in [observability](../architecture/observability.md).
 
 ## Two Prometheus configurations
 
@@ -104,6 +104,17 @@ The item and claim handlers in Worker tolerate a redelivered event (`ItemMatchHa
 Provisioned from `docker/grafana/provisioning/datasources/prometheus.yml`: one datasource named `Prometheus` at `http://prometheus:9090`, default, editable. Sign-up is disabled; log in as `admin` / `admin` locally.
 
 No dashboards are provisioned from files. Import 4701 through the UI (Dashboards, New, Import, enter the id) and it is kept in the `grafanadata` volume. If a dashboard should survive `docker compose down -v`, export its JSON and add a `dashboards` provider under `docker/grafana/provisioning`.
+
+## Production metrics (Grafana Cloud)
+
+Production does not run the Prometheus above. Each machine runs a `prometheus-agent` container instead: Prometheus with `--agent`, which scrapes the local services and pushes the samples with `remote_write` to Grafana Cloud (`GRAFANA_CLOUD_PROM_URL`, `GRAFANA_CLOUD_PROM_USER`, `GRAFANA_CLOUD_TOKEN`). The config is rendered at container start by the same `awk` substitution as Alertmanager's, from one of two templates, because the services are split over two machines:
+
+| Template | Machine | Targets |
+|---|---|---|
+| `docker/prometheus/prometheus-agent-api.yml.tmpl` | API | `Client-API`, `Admin-API` |
+| `docker/prometheus/prometheus-agent-worker.yml.tmpl` | worker | `Worker`, `Notification`, `Ingest` |
+
+One agent per machine. The agent has no rules and no alerts (alerting stays with the dev/full-mode Prometheus and Alertmanager), and it scrapes every 60 s instead of 15 s: the free tier counts one data point per series per minute, so a faster scrape only costs more. A `metric_relabel_configs` rule also drops the high-cardinality `spring_data_repository_invocations_*`, `graphql_datafetcher_*`, `*_active_seconds_*` and `tomcat_sessions_*` series. A new service goes into the template of the machine it runs on, with its management port.
 
 ## Checking that scraping works
 

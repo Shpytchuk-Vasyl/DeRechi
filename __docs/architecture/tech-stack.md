@@ -73,7 +73,7 @@ Gateway's server is WebFlux-based.
 | optimaize `language-detector` 0.6 | `Client-API`, `Admin-API` | detects the language of a notice's title and description when it is written; search, matching and SEO read the stored code |
 | ShedLock 7.10.1 (`shedlock-spring`, `shedlock-provider-jdbc-template`) | `Worker` | one instance at a time runs a scheduled job, through the `shedlock` table |
 | NotifyHub 1.1.0 (`notify-spring-boot-starter`, `notify-email`, `notify-telegram` managed) | `Notification` | one API over email / SMS / messengers |
-| Lombok | `Admin-API`, `Client-API`, `Worker` | entities and forms only; see [../conventions/java-code-style.md](../conventions/java-code-style.md) |
+| Lombok | `Admin-API`, `Client-API`, `Worker`, `Ingest` | entities and forms only; see [../conventions/java-code-style.md](../conventions/java-code-style.md) |
 | Testcontainers (PostgreSQL module) | `Client-API`, `Admin-API` | integration tests against real PostGIS |
 | Micrometer Prometheus registry | all | `/actuator/prometheus` |
 

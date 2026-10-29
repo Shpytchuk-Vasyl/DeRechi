@@ -48,6 +48,8 @@ Resolution order, identical in `Client-API` (`ItemService.currencyFor`) and `Adm
 2. otherwise the currency of the place's country;
 3. either way the result must be one of `currencies()`, else `Unsupported currency: XXX` (`BAD_REQUEST`) or the field error `validation.currency`.
 
+**Asking for it.** The site and the admin form both ask with a select "None / By agreement / Amount" (`rewardKind` in the site form, `form/RewardKind` in `Admin-API`: `NONE` is `null`, `NEGOTIABLE` is `0`, `AMOUNT` is the typed sum); the amount field shows only for "Amount". Wherever a `0` is displayed (the badge on a card and the notice page, the tag in the admin panel, the `Ingest` caption) it reads just "Reward", with no amount: longer text does not fit a small card. The `Money` the model returns carries `amount: 0` for a notice with a reward but no sum. Zeros entered before this distinction existed are read as "by agreement" too (decided).
+
 There is **no conversion**. An amount is shown in the currency it was declared in; `Formats.money` only localises digits and the symbol.
 
 GraphQL surface:
@@ -69,7 +71,7 @@ Hibernate's schema validation (`ddl-auto: validate` in `DB-Postgres` and in test
 
 ## Modules not involved
 
-`Worker` and `Notification` read neither the amount nor the country. Matching is by category, date and distance, and the notification body does not mention the reward.
+`Worker` and `Notification` read neither the amount nor the country. Matching is by category, date and distance, and the notification body does not mention the reward. `Worker` still maps `Thing.compensation` and `currency`, only because it copies the notice into the history table when it archives a claimed one.
 
 ## Where to look
 

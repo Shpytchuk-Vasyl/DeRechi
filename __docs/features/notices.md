@@ -76,7 +76,7 @@ GraphQL returns it as `language` on `LostItem` and `FoundItem`.
 
 `ItemEventAspect` wraps every `ItemService.create(..)` with `@AfterReturning` and publishes an `ItemCreatedEvent` (`id`, `date`, `category`, `lat`, `lon`, `title`, `language`, and for the Telegram channel `categoryKey`, `placeName`, `description`, `compensation`, `currency`, `image`) to the `notice.status.exchange` exchange. The routing key is `notice.lost.created` or `notice.found.created`: the aspect binds the service that ran (`target(service)`) and asks its `kind()`, an `ItemKind`, for `noticeKey("created")`. `Worker` consumes it, see [Automatic matching](automatic-matching.md), and so does `Ingest`, which posts the notice to our Telegram channel, see [Telegram import](telegram-ingest.md#notices-from-the-site).
 
-The aspect has `@Order(0)`, so it sits outside the transaction interceptor and fires only after the insert has committed; a failing `create` publishes nothing (`ItemEventAspectTest.doesNotPublishWhenCreateThrows`). The flip side: if RabbitMQ is unreachable at that moment the row is already committed but the publish throws and the mutation returns an error. There is no outbox, so such a notice simply never gets matched.
+The aspect has `@Order(0)`, so it sits outside the transaction interceptor and fires only after the insert has committed; a failing `create` publishes nothing (`ItemEventAspectTest.doesNotPublishWhenCreateThrows`). If RabbitMQ is unreachable at that moment, `EventPublisher` puts the event into its in-memory buffer and the mutation still succeeds; the event goes out once the connection is back. A restart of the instance loses the buffer, and then such a notice is never matched: there is no outbox (see [Messaging](../architecture/messaging.md)).
 
 A notice lives 30 days from its `date`, the day the thing was lost or found, not the day it was posted. After that `Worker` archives it whether it has claims or not (`ClaimFollowUpJob`, step "archive of stale item", `derechi.archive.max-age: P30D`, days in UTC, `date` strictly before today minus 30 days): a notice dated 1 September is still listed on 1 October and goes on the first run of 2 October. Since `Client-API` accepts a `date` up to 30 days back, a notice posted with an old date is listed for only the days it has left. Claims archive it earlier, see [Claims](claims.md).
 
@@ -88,6 +88,8 @@ A notice lives 30 days from its `date`, the day the thing was lost or found, not
 |---|---|---|
 | `returnedThisWeek` | rows in `found_item_history` by `archived_at` | the last 7 days, today included, from midnight UTC; a rolling window, so the figure does not drop to zero every Monday |
 | `foundToday` | rows in `found_item` by `date` | today in UTC |
+
+The figures are approximate. History also receives notices archived automatically without a confirmed return (a week after a claim, 30 days after `date`), and `date` is the day the item was found, not the time it was posted (there is no `created_at`).
 
 The Web-Client caches the answer for an hour under the `stats` tag and drops the tag when a found notice is posted; it hides a figure that is zero.
 

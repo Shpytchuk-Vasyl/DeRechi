@@ -36,11 +36,11 @@ public class MatchService { private final LostItemRepository lostItemRepository;
 
 Do not put `@Data`, `@Builder` or `@Value` on anything. `@Data` generates `equals`/`hashCode` over all fields, which is wrong for entities and unnecessary for records.
 
-Lombok is declared with `provided` + `optional` scope and listed in `annotationProcessorPaths` only in `Admin-API`, `Client-API` and `Worker`. Modules without Lombok (`Notification`, `Getaway`) stay without it.
+Lombok is declared with `provided` + `optional` scope and listed in `annotationProcessorPaths` only in `Admin-API`, `Client-API`, `Worker` and `Ingest`. Modules without Lombok (`Notification`, `Getaway`) stay without it.
 
 ## Logging
 
-The preferred way is Lombok's `@Slf4j` on the class, in every module that has Lombok (`Admin-API`, `Client-API`, `Worker`):
+The preferred way is Lombok's `@Slf4j` on the class, in every module that has Lombok (`Admin-API`, `Client-API`, `Worker`, `Ingest`):
 
 ```java
 @Service

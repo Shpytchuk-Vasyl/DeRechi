@@ -39,7 +39,8 @@ description; the reviewer ticks the items they verified, the author ticks the re
 - [ ] If a procedure changed, the checklist in [extending/](../extending/README.md) is updated.
 - [ ] The module page under `architecture/modules/` is updated if the module's responsibilities,
       ports, queues or configuration changed.
-- [ ] `.claude/CLAUDE.md` is updated if a rule or gotcha changed.
+- [ ] `.claude/CLAUDE.md` is updated if a rule for every task changed or a doc page was added or
+      moved (details go to `__docs`, not there).
 - [ ] Impact on the `Web-Client` (schema change, files route, cookie) is written in the PR and
       communicated to whoever maintains it.
 

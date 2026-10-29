@@ -38,7 +38,7 @@ NotifyHub's own SMS channel is Twilio-only, so SMS goes through `channel/SmsFlyC
   `text/html` would otherwise fail every send.
 - Configuration: `derechi.sms-fly.*` (`SmsFlyProperties`): `api-key`, `api-url`, `source` (the
   approved alpha-name), `ttl` (1m to 24h, sent in minutes), timeouts. `SmsFlyConfig` registers the
-  channel only for a **non-blank** key, so unlike NotifyHub's channels an empty `SMS_FLY_API_KEY`
+  channel (condition `SmsFlyConfig.ApiKeyPresent`) only for a **non-blank** key, so unlike NotifyHub's channels an empty `SMS_FLY_API_KEY`
   simply switches SMS off and the sender skips it with a warning.
 - Failures: `success: 0` (`INVSOURCE`, `INVRECIPIENT`, ...), an SMS status other than `ACCEPTD`
   (`INSUFFICIENTFUNDS`, ...), an HTTP error or a timeout throw `NotificationSendException`, so the
@@ -50,7 +50,7 @@ NotifyHub's own SMS channel is Twilio-only, so SMS goes through `channel/SmsFlyC
   So SMS does not get the email text: the route sends the event's `smsMessage`, and only falls back
   to `message` when a producer sent none. `Worker` keeps the claim SMS in one segment (the item and
   the phone, nothing else) and the reminders in two, because the confirm link alone is 67
-  characters; `Admin-API` keeps the match SMS in one. Latin texts use straight quotes, so a Latin
+  characters; `Admin-API` keeps the match SMS in one. No `DeRechi:` prefix in any `*.sms` or `*.subject` text: the sender is already visible (the approved alpha-name `SMS_FLY_SOURCE` for SMS, `from-name: DeRechi` for mail), and in an SMS the prefix only ate segment characters. Latin texts use straight quotes, so a Latin
   title stays in GSM-7 (160 per segment).
 
 A channel is enabled by the **presence** of its key under `notify.channels.*`: `email` by

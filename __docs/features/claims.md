@@ -213,8 +213,8 @@ Unchanged contract, two fixes that this feature needed:
   `<recipient>:<CHANNEL>`, so two different claims reaching the same author within an hour both go
   out, while a replay of the same event is still dropped;
 - a channel that is not configured under `notify.channels.*` is skipped with a warning instead of
-  failing the message. Every claim notification carries a phone, and SMS has no provider yet;
-  before the fix such a message would have gone to the DLQ after the email was already sent.
+  failing the message. Every claim notification carries a phone, and without `SMS_FLY_API_KEY` the SMS
+  channel is off; before the fix such a message would have gone to the DLQ after the email was already sent.
 
 ### Admin-API
 
@@ -383,9 +383,7 @@ check details before meeting.
   the log.
 - Product creation is capped at 5 a minute per shop; the dialog asks to try again, there is no
   queue or pool of ready products yet.
-- SMS has no provider, so until it has one the author's phone number reaches the responder by email only.
 
-- SMS is still not wired in `Notification` (no provider); authors get email only until it is.
 - Messengers are only listed as text in the message; nothing is sent through them.
 - The author cannot see the responses anywhere except the messages; there is no "my notice" page.
 - The web client's detail page is cached for six hours, so an archived notice can stay visible

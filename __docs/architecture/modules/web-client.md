@@ -96,7 +96,7 @@ How search engines see the site; the details are in the "Search" section of `Web
   short scroll, peeks over the top of a card the way she roams the home page (the same
   `useRoaming`, loaded lazily), and from a speech bubble above her head offers the list of the city Vercel guesses from the IP address
   (`x-vercel-ip-latitude`/`-longitude` through `nearestCity`, a suggestion only, never stored)
-  and "Near me"; closed, she rests for a week.
+  and "Near me"; closed, she rests for an hour (`derechi.city-hint` in `localStorage`, `z-40` above the sticky filters).
   The home page links the cities from a static map of Ukraine (Natural Earth outline in Ukraine's
   point of view, Crimea included), a notice page links the city its coordinates fall into, and that city is added after the place in the
   notice's `<title>` ("Привокзальний ринок, Львів"). A city without live notices answers `noindex` and is left out of the sitemap.
@@ -115,6 +115,14 @@ How search engines see the site; the details are in the "Search" section of `Web
   date), drawn with Nunito loaded from Google Fonts; the other pages share one card per locale.
   The notice card goes out as JPEG (the PNG from `ImageResponse` re-encoded with `sharp`), cached
   for an hour: as PNG a card with a photo weighed ~600 KB, and every crawler hit was a new render.
+
+## Pitfalls
+
+- **JSON-LD only through `jsonLd()`** from `src/lib/seo.ts`, never `JSON.stringify` inside `dangerouslySetInnerHTML`: `JSON.stringify` does not escape `<`, so a notice titled `</script><script>...` would run on its own page.
+- **`t.raw` throws.** Messages are precompiled, so an array in a bundle cannot be read whole; read it element by element with a loop on `t.has("key.0")`, `t.has("key.1")`, ... as `searchExamples` does in `hero-search.tsx`.
+- **Server errors are logged, client errors are not.** `src/instrumentation.ts` (`onRequestError`) writes every error of a component, server action or route handler as one JSON line, without headers or query, so it shows in the hosting logs. Browser errors are not collected (decided).
+- **Vercel Analytics and Speed Insights** live in `SiteAnalytics` and load only when `process.env.VERCEL` is set, so neither runs locally or in e2e.
+- **A new city** is a registry entry in `src/lib/cities.ts` plus `city.<slug>` in all five bundles.
 
 ## Feature flags
 

@@ -9,6 +9,8 @@ contacts go to the author, and the author decides whom to call back.
 How the whole flow works (Client-API, Worker, Fourthwall settings, storage) is still described
 in [Claims](claims.md#getting-the-authors-phone-number-paid-through-fourthwall).
 
+For users the feature does not exist: do not offer it in texts, and do not build new decisions on it. The back end stays on purpose, as a way back, not as a product.
+
 ## What is still there
 
 Nothing on the back end changed, so the feature comes back by restoring the web client only.

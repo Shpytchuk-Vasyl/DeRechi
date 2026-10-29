@@ -63,6 +63,8 @@ Read [Maven reactor](../architecture/maven-reactor.md), [Maven and modules](../c
    - `docker/prometheus/prometheus.yml`: `host.docker.internal:9086`, `labels: { application: Report-Export }`
    - `docker/prometheus/prometheus-full.yml`: `report-export:9086` (the compose service name), same label
 
+   Production scrapes through a `prometheus-agent` per machine: add the target, with the same port and label, to the template of the machine the service runs on, `docker/prometheus/prometheus-agent-api.yml.tmpl` (`Client-API`, `Admin-API`) or `prometheus-agent-worker.yml.tmpl` (`Worker`, `Notification`, `Ingest`); see [monitoring](../deployment/monitoring.md#production-metrics-grafana-cloud).
+
 10. **Public route, if it serves HTTP to the outside.** The API entry is [Caddy](../deployment/infrastructure.md#caddy-api-entry) for now, so the route goes into `docker/caddy/api.Caddyfile`, above the final `handle { respond 404 }`: a named `path` matcher and a `handle` with `reverse_proxy {$REPORT_EXPORT_URI:http://report-export:8086}`. Pass the variable to the `caddy` service: `http://host.docker.internal:8086` in `docker-compose.yml` (the module runs in IDEA), `${REPORT_EXPORT_URI:-http://report-export:8086}` in the `caddy` override of `docker-compose.services.yml`; the production Caddy needs it in its environment too. Add it to the env files and [environment-variables](../deployment/environment-variables.md).
 
 11. **Context test.** `src/test/java/.../ReportExportApplicationTests.java` with `@SpringBootTest` and an empty `contextLoads()`; if the module needs the database, extend it with the Testcontainers base from `Client-API` (`AbstractPostgresTests`) rather than pointing tests at a local server.
@@ -89,7 +91,7 @@ Only if the module exposes something through Caddy that the web client should ca
 - [ ] `ddl-auto: none`, no Liquibase, entity copies if it uses the database
 - [ ] `COPY` line in `Dockerfile`
 - [ ] Service block in `docker-compose.services.yml`, management port not published
-- [ ] Target in both Prometheus configs on the management port, with the `application` label
+- [ ] Target in both Prometheus configs and in the right `prometheus-agent-*.yml.tmpl` on the management port, with the `application` label
 - [ ] Caddy route in `docker/caddy/api.Caddyfile` with its own `*_URI` variable if it serves HTTP
 - [ ] `*ApplicationTests` passes
 - [ ] `./mvnw test-compile` and `docker compose -f docker-compose.yml -f docker-compose.services.yml build` succeed

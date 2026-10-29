@@ -35,7 +35,8 @@ keep. Go through it every time:
       entities and forms, `@Slf4j` where the module has Lombok, versions only in the root `pom.xml`, blocking code with
       virtual threads rather than WebFlux.
 - [ ] Documentation is updated: the feature page in `features/`, the checklist in `extending/`
-      if a procedure changed, the module page, and `.claude/CLAUDE.md` if a rule changed.
+      if a procedure changed, the module page, and `.claude/CLAUDE.md` if a rule for every task
+      changed or a doc page was added or moved.
 - [ ] Impact on the `Web-Client` is called out in the PR description when the GraphQL schema
       or the files route changed.
 

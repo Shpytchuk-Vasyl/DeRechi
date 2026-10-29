@@ -13,7 +13,7 @@ Imports lost-and-found notices from outside sources and publishes them. The sour
 
 ## Packages
 
-One package per stage. The root of a stage package is what the pipeline sees: the interface and its records. The implementation that knows an outside service sits one level down, named after that service (`source/telegram/`, `extraction/openrouter/`, `place/google/`); another provider is another subpackage next to it. `config/`, `entity/`, `repository/` and `exception/` stay at the top, as in the other modules; `config/` keeps only what the whole module uses (`IngestConfig`, `IngestProperties`) and has a subpackage per stage for the rest. Tests mirror the main packages.
+One package per stage. The root of a stage package is what the pipeline sees: the interface and its records. The implementation that knows an outside service sits one level down, named after that service (`source/telegram/`, `extraction/openrouter/`, `place/google/`); another provider is another subpackage next to it. `config/`, `entity/`, `repository/` and `exception/` stay at the top, as in the other modules; `config/` keeps only what the whole module uses (`IngestConfig`, `IngestProperties`) and has a subpackage per stage for the rest. A package is never named after a technology (`api`, `llm`, `geo`), only after the stage or the service. Tests mirror the main packages.
 
 | Package | Classes |
 |---|---|
@@ -22,19 +22,19 @@ One package per stage. The root of a stage package is what the pipeline sees: th
 | `source/facebook/` | `FacebookPostSource` (the `PostSource` named `facebook`, polls the groups), `FacebookGroupReader` (the group page, then the feed query page by page), `FacebookParser`, `FacebookClient` (the account's cookies), `FacebookDetails` / `FacebookActor` (the post's author) |
 | `phone/` | `PhoneExtractor`, `Masker`, `PhoneHasher` |
 | `image/` | `ImageRedactor`, `RedactedImage` (the JPEG, the mode and the OCR lines kept for the owner's name), `RedactionMode`, `Rotations` (quarter turns) |
-| `image/redaction/` | `DefaultImageRedactor` (what to blur), `DocumentDetector`, `Blur`, `PhotoText` (the OCR lines that may go to the model: words only, no digits, handles or links) |
+| `image/redaction/` | `DefaultImageRedactor` (what to blur; `redactOnPhotoEvidence` redoes a photo from the original on the photo's own evidence only, keywords or an MRZ line, once the model says the category is not `DOCUMENTS`), `DocumentDetector`, `Blur`, `PhotoText` (the OCR lines that may go to the model: words only, no digits, handles or links; covered by `PhotoTextTest`) |
 | `image/ocr/` | `OcrEngine`, `OcrPage` (lines plus the quarter turns that put the photo upright), `OcrLine`, `TesseractOcrEngine` |
 | `image/face/` | `FaceDetector`, `YuNetFaceDetector` |
 | `extraction/` | `Extractor`, `ExtractionRequest`, `Extraction` (the model's answer), `ExtractionResult`, `ExtractionPolicy` (is the answer a usable notice, which phone to take), `OwnerNameFinder` with `OwnerNameRequest`, `OwnerName`, `OwnerNameResult` (the second call that reads the owner's name off a document's OCR lines), `PromptBuilder` (`prompts/extract.md`, `prompts/extraction-schema.json`, `prompts/owner-name.md`, `prompts/owner-name-schema.json`) |
 | `extraction/openrouter/` | `OpenRouterClient` (one strict-schema completion: model, fallback, retries, the daily budget), `OpenRouterExtractor`, `OpenRouterOwnerNameFinder`, `CompletionRequest`, `DailyCallCounter` |
 | `place/` | `PlaceResolver`, `ResolvedPlace` |
-| `place/google/` | `GoogleLegacyPlaceResolver` (`GOOGLE_PLACES_API=LEGACY`, default) or `GooglePlaceResolver` (`NEW`), both on `TextSearchPlaceResolver` |
+| `place/google/` | `GoogleLegacyPlaceResolver` (`GOOGLE_PLACES_API=LEGACY`, default) or `GooglePlaceResolver` (`NEW`), both on `TextSearchPlaceResolver` (`withoutRegion` cuts the country, region and postal code off Google's address) |
 | `pipeline/` | `IngestQueue`, `IngestPipeline`, `PostLedger`, `IngestMetrics`, `Notice`, `Notices` |
 | `publish/` | `Publisher`, `Publishers` (runs the list of `INGEST_PUBLISHERS`), `Publication`, `SiteItem` |
 | `publish/site/` | `SitePublisher` (`site`), `ImageUploader` / `S3ImageUploader` (MinIO) |
-| `publish/telegram/` | `ChannelPoster` (`channel`; `postFromSite`, `edit` and `delete` for one notice), `ChannelMirror` (notices from the site), `StoredPhotos` (a photo from the bucket by key, also the placeholder), `BotApiClient`, `CaptionBuilder`, `ChannelPost` |
+| `publish/telegram/` | `ChannelPoster` (`channel`; `postFromSite`, `edit` and `delete` for one notice; `edit` throws `MessageNotEditableException` when Telegram answers 400 for anything but "message is not modified", and `ChannelMirror` then deletes the post and posts again), `ChannelMirror` (notices from the site), `StoredPhotos` (a photo from the bucket by key, also the placeholder), `BotApiClient`, `CaptionBuilder`, `ChannelPost` |
 | `event/` | `NoticeEventListener` (`ingest.queue`), `ItemEvent` (what `ItemCreatedEvent` and `ItemUpdatedEvent` share for a channel post), `ItemCreatedEvent`, `ItemUpdatedEvent`, `ItemArchivedEvent`, `ItemDeletedEvent`, `EventType`, `EventTypeScanner`: copied per module like in the other consumers |
-| `client/` | `DeRechiApi` / `GraphQlDeRechiApi` and `NewItem`: Client-API, used by the pipeline (categories, countries) and by `site`; `HttpCalls` for every HTTP client |
+| `client/` | `DeRechiApi` / `GraphQlDeRechiApi` and `NewItem`: Client-API, used by the pipeline (categories, countries) and by `site`; `HttpCalls` for every HTTP client (`HttpCalls.notDelivered` is true for 429, 502, 503 and for a refused or timed-out connection, the failures that make a stage "unavailable" and postponable rather than `FAILED`; `OpenRouterUnavailableException` uses it after the retries) |
 | `model/` | `ItemKind`, `Money`, `SocialMedia`, `Outcome`: the values shared by the model's answer, the notice, the ledger, the publishers and the metrics |
 
 ## Sources
@@ -68,6 +68,10 @@ A new source (a website, say) is one `@Component` implementing `PostSource` with
 Each publisher turns the `Notice` into its own format (`SitePublisher` into Client-API's `NewItem`, `ChannelPost.of` into a channel post), so the pipeline knows none of them. A notice without a photo but with `placeholderPhoto` (a found document or wallet, `INGEST_PLACEHOLDER_*`) is created with that storage key as its image, and `channel` loads the picture from the bucket for the post.
 
 A new publisher (a Viber group, say) is one `@Component` implementing `Publisher` with its own name, in its own subpackage of `publish/`; adding the name to `INGEST_PUBLISHERS` turns it on. An unknown name fails the start.
+
+## Evaluating redaction
+
+`tests/redaction/run.sh` runs the real OCR, face detector and blur over every photo in `tests/redaction/input/` and writes `tests/reports/redaction/index.html`: the original, what was detected, what would be published (`--languages`, default `ukr+eng`). The photos are real and stay local, not in git. Use it to judge changes to the blur on live photos; the unit tests only check the mechanics.
 
 ## Build and image
 

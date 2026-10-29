@@ -97,6 +97,14 @@ and the exchange from `event/Exchanges`. The reason it is an aspect rather than 
 service is that the event must not be published when the transaction fails, and the advice
 runs only on a normal return.
 
+`Client-API` sends events only through `EventPublisher`, never through `RabbitTemplate` directly. If
+RabbitMQ is down, the event goes into an **in-memory** buffer (`derechi.events.*`: `buffer-capacity`,
+`batch-size`, `flush-interval`) and the user's request does not fail. While the buffer is not empty, new
+events join the same queue, so order is kept. A scheduled job checks the connection and flushes
+`batch-size` events per pass. A restart of the instance loses the buffer, and an event arriving at a full
+one is dropped with an `ERROR`; this is decided, there is no database outbox and none is planned. The size
+is the metric `derechi.events.pending`.
+
 ## One queue, several events
 
 `Worker` reads everything from `worker.queue` through one class, `WorkerQueueListener`:

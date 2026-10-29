@@ -49,8 +49,8 @@ see [observability.md](observability.md)) true without each pom saying so.
 
 **Plugins.** `<pluginManagement>` configures three plugins:
 
-- `spring-boot-maven-plugin`, with no executions bound. Modules that are services bind it
-  themselves; `DB-Postgres` does not (see below).
+- `spring-boot-maven-plugin`, with no executions bound. Every module, `DB-Postgres` included,
+  declares it in its own `<plugins>`, which binds `repackage` to `package` under the Boot parent.
 - `liquibase-maven-plugin` at `${liquibase.version}`.
 - `maven-compiler-plugin` with `<release>${java.version}</release>` and
   `<parameters>true</parameters>`.
@@ -66,18 +66,20 @@ generates them and we delete them.
 
 ## Lombok
 
-`Admin-API`, `Client-API` and `Worker` declare Lombok as `provided` + `optional`
+`Admin-API`, `Client-API`, `Worker` and `Ingest` declare Lombok as `provided` + `optional`
 and add it to `annotationProcessorPaths` in their own `maven-compiler-plugin` block, which
 otherwise inherits the root configuration. The other modules do not use Lombok at all.
 Where it is used is a convention question, covered in
 [../conventions/java-code-style.md](../conventions/java-code-style.md).
 
-## DB-Postgres is a thin jar
+## DB-Postgres is a fat jar nobody depends on
 
-`DB-Postgres` does not bind `spring-boot-maven-plugin` to `package`. Nobody depends on it, so
-a fat jar would be dead weight, and `repackage` would move the classes under
-`BOOT-INF/classes/` where a dependent module could not see them anyway. `spring-boot:run`
-still works because the goal is invoked directly and picks up the root plugin management.
+`DB-Postgres` declares `spring-boot-maven-plugin` in `<plugins>` like the services, so
+`package` produces a fat jar: the root `Dockerfile` turns it into the `db-postgres` image
+(a one-shot container that migrates and exits). Nobody depends on it and nobody can:
+`repackage` moves the classes under `BOOT-INF/classes/`, where a dependent module would not
+see them. Its entities exist only to diff migrations against, so what it shares is a schema,
+not classes.
 
 It also has an extra `<resource>` that copies `changelog/` (a directory at the module root,
 not under `src/`) to `target/classes/changelog`. The Liquibase plugin reads the same files

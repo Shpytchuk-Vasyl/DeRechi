@@ -56,7 +56,7 @@ the path as the tool saw it. Two tools read this changelog:
   works because `pom.xml` has a second `<resource>` copying `changelog/` to
   `target/classes/changelog`.
 
-Both resolve to `changelog/...`, so a migration applied by one is recognised as applied by
+Because of `searchPath` the plugin reads `changelog/` straight from the module directory, so `process-resources` is not needed before a goal. Both resolve to `changelog/...`, so a migration applied by one is recognised as applied by
 the other. If either side ever saw `DB-Postgres/changelog/...` or
 `src/main/resources/changelog/...` instead, every changeset would look new and be applied a
 second time. The integration tests in `Client-API` and `Admin-API` point Liquibase at the

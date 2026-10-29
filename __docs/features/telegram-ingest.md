@@ -2,8 +2,6 @@
 
 The `Ingest` module reads the lost-and-found channels and groups our Telegram account follows, turns real notices into site notices and reposts them to our own channel. It also mirrors into the channel the notices created on the site and in the admin panel, and deletes a channel post once its notice is archived or deleted (see [Notices from the site](#notices-from-the-site)). Public Facebook groups are read too, through a logged-in account once an hour (see [Ingest](../architecture/modules/ingest.md#facebook)); from the phone step on, a Facebook post goes the same way. Notices created this way are ordinary notices: matching in `Worker` and claims work for them unchanged.
 
-The design and the decisions behind it are in [the spec](../specs/telegram-ingest.md) until the feature has run in production for a while; this page describes what the code does.
-
 ## The flow
 
 One post at a time, from an in-memory queue (`IngestQueue` → `IngestPipeline`):

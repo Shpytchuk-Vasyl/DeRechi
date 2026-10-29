@@ -114,7 +114,8 @@ Docs are part of the change, not a follow-up:
 - the checklist in `extending/` if a procedure gained or lost a step;
 - the module page under `architecture/modules/` if responsibilities, queues, ports or
   configuration changed;
-- `.claude/CLAUDE.md` if a rule or gotcha changed, so the condensed version stays in step.
+- `.claude/CLAUDE.md` only if a rule that applies to every task changed, or a page here was added
+  or moved. It holds those rules and a map of these docs; gotchas and details belong on the pages.
 
 ## 8. Commit and push
 

@@ -73,7 +73,7 @@ previous state of your entities.
 ```
 
 Compares the entities against the live database and writes the difference to
-`changelog/changes/003-delta.postgresql.sql` (configured as `diffChangeLogFile`). No shadow
+`changelog/changes/000-delta.postgresql.sql` (configured as `diffChangeLogFile`). No shadow
 database is involved.
 
 `changeSets count: 0` means the schema already matches the entities and nothing was written.
@@ -83,13 +83,13 @@ database is involved.
 **Read the generated file before applying it.** Liquibase gets several things in this project
 wrong – the list is below. Fix them by hand.
 
-Then rename `003-delta.postgresql.sql` to something meaningful:
+Then rename `000-delta.postgresql.sql` to the next free number and something meaningful:
 
 ```
-changelog/changes/003-add-thing-status.postgresql.sql
+changelog/changes/017-add-thing-status.postgresql.sql
 ```
 
-`003-delta` is just "the next free number". If you leave the name as is, the next diff appends
+`000-delta` is only a fixed scratch name. If you leave the name as is, the next diff appends
 its changesets to the end of that same file and two unrelated releases end up sharing one
 number.
 
@@ -153,8 +153,8 @@ through `psql` or pasted by hand. Before the first `up`, record every changeset 
 without running it:
 
 ```bash
-./mvnw -pl DB-Postgres process-resources liquibase:changelogSyncSQL   # dry run: prints the INSERTs
-./mvnw -pl DB-Postgres process-resources liquibase:changelogSync
+./mvnw -pl DB-Postgres liquibase:changelogSyncSQL   # dry run: prints the INSERTs
+./mvnw -pl DB-Postgres liquibase:changelogSync
 ```
 
 `changelogSync` does not check anything: it trusts that the schema already matches every
@@ -210,12 +210,8 @@ Every goal below is run from the **reactor root**, and every one of them reads
 `liquibase.properties` through the `<propertyFile>` configured on the plugin, so the
 connection details never go on the command line.
 
-`process-resources` is what copies `changelog/` into `target/classes`. The plugin resolves
-changesets from there, not from the source tree, so run it whenever a changeset file changed:
-
-```bash
-./mvnw -pl DB-Postgres process-resources
-```
+The plugin reads `changelog/` straight from the module directory
+(`<searchPath>${project.basedir}</searchPath>`), so no `process-resources` is needed before a goal.
 
 ### Applying
 

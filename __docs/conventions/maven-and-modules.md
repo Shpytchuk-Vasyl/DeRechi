@@ -68,7 +68,7 @@ A nested `.gitignore` would silently change what is tracked under that module, a
 
 ## Packaging
 
-Every service module declares `spring-boot-maven-plugin` in its `<build>`; under `spring-boot-starter-parent` that alone binds `repackage`, so `./mvnw package` produces the fat jar the `Dockerfile` copies. `DB-Postgres` does **not**: it is a library that nobody depends on, and `repackage` would hide its classes under `BOOT-INF/classes/`. `spring-boot:run` still works there because the plugin is configured in root `pluginManagement`.
+Every module declares `spring-boot-maven-plugin` in its `<build>`; under `spring-boot-starter-parent` that alone binds `repackage`, so `./mvnw package` produces the fat jar the `Dockerfile` copies. That includes `DB-Postgres`: its jar becomes the `db-postgres` migration image. Nobody depends on it, and nobody can, because `repackage` hides its classes under `BOOT-INF/classes/`.
 
 Service modules never depend on each other: shared entities are copied into each module, not imported.
 
