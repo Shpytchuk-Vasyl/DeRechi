@@ -1,9 +1,10 @@
 import { CalendarDays, MapPin } from "lucide-react"
-import { useFormatter, useLocale, useTranslations } from "next-intl"
+import { useFormatter, useTranslations } from "next-intl"
 import type { ReactNode } from "react"
 import type { ItemKind, ItemSummary } from "@/api/items"
 import { ItemPhoto } from "@/components/items/item-photo"
 import { MetaRow } from "@/components/items/meta-row"
+import { NoticeDate } from "@/components/items/notice-date"
 import { Card } from "@/components/pouf/card"
 import { Badge } from "@/components/pouf/media"
 import { Skeleton } from "@/components/pouf/skeleton"
@@ -11,11 +12,9 @@ import { Heading } from "@/components/pouf/text"
 import { Link } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
 import type { Money } from "@/lib/intl/country"
-import { formatNoticeDate, fromIsoDate, todayIso, toIsoDate } from "@/lib/intl/dates"
+import { fromIsoDate, toIsoDate } from "@/lib/intl/dates"
 import { formatMoney } from "@/lib/intl/money"
 import { Stack } from "../pouf/layout"
-
-const RELATIVE_DAYS = 7
 
 type Props = {
   item: ItemSummary
@@ -57,18 +56,7 @@ type NoticeCardProps = {
 export function NoticeCard({ title, place, date, compensation, media }: NoticeCardProps) {
   const t = useTranslations()
   const format = useFormatter()
-  const locale = useLocale()
-
-  let when: string | null = null
   const day = fromIsoDate(date)
-  if (day) {
-    const today = fromIsoDate(todayIso()) ?? new Date()
-    const days = Math.round((today.getTime() - day.getTime()) / 86_400_000)
-    when =
-      days <= RELATIVE_DAYS
-        ? new Intl.RelativeTimeFormat(locale, { numeric: "auto" }).format(-days, "day")
-        : formatNoticeDate(format, day, today)
-  }
 
   return (
     <Card variant="flush" motion="lift" data-mascot-spot>
@@ -94,9 +82,9 @@ export function NoticeCard({ title, place, date, compensation, media }: NoticeCa
         <MetaRow icon={<MapPin />} truncate>
           {place}
         </MetaRow>
-        {day && when ? (
+        {day ? (
           <MetaRow icon={<CalendarDays />} faint>
-            <time dateTime={toIsoDate(day)}>{when}</time>
+            <NoticeDate isoDay={toIsoDate(day)} />
           </MetaRow>
         ) : null}
       </Stack>

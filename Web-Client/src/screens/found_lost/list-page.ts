@@ -79,7 +79,7 @@ export async function listMetadata(
     getTranslations({ locale, namespace: "list" }),
     getTranslations({ locale, namespace: "city" }),
     loadListPage(kind, raw, city?.slug),
-    city ? cityHasNotices(city, kind) : true,
+    city ? cityHasNotices(city, { kind }) : true,
   ])
 
   const base = city ? paths.cityList(city.slug, kind) : paths.list(kind)

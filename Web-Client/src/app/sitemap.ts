@@ -69,7 +69,9 @@ async function pageEntries(): Promise<MetadataRoute.Sitemap> {
     CITIES.map(async (city) => {
       const withNotices = (
         await Promise.all(
-          ITEM_KINDS.map(async (kind) => ((await cityHasNotices(city, kind)) ? kind : null)),
+          ITEM_KINDS.map(async (kind) =>
+            (await cityHasNotices(city, { kind, cache: CACHE.sitemapItems })) ? kind : null,
+          ),
         )
       ).filter((kind) => kind !== null)
       if (withNotices.length === 0) return []

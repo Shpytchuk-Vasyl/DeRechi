@@ -58,8 +58,9 @@ the code that enforces them.
 Every GraphQL read in `src/api/` is a `fetch` cached by Next, and all the numbers live in
 `src/lib/cache.ts`:
 
-- `CACHE_TTL`: `minute` (lists, place suggestions), `hour` (home page `stats`, the sitemap),
-  `sixHours` (one notice) and `day` (categories, countries, OG fonts).
+- `CACHE_TTL`: `minute` (lists, place suggestions), `fifteenMinutes` (the rails of the home and
+  city pages), `hour` (home page `stats`, the sitemap), `sixHours` (one notice) and `day`
+  (categories, countries, OG fonts, the guide rails).
   Pick the tier by how stale the data may get, not per call site.
 - `CACHE_TAG` and `CACHE`: the tag and the policy (`{ revalidate, tags }`) of each read,
   passed straight to `graphqlRequest`.
@@ -70,10 +71,18 @@ Every GraphQL read in `src/api/` is a `fetch` cached by Next, and all the number
 
 Two things Next does not make obvious. A fetch with a shorter `revalidate` shortens the whole
 route, which is why the sitemap reads the lists through `CACHE.sitemapItems` (an hour) and not
-`CACHE.items` (a minute). And route segment config such as `export const revalidate` has to be
-a literal, so `sitemap.ts` repeats `3600` with a comment instead of importing `CACHE_TTL.hour`.
-The hour bounds changes made outside the site (notices imported from Telegram, archiving in the
-admin panel and by Worker); posts through the site drop the `items:<kind>` tag at once.
+`CACHE.items` (a minute), and the prerendered pages read their rails the same way:
+`CACHE.homeItems` (15 minutes) on the home and city pages, the city's `cityHasNotices` in its
+metadata included, and `CACHE.guideItems` (a day) on the guides. And route segment config such as
+`export const revalidate` has to be a literal, so `sitemap.ts` repeats `3600` with a comment
+instead of importing `CACHE_TTL.hour`. These intervals bound changes made outside the site
+(notices imported from Telegram, archiving in the admin panel and by Worker); posts through the
+site drop the `items:<kind>` tag at once.
+
+Vercel bills an ISR write each time a regenerated page comes out different, at about 15 to 20
+write units per home, city or guide page, so the five locales of each multiply every change.
+Nothing in a prerendered page may depend on the clock: the card date ("yesterday", "2 days ago")
+is worked out in the browser by `NoticeDate`, the server renders the plain date.
 
 ## Tests
 

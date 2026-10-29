@@ -22,6 +22,7 @@ import {
 } from "@/content/guides"
 import { Link } from "@/i18n/navigation"
 import { paths } from "@/i18n/paths"
+import { CACHE } from "@/lib/cache"
 import { fromIsoDate } from "@/lib/intl/dates"
 import { readingMinutes } from "@/lib/reading-time"
 import { absoluteUrl, jsonLd, pageAlternates, SITE_URL } from "@/lib/seo"
@@ -168,6 +169,7 @@ export default async function GuidePage({ locale, slug }: Props) {
             title={doc.railTitle}
             seeAll={{ label: doc.ctaFound, query: foundInCategory }}
             empty={doc.railEmpty}
+            cache={CACHE.guideItems}
           />
         ) : null}
 

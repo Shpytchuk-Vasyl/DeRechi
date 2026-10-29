@@ -4,6 +4,7 @@ import type { ItemKind } from "@/lib/kinds"
 export const CACHE_TTL = {
   minute: 60,
   fiveMinutes: 300,
+  fifteenMinutes: 900,
   hour: 3600,
   sixHours: 21_600,
   day: 86_400,
@@ -23,6 +24,14 @@ export type CachePolicy = { revalidate: number; tags: string[] }
 export const CACHE = {
   items: (kind: ItemKind): CachePolicy => ({
     revalidate: CACHE_TTL.minute,
+    tags: [CACHE_TAG.items(kind)],
+  }),
+  homeItems: (kind: ItemKind): CachePolicy => ({
+    revalidate: CACHE_TTL.fifteenMinutes,
+    tags: [CACHE_TAG.items(kind)],
+  }),
+  guideItems: (kind: ItemKind): CachePolicy => ({
+    revalidate: CACHE_TTL.day,
     tags: [CACHE_TAG.items(kind)],
   }),
   sitemapItems: (kind: ItemKind): CachePolicy => ({

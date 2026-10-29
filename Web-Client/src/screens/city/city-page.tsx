@@ -5,6 +5,7 @@ import { cityHasNotices } from "@/api/cities"
 import { SectionArrival } from "@/components/effects/section-arrival"
 import { LazyMascotRoamer } from "@/components/mascot/lazy-mascot-roamer"
 import { paths } from "@/i18n/paths"
+import { CACHE } from "@/lib/cache"
 import { cityArea, cityBySlug } from "@/lib/cities"
 import { cityPageJsonLd, jsonLd, pageAlternates } from "@/lib/seo"
 import LostProperty from "@/screens/city/lost-property"
@@ -29,7 +30,9 @@ export async function cityMetadata(locale: string, slug: string): Promise<Metada
     title,
     description,
     alternates: pageAlternates(locale, paths.city(slug)),
-    ...((await cityHasNotices(city)) ? {} : { robots: { index: false, follow: true } }),
+    ...((await cityHasNotices(city, { cache: CACHE.homeItems }))
+      ? {}
+      : { robots: { index: false, follow: true } }),
     openGraph: { type: "website", title, description },
   }
 }

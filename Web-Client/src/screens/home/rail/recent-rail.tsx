@@ -7,6 +7,7 @@ import { ErrorNote } from "@/components/pouf/feedback"
 import { Row, Spacer, Stack } from "@/components/pouf/layout"
 import { Heading, Text } from "@/components/pouf/text"
 import type { NearInput } from "@/graphql/generated/graphql"
+import { CACHE, type CachePolicy } from "@/lib/cache"
 import SeeAllLink from "./see-all-link"
 
 const RAIL_SIZE = 5
@@ -18,9 +19,18 @@ type Props = {
   title?: string
   seeAll?: { label: string; pathname?: string; query?: Record<string, string> }
   empty?: string
+  cache?: (kind: ItemKind) => CachePolicy
 }
 
-export default async function RecentRail({ kind, near, categoryId, title, seeAll, empty }: Props) {
+export default async function RecentRail({
+  kind,
+  near,
+  categoryId,
+  title,
+  seeAll,
+  empty,
+  cache = CACHE.homeItems,
+}: Props) {
   const t = await getTranslations("home")
   const messages = KIND_META[kind].home
   const headingId = `recent-${kind}-heading`
@@ -38,11 +48,9 @@ export default async function RecentRail({ kind, near, categoryId, title, seeAll
           </SeeAllLink>
         </Row>
         <ErrorBoundary
-          fallback={
-            <ErrorNote className="self-center!">{t(messages.recentError)}</ErrorNote>
-          }
+          fallback={<ErrorNote className="self-center!">{t(messages.recentError)}</ErrorNote>}
         >
-          <RailItems kind={kind} near={near} categoryId={categoryId} empty={empty} />
+          <RailItems kind={kind} near={near} categoryId={categoryId} empty={empty} cache={cache} />
         </ErrorBoundary>
       </section>
     </Stack>
@@ -54,11 +62,16 @@ async function RailItems({
   near,
   categoryId,
   empty,
-}: Pick<Props, "kind" | "near" | "categoryId" | "empty">) {
-  const { items } = await fetchItems(kind, {
-    first: RAIL_SIZE,
-    ...(near || categoryId ? { filter: { near, categoryId } } : {}),
-  })
+  cache,
+}: Pick<Props, "kind" | "near" | "categoryId" | "empty"> & Required<Pick<Props, "cache">>) {
+  const { items } = await fetchItems(
+    kind,
+    {
+      first: RAIL_SIZE,
+      ...(near || categoryId ? { filter: { near, categoryId } } : {}),
+    },
+    cache(kind),
+  )
 
   if (items.length === 0) {
     return empty ? <Text muted>{empty}</Text> : null
