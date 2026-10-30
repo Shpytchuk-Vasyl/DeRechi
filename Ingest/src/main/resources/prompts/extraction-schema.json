@@ -12,7 +12,7 @@
     },
     "title": {
       "type": ["string", "null"],
-      "description": "at most 100 characters, in the language of the post, Ukrainian when the post is in Russian; for a document or another thing with its owner's name, that name: \"Знайдено Леокарту на ім'я Столяр Максим\""
+      "description": "at most 100 characters, in the language of the post, Ukrainian when the post is in Russian; for a document or another thing with its owner's name, that name: \"Знайдено Леокарту на ім'я Столяр Максим\"; for an animal, its breed when the post gives it or a photo clearly shows it: \"Загублено собаку породи хаскі\""
     },
     "description": {
       "type": ["string", "null"],

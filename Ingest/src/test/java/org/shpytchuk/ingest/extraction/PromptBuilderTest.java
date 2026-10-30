@@ -29,7 +29,8 @@ class PromptBuilderTest {
         assertThat(prompt)
                 .contains("untrusted", "isNotice", "contactPhoneRef", "postDate", "placeText", "rejectReason")
                 .contains("chatCity", "Google Maps", "маршрутка 25")
-                .contains("Леокарт", "вулиця Наукова та вулиця Кульпарківська");
+                .contains("Леокарт", "вулиця Наукова та вулиця Кульпарківська")
+                .contains("breed", "Знайдено собаку породи хаскі");
     }
 
     @Test

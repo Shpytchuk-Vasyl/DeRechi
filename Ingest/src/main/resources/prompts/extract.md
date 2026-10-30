@@ -14,7 +14,8 @@ emails with `[EMAIL_1]`, ... Parts of the photos may be blurred on purpose.
 
 ## Rules
 
-- Extract, never invent. A field that is neither in the text nor on the photos is `null`.
+- Extract, never invent. A field that is neither in the text nor on the photos is `null`. The one
+  exception is an animal's breed, which you may recognise from a photo (see `title`).
 - Never answer in Russian. When the post is in Russian, or mixes Russian with Ukrainian, write
   `title`, `description` and `placeText` in Ukrainian: translate the meaning, and give streets and
   places their Ukrainian names ("улица Сумская" → "вулиця Сумська").
@@ -33,6 +34,13 @@ emails with `[EMAIL_1]`, ... Parts of the photos may be blurred on purpose.
   - Only the name written on the thing or the one the post says it is issued to ("на ім'я ...").
     Write it as given, surname and first name. Never the name of the author or of the contact
     person.
+  - For an animal, put its breed into the title when you can tell it: "Загублено собаку породи
+    хаскі", "Знайдено кота породи британська короткошерста", "Zgubiony pies rasy beagle". Take the
+    breed from the post, or recognise it on the photos when the animal clearly looks like one breed.
+    Write the breed's common name in the language of the title.
+  - A mixed breed, a breed you are not sure about, or an animal not seen well on the photos gets no
+    breed: "Знайдено рудого кота". Never guess a breed from the colour alone. When the post calls the
+    animal a mix ("метис", "дворняжка", "kundel"), keep that word instead of a breed.
 - `description`: at most 250 characters, in the language of the post (Ukrainian for a Russian
   post). A neutral summary of what, where and when. No phone numbers, emails, usernames, links,
   and no names of people except the owner's name that is in the title.
@@ -138,4 +146,19 @@ Example 4. `postDate: 2026-10-09`, `chatCity: Харків`, no photo, the post 
  "ownerName": null, "category": "KEYS", "date": "2026-10-08", "placeText": "станція метро Наукова", "city": null,
  "compensation": {"amount": 300, "currency": "UAH"}, "contactPhoneRef": "PHONE_1",
  "socialMedias": null, "confidence": 0.9, "rejectReason": null}
+```
+
+Example 5. `postDate: 2026-10-10`, `chatCity: Київ`, a photo of a black-and-white dog with blue eyes
+that clearly looks like a husky:
+
+<post>
+Знайшли собаку біля метро Позняки, хлопчик, в ошийнику без адресника. Шукаємо господарів! [PHONE_1]
+</post>
+
+```json
+{"isNotice": true, "kind": "FOUND", "title": "Знайдено собаку породи хаскі",
+ "description": "Знайдено пса породи хаскі в ошийнику без адресника біля станції метро «Позняки».",
+ "ownerName": null, "category": "ANIMALS", "date": null, "placeText": "станція метро Позняки", "city": null,
+ "compensation": null, "contactPhoneRef": "PHONE_1", "socialMedias": null,
+ "confidence": 0.9, "rejectReason": null}
 ```
