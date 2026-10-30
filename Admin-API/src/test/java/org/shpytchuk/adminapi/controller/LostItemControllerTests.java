@@ -168,7 +168,7 @@ class LostItemControllerTests {
         mockMvc.perform(get("/admin/lost-items").with(oidcLogin().authorities(authority(Scope.LOST_ITEM, Action.VIEW))))
                 .andExpect(status().isOk())
                 .andExpect(content().string(allOf(
-                        containsString("thumb image is-48x48"),
+                        containsString("thumb image is-96x96"),
                         not(containsString("thumb-img")),
                         not(containsString("commandfor=\"photo-item-7\"")),
                         not(containsString("photo-dialog")))));
