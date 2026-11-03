@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { connection } from "next/server"
 import { routing } from "@/i18n/routing"
 import { CITIES } from "@/lib/cities"
 import CityPage, { cityMetadata } from "@/screens/city/city-page"
@@ -17,6 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CityRoute({ params }: Props) {
+  await connection()
   const { locale, city } = await params
   return <CityPage locale={locale} slug={city} />
 }

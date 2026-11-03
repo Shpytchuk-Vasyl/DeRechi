@@ -71,18 +71,24 @@ Every GraphQL read in `src/api/` is a `fetch` cached by Next, and all the number
 
 Two things Next does not make obvious. A fetch with a shorter `revalidate` shortens the whole
 route, which is why the sitemap reads the lists through `CACHE.sitemapItems` (an hour) and not
-`CACHE.items` (a minute), and the prerendered pages read their rails the same way:
-`CACHE.homeItems` (15 minutes) on the home and city pages, the city's `cityHasNotices` in its
-metadata included, and `CACHE.guideItems` (a day) on the guides. And route segment config such as
+`CACHE.items` (a minute), and the guides read their rail through `CACHE.guideItems` (a day). The
+home and city pages are not prerendered at all (below), so `CACHE.homeItems` (15 minutes) there,
+the city's `cityHasNotices` in its metadata included, only bounds how often they ask the API. And
+route segment config such as
 `export const revalidate` has to be a literal, so `sitemap.ts` repeats `3600` with a comment
 instead of importing `CACHE_TTL.hour`. These intervals bound changes made outside the site
 (notices imported from Telegram, archiving in the admin panel and by Worker); posts through the
 site drop the `items:<kind>` tag at once.
 
 Vercel bills an ISR write each time a regenerated page comes out different, at about 15 to 20
-write units per home, city or guide page, so the five locales of each multiply every change.
-Nothing in a prerendered page may depend on the clock: the card date ("yesterday", "2 days ago")
-is worked out in the browser by `NoticeDate`, the server renders the plain date.
+write units per home, city or guide page, so the five locales of each multiply every change. A
+page whose async components (the rails, `stats`) wait on separate fetches comes out different on
+nearly every regeneration even with the same data: the RSC payload is serialized in the order the
+fetches answer. That is why the home and city pages call `connection()` and render on every
+request, their fetches still served from the Data Cache; `force-dynamic` would not do, it turns
+every fetch into `no-store`. Nothing in a prerendered page may depend on the clock either: the card
+date ("yesterday", "2 days ago") is worked out in the browser by `NoticeDate`, the server renders
+the plain date.
 
 ## Tests
 

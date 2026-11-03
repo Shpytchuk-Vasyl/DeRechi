@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { connection } from "next/server"
 import { getLocale, getTranslations } from "next-intl/server"
 import { LazyMascotRoamer } from "@/components/mascot/lazy-mascot-roamer"
 import { jsonLd, pageAlternates, websiteJsonLd } from "@/lib/seo"
@@ -36,6 +37,7 @@ export async function generateMetadata({
 }
 
 export default async function HomePage() {
+  await connection()
   const locale = await getLocale()
   const t = await getTranslations("app")
   const alternateNames: string[] = []
