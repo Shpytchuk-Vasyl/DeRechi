@@ -44,7 +44,8 @@ public class FacebookPostSource implements PostSource {
 
     private final FacebookProperties properties;
     private final FacebookClient client;
-    private final FacebookGroupReader reader;
+    private final GroupReader reader;
+    private final boolean viaApify;
     private final TaskScheduler scheduler;
     private final Clock clock;
     private final MeterRegistry registry;
@@ -54,16 +55,19 @@ public class FacebookPostSource implements PostSource {
     private volatile Consumer<IncomingPost> sink = post -> {
     };
 
-    public FacebookPostSource(FacebookProperties properties, FacebookClient client, JsonMapper json,
+    public FacebookPostSource(FacebookProperties properties, FacebookClient client, ApifyClient apify, JsonMapper json,
                               TaskScheduler scheduler, Clock clock, MeterRegistry registry) {
         this.properties = properties;
         this.client = client;
         this.scheduler = scheduler;
         this.clock = clock;
         this.registry = registry;
-        this.reader = new FacebookGroupReader(client, json, properties.maxPages(), this::pause);
+        this.viaApify = apify.configured();
+        this.reader = viaApify
+                ? new ApifyGroupReader(apify)
+                : new FacebookGroupReader(client, json, properties.maxPages(), this::pause);
         Gauge.builder("derechi.ingest.facebook.authorized", authorized, AtomicInteger::get)
-                .description("0 when the Facebook session was logged out on the last poll")
+                .description("0 when the Facebook session was logged out or Apify rejected the run on the last poll")
                 .register(registry);
     }
 
@@ -74,14 +78,16 @@ public class FacebookPostSource implements PostSource {
 
     @Override
     public void start(Consumer<IncomingPost> sink) {
-        if (!properties.configured()) {
-            log.warn("Facebook is not configured (FACEBOOK_COOKIES, FACEBOOK_GROUPS), no groups will be read");
+        if (properties.groupSettings().isEmpty() || !viaApify && properties.cookies().isEmpty()) {
+            log.warn("Facebook is not configured (FACEBOOK_GROUPS, and FACEBOOK_COOKIES or APIFY_TOKEN), "
+                    + "no groups will be read");
             return;
         }
         this.sink = sink;
         scheduleIn(FIRST_POLL);
-        log.info("Facebook source started: {} groups every {} plus up to {}, active hours {}",
-                properties.groupSettings().size(), properties.pollEvery(), properties.pollJitter(), properties.activeHours());
+        log.info("Facebook source started through {}: {} groups every {} plus up to {}, active hours {}",
+                viaApify ? "Apify" : "the account's cookies", properties.groupSettings().size(),
+                properties.pollEvery(), properties.pollJitter(), properties.activeHours());
     }
 
     @Override
@@ -113,7 +119,7 @@ public class FacebookPostSource implements PostSource {
             }
             boolean first = true;
             for (Map.Entry<String, SourceSettings> group : awake.entrySet()) {
-                if (!first) {
+                if (!first && !viaApify) {
                     pause();
                 }
                 first = false;
@@ -149,7 +155,7 @@ public class FacebookPostSource implements PostSource {
         Instant started = clock.instant();
         Instant from = since.getOrDefault(group, started.minus(properties.catchUpMaxAge()));
         try {
-            FacebookGroupReader.GroupFeed feed = reader.read(group, from);
+            GroupFeed feed = reader.read(group, from);
             authorized.set(1);
             List<FacebookStory> fresh = feed.stories().stream()
                     .filter(story -> !story.createdAt().isBefore(from))

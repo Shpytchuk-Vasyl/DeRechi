@@ -43,10 +43,6 @@ public record FacebookProperties(
         ActiveHours.parse(ACTIVE_HOURS_PROPERTY, activeHours);
     }
 
-    public boolean configured() {
-        return !cookies.isEmpty() && !groupSettings().isEmpty();
-    }
-
     public ActiveHours hours() {
         return ActiveHours.parse(ACTIVE_HOURS_PROPERTY, activeHours);
     }

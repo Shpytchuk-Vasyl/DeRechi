@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.shpytchuk.ingest.config.facebook.FacebookProperties;
 import org.shpytchuk.ingest.exception.IngestException;
+import org.shpytchuk.ingest.exception.StageUnavailableException;
 import org.shpytchuk.ingest.model.SocialMedia;
 import org.shpytchuk.ingest.source.AuthorProfile;
 import org.shpytchuk.ingest.source.IncomingPost;
@@ -45,6 +46,7 @@ class FacebookPostSourceTest {
     private static final URI LVIV = URI.create("https://www.facebook.com/groups/lviv_lost/?sorting_setting=CHRONOLOGICAL");
 
     private final FacebookClient client = mock(FacebookClient.class);
+    private final ApifyClient apify = mock(ApifyClient.class);
     private final TaskScheduler scheduler = mock(TaskScheduler.class);
     private final SimpleMeterRegistry registry = new SimpleMeterRegistry();
     private final List<IncomingPost> received = new ArrayList<>();
@@ -63,6 +65,33 @@ class FacebookPostSourceTest {
         source(properties("", "zzter=Тернопіль")).start(received::add);
 
         verifyNoInteractions(scheduler, client);
+    }
+
+    @Test
+    void withAnApifyTokenTheGroupsAreReadThroughApifyWithoutCookies() {
+        when(apify.configured()).thenReturn(true);
+        when(apify.groupPosts(anyString(), any())).thenReturn(ApifyFixtures.posts());
+        FacebookPostSource source = started(properties("", "zzter=Тернопіль;lviv_lost=Львів"));
+
+        source.poll();
+
+        verifyNoInteractions(client);
+        verify(apify, times(2)).groupPosts(anyString(), any());
+        assertThat(received).extracting(post -> post.key().channel()).containsOnly("zzter", "lviv_lost");
+        assertThat(received.getFirst().link()).isEqualTo("https://www.facebook.com/groups/zzter/permalink/9001/");
+    }
+
+    @Test
+    void anApifyRunItRejectsIsReportedLikeALoggedOutSession() {
+        when(apify.configured()).thenReturn(true);
+        when(apify.groupPosts(anyString(), any())).thenThrow(new StageUnavailableException("HTTP 402"));
+        FacebookPostSource source = started(properties("", "zzter=Тернопіль"));
+
+        source.poll();
+
+        assertThat(registry.get("derechi.ingest.facebook.authorized").gauge().value()).isZero();
+        assertThat(registry.get("derechi.ingest.facebook.polls").tag("outcome", "unauthorized").counter().count())
+                .isEqualTo(1);
     }
 
     @Test
@@ -235,7 +264,7 @@ class FacebookPostSourceTest {
     }
 
     private FacebookPostSource source(FacebookProperties properties) {
-        return new FacebookPostSource(properties, client, JsonMapper.builder().build(), scheduler,
+        return new FacebookPostSource(properties, client, apify, JsonMapper.builder().build(), scheduler,
                 Clock.fixed(NOW, ZoneOffset.UTC), registry);
     }
 

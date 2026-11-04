@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-class FacebookGroupReader {
+class FacebookGroupReader implements GroupReader {
 
     static final String FEED_QUERY = "GroupsCometFeedRegularStoriesPaginationQuery";
 
@@ -37,7 +37,8 @@ class FacebookGroupReader {
         this.pause = pause;
     }
 
-    GroupFeed read(String group, Instant since) {
+    @Override
+    public GroupFeed read(String group, Instant since) {
         URI url = URI.create(FacebookClient.ORIGIN + "/groups/" + group + "/?sorting_setting=CHRONOLOGICAL");
         GroupPage page = parser.groupPage(client.page(url));
         List<FacebookStory> stories = new ArrayList<>(page.feed().stories());
@@ -132,8 +133,5 @@ class FacebookGroupReader {
 
     static String jazoest(String fbDtsg) {
         return "2" + fbDtsg.chars().sum();
-    }
-
-    record GroupFeed(String name, List<FacebookStory> stories) {
     }
 }

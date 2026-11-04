@@ -103,6 +103,13 @@ derechi:
     timeout: ${FACEBOOK_TIMEOUT:PT30S}
     active-hours: ${FACEBOOK_ACTIVE_HOURS:07:00-22:00}
 
+  apify:
+    token: ${APIFY_TOKEN:}
+    facebook-actor: ${APIFY_FACEBOOK_ACTOR:apify~facebook-groups-scraper}
+    results-limit: ${APIFY_RESULTS_LIMIT:10}
+    max-charge-usd: ${APIFY_MAX_CHARGE_USD:0.05}
+    timeout: ${APIFY_TIMEOUT:PT4M}
+
   bot:
     api-url: ${TELEGRAM_BOT_API_URL:https://api.telegram.org}
     token: ${TELEGRAM_BOT_TOKEN:}

@@ -47,7 +47,7 @@ class FacebookGroupReaderTest {
 
     @Test
     void readsPagesUntilTheStoriesAreOlderThanSince() {
-        FacebookGroupReader.GroupFeed feed = reader.read("zzter", FacebookFixtures.THIRD.plusSeconds(60));
+        GroupFeed feed = reader.read("zzter", FacebookFixtures.THIRD.plusSeconds(60));
 
         assertThat(feed.name()).isEqualTo("ЗАГУБИВ-ЗНАЙШОВ ТЕРНОПІЛЬ");
         assertThat(feed.stories()).extracting(FacebookStory::postId).containsExactly("9003", "9002", "9001");
@@ -56,7 +56,7 @@ class FacebookGroupReaderTest {
 
     @Test
     void stopsAtTheLastPage() {
-        FacebookGroupReader.GroupFeed feed = reader.read("zzter", Instant.EPOCH);
+        GroupFeed feed = reader.read("zzter", Instant.EPOCH);
 
         assertThat(feed.stories()).extracting(FacebookStory::postId).containsExactly("9003", "9002", "9001", "8001");
         verify(client, times(2)).graphQl(anyString(), anyMap(), anyString(), any());
@@ -109,7 +109,7 @@ class FacebookGroupReaderTest {
                 .thenThrow(new IngestException("Facebook feed answered without stories: PersistedQueryNotFound"))
                 .thenReturn(FacebookFixtures.feed());
 
-        FacebookGroupReader.GroupFeed feed = reader.read("zzter", FacebookFixtures.THIRD.plusSeconds(60));
+        GroupFeed feed = reader.read("zzter", FacebookFixtures.THIRD.plusSeconds(60));
 
         assertThat(feed.stories()).hasSize(3);
         verify(client, times(2)).script(SECOND_SCRIPT);

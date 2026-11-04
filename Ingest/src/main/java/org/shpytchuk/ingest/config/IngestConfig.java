@@ -2,6 +2,7 @@ package org.shpytchuk.ingest.config;
 
 import org.shpytchuk.ingest.config.bot.BotProperties;
 import org.shpytchuk.ingest.config.client.ApiProperties;
+import org.shpytchuk.ingest.config.facebook.ApifyProperties;
 import org.shpytchuk.ingest.config.facebook.FacebookProperties;
 import org.shpytchuk.ingest.config.openrouter.OpenRouterProperties;
 import org.shpytchuk.ingest.config.places.PlacesProperties;
@@ -20,6 +21,7 @@ import java.time.Clock;
 @EnableConfigurationProperties({
         TelegramProperties.class,
         FacebookProperties.class,
+        ApifyProperties.class,
         BotProperties.class,
         IngestProperties.class,
         OpenRouterProperties.class,
