@@ -42,9 +42,9 @@ export default function ClaimCard({ kind, id, countryCode, category, contact }: 
       <CardContent>
         <dl className="grid grid-cols-[90px_1fr] gap-x-3.5 gap-y-2.5">
           <dt className="text-muted-foreground">{t("phone")}</dt>
-          <dd className="font-semibold">{contact.phone ?? "-"}</dd>
+          <dd className="font-semibold">{contact.phone ?? "**********"}</dd>
           <dt className="text-muted-foreground">{t("email")}</dt>
-          <dd className="font-semibold">{contact.email ?? "-"}</dd>
+          <dd className="font-semibold">{contact.email ?? "**************"}</dd>
         </dl>
         <p className="mt-3.5 text-muted-foreground text-sm leading-relaxed">{t("maskedNote")}</p>
 
