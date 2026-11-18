@@ -443,10 +443,46 @@ docker compose exec postgres sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"'
 ssh -N -L 15432:10.0.0.10:5432 derechi-api          # з ПК: прод-база на localhost:15432 (pgAdmin — 4-other.sh)
 ```
 
-Відновлення бекапу (спробувати заздалегідь, не в день аварії): скачати файл з B2 →
-`age -d -o dump.zst <файл>` (пароль `BACKUP_ENCRYPT_PASSPHRASE`) → `zstd -d dump.zst` → `psql`
-або `pg_restore`. Відновлювати в образ з hunspell (`derechi/postgis:17-3.5-uk` локально): у дампі
-конфіг `ukrainian`.
+Відновлення бекапу (перевірено 2026-11-18 на бекапі від 17.11). Файл у B2 — не `pg_dump`, а SQL
+власного формату `nfrastack/db-backup`, і просто `psql` на ньому не спрацює:
+- **немає словників пошуку** `ukrainian` і `polish` (міграції `001`, `010`). Таблиці відновлюються без
+  помилок, але пошук Client-API падає на `CAST(... AS regconfig)`;
+- **роль з `!` в імені** дампер пише в `GRANT` як `"""роль"""`, і відновлення падає на цьому рядку;
+- **бази `keycloak` у бекапі немає** (знімається лише `derechi`), фото лежать в окремому бакеті B2.
+
+Відновлювати в образ з hunspell (`derechi/postgis:17-3.5-uk` локально, `derechi-postgis` з ghcr на проді),
+з кореня репозиторію:
+```bash
+# 1. Файл з B2 (тека postgres/, *.sql.zst.age) у поточну теку; пароль — BACKUP_ENCRYPT_PASSPHRASE
+docker run --rm -it -v "$PWD:/work" -w /work alpine:3.20 sh -c \
+  "apk add --no-cache -q age zstd && age -d <файл>.sql.zst.age | zstd -d -o dump.sql"
+
+# 2. Битий GRANT і власник → користувач, під яким відновлюємо
+sed -i -E -e 's/ TO """[^"]+""";$/ TO CURRENT_USER;/' \
+          -e '/pg_database_owner/!s/OWNER TO "[^"]+"/OWNER TO CURRENT_USER/' dump.sql
+
+# 3. Порожня база й дамп однією транзакцією: при помилці база лишається порожньою
+docker exec derechi-postgres sh -c 'createdb -U "$POSTGRES_USER" derechi_restore'
+docker exec -i derechi-postgres sh -c \
+  'psql -U "$POSTGRES_USER" -d derechi_restore -q -v ON_ERROR_STOP=1 --single-transaction' < dump.sql > /dev/null
+
+# 4. Словники пошуку — з тих самих міграцій
+cat DB-Postgres/changelog/changes/001-extentions-and-configuration.sql \
+    DB-Postgres/changelog/changes/010-polish-fts.postgresql.sql |
+  docker exec -i derechi-postgres sh -c \
+  'psql -U "$POSTGRES_USER" -d derechi_restore -q -v ON_ERROR_STOP=1 --single-transaction'
+
+# 5. Перевірка
+docker exec -it derechi-postgres sh -c 'psql -U "$POSTGRES_USER" -d derechi_restore'
+#   select count(*) from lost_item;                       -- як на проді
+#   select count(*) from databasechangelog;               -- = кількість changeset у DB-Postgres/changelog
+#   select to_tsvector('ukrainian', 'загубила гаманці');  -- 'гаманець':2 'загубити':1
+```
+На проді замість `derechi_restore` — `derechi`, без `createdb`. Якщо `db-postgres` уже встиг накотити
+міграції, дамп однаково ляже (він робить `DROP TABLE IF EXISTS ... CASCADE`), а словники вже є: крок 4
+впаде з `already exists`, його пропускають. Сервіси на відновлену локальну базу — `POSTGRES_DB=derechi_restore`.
+На Windows крок 1 запускати з PowerShell (`-v "${PWD}:/work"`), кроки 2–5 — з Git Bash. Розшифрований
+`dump.sql` містить контакти людей: після перевірки його видаляють.
 
 Caddy без рестарту: `docker compose exec caddy caddy reload --config /etc/caddy/Caddyfile`. Тека
 `docker/caddy` змонтована цілком (`Caddyfile` імпортує `api.Caddyfile`), тож після `git pull` reload бачить
@@ -462,4 +498,7 @@ Caddy без рестарту: `docker compose exec caddy caddy reload --config 
 - **`__deploy/` є лише в гілці `deploy`** (локальній): перед деплоєм у неї зливається `main`. На машини
   йде clone `main`, тож compose-файли туди доїжджають лише scp-ом.
 - Невдалий бекап ніхто не помітить (алертів немає) — зрідка дивитись, чи свіжий останній файл у бакеті.
+- **Бекап не знімає базу `keycloak`**: акаунти адмінів після аварії довелося б створювати заново. Додати
+  її другою базою в `postgres-backup` (`DB02_*`) і заодно перевірити, чи нова версія образу дампить словники
+  пошуку (див. «Відновлення бекапу» в розділі 8).
 - Зовнішнього uptime-моніторингу немає: падіння машини 1 видно лише в Grafana Cloud.
