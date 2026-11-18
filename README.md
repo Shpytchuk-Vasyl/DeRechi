@@ -19,6 +19,8 @@ of notice in the background, and the owner hears about a likely match by email o
 
 </div>
 
+![DeRechi home page: report a find or a loss, contacts hidden from strangers](Web-Client/screenshots/home.webp)
+
 ---
 
 ## What it does
@@ -33,7 +35,37 @@ of notice in the background, and the owner hears about a likely match by email o
   notices are archived automatically.
 - **Admin panel** for moderators: matches, notices, archives and one-click "Notify the owner",
   with fine-grained permissions on top of Keycloak roles.
-- **SEO-first public site**: server-rendered Next.js with per-city pages and structured data.
+- **SEO-first public site** in five languages (Ukrainian, English, Polish, German, French):
+  server-rendered Next.js with per-city pages, guides and structured data.
+
+## A look at the site
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="Web-Client/screenshots/city-map.webp" alt="Map of Ukraine with a pin for every city page">
+      <p><b>A page for every city.</b> Kyiv and the regional centres on a map of Ukraine. A city
+      page lists the notices within its radius and has its own found and lost lists.</p>
+    </td>
+    <td width="50%" valign="top">
+      <img src="Web-Client/screenshots/city-lost-property.webp" alt="Where else to ask in Lviv: the city lost-property office, railways, buses and the law">
+      <p><b>Where else to ask.</b> The city's lost-property office with its phone and channel,
+      railway and bus rules, and what the law says about a found item. Contacts are checked by hand.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="Web-Client/screenshots/guide.webp" alt="Guide: lost documents, what to do">
+      <p><b>Guides.</b> What to do when documents, keys, a wallet, electronics or a pet go missing:
+      the first hour, where to look, getting them reissued, how not to get scammed.</p>
+    </td>
+    <td width="50%" valign="top">
+      <img src="Web-Client/screenshots/faq-and-stats.webp" alt="FAQ, live figures and the footer">
+      <p><b>FAQ and live figures.</b> Things returned to their owners this week and finds posted
+      today. Znaida, the site's mascot, roams the page.</p>
+    </td>
+  </tr>
+</table>
 
 ## How it fits together
 
